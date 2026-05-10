@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 읽기 - 제60회 - Vui Học Tiếng Hàn</title>
+    
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+
+<style>
+    /* ===== HEADER BADGE THEO SOP ===== */
+    .header-badge-container {
+        text-align: center;
+        margin: 40px auto 50px auto;
+        width: 100%;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 12px 50px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* ===== CSS INFOGRAPHIC ĐỀ 60 & FIX MOBILE ===== */
+    .info-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); display: flex; flex-direction: column; justify-content: space-between; }
+    .info-title { font-size: 1.05rem; font-weight: 800; color: #0f172a; text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; }
+    
+    .q53-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Máy tính 2 cột */
+        gap: 20px;
+    }
+
+    /* Biểu đồ 1: Đường (Line Chart) 3 điểm */
+    .line-chart-60 { position: relative; height: 180px; border-left: 2px solid #cbd5e1; border-bottom: 2px solid #cbd5e1; margin: 10px 15px 25px 15px; overflow: visible; }
+    .data-point { position: absolute; background: white; border: 3px solid #2563eb; width: 14px; height: 14px; transform: translate(-50%, 50%); z-index: 3; }
+    .point-val { position: absolute; font-weight: 800; font-size: 0.95rem; color: #1e293b; transform: translate(-50%, -150%); z-index: 4; white-space: nowrap;}
+    .svg-line-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .growth-badge { position: absolute; top: 15%; left: 45%; transform: translateX(-50%); background: #1e293b; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 800; font-size: 0.9rem; z-index: 2; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    .year-label { display: flex; justify-content: space-between; margin-top: 10px; font-weight: 700; color: #64748b; font-size: 0.95rem; padding: 0 10px; }
+
+    /* Box Nguyên nhân */
+    .cause-box-60 { border: 1px solid #cbd5e1; padding: 20px; border-radius: 12px; background: #f8fafc; margin-bottom: 20px;}
+    .cause-title-badge { display: inline-block; background: #64748b; color: white; padding: 6px 16px; border-radius: 8px; font-weight: 700; font-size: 0.95rem; margin-bottom: 15px; }
+    .cause-list { margin: 0; padding-left: 20px; line-height: 1.8; font-weight: 600; font-size: 0.95rem; color: #1e293b; }
+
+    /* Biểu đồ 2: Cột kép (Bar Chart) */
+    .bar-chart-wrapper { border: 1px solid #cbd5e1; padding: 20px; border-radius: 12px; background: #ffffff; flex: 1; }
+    .bar-chart-60 { display: flex; justify-content: space-around; align-items: flex-end; height: 130px; border-bottom: 2px solid #cbd5e1; padding-bottom: 5px; position: relative;}
+    .bar-group-wrap { display: flex; gap: 4px; align-items: flex-end; height: 100%; position: relative;}
+    .bar { width: 22px; border-radius: 3px 3px 0 0; }
+    .bg-2007 { background: #334155; }
+    .bg-2017 { background: #cbd5e1; background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(0,0,0,0.1) 5px, rgba(0,0,0,0.1) 10px); }
+    .bar-growth-text { position: absolute; top: -35px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; font-weight: 800; font-size: 0.8rem; padding: 2px 6px; border-radius: 4px; white-space: nowrap;}
+    .bar-arrow-svg { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 30px; height: 20px; overflow: visible; z-index: 5;}
+    .bar-x-labels { display: flex; justify-content: space-around; font-weight: 700; color: #475569; font-size: 0.85rem; margin-top: 10px; }
+
+    /* FIX LỖI MOBILE */
+    @media (max-width: 768px) {
+        .header-badge-container { margin: 20px auto 30px auto; }
+        .topik-header-badge { font-size: 1.5rem; padding: 10px 30px; border-width: 1.5px; }
+        .q53-info-grid { grid-template-columns: 1fr; gap: 15px; } /* Điện thoại 1 cột xếp dọc */
+        .bar { width: 18px; }
+        .bar-growth-text { font-size: 0.75rem; }
+    }
+</style>
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제60회</div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        <div style="margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <span style="background:#f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; color:#475569; font-weight: 700; margin-right: 10px;">Q & A 게시판</span>
+            <b>한국대학교 도서관</b>
+        </div>
+        <div>
+            <b>제목 : 도서관을 이용하고 싶습니다.</b><br>
+            <span style="color:#64748b; font-size:0.9rem;">작성자 : 타넷(2018-10-20)</span><br><br>
+            한국대학교를 졸업한 학생인데 도서관을 이용하고 싶습니다.<br>
+            선배에게 물어보니 졸업생이 도서관을 이용하려면 출입증이 <b>( ㉠ )</b>?<br>
+            출입증을 만들려면 <b>( ㉡ )</b>.<br>
+            방법을 알려 주시면 감사하겠습니다.
+        </div>
+
+        <details style="margin-top: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+            <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+            <div class="details-content" style="font-size: 0.95rem; color: #111;">
+                <b>Tiêu đề: Tôi muốn sử dụng thư viện.</b><br>
+                Tôi là sinh viên đã tốt nghiệp Đại học Hàn Quốc và muốn sử dụng thư viện.<br>
+                Tôi có hỏi tiền bối thì nghe nói nếu sinh viên tốt nghiệp muốn sử dụng thư viện thì <b>(cần phải có / nghe nói là phải có)</b> thẻ ra vào phải không ạ?<br>
+                Nếu muốn làm thẻ ra vào thì <b>(tôi phải làm thế nào / phải đi đâu)</b> ạ.<br>
+                Nếu bạn cho tôi biết cách thức thì tôi rất biết ơn.
+            </div>
+        </details>
+    </div>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-51-a" style="display:none;" onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-a" class="explanation-box">
+                <div id="score-51-a" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Từ khóa `선배에게 물어보니` (Vì tôi đã hỏi tiền bối nên...) báo hiệu đây là một thông tin NGHE ĐƯỢC từ người khác. Phía trước có `출입증이` (Thẻ ra vào), nên động từ đi kèm là 'cần' hoặc 'có'. Đặc biệt cuối câu có dấu chấm hỏi `?` nên phải dùng đuôi câu hỏi.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>필요하다 / 있다</code> + Ngữ pháp trích dẫn gián tiếp dạng câu hỏi <code>-다고 합니까? / -다고 들었는데 맞습니까?</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 필요하다고 합니다 / 있어야 한다고 합니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 필요하다고 들었습니다 / 있어야 한다고 들었습니다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-51-b" style="display:none;" onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-b" class="explanation-box">
+                <div id="score-51-b" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Người viết hỏi `출입증을 만들려면` (Nếu muốn làm thẻ ra vào thì...). Câu tiếp theo lại là `방법을 알려 주시면...` (Nếu báo cho tôi cách thức thì...). Rõ ràng đây là câu hỏi xin hướng dẫn "phải làm thế nào?".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Từ để hỏi <code>어떻게</code> + Động từ <code>하다</code> + Ngữ pháp bắt buộc <code>-아/어야 합니까? / -아/어야 됩니까?</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 어떻게 해야 합니까 / 어떻게 해야 됩니까.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 어떻게 신청해야 합니까 / 무엇을 준비해야 합니까.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        사람들은 음악 치료를 할 때 환자에게 주로 밝은 분위기의 음악을 들려줄 것이라고 생각한다. 그러나 환자에게 항상 밝은 분위기의 음악을 <b>( ㉠ )</b>. 치료 초기에는 환자가 편안한 감정을 느끼는 것이 중요하다. 그래서 환자의 심리 상태와 비슷한 분위기의 음악을 들려준다. 그 이후에는 환자에게 다양한 분위기의 음악을 들려줌으로써 환자가 다양한 감정을 <b>( ㉡ )</b>.
+    </div>
+
+    <details style="margin-bottom: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+        <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+        <div class="details-content" style="font-size: 0.95rem; color: #111;">
+            Mọi người thường nghĩ rằng khi trị liệu bằng âm nhạc, người ta sẽ chủ yếu mở cho bệnh nhân nghe những bản nhạc mang bầu không khí tươi sáng. Tuy nhiên không phải lúc nào người ta cũng <b>(mở cho nghe)</b> những bản nhạc có bầu không khí tươi sáng. Trong giai đoạn đầu trị liệu, việc bệnh nhân cảm thấy thoải mái là rất quan trọng. Vì vậy, người ta mở cho bệnh nhân nghe những bản nhạc có bầu không khí tương đồng với trạng thái tâm lý của họ. Sau đó, bằng cách mở cho bệnh nhân nghe những bản nhạc có bầu không khí đa dạng, người ta <b>(làm cho/giúp cho)</b> bệnh nhân cảm nhận được những cảm xúc đa dạng.
+        </div>
+    </details>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-52-a" style="display:none;" onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-a" class="explanation-box">
+                <div id="score-52-a" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Câu trước đưa ra định kiến chung "người ta nghĩ rằng sẽ CHỦ YẾU mở nhạc sáng". Câu sau bắt đầu bằng "그러나" (Tuy nhiên) và "항상" (Luôn luôn). Đây là cấu trúc PHỦ ĐỊNH MỘT PHẦN kinh điển: "Tuy nhiên KHÔNG PHẢI LÚC NÀO CŨNG...". Động từ lấy từ câu trước là `들려주다`.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>들려주다 / 사용하다</code> + Phủ định một phần <code>-는 것은 아니다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 들려주는 것은 아니다 / 사용하는 것은 아니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 틀어주는 것은 아니다 / 들려주지는 않는다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án의 của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-52-b" style="display:none;" onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-b" class="explanation-box">
+                <div id="score-52-b" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Câu này mô tả HÀNH ĐỘNG CỦA BÁC SĨ (người ta mở nhạc đa dạng) để tạo ra KẾT QUẢ CHO BỆNH NHÂN (bệnh nhân cảm nhận được cảm xúc đa dạng). Phía trước có trợ từ `감정을` nên động từ chắc chắn là `느끼다` (cảm nhận). Vì đây là sự tác động nên phải dùng cấu trúc sai khiến "Làm cho/khiến cho".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>느끼다 / 경험하다</code> + Ngữ pháp sai khiến <code>-게 하다 / -도록 하다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 느끼도록 한다 / 느끼게 한다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 가지게 한다 / 경험하게 한다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [53] 다음을 참고하여 '인주시의 자전거 이용자 변화'에 대한 글을 200~300자로 쓰시오. 단, 글의 제목은 쓰지 마시오. (30점)
+    </div>
+
+    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        
+        <div class="q53-info-grid">
+            <div class="info-card">
+                <div class="info-title">자전거 이용자 수 <span style="font-size: 0.8rem; color: #64748b; font-weight:500;">(단위: 명)</span></div>
+                <div class="line-chart-60">
+                    <div class="growth-badge">약 5배 ↗</div>
+                    <div class="data-point" style="bottom: 10%; left: 15%; shape-outside: circle();"></div>
+                    <div class="point-val" style="bottom: 10%; left: 15%;">4만</div>
+                    
+                    <div class="data-point" style="bottom: 35%; left: 50%;"></div>
+                    <div class="point-val" style="bottom: 35%; left: 50%;">9만</div>
+                    
+                    <div class="data-point" style="bottom: 85%; left: 85%;"></div>
+                    <div class="point-val" style="bottom: 85%; left: 85%;">21만</div>
+
+                    <svg class="svg-line-container" preserveAspectRatio="none">
+                        <line x1="15%" y1="90%" x2="50%" y2="65%" stroke="#1e293b" stroke-width="3"/>
+                        <line x1="50%" y1="65%" x2="85%" y2="15%" stroke="#1e293b" stroke-width="3"/>
+                    </svg>
+                </div>
+                <div class="year-label" style="justify-content: space-between; border-top: 2px solid #cbd5e1; margin-top: 0; padding-top: 10px;">
+                    <span style="margin-left: 5%;">2007년</span>
+                    <span style="margin-left: 3%;">2012년</span>
+                    <span style="margin-right: 5%;">2017년</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 15px;">
+                
+                <div class="cause-box-60">
+                    <div class="info-title" style="margin-bottom: 10px; border:none; padding:0; background: #64748b; color:white; border-radius: 99px; padding: 4px; width: 100px; margin: 0 auto 15px auto; font-size: 0.95rem;">변화 이유</div>
+                    <ul class="cause-list">
+                        <li>자전거 도로 개발</li>
+                        <li>자전거 빌리는 곳 확대</li>
+                    </ul>
+                </div>
+
+                <div class="bar-chart-wrapper">
+                    <div class="info-title" style="margin-bottom: 25px; border-bottom: 1px dashed #cbd5e1;">이용 목적</div>
+                    <div class="bar-chart-60">
+                        <div class="bar-group-wrap">
+                            <div class="bar-growth-text">4배 ↗</div>
+                            <svg class="bar-arrow-svg" preserveAspectRatio="none"><path d="M5,20 Q15,5 25,20" fill="none" stroke="#64748b" stroke-width="1.5"/></svg>
+                            <div class="bar bg-2007" style="height: 15%;"></div>
+                            <div class="bar bg-2017" style="height: 60%;"></div>
+                        </div>
+                        <div class="bar-group-wrap">
+                            <div class="bar-growth-text" style="background:#dc2626;">14배 ↗</div>
+                            <svg class="bar-arrow-svg" preserveAspectRatio="none" style="top:-25px; height: 30px;"><path d="M5,30 Q15,0 25,30" fill="none" stroke="#dc2626" stroke-width="2"/></svg>
+                            <div class="bar bg-2007" style="height: 5%;"></div>
+                            <div class="bar bg-2017" style="height: 80%;"></div>
+                        </div>
+                        <div class="bar-group-wrap">
+                            <div class="bar-growth-text">3배 ↗</div>
+                            <svg class="bar-arrow-svg" preserveAspectRatio="none"><path d="M5,20 Q15,5 25,20" fill="none" stroke="#64748b" stroke-width="1.5"/></svg>
+                            <div class="bar bg-2007" style="height: 10%;"></div>
+                            <div class="bar bg-2017" style="height: 30%;"></div>
+                        </div>
+                    </div>
+                    <div class="bar-x-labels">
+                        <span>운동 및 산책</span>
+                        <span style="font-weight: 800; color:#dc2626;">출퇴근</span>
+                        <span>기타</span>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:15px; margin-top:15px; font-size:0.8rem; font-weight:700; color:#475569;">
+                        <div style="display:flex; align-items:center; gap:5px;"><div style="width:12px;height:12px;background:#334155;border-radius:2px;"></div>2007년</div>
+                        <div style="display:flex; align-items:center; gap:5px;"><div style="width:12px;height:12px;background:#cbd5e1;background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.2) 3px, rgba(0,0,0,0.2) 6px);border-radius:2px;"></div>2017년</div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+        <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+        <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+        <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+    </div>
+
+    <div id="t53-guide" class="tab-content t53-content active">
+        <div class="guide-box">
+            <b>Dàn ý phân tích biểu đồ:</b><br><br>
+            1. <b>Mở bài (Biểu đồ 1):</b> Giới thiệu (인주시의 자전거 이용자 변화를 살펴보면). Nêu xu hướng đường thẳng 3 điểm: Từ 4 vạn (2007) -> 9 vạn (2012) -> 21 vạn (2017), tổng cộng tăng gấp 5 lần (지난 10년간 약 5배 증가하였다).<br>
+            2. <b>Mở rộng Thân bài 1:</b> Nhấn mạnh giai đoạn tăng sốc: Đặc biệt từ 2012 đến 2017 tăng đột biến (특히 2012년부터 2017년까지 급증한 것으로 나타났다).<br>
+            3. <b>Nguyên nhân:</b> Giải thích lý do (이와 같이 증가한 이유는 ~ 기 때문인 것으로 보인다). Do phát triển đường xe đạp và mở rộng nơi cho thuê.<br>
+            4. <b>Thân bài 2 (Biểu đồ 2):</b> Xét theo mục đích (이용 목적을 보면). Thể thao/đi dạo tăng 4 lần, đi làm tăng 14 lần, khác tăng 3 lần. Nhấn mạnh việc đi làm (출퇴근) có tỷ lệ tăng cao nhất (가장 높은 증가율을 보였다).
+        </div>
+    </div>
+
+    <div id="t53-grammar" class="tab-content t53-content">
+        <details><summary>1. ~의 변화를 살펴보면, ~은/는 ~년 N에서 ~년에는 N, ~년에는 N으로 지난 N년간 약 N배 증가하였다.</summary><div class="details-content">Nếu xem xét sự thay đổi của [Chủ đề], [Chủ đề] đã đạt mức [Số 1] năm..., [Số 2] năm..., [Số 3] năm..., tăng khoảng N lần trong N năm qua.</div></details>
+        <details><summary>2. 특히 ~부터 ~까지 ~이/가 급증한 것으로 나타났다.</summary><div class="details-content">Đặc biệt từ năm... đến năm... cho thấy sự tăng vọt/tăng đột biến của...</div></details>
+        <details><summary>3. 이와 같이 ~이/가 증가한 이유는 ~고 ~되었기 때문인 것으로 보인다.</summary><div class="details-content">Nguyên nhân khiến cho... gia tăng như thế này được cho là do [Lý do 1] và [Lý do 2].</div></details>
+        <details><summary>4. ~을/를 보면, N년간 [A]은/는 N배, [B]은/는 N배 늘어난 것으로 나타났으며,</summary><div class="details-content">Nếu nhìn vào [Tiêu chí biểu đồ 2], trong N năm qua cho thấy [A] tăng N lần, [B] tăng N lần...</div></details>
+        <details><summary>5. [B] 시 이용이 가장 높은 증가율을 보였다.</summary><div class="details-content">Việc sử dụng khi [B] đã cho thấy tỷ lệ gia tăng cao nhất.</div></details>
+    </div>
+
+    <div id="t53-answer" class="tab-content t53-content">
+        <table class="bilingual-table">
+            <tr><td>인주시의 자전거 이용자 변화를 살펴보면, 자전거 이용자 수는 2007년 4만 명에서 2012년에는 9만 명, 2017년에는 21만 명으로, 지난 10년간 약 5배 증가하였다.</td><td>Nếu xem xét sự thay đổi số lượng người sử dụng xe đạp ở thành phố Inju, số lượng người dùng xe đạp đã tăng khoảng 5 lần trong 10 năm qua, từ 40.000 người năm 2007 lên 90.000 người năm 2012 và 210.000 người năm 2017.</td></tr>
+            <tr><td>특히 2012년부터 2017년까지 자전거 이용자 수가 급증한 것으로 나타났다.</td><td>Đặc biệt, từ năm 2012 đến năm 2017 đã cho thấy số lượng người sử dụng xe đạp tăng đột biến.</td></tr>
+            <tr><td>이와 같이 자전거 이용자 수가 증가한 이유는 자전거 도로가 개발되고 자전거 빌리는 곳이 확대되었기 때문인 것으로 보인다.</td><td>Nguyên nhân khiến cho số lượng người dùng xe đạp gia tăng như thế này được cho là do các tuyến đường xe đạp được phát triển và những nơi cho thuê xe đạp được mở rộng.</td></tr>
+            <tr><td>자전거 이용 목적을 보면, 10년간 운동 및 산책은 4배, 출퇴근은 14배, 기타는 3배 늘어난 것으로 나타났으며, 출퇴근 시 이용이 가장 높은 증가율을 보였다.</td><td>Nếu nhìn vào mục đích sử dụng xe đạp, trong vòng 10 năm qua cho thấy mục đích tập thể dục và đi dạo tăng 4 lần, đi làm tăng 14 lần, các mục đích khác tăng 3 lần, trong đó việc sử dụng xe đạp khi đi làm cho thấy tỷ lệ gia tăng cao nhất.</td></tr>
+        </table>
+    </div>
+
+    <div id="t53-practice" class="tab-content t53-content">
+        <div class="book-container">
+            <div class="book-page page-left">
+                <div class="book-title">Tiếng Việt</div>
+                <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+            </div>
+            <div class="book-page page-right">
+                <div class="book-title">Tiếng Hàn</div>
+                <div id="book-ko-text" style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                <div id="book-ko-input-area" style="display: none;">
+                    <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                    <div id="diff-result-box" style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;"></div>
+                    <div id="diff-correct-ans" style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="book-nav-wrapper">
+            <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+            <span id="book-page-indicator" class="page-indicator">1 / 4</span>
+            <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+            <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper" style="margin-bottom:0;">
+    <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [54] 다음을 주제로 하여 자신의 생각을 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+    </div>
+    
+    <div class="writing-box">
+        요즘은 아이가 학교에 들어가기 전 어릴 때부터 악기나 외국어 등 여러 가지를 교육하는 경우가 많다. 이러한 조기 교육은 좋은 점도 있지만 문제점도 있다. 아래의 내용을 중심으로 <b>'조기 교육의 장점과 문제점'</b>에 대해 자신의 의견을 쓰라.
+        <ul style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+            <li>조기 교육의 장점은 무엇인가?</li>
+            <li>조기 교육의 문제점은 무엇인가?</li>
+            <li>조기 교육에 찬성하는가, 반대하는가? 근거를 들어 자신의 의견을 쓰라.</li>
+        </ul>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài & Ưu điểm</button>
+        <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Nhược điểm</button>
+        <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Ý kiến cá nhân</button>
+        <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+    </div>
+
+    <div id="t54-intro" class="tab-content t54-content active">
+        <div class="guide-box">
+            <b>Trọng tâm: 조기 교육의 장점은 무엇인가? (Ưu điểm của giáo dục sớm?)</b><br>
+            - Mở bài: Giới thiệu xu hướng giáo dục trẻ em từ sớm trước khi vào trường học (điều này có cả mặt tốt và xấu).<br>
+            - Ưu điểm 1: Phát hiện tài năng sớm và cực đại hóa tiềm năng của trẻ (ví dụ các danh nhân nghệ thuật/thể thao).<br>
+            - Ưu điểm 2: Nâng cao năng lực cạnh tranh học tập và mở rộng thế giới quan thông qua nhiều trải nghiệm.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>요즘은 학교에 들어가지 않은 아이들에게 다양한 교육을 실시하는 경우가 많다. 어릴 때부터 이루어지는 조기 교육은 좋은 점도 있지만 문제점도 있다.</td><td>Dạo gần đây có nhiều trường hợp tiến hành đào tạo đa dạng cho những đứa trẻ chưa bước vào trường học. Việc giáo dục sớm được thực hiện từ lúc còn nhỏ như thế này có điểm tốt nhưng cũng có cả những vấn đề bất cập.</td></tr>
+            <tr><td>먼저 조기 교육의 가장 큰 장점은 아이의 재능을 일찍 발견하고 아이가 가진 잠재력을 극대화할 수 있다는 점이다.</td><td>Trước tiên, ưu điểm lớn nhất của giáo dục sớm là có thể phát hiện sớm tài năng của trẻ và cực đại hóa tiềm năng mà đứa trẻ có.</td></tr>
+            <tr><td>예를 들어 예체능계의 유명인 중에는 어릴 때부터 체계적인 교육을 받은 경우가 많다.</td><td>Ví dụ, trong số những người nổi tiếng của giới văn hóa nghệ thuật và thể dục thể thao, có rất nhiều trường hợp đã nhận được sự giáo dục có hệ thống từ khi còn nhỏ.</td></tr>
+            <tr><td>또 다른 조기 교육의 장점은 아이의 학업 경쟁력을 높일 수 있다는 점이다. 이 외에도 조기 교육에서의 다양한 경험은 아이의 세계관을 넓히는 데 도움이 된다.</td><td>Một ưu điểm khác của giáo dục sớm là có thể nâng cao năng lực cạnh tranh học tập của trẻ. Ngoài ra, những trải nghiệm đa dạng trong giáo dục sớm cũng giúp ích cho việc mở rộng thế giới quan của trẻ.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-body" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 조기 교육의 문제점은 무엇인가? (Vấn đề của giáo dục sớm?)</b><br>
+            - Dùng liên từ (그러나). Cảnh báo: Giáo dục sớm thường bị ép buộc bởi cha mẹ.<br>
+            - Hậu quả 1: Trẻ bị stress, sinh ra tâm lý phản kháng, mất hứng thú với việc học.<br>
+            - Hậu quả 2: Làm quá đà sẽ ảnh hưởng tiêu cực đến sự phát triển cảm xúc của trẻ.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>그러나 조기 교육은 부모의 강요에 의해 이루어질 수 있다는 문제점이 있다.</td><td>Tuy nhiên, giáo dục sớm có một vấn đề đó là nó có thể bị thực hiện do sự ép buộc của cha mẹ.</td></tr>
+            <tr><td>이로 인해 아이는 스트레스를 받거나, 억압적인 학습 경험의 반발로 학업에 흥미를 느끼지 못할 수 있다.</td><td>Chính vì điều này, đứa trẻ có thể bị căng thẳng, hoặc sinh ra tâm lý phản kháng đối với những kinh nghiệm học tập mang tính áp bức, dẫn đến việc không thể cảm thấy hứng thú với học tập.</td></tr>
+            <tr><td>또한 조기 교육이 과도하게 이루어질 경우, 아이들의 정서 발달에 부정적인 영향을 미칠 수 있다.</td><td>Hơn nữa, trong trường hợp giáo dục sớm bị thực hiện một cách quá đà, nó có thể gây ra ảnh hưởng tiêu cực đến sự phát triển cảm xúc của trẻ em.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-conclusion" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 조기 교육에 찬성하는가, 반대하는가? 근거를 들어 자신의 의견을 쓰라. (Ý kiến cá nhân: Tán thành hay phản đối?)</b><br>
+            - Lập trường: Phản đối. Lợi bất cập hại.<br>
+            - Căn cứ 1: Giáo dục chân chính phải dựa trên tính tự phát và động lực bên trong của người học.<br>
+            - Căn cứ 2: Trẻ còn nhỏ chưa biết mình muốn gì, nên việc học thường bị áp đặt bởi mong muốn của người lớn chứ không phải của trẻ.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>조기 교육의 장점에도 불구하고 위의 문제점을 고려하였을 때 조기 교육을 실시하는 것이 적절하지 않다고 생각한다.</td><td>Bất chấp những ưu điểm của giáo dục sớm, khi xem xét những vấn đề nêu trên, tôi nghĩ rằng việc tiến hành giáo dục sớm là không phù hợp.</td></tr>
+            <tr><td>진정한 교육이란 학습자의 자발성과 내적 동기를 전제로 이루어진다고 생각하기 때문이다.</td><td>Đó là bởi vì tôi cho rằng nền giáo dục chân chính phải được thực hiện với tiền đề là tính tự phát và động cơ nội tại của người học.</td></tr>
+            <tr><td>아이는 발달 중에 있고 경험이 적기 때문에 자신이 무엇을 배우고 싶은지 명확히 인지하지 못할 가능성이 크다.</td><td>Vì trẻ em vẫn đang trong quá trình phát triển và có ít kinh nghiệm, nên khả năng cao là chúng không thể nhận thức một cách rõ ràng bản thân mình muốn học cái gì.</td></tr>
+            <tr><td>이는 아이의 동기보다 보호자의 바람이 조기 교육에 더 큰 영향을 미치게 되는 이유이기도 하다. 이러한 이유로 조기 교육을 실시하는 것에 반대한다.</td><td>Đây cũng chính là lý do khiến cho mong muốn của người giám hộ tạo ra ảnh hưởng lớn lên giáo dục sớm hơn là động cơ của chính đứa trẻ. Vì những lý do này, tôi phản đối việc tiến hành giáo dục sớm.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-grammar" class="tab-content t54-content">
+        <details><summary>1. 요즘은 ~에게 다양한 교육을 실시하는 경우가 많다.</summary><div class="details-content">Dạo gần đây có nhiều trường hợp tiến hành giáo dục đa dạng cho [Đối tượng]. <i>(Mở bài nêu hiện trạng xã hội)</i></div></details>
+        <details><summary>2. 이러한 ~은/는 좋은 점도 있지만 문제점도 있다.</summary><div class="details-content">Sự [Chủ đề] như thế này có những điểm tốt nhưng cũng có những vấn đề bất cập.</div></details>
+        <details><summary>3. 먼저 ~의 가장 큰 장점은 ~을/를 발견하고 ~을/를 극대화할 수 있다는 점이다.</summary><div class="details-content">Trước tiên, ưu điểm lớn nhất của... là có thể phát hiện... và cực đại hóa...</div></details>
+        <details><summary>4. 이 외에도 ~은/는 ~를 넓히는 데 도움이 된다.</summary><div class="details-content">Ngoài ra, [Chủ đề] còn giúp ích cho việc mở rộng...</div></details>
+        <details><summary>5. 그러나 ~은/는 ~에 의해 이루어질 수 있다는 문제점이 있다.</summary><div class="details-content">Tuy nhiên, [Chủ đề] có một vấn đề là nó có thể bị thực hiện do sự [ép buộc/tác động] của...</div></details>
+        <details><summary>6. 이로 인해 ~을/를 받거나 ~의 반발로 흥미를 느끼지 못할 수 있다.</summary><div class="details-content">Vì điều này, có thể bị [Căng thẳng] hoặc mất hứng thú do sự phản kháng đối với...</div></details>
+        <details><summary>7. ~이/가 과도하게 이루어질 경우, ~발달에 부정적인 영향을 미칠 수 있다.</summary><div class="details-content">Trong trường hợp... được thực hiện quá đà, nó có thể gây ảnh hưởng tiêu cực đến sự phát triển...</div></details>
+        <details><summary>8. ~의 장점에도 불구하고 위의 문제점을 고려하였을 때 ~는 것이 적절하지 않다고 생각한다.</summary><div class="details-content">Bất chấp những ưu điểm của... khi xem xét những vấn đề trên, tôi nghĩ rằng việc tiến hành... là không phù hợp. <i>(Cấu trúc vàng để lật ngược vấn đề sang phản đối)</i></div></details>
+        <details><summary>9. 진정한 ~이란 ~을/를 전제로 이루어진다고 생각하기 때문이다.</summary><div class="details-content">Đó là bởi vì tôi cho rằng [Chủ đề] chân chính phải được thực hiện với tiền đề là...</div></details>
+        <details><summary>10. 이는 A보다 B가 ~에 더 큰 영향을 미치게 되는 이유이기도 하다.</summary><div class="details-content">Đây cũng chính là lý do khiến B có ảnh hưởng lớn đến [Chủ đề] hơn là A.</div></details>
+    </div>
+</div>
+
+<script src="exam-logic.js"></script>
+
+<script>
+    // CÂU 51A
+    function grade51A() {
+        let val = document.getElementById('ans-51-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['필요하', '있어야 하', '있어'];
+        let validEndings = ['다고 합니까', '다고 들었', '다고 됩니까', '다면서요'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc gián tiếp nghe từ người khác."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu đuôi câu trích dẫn gián tiếp (-다고 하다)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'cần / phải có'."); }
+
+        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+    }
+
+    // CÂU 51B
+    function grade51B() {
+        let val = document.getElementById('ans-51-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['어떻게 하', '무엇을 하', '어디로 가', '어떻게 신청'];
+        let validEndings = ['야 합', '야 됩', '야 하', '면 됩'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hỏi cách thức rất chuẩn xác."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp bắt buộc điều kiện (-아야 합니까)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ để hỏi 'như thế nào / làm gì / đi đâu'."); }
+
+        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+    }
+
+    // CÂU 52A
+    function grade52A() {
+        let val = document.getElementById('ans-52-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['들려주', '사용하', '틀어주'];
+        let validEndings = ['는 것은 아니', '지는 않', '지 않습'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) {
+            score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định một phần rất chính xác (không phải lúc nào cũng...).");
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'mở cho nghe/sử dụng' và cấu trúc phủ định một phần."); }
+
+        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+    }
+
+    // CÂU 52B
+    function grade52B() {
+        let val = document.getElementById('ans-52-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['느끼', '경험하', '가지'];
+        let validEndings = ['게 한', '도록 한', '게 만듭'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Cấu trúc sai khiến hoàn hảo."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu cấu trúc sai khiến (Làm cho/khiến cho: -게 하다)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'cảm nhận/trải nghiệm'."); }
+
+        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+    }
+
+    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 60 ---
+    const bookData_60 = [
+        { vi: "Nếu xem xét sự thay đổi số lượng người sử dụng xe đạp ở thành phố Inju, số lượng người dùng xe đạp đã tăng khoảng 5 lần trong 10 năm qua, từ 40.000 người năm 2007 lên 90.000 người năm 2012 và 210.000 người năm 2017.", ko: "인주시의 자전거 이용자 변화를 살펴보면, 자전거 이용자 수는 2007년 4만 명에서 2012년에는 9만 명, 2017년에는 21만 명으로, 지난 10년간 약 5배 증가하였다." },
+        { vi: "Đặc biệt, từ năm 2012 đến năm 2017 đã cho thấy số lượng người sử dụng xe đạp tăng đột biến.", ko: "특히 2012년부터 2017년까지 자전거 이용자 수가 급증한 것으로 나타났다." },
+        { vi: "Nguyên nhân khiến cho số lượng người dùng xe đạp gia tăng như thế này được cho là do các tuyến đường xe đạp được phát triển và những nơi cho thuê xe đạp được mở rộng.", ko: "이와 같이 자전거 이용자 수가 증가한 이유는 자전거 도로가 개발되고 자전거 빌리는 곳이 확대되었기 때문인 것으로 보인다." },
+        { vi: "Nếu nhìn vào mục đích sử dụng xe đạp, trong vòng 10 năm qua cho thấy mục đích tập thể dục và đi dạo tăng 4 lần, đi làm tăng 14 lần, các mục đích khác tăng 3 lần, trong đó việc sử dụng xe đạp khi đi làm cho thấy tỷ lệ gia tăng cao nhất.", ko: "자전거 이용 목적을 보면, 10년간 운동 및 산책은 4배, 출퇴근은 14배, 기타는 3배 늘어난 것으로 나타났으며, 출퇴근 시 이용이 가장 높은 증가율을 보였다." }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initBook(bookData_60);
+    });
+</script>

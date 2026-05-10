@@ -1,0 +1,1244 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ Từ Vựng - Vui Học Tiếng Hàn</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="assets/js/block.js"></script>
+    <style>
+        :root {
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --border: #e5e7eb;
+            --primary: #2563eb;
+            --c-moi: #cbd5e1;
+            --c-hoc: #f472b6;
+            --c-on: #60a5fa;
+            --c-thanh: #34d399;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Inter', sans-serif !important;
+            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0 0 40px 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        button,
+        input,
+        select {
+            font-family: 'Pretendard', 'Inter', sans-serif !important;
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .global-nav, .wrapper {
+                margin-left: 15px !important;
+                margin-right: 15px !important;
+                width: auto !important;
+            }
+        }
+        @media (max-width: 600px) {
+            .wrapper { margin-left: 15px; margin-right: 15px; border-radius: 16px; padding: 20px 16px; width: auto; }
+        }
+
+        /* WRAPPER KÍNH MỜ */
+        .wrapper { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 30px 40px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box; }
+
+        .blue-banner {
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.85) 0%, rgba(59, 130, 246, 0.85) 100%);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 25px 30px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.2);
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .blue-banner h2 {
+            font-size: 2em;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.1;
+        }
+
+        .blue-banner p {
+            color: #dbeafe;
+            margin: 5px 0 0 0;
+            font-weight: 500;
+            font-size: 1.1em;
+        }
+
+        .tabs-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn-flat {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            color: var(--text-sub);
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn-flat:hover {
+            border-color: #94a3b8;
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .tab-btn-flat.active {
+            background: rgba(239, 246, 255, 0.9);
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+
+        /* SỔ TỪ VỰNG CSS */
+        .vocab-stats-box {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            margin-bottom: 25px;
+        }
+
+        .progress-bar {
+            display: flex;
+            height: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .prog-seg {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+
+        .bg-moi {
+            background-color: var(--c-moi) !important;
+        }
+
+        .bg-hoc {
+            background-color: var(--c-hoc) !important;
+        }
+
+        .bg-on {
+            background-color: var(--c-on) !important;
+        }
+
+        .bg-thanh {
+            background-color: var(--c-thanh) !important;
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .legend-item {
+            cursor: pointer;
+            padding: 10px 5px;
+            border-radius: 12px;
+            border: 2px solid transparent;
+            transition: 0.2s;
+            user-select: none;
+        }
+
+        .legend-item:hover {
+            background: rgba(248, 250, 252, 0.8);
+        }
+
+        .legend-item.filter-active {
+            border-color: #cbd5e1;
+            background: rgba(241, 245, 249, 0.9);
+            transform: scale(1.02);
+        }
+
+        .l-val {
+            font-size: 1.4em;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            color: var(--text-main);
+        }
+
+        .l-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .l-lbl {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        .list-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .list-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            background: #fff;
+        }
+
+        .list-title {
+            font-size: 1.2em;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 5px;
+        }
+
+        .list-count {
+            font-size: 0.9em;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+
+        .btn-create-list {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-create-list:hover {
+            background: #1d4ed8;
+        }
+
+        .current-list-title {
+            margin: 0;
+            font-size: 1.4em;
+            color: var(--primary);
+            font-weight: 900;
+        }
+
+        .btn-edit {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(4px);
+            color: #1f2937;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1em;
+            transition: 0.2s;
+        }
+
+        .btn-edit:hover {
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .folder-actions {
+            position: relative;
+        }
+
+        .folder-dots-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: #64748b;
+            border-radius: 8px;
+            font-size: 1.2em;
+            line-height: 1;
+            font-weight: bold;
+        }
+
+        .folder-dots-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+            color: #0f172a;
+        }
+
+        .folder-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            min-width: 150px;
+            overflow: hidden;
+        }
+
+        .folder-menu.show {
+            display: block;
+            animation: fadeIn 0.15s ease;
+        }
+
+        .folder-menu-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+            text-align: left;
+        }
+
+        .folder-menu-item:hover {
+            background: #f8fafc;
+            color: var(--primary);
+        }
+
+        .folder-menu-item.danger {
+            color: #ef4444;
+        }
+
+        .folder-menu-item.danger:hover {
+            color: #dc2626;
+            background: #fef2f2;
+        }
+
+        .add-word-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(4px);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px dashed rgba(255, 255, 255, 0.8);
+        }
+
+        .add-word-input-wrapper {
+            flex: 1;
+            min-width: 200px;
+            position: relative;
+        }
+
+        .add-word-row input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            font-size: 1em;
+            outline: none;
+            box-sizing: border-box;
+        }
+
+        .add-word-row input:focus {
+            border-color: #3b82f6;
+        }
+
+        .add-word-row button {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            height: fit-content;
+        }
+
+        .suggest-box {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .suggest-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid #f3f4f6;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .suggest-item:hover {
+            background: #eff6ff;
+            color: #3b82f6;
+        }
+
+        .v-grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .v-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            padding: 15px 15px 15px 45px;
+            border-radius: 12px;
+            transition: 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .v-card:hover {
+            border-color: #94a3b8;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            background: #fff;
+        }
+
+        .v-card.sortable-ghost {
+            opacity: 0.4;
+        }
+
+        /* Grab handle */
+        .drag-handle {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #cbd5e1;
+            cursor: grab;
+            padding: 10px;
+            font-size: 1.2em;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+            color: #3b82f6;
+        }
+
+        .v-card:hover .drag-handle {
+            color: #94a3b8;
+        }
+
+        .v-status-dot {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            left: 35px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border: 2px solid #fff;
+        }
+
+        .v-word {
+            font-size: 1.15em;
+            font-weight: 800;
+            margin-bottom: 4px;
+            color: var(--text-main);
+        }
+
+        .v-mean {
+            font-size: 0.95em;
+            color: var(--text-sub);
+            font-weight: 500;
+        }
+
+        .v-actions {
+            display: flex;
+            flex-direction: row;
+            gap: 4px;
+            align-items: center;
+            position: relative;
+        }
+
+        .btn-icon-flat {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            color: #ef4444;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .btn-icon-flat:hover {
+            background: rgba(254, 242, 242, 0.8);
+        }
+
+        .v-dropdown-menu {
+            display: none;
+            position: absolute;
+            right: 0;
+            top: 35px;
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            min-width: 170px;
+            overflow: hidden;
+        }
+
+        .v-dropdown-menu.show {
+            display: block;
+            animation: fadeIn 0.15s ease;
+        }
+
+        .v-menu-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: 0.2s;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .v-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .v-menu-item:hover {
+            background: #f8fafc;
+            color: var(--primary);
+        }
+
+        /* FAB MENU */
+        .fab-container {
+            position: fixed;
+            right: 20px;
+            bottom: 40px;
+            z-index: 9999;
+        }
+
+        .fab-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 1.8em;
+            box-shadow: 0 4px 20px rgba(37, 99, 235, 0.4);
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fab-btn:hover {
+            transform: scale(1.08);
+            background: #1d4ed8;
+        }
+
+        .fab-menu {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 40px;
+            backdrop-filter: blur(8px);
+
+            position: absolute;
+            bottom: 85px;
+            right: 0;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 15px;
+            opacity: 0;
+            visibility: hidden;
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(20px);
+        }
+
+        
+        @media (min-width: 1024px) {
+            body.nav-open .wrapper { transform: translateX(-130px); transition: transform 0.3s ease; }
+            body.nav-open .global-nav { transform: translateX(-130px); transition: transform 0.3s ease; }
+        }
+
+        .fab-container.open .fab-menu {
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 40px;
+            backdrop-filter: blur(8px);
+
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .fab-item {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .fab-item-label {
+            background: #1e293b;
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            white-space: nowrap;
+            transform: translateX(10px);
+            opacity: 0;
+            transition: 0.3s;
+            min-width: 170px;
+    text-align: center;
+}
+
+        .fab-container.open .fab-item-label {
+            transform: translateX(0);
+            opacity: 1;
+            min-width: 170px;
+    text-align: center;
+}
+
+        .fab-item-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            font-size: 1.3em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: 0.2s;
+            font-weight: bold;
+        }
+
+        .fab-item:hover .fab-item-btn {
+            background: var(--primary);
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .tooltip-float {
+            position: absolute;
+            top: -50px;
+            right: -15px;
+            background: #ef4444;
+            color: #fff;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 800;
+            white-space: nowrap;
+            animation: bounce 2s infinite;
+            pointer-events: none;
+            opacity: 0.95;
+            box-shadow: 0 4px 10px rgba(239, 68, 68, 0.4);
+        }
+
+        .tooltip-float::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            right: 40px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: #ef4444 transparent transparent transparent;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        /* MODAL CHUNG CỦA GAME */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-box {
+            background: #fff;
+            width: 95%;
+            max-width: 500px;
+            border-radius: 20px;
+            padding: 30px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            transition: max-width 0.3s ease;
+        }
+
+        .modal-box.large-modal {
+            width: 80vw;
+            max-width: 80vw;
+            min-width: min(700px, 95vw);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            min-height: 80vh;
+            max-height: 80vh;
+            height: 80vh;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #f3f4f6;
+            padding-bottom: 15px;
+        }
+
+        .modal-title {
+            font-size: 1.2em;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.8em;
+            cursor: pointer;
+            color: #9ca3af;
+            line-height: 1;
+        }
+
+        .close-btn:hover {
+            color: #1f2937;
+        }
+
+        /* FLASHCARD CHUẨN CŨ */
+        .fc-container {
+            perspective: 1000px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+        }
+
+        .fc-card {
+            width: 100%;
+            height: 210px;
+            position: relative;
+            transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            cursor: pointer;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            margin: 0 15px;
+            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+            color: white;
+        }
+
+        .fc-card.flipped {
+            transform: rotateY(180deg);
+            background: #fff;
+            color: #1e293b;
+            border: 3px solid #bfdbfe;
+        }
+
+        .fc-text {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8em;
+            font-weight: 900;
+            backface-visibility: hidden;
+        }
+
+        .fc-card.flipped .fc-text {
+            transform: rotateY(180deg);
+            font-size: 1.8em;
+            color: #3b82f6;
+        }
+
+        .fc-hint {
+            position: absolute;
+            bottom: 15px;
+            width: 100%;
+            text-align: center;
+            font-size: 0.85em;
+            opacity: 0.7;
+            backface-visibility: hidden;
+            font-weight: 500;
+        }
+
+        .fc-card.flipped .fc-hint {
+            display: none;
+        }
+
+        .fc-nav-btn {
+            background: none;
+            border: none;
+            font-size: 2.5em;
+            cursor: pointer;
+            color: #9ca3af;
+            padding: 10px;
+            transition: 0.2s;
+        }
+
+        .fc-nav-btn:hover {
+            color: #3b82f6;
+            transform: scale(1.1);
+        }
+
+        .fc-controls-flat {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .fc-controls-flat button {
+            background: #f8fafc;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            color: #64748b;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fc-controls-flat button:hover {
+            background: #e2e8f0;
+            color: #0f172a;
+        }
+
+        .assess-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn-pastel {
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-pastel:hover {
+            transform: translateY(-2px);
+            filter: brightness(0.95);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .wrapper {
+                padding: 20px 15px;
+                border-radius: 16px;
+            }
+
+            .tabs-2x2 {
+                gap: 10px;
+            }
+
+            .tab-btn-flat {
+                padding: 15px 5px;
+                font-size: 1em;
+            }
+
+            .list-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .v-grid-2col {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-box {
+                padding: 20px 15px;
+                width: 95%;
+                max-width: 100%;
+            }
+
+            .fab-container {
+                right: 20px;
+                bottom: 20px;
+            }
+
+            .fab-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.5em;
+            }
+
+            .fab-item-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1.2em;
+            }
+
+            .tooltip-float {
+                font-size: 0.85em;
+                right: -5px;
+            }
+
+            .fc-card {
+                height: 200px;
+            }
+
+            .fc-text {
+                font-size: 2em;
+            }
+
+            .fc-nav-btn {
+                font-size: 2em;
+                padding: 5px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.98); }
+        }
+</style>
+    <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/navbar.js"></script>
+</head>
+
+<body>
+
+    
+
+
+
+    <div class="wrapper">
+        <div class="">
+            <div>
+                <h2></h2>
+                <p></p>
+            </div>
+        </div>
+
+        <div id="vocabStatsArea">
+            <div class="vocab-stats-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h3 style="margin: 0; font-size: 1.1em; color: var(--text-main)" id="statTotalTitle">Thống kê ghi
+                        nhớ</h3>
+                    <button id="clearFilterBtn" onclick="filterByStatus(null)"
+                        style="display: none; background: #fef2f2; color: #ef4444; border: none; padding: 5px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9em;">Hủy
+                        lọc</button>
+                </div>
+                <div class="progress-bar">
+                    <div id="bar0" class="prog-seg bg-moi" style="width: 0%;"></div>
+                    <div id="bar1" class="prog-seg bg-hoc" style="width: 0%;"></div>
+                    <div id="bar2" class="prog-seg bg-on" style="width: 0%;"></div>
+                    <div id="bar3" class="prog-seg bg-thanh" style="width: 0%;"></div>
+                </div>
+                <div class="legend-grid">
+                    <div class="legend-item" id="leg0" onclick="filterByStatus(0)">
+                        <div class="l-val">
+                            <div class="l-dot bg-moi"></div><span id="c0">0</span>
+                        </div>
+                        <div class="l-lbl">Mới</div>
+                    </div>
+                    <div class="legend-item" id="leg1" onclick="filterByStatus(1)">
+                        <div class="l-val">
+                            <div class="l-dot bg-hoc"></div><span id="c1">0</span>
+                        </div>
+                        <div class="l-lbl">Đang học</div>
+                    </div>
+                    <div class="legend-item" id="leg2" onclick="filterByStatus(2)">
+                        <div class="l-val">
+                            <div class="l-dot bg-on"></div><span id="c2">0</span>
+                        </div>
+                        <div class="l-lbl">Đang ôn</div>
+                    </div>
+                    <div class="legend-item" id="leg3" onclick="filterByStatus(3)">
+                        <div class="l-val">
+                            <div class="l-dot bg-thanh"></div><span id="c3">0</span>
+                        </div>
+                        <div class="l-lbl">Thành thạo</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tabs-2x2">
+            <button class="tab-btn-flat active" id="tabAllBtn" onclick="switchVocabTab('all')">📚 Từ vựng</button>
+            <button class="tab-btn-flat" id="tabFoldersBtn" onclick="switchVocabTab('folders')">📁 Thư mục</button>
+        </div>
+
+        <!-- TAB CONTENT: TỪ VỰNG -->
+        <div id="viewAllVocab" style="display: block; animation: fadeIn 0.3s ease;">
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid rgba(255,255,255,0.6); padding-bottom: 10px; margin-bottom: 20px;">
+                <h3 style="font-size: 1.25em; margin:0;" id="allVocabTitle">Tất cả từ vựng (<span
+                        id="totalVocabCountGlobal">0</span>)</h3>
+            </div>
+            <div id="vocabSkeleton" style="text-align: center; padding: 40px 20px; font-weight: bold; font-size: 1.2em; color: #3b82f6;">
+                <div style="display: inline-block; animation: pulse 1.5s infinite;">⏳ Đang tải dữ liệu...</div>
+            </div>
+            <div class="v-grid-2col" id="vocabGridGlobal"></div>
+        </div>
+
+        <!-- TAB CONTENT: THƯ MỤC -->
+        <div id="viewFolders" style="display: none; animation: fadeIn 0.3s ease;">
+            <div id="vocabSetsView">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.6); padding-bottom: 10px;">
+                    <h3 style="margin:0; font-size: 1.3em;">Các Bộ Thẻ Của Bạn</h3>
+                    <button class="btn-create-list" onclick="createNewList()">+ Tạo Thư Mục</button>
+                </div>
+                <div class="list-grid" id="listsGrid"></div>
+            </div>
+
+            <!-- DETAIL VIEW -->
+            <div id="vocabDetailView" style="display: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <button class="btn-edit" onclick="backToSets()"
+                        style="padding: 10px 15px; width: auto; flex: none;">← Quay Lại</button>
+                    <h3 id="currentListName" class="current-list-title">Tên Danh Sách</h3>
+                </div>
+
+                <div class="add-word-row" id="addWordSection">
+                    <div class="add-word-input-wrapper">
+                        <input type="text" id="newKrWord" placeholder="Nhập từ vựng..." autocomplete="off"
+                            oninput="fetchSuggestion()">
+                    </div>
+                    <div class="add-word-input-wrapper">
+                        <input type="text" id="newVnMean" placeholder="Nghĩa dịch..." autocomplete="off">
+                        <div id="suggestBox" class="suggest-box"></div>
+                    </div>
+                    <button onclick="addWordToList()">Thêm từ</button>
+                </div>
+
+                <h3 style="font-size: 1.1em; border-bottom: 2px solid rgba(255,255,255,0.6); padding-bottom: 10px;">Danh
+                    sách từ (<span id="totalVocabCountDetail">0</span>)</h3>
+                <div class="v-grid-2col" id="vocabGridDetail"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING ACTION BUTTON (GAMES) -->
+    
+        <div class="fab-container" id="fabContainer">
+        <!-- Tooltip -->
+        <div class="tooltip-float" id="fabTooltip">Ấn vào đây để luyện tập 🎮</div>
+
+        <button class="fab-btn" onclick="toggleFabMenu()" id="fabMainBtn">📖</button>
+        <div class="fab-menu">
+            <div class="fab-item" onclick="startStudy('flashcard')">
+                <div class="fab-item-label">Flashcard</div>
+                <div class="fab-item-btn">🎴</div>
+            </div>
+            <div class="fab-item" onclick="startStudy('match')">
+                <div class="fab-item-label">Ghép thẻ</div>
+                <div class="fab-item-btn">🧩</div>
+            </div>
+            <div class="fab-item" onclick="startStudy('type')">
+                <div class="fab-item-label">Nhập từ</div>
+                <div class="fab-item-btn">⌨️</div>
+            </div>
+            <div class="fab-item" onclick="startStudy('dictation')">
+                <div class="fab-item-label">Nghe viết</div>
+                <div class="fab-item-btn">🎧</div>
+            </div>
+            <div class="fab-item" onclick="startStudy('speaking')">
+                <div class="fab-item-label">Luyện nói</div>
+                <div class="fab-item-btn">🎤</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Elements for existing features -->
+    <div id="moveModal" class="modal-overlay" style="z-index: 100000;">
+        <div class="modal-box" style="max-width: 400px; padding: 25px;">
+            <h3 style="margin-top:0; font-size: 1.3em;">Chuyển đến bộ thẻ</h3>
+            <select id="moveSelect"
+                style="width:100%; padding:15px; border:2px solid var(--border); border-radius:8px; font-size:1em; outline:none; margin-top:10px;"></select>
+            <div style="display:flex; gap:10px; margin-top:25px;">
+                <button onclick="document.getElementById('moveModal').style.display='none'"
+                    style="flex:1; padding:12px; border-radius:8px; border:1px solid #cbd5e1; background:#fff; font-weight:600; cursor:pointer;">Hủy</button>
+                <button id="confirmMoveBtn"
+                    style="flex:1; padding:12px; border-radius:8px; border:none; background:#3b82f6; color:#fff; font-weight:bold; cursor:pointer;">Xác
+                    nhận</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameModalsContainer"></div>
+
+    
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU", authDomain: "vuihoctienghan2027.firebaseapp.com", projectId: "vuihoctienghan2027", storageBucket: "vuihoctienghan2027.firebasestorage.app", messagingSenderId: "346757373399", appId: "1:346757373399:web:526625b339fc9a1a523f92", measurementId: "G-JHCHNDDY1S" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        window.currentUserUid = null;
+
+        auth.onAuthStateChanged(user => {
+            if (!user) { window.location.href = 'index.html'; return; }
+            window.currentUserUid = user.uid;
+
+            db.collection("users").doc(user.uid).onSnapshot(doc => {
+                if (doc.exists) {
+                    let d = doc.data();
+                    let lists = d.vocabLists || [];
+                    if (lists.includes('Mặc định')) lists[lists.indexOf('Mặc định')] = 'Đã lưu';
+                    if (!lists.includes('Đã lưu')) lists.unshift('Đã lưu');
+                    if (window.setVocabLists) window.setVocabLists(lists);
+                }
+            });
+
+            db.collection("users").doc(user.uid).collection("vocabulary")
+                .onSnapshot(snap => {
+                    let fetchedData = [];
+                    snap.forEach(doc => {
+                        let d = doc.data(); d.id = doc.id;
+                        if (!d.listName || d.listName === 'Mặc định') d.listName = 'Đã lưu';
+                        if (typeof d.order === 'undefined') d.order = snap.docs.indexOf(doc);
+                        fetchedData.push(d);
+                    });
+
+                    fetchedData.sort((a, b) => {
+                        if (a.order !== b.order) return a.order - b.order;
+                        if (b.savedAt && a.savedAt) return b.savedAt.toMillis() - a.savedAt.toMillis();
+                        return 0;
+                    });
+
+                    if (window.setVocabData) window.setVocabData(fetchedData);
+                });
+        });
+
+        setTimeout(() => {
+            let t = document.getElementById('fabTooltip');
+            if (t) {
+                setTimeout(() => { t.style.opacity = '0'; t.style.transition = '0.5s'; }, 10000);
+            }
+        }, 1000);
+    </script>
+    <script src="assets/js/mypage-vocab.js"></script>
+    <script src="assets/js/game-dictation.js"></script>
+    <script src="assets/js/game-speaking.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <script src="assets/js/menu.js"></script>
+    <script src="assets/js/study-timer.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,214 @@
+/* ==========================================================================
+   EXAM-CONTROLS.CSS — Navbar inject, Start Screen, Timer, Result Modal, Score Circle
+   ========================================================================== */
+
+/* ========== ICON HOME & SCROLL ========== */
+.hide-on-scroll { transform: translateY(-100px); opacity: 0; pointer-events: none; }
+.icon-home { position: fixed; top: 15px; right: 15px; width: 42px; height: 42px; color: #4a5568; z-index: 99999; cursor: pointer; transition: all 0.3s ease; background: #fff; border: 1px solid #cbd5e0; border-radius: 8px; padding: 8px; box-sizing: border-box; }
+.icon-home svg { width: 100%; height: 100%; fill: currentColor; }
+
+/* ========== EXAM TIMER & SUBMIT ========== */
+#examControls { display: none; position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); padding: 15px 20px; border-radius: 12px; border: 1px solid #cbd5e0; z-index: 999; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); backdrop-filter: blur(5px); }
+.timer-display { font-size: 1.5em; font-weight: bold; color: #e53e3e; font-family: monospace; margin-bottom: 8px; line-height: 1; }
+.btn-submit { background: #e53e3e; color: white; border: none; padding: 10px 20px; font-size: 0.95em; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; }
+
+/* ========== RESULT MODAL & SCORE CIRCLE ========== */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 9999; justify-content: center; align-items: center; }
+.modal-content { background: #fff; width: 95%; max-width: 800px; border-radius: 16px; padding: 35px; position: relative; display: flex; flex-direction: column; overflow-y: auto; max-height: 90vh; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 2em; cursor: pointer; color: #a0aec0; z-index: 100; transition: color 0.2s; }
+.close-btn:hover { color: #4a5568; }
+
+#questionStatusGrid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; margin-bottom: 25px; }
+.q-status-item { padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; color: white; font-size: 0.9em; }
+.q-status-item.q-correct { background-color: #48bb78; }
+.q-status-item.q-wrong { background-color: #e53e3e; }
+
+/* Score Circle */
+.score-circle {
+    position: relative !important; width: 150px !important; height: 150px !important;
+    border-radius: 50% !important;
+    background: conic-gradient(#48bb78 var(--progress, 0%), #e53e3e 0deg) !important;
+    display: flex !important; flex-direction: column !important;
+    justify-content: center !important; align-items: center !important;
+    margin: 0 auto 30px !important;
+    border: none !important; box-shadow: none !important; flex-shrink: 0 !important;
+}
+.score-circle::before {
+    content: '' !important; position: absolute !important; inset: 14px !important;
+    background: #ffffff !important; border-radius: 50% !important;
+    z-index: 0 !important; box-shadow: none !important;
+}
+.score-circle-content { position: relative !important; z-index: 10 !important; display: flex !important; flex-direction: column !important; align-items: center !important; }
+.score-text { font-size: 3.5em !important; color: #2d3748 !important; font-weight: 900 !important; line-height: 1 !important; }
+.score-sub { font-size: 1.1em !important; color: #718096 !important; font-weight: bold !important; margin-top: 5px !important; }
+
+/* Dark mode fixes */
+body.dark-mode .score-circle::before { background: var(--bg-card) !important; }
+body.dark-mode .score-text { color: var(--text-main) !important; }
+
+/* ==========================================================================
+   QUESTION NAVIGATOR — position: fixed, khong cuon theo trang
+   ========================================================================== */
+
+/* Nut toggle */
+.nav-toggle-btn {
+    position: fixed;
+    bottom: 22px;
+    right: 22px;
+    display: none;
+    align-items: center;
+    gap: 7px;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    padding: 11px 16px;
+    font-size: 0.87em;
+    font-weight: 700;
+    cursor: pointer;
+    z-index: 9000;
+    box-shadow: 0 4px 18px rgba(37,99,235,0.4);
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    white-space: nowrap;
+}
+.nav-toggle-btn:hover  { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 6px 22px rgba(37,99,235,0.5); }
+.nav-toggle-btn.active { background: #1e3a8a; right: 12px; padding: 12px; border-radius: 12px; }
+.nav-toggle-btn.active .nav-toggle-label { display: none; }
+.nav-toggle-btn svg    { flex-shrink: 0; }
+.nav-toggle-label      { letter-spacing: 0.3px; overflow: hidden; transition: width 0.2s; }
+
+/* Panel — Desktop: fixed sidebar phai man hinh */
+.question-nav-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 260px;
+    height: 100vh;
+    z-index: 8999;
+    display: flex;
+    flex-direction: column;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-left: 1px solid #e2e8f0;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+    transform: translateX(100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+.question-nav-panel.open { transform: translateX(0); }
+
+/* Header */
+.nav-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+    flex-shrink: 0;
+}
+.nav-panel-title { font-weight: 800; font-size: 0.9em; color: #1e293b; }
+.nav-panel-close {
+    background: none; border: none; color: #94a3b8; font-size: 1.05em;
+    cursor: pointer; padding: 4px 7px; border-radius: 6px;
+    transition: color 0.2s, background 0.2s; line-height: 1;
+}
+.nav-panel-close:hover { color: #ef4444; background: #fee2e2; }
+
+/* Luoi cau hoi */
+.nav-grid {
+    display: grid;
+    gap: 6px;
+    padding: 14px;
+    overflow-y: auto;
+    flex: 1;
+    align-content: start;
+}
+
+/* Nut tung cau */
+.nav-q-btn {
+    aspect-ratio: 1 / 1;
+    border: 2px solid #cbd5e0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #4a5568;
+    font-size: 0.8em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+.nav-q-btn:hover          { background: #e2e8f0; border-color: #94a3b8; transform: scale(1.06); }
+.nav-q-btn.nav-q-answered { background: #ebf8ff; border-color: #3182ce; color: #2b6cb0; }
+.nav-q-btn.nav-q-correct  { background: #f0fff4; border-color: #38a169; color: #276749; }
+.nav-q-btn.nav-q-wrong    { background: #fff5f5; border-color: #e53e3e; color: #c53030; }
+.nav-q-btn.nav-q-skipped  { background: #f1f5f9; border-color: #94a3b8; color: #64748b; }
+
+/* Dark mode */
+body.dark-mode .question-nav-panel       { background: rgba(15,23,42,0.97); border-color: #334155; box-shadow: -4px 0 24px rgba(0,0,0,0.5); }
+body.dark-mode .nav-panel-header         { background: #0f172a; border-color: #334155; }
+body.dark-mode .nav-panel-title          { color: #e2e8f0; }
+body.dark-mode .nav-q-btn                { background: #1e293b; border-color: #475569; color: #94a3b8; }
+body.dark-mode .nav-q-btn:hover          { background: #334155; border-color: #64748b; }
+body.dark-mode .nav-q-btn.nav-q-answered { background: #1e3a5f; border-color: #3b82f6; color: #93c5fd; }
+body.dark-mode .nav-q-btn.nav-q-correct  { background: #14532d; border-color: #22c55e; color: #86efac; }
+body.dark-mode .nav-q-btn.nav-q-wrong    { background: #450a0a; border-color: #ef4444; color: #fca5a5; }
+body.dark-mode .nav-q-btn.nav-q-skipped  { background: #1e293b; border-color: #475569; color: #64748b; }
+body.dark-mode .nav-toggle-btn           { background: #3b82f6; box-shadow: 0 4px 16px rgba(59,130,246,0.4); }
+body.dark-mode .nav-toggle-btn:hover     { background: #2563eb; }
+.type-nav-content { overflow-y: hidden; }
+.nav-type-row { padding: 8px 0; }
+
+/* Mobile < 768px: full-screen overlay — KHÔNG scroll bên trong */
+@media (max-width: 767px) {
+    .question-nav-panel {
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100%;
+        height: 100%;
+        border-left: none;
+        border-radius: 0;
+        box-shadow: none;
+        transform: translateY(100%);
+        overflow: hidden; /* Panel không scroll */
+    }
+    .question-nav-panel.open { transform: translateY(0); }
+
+    .nav-panel-header {
+        padding: 14px 18px;
+        flex-shrink: 0;
+    }
+
+    /* Grid chiếm toàn bộ phần còn lại — KHÔNG scroll */
+    .nav-grid {
+        flex: 1;           /* Chiếm hết chiều cao còn lại sau header */
+        overflow: hidden;  /* KHÔNG scroll */
+        padding: 12px 16px 16px;
+        gap: 8px;
+        /* Các hàng tự co giãn đều nhau để lấp đầy chiều cao */
+        grid-auto-rows: 1fr;
+    }
+
+    .nav-q-btn {
+        /* Bỏ aspect-ratio để nút stretch theo chiều dọc của hàng */
+        aspect-ratio: unset;
+        width: 100%;
+        height: 100%;
+        font-size: 0.88em;
+        border-radius: 10px;
+    }
+
+    .nav-toggle-btn { bottom: 16px; right: 12px; padding: 12px; border-radius: 12px; }
+    .nav-toggle-btn.active { right: 12px; padding: 12px; }
+    .nav-toggle-label { display: none; }
+
+    .nav-type-qlist .nav-q-btn { width: auto; min-width: 44px; height: 44px; aspect-ratio: 1/1; }
+    .type-nav-content { overflow-y: auto; }
+    .nav-type-row { padding: 16px 0; }
+}

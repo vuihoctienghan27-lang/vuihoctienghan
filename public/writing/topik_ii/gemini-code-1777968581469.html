@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Câu 51| TOPIK II 쓰기 - Vui Học Tiếng Hàn</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/exam-layout.css">
+    <link rel="stylesheet" href="../../assets/css/exam-controls.css">
+
+    <style>
+        /* ===== KẾ THỪA PHONG CÁCH GLASSMORPHISM ===== */
+        :root {
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --primary: #2563eb;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0 0 40px 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* ===== NAVBAR KÍNH MỜ ===== */
+        .global-nav {
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            max-width: 900px;
+            margin: 20px auto 30px auto;
+        }
+
+        .nav-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: 55px;
+            position: relative;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 8px;
+            transition: 0.2s;
+            color: #0f172a;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-logo {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-desktop-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-sub);
+            font-weight: 700;
+            font-size: 1.15em;
+            transition: 0.2s;
+        }
+
+        /* CHỮ ĐỌC ĐƯỢC IN ĐẬM VÀ CÓ MÀU XANH KHI ĐANG Ở TRANG NÀY */
+        .nav-link.active {
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+       
+        /* ===== WRAPPER KÍNH MỜ ===== */
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            padding: 30px 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== HERO SECTION (BANNER) ===== */
+        .hero-section {
+            background: var(--random-bg-gradient, linear-gradient(135deg, #1e40af 0%, #3b82f6 100%));
+            border-radius: 16px;
+            padding: 25px 36px;
+            color: white;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.18);
+            color: #dbeafe;
+            font-size: 0.9em;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 99px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        @media (max-width: 600px) {
+            .hero-section {
+                padding: 24px 20px;
+                margin-bottom: 20px;
+            }
+
+            .hero-title {
+                font-size: 1.6em;
+            }
+        }
+
+        /* ===== FOOTER KÍNH MỜ ===== */
+        .global-footer {
+            max-width: 900px;
+            margin: 10px auto 30px auto;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+
+        .footer-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 1.05em;
+            transition: 0.2s;
+        }
+
+        .footer-link:hover {
+            transform: translateY(-2px);
+            color: #1877f2;
+        }
+
+        .footer-fb-icon {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+
+        /* Nhãn báo nguồn gốc câu hỏi */
+        .exam-source-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.6);
+            color: #0284c7;
+            font-size: 0.85em;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin-top: 25px;
+            margin-bottom: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .loading-text {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #64748b;
+            padding: 50px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.5;
+            }
+        }
+
+        
+        /* CARD BỌC CÂU HỎI */
+        .question-text, .shared-text {
+            background: var(--bg-card); color: var(--primary-text);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        /* ===== RESPONSIVE MOBILE ===== */
+        @media (max-width: 768px) {
+            .nav-top-row {
+                height: 50px;
+                padding: 0 15px;
+            }
+
+            .nav-logo-wrapper {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            .nav-logo {
+                font-size: 1.15em;
+            }
+
+            .nav-desktop-links {
+                display: none;
+            }
+
+            /* Xóa menu chữ trên điện thoại */
+        }
+
+        @media (max-width: 600px) {
+
+            .global-nav,
+            .wrapper,
+            .global-footer {
+                margin-left: 5px;
+                margin-right: 5px;
+                border-radius: 16px;
+            }
+
+            .wrapper {
+                padding: 20px 16px;
+            }
+
+            
+
+            
+        }
+    </style>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/type-navigator.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+</head>
+
+<body class="app-started">
+
+    
+
+    <div class="wrapper">
+        <div class="hero-section">
+            <h1 class="hero-title"> Luyện viết câu 51</h1>
+            <div class="hero-tag">Điền vào chỗ trống</div>
+
+        </div>
+
+        <div id="dynamic-questions-container">
+            <div class="loading-text">⏳ Đang gom nhặt câu hỏi từ các đề...</div>
+        </div>
+    </div>
+
+    <footer class="global-footer">
+        <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer"
+            class="footer-link">
+            <span>📚 Vui Học Tiếng Hàn</span>
+            <svg class="footer-fb-icon" viewBox="0 0 24 24">
+                <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+        </a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="../../auth.js"></script>
+
+<script src="exam-logic.js"></script>
+
+        <script>
+        // Danh sách các file đề viết (Hãy đảm bảo đường dẫn này khớp với vị trí file của bạn)
+        const examsToFetch = [
+            'topik35.html', 'topik36.html', 'topik37.html', 'topik41.html',
+            'topik47.html', 'topik52.html', 'topik60.html', 'topik64.html',
+            'topik83.html', 'topik91.html', 'topik96.html', 'topik102.html'
+        ];
+
+        async function fetchQuestionsByType() {
+            const container = document.getElementById('dynamic-questions-container');
+            let totalQuestions = 0;
+            let tempHTML = '';
+            let collectedScripts = ''; // Biến để gom toàn bộ Script chấm điểm
+
+            for (let examFile of examsToFetch) {
+                try {
+                    let response = await fetch(examFile);
+                    if(!response.ok) continue; // Bỏ qua nếu file không tồn tại
+                    
+                    let htmlString = await response.text();
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(htmlString, 'text/html');
+
+                    // Tìm tất cả các thẻ div class="wrapper" (Đây là khối bọc của mỗi câu trong code viết)
+                    let wrappers = doc.querySelectorAll('.wrapper');
+                    let examName = examFile.replace('.html', '').replace('topik', 'Đề ');
+
+                    wrappers.forEach((wrapper, index) => {
+                        let titleEl = wrapper.querySelector('.section-title');
+                        
+                        // Nếu tiêu đề của khối này chứa chữ "Câu 51"
+                        if (titleEl && titleEl.innerText.includes('Câu 51')) {
+                            
+                            // Tạo ID duy nhất cho các thành phần để tránh xung đột khi gom vào 1 trang
+                            let uid = examName.replace(' ', '') + '_' + index;
+                            
+                            // Đổi ID của textarea và div hiển thị điểm, nút bấm
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/ans-51-a/g, `ans-51-a-${uid}`);
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/ans-51-b/g, `ans-51-b-${uid}`);
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/btn-exp-51-a/g, `btn-exp-51-a-${uid}`);
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/btn-exp-51-b/g, `btn-exp-51-b-${uid}`);
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/exp-51-a/g, `exp-51-a-${uid}`);
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/exp-51-b/g, `exp-51-b-${uid}`);
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/score-51-a/g, `score-51-a-${uid}`);
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/score-51-b/g, `score-51-b-${uid}`);
+                            
+                            // Đổi tên hàm gọi trong onclick
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/grade51A\(\)/g, `grade51A_${uid}()`);
+                            wrapper.innerHTML = wrapper.innerHTML.replace(/grade51B\(\)/g, `grade51B_${uid}()`);
+
+                            let badge = `<div class="exam-source-badge">📚 Trích từ: ${examName.toUpperCase()}</div>`;
+                            tempHTML += `<div>${badge}${wrapper.outerHTML}</div>`;
+                            totalQuestions++;
+                        }
+                    });
+
+                    // TRÍCH XUẤT JAVASCRIPT TỪ FILE NGUỒN
+                    let scripts = doc.querySelectorAll('script');
+                    scripts.forEach(script => {
+                        let scriptText = script.innerText;
+                        if(scriptText.includes('grade51A') || scriptText.includes('grade51B')) {
+                            // Extract riêng phần hàm grade51A và grade51B, và đổi tên chúng theo UID
+                            // Do việc parse Regex Javascript khá phức tạp, chúng ta sẽ bọc nó trong một hàm ảo
+                            
+                            // Tìm tất cả các wrapper lần nữa để lấy ID tương ứng
+                            wrappers.forEach((wrapper, index) => {
+                                let titleEl = wrapper.querySelector('.section-title');
+                                if (titleEl && titleEl.innerText.includes('Câu 51')) {
+                                    let uid = examName.replace(' ', '') + '_' + index;
+                                    
+                                    // Thay thế các string ID trong code JS để trỏ đúng vào DOM mới
+                                    let modifiedScript = scriptText
+                                        .replace(/grade51A/g, `grade51A_${uid}`)
+                                        .replace(/grade51B/g, `grade51B_${uid}`)
+                                        .replace(/'ans-51-a'/g, `'ans-51-a-${uid}'`)
+                                        .replace(/'ans-51-b'/g, `'ans-51-b-${uid}'`)
+                                        .replace(/'btn-exp-51-a'/g, `'btn-exp-51-a-${uid}'`)
+                                        .replace(/'btn-exp-51-b'/g, `'btn-exp-51-b-${uid}'`)
+                                        .replace(/'exp-51-a'/g, `'exp-51-a-${uid}'`)
+                                        .replace(/'exp-51-b'/g, `'exp-51-b-${uid}'`)
+                                        .replace(/'score-51-a'/g, `'score-51-a-${uid}'`)
+                                        .replace(/'score-51-b'/g, `'score-51-b-${uid}'`);
+                                        
+                                    collectedScripts += modifiedScript + '\n';
+                                }
+                            });
+                        }
+                    });
+
+                } catch (error) {
+                    console.error("Lỗi khi tải đề:", examFile, error);
+                }
+            }
+
+            if (totalQuestions > 0) {
+                container.innerHTML = tempHTML;
+
+                // THỰC THI SCRIPT ĐÃ GOM ĐƯỢC ĐỂ KÍCH HOẠT NÚT CHẤM ĐIỂM
+                let scriptEl = document.createElement('script');
+                scriptEl.text = collectedScripts;
+                document.body.appendChild(scriptEl);
+
+            } else {
+                container.innerHTML = '<div style="text-align:center; color:red; padding: 30px;">Không tìm thấy dữ liệu Câu 51! Hãy kiểm tra lại tên các file HTML.</div>';
+            }
+        }
+
+        // Chạy hàm khi trang load xong
+        document.addEventListener('DOMContentLoaded', fetchQuestionsByType);            if (totalQuestions > 0) {
+                container.innerHTML = tempHTML;
+
+                               // 4. Trả lại hàm gốc cho trình duyệt sau 500ms
+                setTimeout(() => { document.addEventListener = ogAddEventListener; }, 500);
+                document.dispatchEvent(new Event('typeQuestionsLoaded'));
+                /* ========================================================= */
+
+            } else {
+                container.innerHTML = '<div style="text-align:center; color:red; padding: 30px;">Không tìm thấy dữ liệu!</div>';
+            }
+        }
+
+        // Chạy robot khi load trang
+        document.addEventListener('DOMContentLoaded', fetchQuestionsByType);
+
+        // Vô hiệu hóa đếm giờ ngầm của file exam.js
+        window.startTimer = function () { };
+
+           </script>
+</body>
+
+</html>

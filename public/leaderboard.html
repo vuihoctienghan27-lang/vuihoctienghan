@@ -1,0 +1,355 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bảng Xếp Hạng - Vui Học Tiếng Hàn</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <style>
+        :root {
+            --primary: #2563eb; --bg: #f0f4ff; --card: #ffffff;
+            --text: #0f172a; --sub: #64748b; --border: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Pretendard', sans-serif; background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%); min-height: 100vh; color: var(--text); }
+
+        /* NAVBAR */
+        .nav { position: sticky; top: 0; z-index: 100; background: rgba(255,255,255,0.92); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+        .nav-inner { max-width: 860px; margin: 0 auto; padding: 0 20px; height: 55px; display: flex; align-items: center; justify-content: space-between; }
+        .nav-logo { font-size: 1.2em; font-weight: 800; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 6px; }
+        .nav-links { display: flex; gap: 10px; }
+        .nav-btn { background: none; border: 1px solid var(--border); padding: 7px 14px; border-radius: 8px; font-weight: 700; font-size: 0.9em; color: var(--sub); cursor: pointer; text-decoration: none; transition: 0.2s; }
+        .nav-btn:hover { background: #f1f5f9; color: var(--primary); border-color: var(--primary); }
+        .nav-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+        .nav-btn.primary:hover { background: #1d4ed8; }
+
+        /* PAGE */
+        .page { max-width: 860px; margin: 30px auto 60px; padding: 0 20px; }
+
+        /* HERO */
+        .hero { text-align: center; margin-bottom: 30px; }
+        .hero h1 { font-size: 2.2em; font-weight: 900; color: var(--text); margin-bottom: 8px; }
+        .hero p { color: var(--sub); font-size: 1.05em; }
+
+        /* FILTER */
+        .filter-row { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; flex-wrap: wrap; }
+        .filter-btn { background: white; border: 2px solid var(--border); padding: 8px 18px; border-radius: 20px; font-weight: 700; font-size: 0.9em; color: var(--sub); cursor: pointer; transition: 0.2s; }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .filter-btn:hover:not(.active) { border-color: var(--primary); color: var(--primary); }
+
+        /* LEADERBOARD CARD */
+        .lb-card { background: white; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.08); }
+
+        /* TOP 3 PODIUM */
+        .podium { display: flex; justify-content: center; align-items: flex-end; gap: 15px; padding: 30px 20px 0; background: linear-gradient(180deg, #1e40af 0%, #2563eb 100%); }
+        .podium-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .podium-item:hover .podium-avatar { transform: scale(1.08); }
+        .podium-avatar { width: 64px; height: 64px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8em; border: 3px solid rgba(255,255,255,0.6); transition: 0.2s; background: rgba(255,255,255,0.15); }
+        .podium-item.rank-1 .podium-avatar { width: 80px; height: 80px; font-size: 2.2em; border-color: #fbbf24; }
+        .podium-name { font-weight: 800; font-size: 0.9em; color: white; margin: 8px 0 4px; text-align: center; max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .podium-exp { font-size: 0.8em; color: #bfdbfe; font-weight: 700; margin-bottom: 8px; }
+        .podium-base { height: 60px; border-radius: 8px 8px 0 0; display: flex; align-items: center; justify-content: center; font-size: 1.5em; font-weight: 900; color: white; min-width: 80px; }
+        .rank-1 .podium-base { height: 80px; background: rgba(251,191,36,0.3); font-size: 1.8em; }
+        .rank-2 .podium-base { background: rgba(255,255,255,0.15); }
+        .rank-3 .podium-base { background: rgba(255,255,255,0.1); }
+
+        /* LIST */
+        .lb-list { padding: 10px 0; }
+        .lb-row { display: flex; align-items: center; padding: 14px 24px; border-bottom: 1px solid #f3f4f6; transition: 0.2s; cursor: pointer; }
+        .lb-row:last-child { border-bottom: none; }
+        .lb-row:hover { background: #f8fafc; }
+        .lb-row.me { background: #eff6ff; }
+        .lb-row.me:hover { background: #dbeafe; }
+        .lb-rank { width: 48px; font-weight: 900; font-size: 1.1em; color: var(--sub); flex-shrink: 0; }
+        .lb-avatar { width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1.2em; margin-right: 14px; flex-shrink: 0; }
+        .lb-info { flex: 1; }
+        .lb-name { font-weight: 700; font-size: 1em; color: var(--text); }
+        .lb-sub { font-size: 0.82em; color: var(--sub); margin-top: 2px; }
+        .lb-exp { font-weight: 900; font-size: 1.15em; color: #7c3aed; display: flex; align-items: center; gap: 4px; }
+        .lb-streak { font-size: 0.85em; color: #f59e0b; font-weight: 700; margin-left: 12px; flex-shrink: 0; }
+
+        /* MY RANK BANNER */
+        .my-rank-banner { background: linear-gradient(135deg, #1e40af, #7c3aed); border-radius: 12px; padding: 16px 24px; color: white; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .my-rank-banner .rank-num { font-size: 2.5em; font-weight: 900; }
+        .my-rank-banner .rank-lbl { font-size: 0.85em; color: #c7d2fe; margin-bottom: 4px; }
+        .my-rank-banner .rank-name { font-size: 1.1em; font-weight: 800; }
+        .my-rank-banner .rank-right { text-align: right; }
+        .my-rank-banner .rank-exp { font-size: 1.8em; font-weight: 900; color: #fbbf24; }
+
+        /* MODAL */
+        .modal-bg { display: none; position: fixed; inset: 0; background: rgba(15,23,42,0.7); z-index: 9999; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-box { background: white; border-radius: 20px; padding: 30px; width: 90%; max-width: 360px; position: relative; animation: popIn 0.25s ease; }
+        @keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-close { position: absolute; top: 12px; right: 16px; background: none; border: none; font-size: 1.6em; cursor: pointer; color: #94a3b8; }
+        .modal-avatar { font-size: 3.5em; text-align: center; margin-bottom: 10px; }
+        .modal-name { font-size: 1.5em; font-weight: 900; text-align: center; margin-bottom: 4px; }
+        .modal-level { text-align: center; margin-bottom: 20px; }
+        .level-badge { background: #fef3c7; color: #92400e; padding: 4px 14px; border-radius: 99px; font-weight: 800; font-size: 0.9em; border: 1px solid #fde68a; display: inline-block; }
+        .modal-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        .stat-box { background: #f8fafc; border-radius: 12px; padding: 14px 8px; text-align: center; }
+        .stat-val { font-size: 1.6em; font-weight: 900; color: var(--text); }
+        .stat-lbl { font-size: 0.75em; color: var(--sub); font-weight: 600; margin-top: 4px; }
+
+        /* LOADING */
+        .loading { text-align: center; padding: 60px 20px; color: var(--sub); font-size: 1.1em; }
+        .spinner { width: 36px; height: 36px; border: 4px solid #e2e8f0; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.7em; }
+            .podium { padding: 20px 10px 0; gap: 8px; }
+            .podium-avatar { width: 50px; height: 50px; font-size: 1.4em; }
+            .rank-1 .podium-avatar { width: 64px; height: 64px; font-size: 1.7em; }
+            .podium-name { font-size: 0.8em; max-width: 72px; }
+            .lb-row { padding: 12px 16px; }
+            .nav-links { gap: 6px; }
+            .nav-btn { padding: 6px 10px; font-size: 0.82em; }
+        }
+    </style>
+    <script src="assets/js/block.js"></script>
+    <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/navbar.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="index.html" class="nav-logo">📚 Vui Học Tiếng Hàn</a>
+        <div class="nav-links">
+            <a href="index.html" class="nav-btn">🏠 Trang chủ</a>
+            <a href="mypage.html" class="nav-btn primary" id="mypageBtn">👤 Trang cá nhân</a>
+        </div>
+    </div>
+</nav>
+
+<div class="page">
+    <div class="hero">
+        <h1>🏆 Bảng Xếp Hạng</h1>
+        <p>Top học viên xuất sắc theo điểm EXP tích lũy</p>
+    </div>
+
+    <!-- My rank banner (chỉ hiện khi đăng nhập) -->
+    <div id="myRankBanner" style="display:none;" class="my-rank-banner">
+        <div>
+            <div class="rank-lbl">Hạng của bạn</div>
+            <div class="rank-name" id="brMyName">—</div>
+            <div style="font-size:0.85em;color:#c7d2fe;margin-top:4px;" id="brMyLevel">Thường Dân 🌱</div>
+        </div>
+        <div class="rank-right">
+            <div class="rank-lbl">EXP</div>
+            <div class="rank-exp" id="brMyExp">0 ⭐</div>
+        </div>
+        <div style="text-align:center;">
+            <div class="rank-lbl" style="text-align:center;">Hạng</div>
+            <div class="rank-num" id="brMyRank">#—</div>
+        </div>
+    </div>
+
+    <div class="filter-row">
+        <button class="filter-btn active" onclick="setFilter('exp', this)">⭐ Điểm EXP</button>
+        <button class="filter-btn" onclick="setFilter('streak', this)">🔥 Chuỗi dài</button>
+        <button class="filter-btn" onclick="setFilter('minutes', this)">⏱️ Giờ học</button>
+    </div>
+
+    <div class="lb-card" id="lbCard">
+        <div class="loading" id="lbLoading">
+            <div class="spinner"></div>
+            Đang tải bảng xếp hạng...
+        </div>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal-bg" id="profileModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <div class="modal-avatar" id="mpAvatar">🧑</div>
+        <div class="modal-name" id="mpName">Học viên</div>
+        <div class="modal-level"><span class="level-badge" id="mpLevel">Thường Dân 🌱</span></div>
+        <div class="modal-stats">
+            <div class="stat-box">
+                <div class="stat-val" id="mpExp" style="color:#7c3aed;">0</div>
+                <div class="stat-lbl">⭐ EXP</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-val" id="mpStreak" style="color:#f59e0b;">0</div>
+                <div class="stat-lbl">🔥 Chuỗi</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-val" id="mpMins" style="color:#10b981;">0</div>
+                <div class="stat-lbl">⏱️ Phút học</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script src="auth.js"></script>
+
+<script>
+    const STICKERS = ['🐶','🐱','🦊','🐻','🐼','🐨','🐯','🐰','🦄','🐧','🦉','🐢','🦖','🐸','🐙','🦋'];
+    let allUsers = [], currentFilter = 'exp', currentUserUid = null;
+
+    function getLocalDate() {
+        const d = new Date();
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function calcExp(data) {
+        return Math.max(0, Math.floor((data.totalStudyMinutes || 0) / 10) * 5 + (data.bonusEXP || 0));
+    }
+
+    function getLevelName(exp) {
+        if (exp > 3000) return 'Trạng Nguyên 👑';
+        if (exp >= 1001) return 'Thượng Thư 📜';
+        if (exp >= 401)  return 'Tú Tài 🖋️';
+        if (exp >= 51)   return 'Sĩ Tử 🕯️';
+        return 'Thường Dân 🌱';
+    }
+
+    function sortUsers(arr, filter) {
+        return [...arr].sort((a, b) => {
+            if (filter === 'streak')  return (b.streakDays || 0) - (a.streakDays || 0);
+            if (filter === 'minutes') return (b.totalStudyMinutes || 0) - (a.totalStudyMinutes || 0);
+            return (b._exp || 0) - (a._exp || 0);
+        });
+    }
+
+    function setFilter(type, btn) {
+        currentFilter = type;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderBoard(allUsers);
+    }
+
+    function renderBoard(users) {
+        const sorted = sortUsers(users, currentFilter);
+        const card = document.getElementById('lbCard');
+
+        // Top 3 podium
+        const top = sorted.slice(0, 3);
+        const podiumOrder = top.length >= 3 ? [top[1], top[0], top[2]] : top;
+        const podiumRanks = top.length >= 3 ? ['rank-2', 'rank-1', 'rank-3'] : ['rank-1'];
+        const podiumEmojis = top.length >= 3 ? ['🥈', '🥇', '🥉'] : ['🥇'];
+
+        const getVal = (u) => {
+            if (currentFilter === 'streak')  return `${u.streakDays || 0} 🔥`;
+            if (currentFilter === 'minutes') return `${u.totalStudyMinutes || 0} ph`;
+            return `${u._exp} ⭐`;
+        };
+
+        let podiumHTML = '';
+        if (top.length >= 1) {
+            podiumHTML = `<div class="podium">`;
+            podiumOrder.forEach((u, i) => {
+                if (!u) return;
+                const sticker = STICKERS[Math.abs(u._uid.charCodeAt(0) % STICKERS.length)];
+                const rIdx = sorted.indexOf(u);
+                podiumHTML += `
+                    <div class="podium-item ${podiumRanks[i]}" onclick="showProfile(${sorted.indexOf(u)})">
+                        <div class="podium-avatar">${sticker}</div>
+                        <div class="podium-name">${u.fullName || 'Ẩn danh'}</div>
+                        <div class="podium-exp">${getVal(u)}</div>
+                        <div class="podium-base">${podiumEmojis[i]}</div>
+                    </div>`;
+            });
+            podiumHTML += `</div>`;
+        }
+
+        // List from rank 4
+        let listHTML = `<div class="lb-list">`;
+        sorted.slice(3).forEach((u, i) => {
+            const rank = i + 4;
+            const sticker = STICKERS[Math.abs(u._uid.charCodeAt(0) % STICKERS.length)];
+            const isMe = u._uid === currentUserUid;
+            listHTML += `
+                <div class="lb-row${isMe ? ' me' : ''}" onclick="showProfile(${sorted.indexOf(u)})">
+                    <div class="lb-rank">${rank}</div>
+                    <div class="lb-avatar">${sticker}</div>
+                    <div class="lb-info">
+                        <div class="lb-name">${u.fullName || 'Ẩn danh'}${isMe ? ' <span style="color:#3b82f6;font-size:0.8em;">(Bạn)</span>' : ''}</div>
+                        <div class="lb-sub">${getLevelName(u._exp)}</div>
+                    </div>
+                    <div class="lb-exp">${getVal(u)}</div>
+                    <div class="lb-streak">🔥${u.streakDays || 0}</div>
+                </div>`;
+        });
+        listHTML += `</div>`;
+
+        card.innerHTML = podiumHTML + listHTML;
+
+        // Cập nhật banner người dùng hiện tại
+        if (currentUserUid) {
+            const myIdx = sorted.findIndex(u => u._uid === currentUserUid);
+            if (myIdx >= 0) {
+                const me = sorted[myIdx];
+                document.getElementById('myRankBanner').style.display = 'flex';
+                document.getElementById('brMyName').textContent = me.fullName || 'Học viên';
+                document.getElementById('brMyExp').textContent = `${me._exp} ⭐`;
+                document.getElementById('brMyRank').textContent = `#${myIdx + 1}`;
+                document.getElementById('brMyLevel').textContent = getLevelName(me._exp);
+            }
+        }
+    }
+
+    function showProfile(idx) {
+        const sorted = sortUsers(allUsers, currentFilter);
+        const u = sorted[idx];
+        if (!u) return;
+        const sticker = STICKERS[Math.abs(u._uid.charCodeAt(0) % STICKERS.length)];
+        document.getElementById('mpAvatar').textContent = sticker;
+        document.getElementById('mpName').textContent = u.fullName || 'Ẩn danh';
+        document.getElementById('mpLevel').textContent = getLevelName(u._exp);
+        document.getElementById('mpExp').textContent = u._exp;
+        document.getElementById('mpStreak').textContent = u.streakDays || 0;
+        document.getElementById('mpMins').textContent = u.totalStudyMinutes || 0;
+        document.getElementById('profileModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('profileModal').style.display = 'none';
+    }
+    document.getElementById('profileModal').addEventListener('click', e => {
+        if (e.target === document.getElementById('profileModal')) closeModal();
+    });
+
+    // Load data
+    async function loadLeaderboard(db) {
+        document.getElementById('lbLoading').style.display = 'block';
+        try {
+            const snap = await db.collection('users').get();
+            allUsers = [];
+            snap.docs.forEach(doc => {
+                const d = doc.data();
+                d._uid = doc.id;
+                d._exp = calcExp(d);
+                allUsers.push(d);
+            });
+            document.getElementById('lbLoading').style.display = 'none';
+            renderBoard(allUsers);
+        } catch(e) {
+            document.getElementById('lbLoading').innerHTML = '<p style="color:#ef4444;padding:40px;">Lỗi tải dữ liệu. Vui lòng thử lại.</p>';
+        }
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+            if (typeof firebase === 'undefined') return;
+            const db = firebase.firestore();
+            firebase.auth().onAuthStateChanged(user => {
+                currentUserUid = user ? user.uid : null;
+                if (!user) {
+                    document.getElementById('mypageBtn').textContent = '🔑 Đăng nhập';
+                    document.getElementById('mypageBtn').href = 'index.html';
+                }
+                loadLeaderboard(db);
+            });
+        }, 600);
+    });
+</script>
+</body>
+</html>

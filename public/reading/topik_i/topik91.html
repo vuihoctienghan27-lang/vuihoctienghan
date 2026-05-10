@@ -1,0 +1,1850 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK I 읽기 - 제91회 - Vui Học Tiếng Hàn</title>
+    
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/exam-layout.css">
+    <link rel="stylesheet" href="../../assets/css/vocab-tooltip.css">
+    <link rel="stylesheet" href="../../assets/css/exam-controls.css">
+    <link rel="stylesheet" href="../../assets/css/games.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/vocab-tooltip.js"></script>
+    <script src="../../assets/js/exam.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/navigator.js"></script>
+</head>
+<body>
+
+    <div class="container" id="main-container">
+
+        <div class="header-wrapper"><div class="header">TOPIK I 읽기 (제91회)</div></div>
+
+
+<div class="instruction">※ [31 ~ 33] 무엇에 대한 내용입니까? &lt;보기&gt;와 같이 알맞은 것을 고르십시오. (각 2점)</div>
+
+<div style="background-color: var(--btn-hover); border: 2px solid #cbd5e1; padding: 15px 25px; border-radius: 8px; margin-bottom: 25px; color: var(--primary-text); text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <div style="font-weight: 900; font-size: 1.1em; color: #2b6cb0; margin-bottom: 10px;">&lt; 보 기 &gt;</div>
+    <div style="font-size: 1.15em; margin-bottom: 15px;">
+        <span class="vocab-word" data-base="오늘" data-meaning="hôm nay">오늘</span>은 <span class="vocab-word" data-base="월요일" data-meaning="Thứ Hai">월요일</span>입니다. <span class="vocab-word" data-base="내일" data-meaning="ngày mai">내일</span>은 <span class="vocab-word" data-base="화요일" data-meaning="Thứ Ba">화요일</span>입니다.
+    </div>
+    <div style="display: flex; justify-content: center; gap: 20px; font-weight: bold; font-size: 1.05em;">
+        <span>① 공부</span> 
+        <span>② 얼굴</span> 
+        <span style="color: #e53e3e; background: #fff5f5; padding: 4px 12px; border-radius: 6px; border: 1px solid #feb2b2;">❸ 요일</span> 
+        <span>④ 가족</span>
+    </div>
+</div>
+
+<div class="question-block" id="q31">
+    <div class="question-text">
+        <span class="q-number">31.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        <div><span class="vocab-word" data-base="사과" data-meaning="quả táo">사과</span>가 <span class="vocab-word" data-base="있다" data-meaning="có">있습니다</span>. <span class="vocab-word" data-base="수박" data-meaning="dưa hấu">수박</span>은 <span class="vocab-word" data-base="없다" data-meaning="không có">없습니다</span>.<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="시간" data-meaning="thời gian">시간</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> <span class="vocab-word" data-base="과일" data-meaning="trái cây">과일</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="운동" data-meaning="sự vận động, thể dục">운동</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="계절" data-meaning="mùa (trong năm)">계절</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Có táo. Dưa hấu thì không có.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Thời gian</li>
+                        <li>② Trái cây</li>
+                        <li>③ Thể dục</li>
+                        <li>④ Mùa</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ②?</strong> Đoạn văn nhắc đến "사과" (Táo) và "수박" (Dưa hấu). Đây đều là những danh từ chỉ tên gọi của <strong>Trái cây (과일)</strong>.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    Không có thông tin nào liên quan đến thời gian (시간), thể dục thể thao (운동) hay các mùa trong năm (계절).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q31')">🎮 Ôn Tập Từ Vựng Câu Này</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q32">
+    <div class="question-text">
+        <span class="q-number">32.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        <div><span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="열다섯" data-meaning="mười lăm (15)">열다섯</span> <span class="vocab-word" data-base="살" data-meaning="tuổi">살</span>입니다. <span class="vocab-word" data-base="언니" data-meaning="chị gái (em gái gọi)">언니</span>는 <span class="vocab-word" data-base="열일곱" data-meaning="mười bảy (17)">열일곱</span> 살입니다.<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="나이" data-meaning="tuổi tác">나이</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="날짜" data-meaning="ngày tháng">날짜</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="이름" data-meaning="tên gọi">이름</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="나라" data-meaning="đất nước">나라</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Tôi 15 tuổi. Chị gái tôi 17 tuổi.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tuổi tác</li>
+                        <li>② Ngày tháng</li>
+                        <li>③ Tên gọi</li>
+                        <li>④ Quốc gia</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ①?</strong> Việc sử dụng các con số thuần Hàn (열다섯, 열일곱) kết hợp với đơn vị đo lường "살" (Tuổi) dùng để miêu tả về chủ đề <strong>Tuổi tác (나이)</strong> của con người.<span style="display:none;"></span></p>
+            </div>
+            <button class="review-link" onclick="openReview('q32')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q33">
+    <div class="question-text">
+        <span class="q-number">33.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        <div>수미 <span class="vocab-word" data-base="씨" data-meaning="anh, chị, bạn (gọi tên)">씨</span>는 <span class="vocab-word" data-base="회사원" data-meaning="nhân viên công ty">회사원</span>입니다. <span class="vocab-word" data-base="컴퓨터" data-meaning="máy vi tính">컴퓨터</span> <span class="vocab-word" data-base="회사" data-meaning="công ty">회사</span>에 <span class="vocab-word" data-base="다니다" data-meaning="đi lại (đi làm)">다닙니다</span>.<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="취미" data-meaning="sở thích">취미</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> <span class="vocab-word" data-base="직업" data-meaning="nghề nghiệp">직업</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="약속" data-meaning="cuộc hẹn">약속</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="쇼핑" data-meaning="mua sắm">쇼핑</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Su-mi là nhân viên công ty. Cô ấy đi làm ở một công ty máy tính.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Sở thích</li>
+                        <li>② Nghề nghiệp</li>
+                        <li>③ Cuộc hẹn</li>
+                        <li>④ Mua sắm</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ②?</strong> Những từ vựng như "회사원" (nhân viên công ty) hay "회사에 다닙니다" (đi làm công ty) dùng để nói về công việc mà một người đang làm, tức là <strong>Nghề nghiệp (직업)</strong>.<span style="display:none;"></span></p>
+            </div>
+            <button class="review-link" onclick="openReview('q33')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [34 ~ 39] &lt;보기&gt;와 같이 ( )에 들어갈 말로 가장 알맞은 것을 고르십시오.</div>
+
+<div style="background-color: var(--btn-hover); border: 2px solid #cbd5e1; padding: 15px 25px; border-radius: 8px; margin-bottom: 25px; color: var(--primary-text); text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <div style="font-weight: 900; font-size: 1.1em; color: #2b6cb0; margin-bottom: 10px;">&lt; 보 기 &gt;</div>
+    <div style="font-size: 1.15em; margin-bottom: 15px;">
+        <span class="vocab-word" data-base="단어" data-meaning="từ vựng">단어</span>를 <span class="vocab-word" data-base="모르다" data-meaning="không biết">모릅니다</span>. ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )을/를 <span class="vocab-word" data-base="찾다" data-meaning="tìm kiếm">찾습니다</span>.
+    </div>
+    <div style="display: flex; justify-content: center; gap: 20px; font-weight: bold; font-size: 1.05em;">
+        <span>① 안경</span> 
+        <span>② 옷장</span> 
+        <span style="color: #e53e3e; background: #fff5f5; padding: 4px 12px; border-radius: 6px; border: 1px solid #feb2b2;">❸ 사전</span> 
+        <span>④ 지갑</span>
+    </div>
+</div>
+
+<div class="question-block" id="q34">
+    <div class="question-text">
+        <span class="q-number">34.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        <div><span class="vocab-word" data-base="친구" data-meaning="bạn bè">친구</span>를 <span class="vocab-word" data-base="만나다" data-meaning="gặp gỡ">만납니다</span>. ( &nbsp;&nbsp;&nbsp;&nbsp; )에서 <span class="vocab-word" data-base="야구" data-meaning="bóng chày">야구</span>를 <span class="vocab-word" data-base="하다" data-meaning="chơi, làm">합니다</span>.<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="약국" data-meaning="tiệm thuốc">약국</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="공항" data-meaning="sân bay">공항</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="도서관" data-meaning="thư viện">도서관</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> <span class="vocab-word" data-base="운동장" data-meaning="sân vận động">운동장</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Tôi đi gặp bạn. Chơi bóng chày ở ( sân vận động ).<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tiệm thuốc</li>
+                        <li>② Sân bay</li>
+                        <li>③ Thư viện</li>
+                        <li>④ Sân vận động</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ④?</strong> Chỗ trống yêu cầu điền một địa điểm có thể thực hiện hành động "야구를 합니다" (Chơi bóng chày). Nơi có không gian lớn để chơi thể thao là <strong>Sân vận động (운동장)</strong>.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    Không ai chơi ném bóng chày ở bên trong Tiệm thuốc (①), Sân bay (②) hay Thư viện (③) cả.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q34')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q35">
+    <div class="question-text">
+        <span class="q-number">35.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        <div><span class="vocab-word" data-base="백화점" data-meaning="trung tâm thương mại">백화점</span>에 <span class="vocab-word" data-base="가다" data-meaning="đi">갑니다</span>. <span class="vocab-word" data-base="바지" data-meaning="quần (dài)">바지</span>( &nbsp;&nbsp;&nbsp;&nbsp; ) <span class="vocab-word" data-base="치마" data-meaning="váy">치마</span>를 <span class="vocab-word" data-base="사다" data-meaning="mua">삽니다</span>.<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 도</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 는</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 하고</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 에게</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Tôi đi đến trung tâm thương mại. Tôi mua quần ( và ) váy.<span style="display:none;"></span></div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ③?</strong> Tác giả mua 2 món đồ là "바지" (Quần) và "치마" (Váy). Để nối hai danh từ tương đương nhau trong một câu liệt kê, ta dùng từ nối <strong>하고 (Và / Cùng với)</strong>.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - ① <strong>도</strong> (Cũng), ② <strong>은/는</strong> (Tiểu từ chủ đề), ④ <strong>에게</strong> (Gửi cho ai đó) đều không thể dùng để nối giữa 2 danh từ đồ vật liền kề nhau.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q35')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q36">
+    <div class="question-text">
+        <span class="q-number">36.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        <div><span class="vocab-word" data-base="병원" data-meaning="bệnh viện">병원</span>이 <span class="vocab-word" data-base="집" data-meaning="nhà">집</span>에서 ( &nbsp;&nbsp;&nbsp;&nbsp; ). <span class="vocab-word" data-base="걷다" data-meaning="đi bộ">걸어서</span> <span class="vocab-word" data-base="가다" data-meaning="đi">갑니다</span>.<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="크다" data-meaning="to lớn">큽니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="싸다" data-meaning="rẻ">쌉니다</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> <span class="vocab-word" data-base="가깝다" data-meaning="gần">가깝습니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="조용하다" data-meaning="yên tĩnh">조용합니다</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Bệnh viện ở ( rất gần ) nhà tôi. Tôi đi bộ để tới đó.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① to lớn</li>
+                        <li>② rẻ</li>
+                        <li>③ gần</li>
+                        <li>④ yên tĩnh</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ③?</strong> Kết quả ở vế sau là "걸어서 갑니다" (Đi bộ đi đến). Để có thể đi bộ đến được một địa điểm thay vì đi các phương tiện khác, thì khoảng cách từ nhà đến bệnh viện bắt buộc phải <strong>Gần (가깝습니다)</strong>.<span style="display:none;"></span></p>
+            </div>
+            <button class="review-link" onclick="openReview('q36')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q37">
+    <div class="question-text">
+        <span class="q-number">37.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span>
+        <div><span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="케이크" data-meaning="bánh kem">케이크</span>를 ( &nbsp;&nbsp;&nbsp;&nbsp; ) <span class="vocab-word" data-base="좋아하다" data-meaning="thích">좋아합니다</span>. <span class="vocab-word" data-base="매일" data-meaning="mỗi ngày">매일</span> <span class="vocab-word" data-base="먹다" data-meaning="ăn">먹습니다</span>.<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="아주" data-meaning="rất">아주</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="아까" data-meaning="lúc nãy">아까</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="먼저" data-meaning="trước tiên">먼저</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="어서" data-meaning="mau, nhanh lên">어서</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Tôi ( rất ) thích bánh kem. Ngày nào tôi cũng ăn.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① rất</li>
+                        <li>② lúc nãy</li>
+                        <li>③ trước tiên</li>
+                        <li>④ mau, nhanh lên (dùng trong mệnh lệnh)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ①?</strong> Vế sau xác nhận tần suất là "매일 먹습니다" (Ngày nào cũng ăn). Việc ăn liên tục mỗi ngày chứng tỏ mức độ yêu thích (좋아합니다) phải cực kỳ cao. Phó từ chỉ mức độ duy nhất có thể bổ nghĩa cho động từ cảm xúc "좋아하다" chính là <strong>아주 (Rất)</strong>.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    Các từ "Lúc nãy" (②), "Trước tiên" (③), "Nhanh lên" (④) đều không thể dùng để bổ nghĩa cho mức độ của tình cảm.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q37')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q38">
+    <div class="question-text">
+        <span class="q-number">38.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span>
+        <div><span class="vocab-word" data-base="비가 오다" data-meaning="trời mưa">비가 옵니다</span>. <span class="vocab-word" data-base="그래서" data-meaning="vì vậy">그래서</span> <span class="vocab-word" data-base="창문" data-meaning="cửa sổ">창문</span>을 ( &nbsp;&nbsp;&nbsp;&nbsp; ).<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="사다" data-meaning="mua">삽니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="주다" data-meaning="cho">줍니다</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> <span class="vocab-word" data-base="닫다" data-meaning="đóng">닫습니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="읽다" data-meaning="đọc">읽습니다</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Trời mưa. Vì thế nên tôi ( đóng ) cửa sổ lại.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① mua</li>
+                        <li>② cho</li>
+                        <li>③ đóng</li>
+                        <li>④ đọc</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ③?</strong> Nguyên nhân là "Trời mưa" (비가 옵니다). Để nước mưa không bị hắt vào nhà, hành động hợp lý nhất tác động lên "창문" (Cửa sổ) chính là <strong>Đóng lại (닫습니다)</strong>.<span style="display:none;"></span></p>
+            </div>
+            <button class="review-link" onclick="openReview('q38')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q39">
+    <div class="question-text">
+        <span class="q-number">39.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        <div><span class="vocab-word" data-base="오늘" data-meaning="hôm nay">오늘</span> <span class="vocab-word" data-base="많이" data-meaning="nhiều">많이</span> <span class="vocab-word" data-base="피곤하다" data-meaning="mệt mỏi">피곤합니다</span>. <span class="vocab-word" data-base="집" data-meaning="nhà">집</span>에서 ( &nbsp;&nbsp;&nbsp;&nbsp; ).<span style="display:none;"></span></div>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="쉬다" data-meaning="nghỉ ngơi">쉽니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="되다" data-meaning="được, trở thành">됩니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="자르다" data-meaning="cắt">자릅니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="찾다" data-meaning="tìm kiếm">찾습니다</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu hỏi:</span>
+                <div class="trans-content">Hôm nay tôi rất mệt. Tôi ( nghỉ ngơi ) ở nhà.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① nghỉ ngơi</li>
+                        <li>② được</li>
+                        <li>③ cắt</li>
+                        <li>④ tìm kiếm</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ①?</strong> Tình trạng hiện tại là "rất mệt mỏi" (많이 피곤합니다). Khi cơ thể mệt mỏi, hành động hợp lý nhất là ở nhà để <strong>Nghỉ ngơi (쉽니다)</strong>.<span style="display:none;"></span></p>
+            </div>
+            <button class="review-link" onclick="openReview('q39')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [40 ~ 42] 다음을 읽고 맞지 않는 것을 고르십시오. (각 3점)</div>
+
+<div class="question-block" id="q40">
+    <div class="question-text"><span class="q-number">40.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span></div>
+    
+    <div style="background: var(--bg-card); border: 2px solid #cbd5e1; border-radius: 12px; width: 95%; max-width: 350px; margin: 0 auto 25px; padding: 25px 20px; box-sizing: border-box; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        
+        <div style="font-size: 1.8em; font-weight: 900; color: var(--primary-text); margin-bottom: 15px; border-bottom: 3px double #94a3b8; padding-bottom: 10px; width: max-content; margin-left: auto; margin-right: auto;">
+            <span class="vocab-word" data-base="불고기" data-meaning="thịt bò xào">불고기</span> <span class="vocab-word" data-base="김밥" data-meaning="cơm cuộn rong biển">김밥</span>
+        </div>
+
+        <div style="background: #f1f5f9; padding: 8px; border-radius: 4px; font-weight: bold; color: #475569; margin-bottom: 15px; font-size: 1.05em;">
+            2023<span class="vocab-word" data-base="년" data-meaning="năm">년</span> 11<span class="vocab-word" data-base="월" data-meaning="tháng">월</span> 30<span class="vocab-word" data-base="일" data-meaning="ngày">일</span><span class="vocab-word" data-base="까지" data-meaning="cho đến, tới">까지</span>
+        </div>
+
+        <div style="font-size: 1.5em; font-weight: bold; color: #e53e3e; border: 2px dashed #fecaca; display: inline-block; padding: 5px 15px; border-radius: 20px;">
+            1,500<span class="vocab-word" data-base="원" data-meaning="won">원</span><span style="display:none;"></span>
+        </div>
+    </div>
+
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 김밥입니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="천오백" data-meaning="một nghìn năm trăm">천오백</span> 원입니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 불고기 <span class="vocab-word" data-base="맛" data-meaning="mùi vị">맛</span>입니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> <span class="vocab-word" data-base="십이월" data-meaning="tháng mười hai">십이월</span>까지 <span class="vocab-word" data-base="팔다" data-meaning="bán">팝니다</span>.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung hình ảnh:</span>
+                <div class="trans-content">
+                    Kimbap vị Bulgogi<br>
+                    (Hạn sử dụng) Cho đến ngày 30 tháng 11 năm 2023<br>
+                    1,500 won<span style="display:none;"></span>
+                </div>
+                <span class="trans-title">📝 Dịch đáp án (Yêu cầu tìm câu SAI):</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Đây là món Kimbap. (ĐÚNG)</li>
+                        <li>② Giá của nó là một nghìn năm trăm won. (ĐÚNG)</li>
+                        <li>③ Kimbap này có vị Bulgogi (Thịt bò xào). (ĐÚNG)</li>
+                        <li>④ Sản phẩm này được bán cho đến tháng 12. (SAI)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ④?</strong> Nhãn dán trên sản phẩm ghi rõ ngày hết hạn (까지): "2023년 <strong>11월 30일</strong>까지" (Cho đến ngày 30 <strong>tháng 11</strong>). Nghĩa là cuộn kimbap này chỉ bán và ăn được trong tháng 11. Việc đáp án ④ cho rằng "Bán cho đến tháng 12 (십이월)" là sai hạn sử dụng. Vì đề bài yêu cầu tìm câu <strong>SAI (맞지 않는 것)</strong>, nên ④ là đáp án đúng.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Các đáp án còn lại đều ĐÚNG với nội dung hình ảnh:</strong><br>
+                    - ① Tên bự chà bá là "김밥" (Kimbap).<br>
+                    - ② Giá ghi là "1,500원", đọc bằng tiếng Hàn là "천오백 원" (Một nghìn năm trăm won).<br>
+                    - ③ Loại kimbap này là loại "불고기 김밥" (Kimbap Bulgogi), tức là có vị Bulgogi.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q40')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q41">
+    <div class="question-text"><span class="q-number">41.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span></div>
+    
+    <div style="background: var(--bg-card); border: 2px solid #cbd5e1; border-radius: 16px; width: 100%; max-width: 550px; margin: 0 auto 25px; padding: 20px; box-sizing: border-box; box-shadow: 0 4px 10px rgba(0,0,0,0.05); position: relative; font-family: 'Pretendard', sans-serif;">
+        
+        <div style="text-align: center; margin-bottom: 20px; font-weight: 900; font-size: 1.5em; color: var(--primary-text); background: #e2e8f0; padding: 8px; border-radius: 30px; width: max-content; margin-left: auto; margin-right: auto; letter-spacing: 2px;">
+            인 주 <span class="vocab-word" data-base="공원" data-meaning="công viên">공 원</span>
+        </div>
+
+        <div style="background: #ecfccb; border: 4px solid #84cc16; border-radius: 60px; height: 250px; position: relative; padding: 20px;">
+            
+            <div style="background: #bae6fd; border-radius: 50%; width: 150px; height: 80px; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); opacity: 0.8;"></div>
+
+            <div style="position: absolute; left: 20px; top: 40px; display: flex; gap: 10px;">
+                <div style="background: #334155; color: white; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9em; font-weight: bold;">
+                    ☕<br><span class="vocab-word" data-base="카페" data-meaning="quán cà phê">카페</span>
+                </div>
+                <div style="background: #334155; color: white; padding: 10px; border-radius: 8px; text-align: center; font-size: 0.9em; font-weight: bold;">
+                    🚻<br><span class="vocab-word" data-base="화장실" data-meaning="nhà vệ sinh">화장실</span>
+                </div>
+            </div>
+
+            <div style="position: absolute; right: 20px; top: 40px; text-align: center;">
+                <div style="font-size: 2em;">⛹️‍♂️⛹️‍♀️</div>
+                <div style="background: var(--bg-card); border: 1px solid #94a3b8; padding: 2px 8px; font-size: 0.85em; font-weight: bold; border-radius: 4px;">
+                    <span class="vocab-word" data-base="농구장" data-meaning="sân bóng rổ">농구장</span>
+                </div>
+            </div>
+
+            <div style="position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); background: var(--bg-card); border: 2px solid #64748b; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.9em;">
+                <span class="vocab-word" data-base="입구" data-meaning="lối vào">입구</span>
+            </div>
+        </div>
+
+        <div style="position: absolute; bottom: 20px; right: 20px; background: #64748b; color: white; padding: 10px 15px; border-radius: 8px; text-align: center; font-weight: bold;">
+            🅿️ 🚗<br><span class="vocab-word" data-base="주차장" data-meaning="bãi đỗ xe">주차장</span><span style="display:none;"></span>
+        </div>
+
+    </div>
+
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> 주차장은 공원 <span class="vocab-word" data-base="안" data-meaning="bên trong">안</span>에 <span class="vocab-word" data-base="있다" data-meaning="ở, có">있습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 카페 <span class="vocab-word" data-base="옆" data-meaning="bên cạnh">옆</span>에 화장실이 있습니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 공원에 입구가 한 <span class="vocab-word" data-base="개" data-meaning="cái">개</span> 있습니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="이곳" data-meaning="nơi này">이곳</span>에서 <span class="vocab-word" data-base="농구" data-meaning="bóng rổ">농구</span>를 <span class="vocab-word" data-base="하다" data-meaning="làm, chơi">할 수 있습니다</span>.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung Bản đồ:</span>
+                <div class="trans-content">
+                    Bản đồ Công viên Inju<br>
+                    (Bên trong khuôn viên): Quán Cafe, Nhà vệ sinh, Sân bóng rổ.<br>
+                    (Mép viền): Lối vào (1 cái).<br>
+                    (Bên ngoài khuôn viên, góc dưới): Bãi đỗ xe.<span style="display:none;"></span>
+                </div>
+                <span class="trans-title">📝 Dịch đáp án (Yêu cầu tìm câu SAI):</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Bãi đỗ xe nằm ở BÊN TRONG công viên. (SAI)</li>
+                        <li>② Nằm bên cạnh quán cà phê là nhà vệ sinh. (ĐÚNG)</li>
+                        <li>③ Công viên chỉ có 1 cổng ra vào. (ĐÚNG)</li>
+                        <li>④ Tại nơi này, bạn có thể chơi bóng rổ. (ĐÚNG)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ①?</strong> Hãy quan sát hình ảnh bản đồ thật kỹ, có một đường viền (màu xanh lá cây) bao bọc xung quanh các khu vực như hồ nước, sân bóng, quán cafe để tạo thành "Khuôn viên của Công viên". Và khu vực "주차장" (Bãi đỗ xe) được vẽ nằm hoàn toàn <strong>Ở BÊN NGOÀI</strong> đường viền đó. Việc đáp án ① cho rằng "Bãi đỗ xe nằm ở <strong>BÊN TRONG</strong> (공원 <strong>안</strong>에)" là sai thực tế bức tranh. Vì đề bài yêu cầu tìm câu <strong>SAI (맞지 않는 것)</strong>, nên ① là đáp án đúng.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Các đáp án còn lại đều ĐÚNG với nội dung hình ảnh:</strong><br>
+                    - ② Trong hình, ký hiệu "카페" (Cafe) được vẽ nằm sát ngay vách tường với ký hiệu "화장실" (Nhà vệ sinh). Tức là cạnh nhau (옆에).<br>
+                    - ③ Nhìn quanh viền bản đồ chỉ có duy nhất 1 cục tròn đánh dấu "입구" (Lối vào).<br>
+                    - ④ Góc phải của công viên có một cái "농구장" (Sân bóng rổ), có hình người ném bóng, chứng tỏ ở đây có thể chơi bóng rổ (농구를 할 수 있습니다).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q41')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q42">
+    <div class="question-text"><span class="q-number">42.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span></div>
+    
+    <div style="background: #e5e7eb; border: 4px solid #9ca3af; border-radius: 20px; width: 85%; max-width: 350px; margin: 0 auto 25px; padding: 15px; box-sizing: border-box; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+        <div style="width: 40px; height: 4px; background: #6b7280; border-radius: 4px; margin: 0 auto 15px;"></div>
+        <div style="background: var(--bg-card); border-radius: 10px; border: 2px solid #cbd5e1; padding: 0; min-height: 180px; display: flex; flex-direction: column; overflow: hidden;">
+            
+            <div style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1; padding: 10px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="color: #3b82f6; font-weight: bold; font-size: 1.2em;">&lt; ✉️</div>
+                <div style="color: #94a3b8; font-size: 1.2em;">📞 🗑️</div>
+            </div>
+
+            <div style="padding: 15px; font-size: 1.05em; line-height: 1.8; color: #334155; margin: 10px;">
+                지은 <span class="vocab-word" data-base="씨" data-meaning="bạn, chị (gọi tên)">씨</span>,<br>
+                <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="오늘" data-meaning="hôm nay">오늘</span> <span class="vocab-word" data-base="일" data-meaning="công việc">일</span>이 <span class="vocab-word" data-base="많다" data-meaning="nhiều">많아서</span><br>
+                <span class="vocab-word" data-base="아직" data-meaning="vẫn, vẫn chưa">아직</span> <span class="vocab-word" data-base="회사" data-meaning="công ty">회사</span>에 <span class="vocab-word" data-base="있다" data-meaning="có, ở">있어요</span>.<br>
+                5<span class="vocab-word" data-base="분" data-meaning="phút">분</span> <span class="vocab-word" data-base="후" data-meaning="sau khi">후에</span> <span class="vocab-word" data-base="출발하다" data-meaning="xuất phát">출발할 거예요</span>.<br>
+                <span class="vocab-word" data-base="조금" data-meaning="một chút">조금</span> <span class="vocab-word" data-base="늦다" data-meaning="muộn, trễ">늦을 거예요</span>.<br>
+                <span class="vocab-word" data-base="미안하다" data-meaning="xin lỗi">미안해요</span>.<br>
+                <div style="text-align: right; font-weight: bold; color: #475569; margin-top: 10px; font-size: 1.1em;">수미</div><span style="display:none;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 수미 씨는 오늘 <span class="vocab-word" data-base="바쁘다" data-meaning="bận rộn">바빴습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 수미 씨는 <span class="vocab-word" data-base="메시지" data-meaning="tin nhắn">메시지</span>를 <span class="vocab-word" data-base="보내다" data-meaning="gửi">보냈습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 수미 씨는 <span class="vocab-word" data-base="지금" data-meaning="bây giờ">지금</span> 회사에 있습니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 수미 씨는 <span class="vocab-word" data-base="십" data-meaning="mười">십</span>분 후에 출발할 <span class="vocab-word" data-base="것이다" data-meaning="sẽ (tương lai)">겁니다</span>.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung tin nhắn:</span>
+                <div class="trans-content">
+                    Ji-eun à,<br>
+                    Hôm nay tớ có nhiều việc quá nên tớ hiện vẫn đang ở lại công ty.<br>
+                    Khoảng 5 phút nữa tớ mới bắt đầu xuất phát đi được.<br>
+                    Chắc tớ sẽ đến trễ một chút đấy.<br>
+                    Xin lỗi cậu nha.<br>
+                    - Su-mi -<span style="display:none;"></span>
+                </div>
+                <span class="trans-title">📝 Dịch đáp án (Yêu cầu tìm câu SAI):</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Hôm nay Su-mi đã rất bận rộn. (ĐÚNG)</li>
+                        <li>② Su-mi là người gửi tin nhắn này. (ĐÚNG)</li>
+                        <li>③ Su-mi hiện tại đang ở công ty. (ĐÚNG)</li>
+                        <li>④ Su-mi sẽ xuất phát đi sau mười phút (10p) nữa. (SAI)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ④?</strong> Su-mi đã hẹn với Ji-eun trong tin nhắn là: "<strong>5분 후에</strong> 출발할 거예요" (Mình sẽ xuất phát <strong>sau 5 phút</strong> nữa). Thế nhưng đáp án ④ lại bảo cô ấy sẽ xuất phát sau tận "<strong>십분 (10 phút)</strong>". Lệch mất 5 phút rồi. Vì đề bài yêu cầu tìm câu <strong>SAI (맞지 않는 것)</strong>, nên ④ là đáp án đúng.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Các đáp án còn lại đều ĐÚNG với nội dung hình ảnh:</strong><br>
+                    - ① Su-mi than vãn "오늘 일이 많아서" (Hôm nay tớ nhiều việc quá). Có nhiều việc làm không hết phải ở lại tức là "Rất bận rộn" (바빴습니다).<br>
+                    - ② Tên người ký ở góc dưới cùng bên phải màn hình là "수미" (Su-mi). Tức là Su-mi gửi.<br>
+                    - ③ Su-mi nhắn "아직 회사에 있어요" (Hiện vẫn đang ở công ty).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q42')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [43 ~ 45] 다음을 읽고 내용이 같은 것을 고르십시오. (Chọn đáp án ĐÚNG)</div>
+
+<div class="question-block" id="q43">
+    <div class="question-text"><span class="q-number">43.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span></div>
+    <div class="shared-text">
+        <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="친구" data-meaning="bạn bè">친구</span>와 <span class="vocab-word" data-base="함께" data-meaning="cùng nhau">함께</span> <span class="vocab-word" data-base="살다" data-meaning="sống">삽니다</span>. <span class="vocab-word" data-base="우리" data-meaning="chúng tôi">우리</span>는 <span class="vocab-word" data-base="집" data-meaning="nhà">집</span>에서 <span class="vocab-word" data-base="한국" data-meaning="Hàn Quốc">한국</span> <span class="vocab-word" data-base="가수" data-meaning="ca sĩ">가수</span>의 <span class="vocab-word" data-base="노래" data-meaning="bài hát">노래</span>를 <span class="vocab-word" data-base="매일" data-meaning="mỗi ngày">매일</span> <span class="vocab-word" data-base="듣다" data-meaning="nghe">듣습니다</span>. <span class="vocab-word" data-base="금요일" data-meaning="thứ sáu">금요일</span>에는 <span class="vocab-word" data-base="수업" data-meaning="lớp học">수업</span>이 <span class="vocab-word" data-base="끝나다" data-meaning="kết thúc">끝나고</span> <span class="vocab-word" data-base="같이" data-meaning="cùng nhau">같이</span> <span class="vocab-word" data-base="노래방" data-meaning="quán karaoke">노래방</span>에 <span class="vocab-word" data-base="가다" data-meaning="đi">갑니다</span>.<span style="display:none;"></span>
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> 친구는 저와 같이 삽니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 저는 금요일에 수업이 <span class="vocab-word" data-base="없다" data-meaning="không có">없습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 우리는 한국 노래를 <span class="vocab-word" data-base="가끔" data-meaning="thỉnh thoảng">가끔</span> 듣습니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 친구는 금요일에 <span class="vocab-word" data-base="혼자" data-meaning="một mình">혼자</span> 노래방에 갑니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch đoạn văn:</span>
+                <div class="trans-content">Tôi đang sống chung nhà cùng với một người bạn. Chúng tôi ngày nào cũng mở nhạc của các ca sĩ Hàn Quốc để nghe ở nhà. Cứ vào ngày thứ Sáu là chúng tôi lại đợi học xong rồi cùng rủ nhau ra quán hát karaoke.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Bạn tôi đang sống chung cùng với tôi.</li>
+                        <li>② Tôi không có lịch học vào ngày thứ Sáu.</li>
+                        <li>③ Thỉnh thoảng chúng tôi mới nghe nhạc Hàn Quốc.</li>
+                        <li>④ Cứ đến thứ Sáu là người bạn đó lại đi hát karaoke một mình.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ①?</strong> Ngay câu đầu tiên của đoạn văn, tác giả nói: "저는 <strong>친구와 함께 삽니다</strong>" (Tôi <strong>sống cùng</strong> với người bạn). Điều này đồng nghĩa với "친군은 저와 <strong>같이 삽니다</strong>" (Người bạn đó sống cùng với tôi). "함께" và "같이" là hai từ đồng nghĩa. Đáp án ① hoàn toàn chính xác.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>② Sai</strong> vì ngày thứ Sáu tác giả đợi <strong>"Học xong" (수업이 끝나고)</strong> mới đi, chứng tỏ là có đi học trên trường.<br>
+                    - <strong>③ Sai</strong> vì ngày nào họ cũng <strong>"Nghe liên tục mỗi ngày" (매일 듣습니다)</strong>, chứ không phải "thỉnh thoảng mới nghe" (가끔).<br>
+                    - <strong>④ Sai</strong> vì tác giả đi hát <strong>CÙNG VỚI (같이)</strong> bạn, chứ không phải bạn lủi thủi đi "một mình" (혼자).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q43')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q44">
+    <div class="question-text"><span class="q-number">44.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span></div>
+    <div class="shared-text">
+        <span class="vocab-word" data-base="매년" data-meaning="mỗi năm">매년</span> <span class="vocab-word" data-base="여름" data-meaning="mùa hè">여름</span>에 <span class="vocab-word" data-base="한강" data-meaning="sông Hàn">한강</span>에서 <span class="vocab-word" data-base="축제" data-meaning="lễ hội">축제</span>를 <span class="vocab-word" data-base="하다" data-meaning="tổ chức, làm">합니다</span>. <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="올해" data-meaning="năm nay">올해</span> 한강 축제에 <span class="vocab-word" data-base="처음" data-meaning="lần đầu tiên">처음</span> <span class="vocab-word" data-base="가다" data-meaning="đi">갔습니다</span>. 축제에서 <span class="vocab-word" data-base="춤" data-meaning="điệu nhảy">춤</span> <span class="vocab-word" data-base="공연" data-meaning="buổi biểu diễn">공연</span>도 <span class="vocab-word" data-base="구경하다" data-meaning="tham quan, xem">구경하고</span> <span class="vocab-word" data-base="맛있다" data-meaning="ngon">맛있는</span> <span class="vocab-word" data-base="치킨" data-meaning="gà rán">치킨</span>도 <span class="vocab-word" data-base="먹다" data-meaning="ăn">먹었습니다</span>.<span style="display:none;"></span>
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 이 축제는 <span class="vocab-word" data-base="가을" data-meaning="mùa thu">가을</span>에 합니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 이 축제에서 춤 공연을 <span class="vocab-word" data-base="보다" data-meaning="xem, nhìn">봤습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 저는 <span class="vocab-word" data-base="작년" data-meaning="năm ngoái">작년</span>에 이 축제에 갔습니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 저는 이 축제에서 치킨을 <span class="vocab-word" data-base="못" data-meaning="không thể">못</span> 먹었습니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch đoạn văn:</span>
+                <div class="trans-content">Cứ đến mùa hè hằng năm là tại khu vực Sông Hàn lại tổ chức một lễ hội. Năm nay là lần đầu tiên tôi đi tham dự Lễ hội Sông Hàn này. Ở lễ hội, tôi đã được xem biểu diễn vũ đạo và còn được ăn gà rán rất ngon nữa.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Lễ hội này được tổ chức vào mùa thu.</li>
+                        <li>② Tôi đã xem một buổi biểu diễn vũ đạo tại lễ hội này.</li>
+                        <li>③ Tôi đã đi tham dự lễ hội này vào năm ngoái.</li>
+                        <li>④ Tôi đã không được ăn gà rán tại lễ hội này.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ②?</strong> Tác giả miêu tả trải nghiệm ở lễ hội: "축제에서 <strong>춤 공연도 구경하고</strong>..." (Tại lễ hội tôi cũng <strong>đã tham quan/xem buổi biểu diễn vũ đạo</strong>...). Cụm từ "구경하다" (xem, ngắm nghía) có thể thay thế bằng "보다" (xem). Đáp án ② diễn đạt lại chính xác hành động này.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì lễ hội tổ chức định kỳ vào <strong>Mùa Hè (여름에)</strong>, không phải mùa thu.<br>
+                    - <strong>③ Sai</strong> vì năm nay mới là <strong>Lần đầu tiên (처음)</strong> tác giả ló mặt đi, không phải là "năm ngoái đã đi rồi" (작년에 갔습니다).<br>
+                    - <strong>④ Sai</strong> vì tác giả khoe đã <strong>Ăn gà rán rất ngon (맛있는 치킨도 먹었습니다)</strong>, không có chuyện "không thể ăn" (못 먹었습니다).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q44')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q45">
+    <div class="question-text"><span class="q-number">45.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span></div>
+    <div class="shared-text">
+        <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="자전거" data-meaning="xe đạp">자전거</span>가 <span class="vocab-word" data-base="있다" data-meaning="có">있지만</span> <span class="vocab-word" data-base="잘" data-meaning="tốt, giỏi">잘</span> <span class="vocab-word" data-base="못하다" data-meaning="kém, không thể">못</span> <span class="vocab-word" data-base="타다" data-meaning="đi (xe)">탑니다</span>. <span class="vocab-word" data-base="그래서" data-meaning="vì vậy">그래서</span> 저는 <span class="vocab-word" data-base="주말마다" data-meaning="mỗi cuối tuần">주말마다</span> 민수 <span class="vocab-word" data-base="씨" data-meaning="anh, bạn (gọi tên)">씨</span>를 <span class="vocab-word" data-base="만나다" data-meaning="gặp">만나서</span> 자전거를 <span class="vocab-word" data-base="배우다" data-meaning="học">배웁니다</span>. <span class="vocab-word" data-base="나중에" data-meaning="sau này">나중에</span> 민수 씨와 자전거 <span class="vocab-word" data-base="여행" data-meaning="du lịch">여행</span>을 <span class="vocab-word" data-base="하고 싶다" data-meaning="muốn làm">하고 싶습니다</span>.<span style="display:none;"></span>
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 저는 자전거가 <span class="vocab-word" data-base="없다" data-meaning="không có">없습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 저는 <span class="vocab-word" data-base="지금" data-meaning="bây giờ">지금</span> 자전거를 잘 탑니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 저는 <span class="vocab-word" data-base="주말" data-meaning="cuối tuần">주말</span>에 민수 씨를 만납니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 저는 <span class="vocab-word" data-base="요즘" data-meaning="dạo này">요즘</span> 민수 씨와 자전거 여행을 합니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch đoạn văn:</span>
+                <div class="trans-content">Tôi có xe đạp đấy nhưng tôi lại đạp không được giỏi cho lắm. Chính vì thế nên cứ mỗi cuối tuần tôi lại hẹn gặp Min-soo để được cậu ấy hướng dẫn cho cách đạp xe. Tôi thực sự mong ước rằng sau này sẽ có thể cùng Min-soo đi một chuyến du lịch phượt bằng xe đạp.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tôi không có xe đạp.</li>
+                        <li>② Bây giờ tôi đã đi xe đạp rất giỏi.</li>
+                        <li>③ Tôi hay gặp gỡ Min-soo vào dịp cuối tuần.</li>
+                        <li>④ Dạo gần đây tôi hay đi phượt xe đạp cùng Min-soo.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ③?</strong> Đoạn văn kể lịch trình cố định của tác giả: "저는 <strong>주말마다 민수 씨를 만나서</strong>..." (<strong>Mỗi dịp cuối tuần tôi lại hẹn gặp Min-soo</strong>). "Mỗi cuối tuần" (주말마다) cũng chính là việc làm vào "Cuối tuần" (주말에). Do đó đáp án ③ (Tôi gặp Min-soo vào cuối tuần) là chính xác hoàn toàn.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì tác giả <strong>CÓ</strong> mua xe đạp (자전거가 있지만), chỉ là chưa biết đi thôi.<br>
+                    - <strong>② Sai</strong> vì tác giả hiện tại vẫn còn <strong>Đang đi học (배웁니다)</strong>, chưa "chạy rất giỏi" (잘 탑니다) được.<br>
+                    - <strong>④ Sai</strong> vì chuyến phượt xe đạp là một "Mơ ước trong TƯƠNG LAI" (나중에... 하고 싶습니다), chứ dạo này (요즘) vẫn còn đang chật vật tập chạy thì làm sao đi phượt.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q45')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [46 ~ 48] 다음을 읽고 중심 내용을 고르십시오. (Chọn nội dung chính)</div>
+
+<div class="question-block" id="q46">
+    <div class="question-text"><span class="q-number">46.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span></div>
+    <div class="shared-text">
+        <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="등산" data-meaning="leo núi">등산</span>을 <span class="vocab-word" data-base="하러 가다" data-meaning="đi để làm">하러</span> 제주도에 <span class="vocab-word" data-base="오다" data-meaning="đến">왔습니다</span>. <span class="vocab-word" data-base="그런데" data-meaning="thế nhưng">그런데</span> <span class="vocab-word" data-base="오늘" data-meaning="hôm nay">오늘</span> <span class="vocab-word" data-base="비가 오다" data-meaning="trời mưa">비가 와서</span> 등산을 <span class="vocab-word" data-base="못" data-meaning="không thể">못</span> <span class="vocab-word" data-base="하다" data-meaning="làm">했습니다</span>. <span class="vocab-word" data-base="내일" data-meaning="ngày mai">내일</span>은 <span class="vocab-word" data-base="꼭" data-meaning="nhất định">꼭</span> <span class="vocab-word" data-base="산" data-meaning="núi">산</span>에 가고 <span class="vocab-word" data-base="싶다" data-meaning="muốn">싶습니다</span>.<span style="display:none;"></span>
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> 저는 제주도에서 등산할 <span class="vocab-word" data-base="것이다" data-meaning="sẽ (tương lai)">겁니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 저는 등산을 하는 <span class="vocab-word" data-base="것" data-meaning="việc">것이</span> <span class="vocab-word" data-base="힘들다" data-meaning="khó khăn, mệt">힘듭니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 저는 비가 오는 <span class="vocab-word" data-base="날" data-meaning="ngày">날</span>을 <span class="vocab-word" data-base="좋아하다" data-meaning="thích">좋아합니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 저는 제주도에 가서 <span class="vocab-word" data-base="살다" data-meaning="sống">살려고</span> 합니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch đoạn văn:</span>
+                <div class="trans-content">Tôi đã cất công đến tận đảo Jeju để leo núi. Thế nhưng ngặt nỗi hôm nay trời lại đổ mưa nên tôi chẳng thể leo lên núi được. Ngày mai tôi nhất định sẽ phải đi lên ngọn núi đó cho bằng được.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tôi nhất định sẽ leo núi ở Jeju.</li>
+                        <li>② Đối với tôi việc leo núi rất là mệt nhọc.</li>
+                        <li>③ Tôi rất thích những ngày trời mưa.</li>
+                        <li>④ Tôi dự định sẽ dọn đến sống ở đảo Jeju.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ①?</strong> Tác giả cất công bay ra đảo Jeju với mục đích duy nhất là leo núi. Dù hôm nay bị mưa cản bước (비가 와서 못 했습니다), tác giả vẫn nuôi quyết tâm rực lửa ở câu cuối: "내일은 <strong>꼭 산에 가고 싶습니다</strong>" (Ngày mai <strong>NHẤT ĐỊNH phải đi leo núi</strong>). Ý chí không bỏ cuộc này chính là mong muốn <strong>"Tôi SẼ leo núi ở Jeju (cho bằng được)" (제주도에서 등산할 겁니다)</strong>. Đáp án ① truyền tải trọn vẹn thông điệp này.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - Tác giả chưa leo được bước nào, nên chưa thể nói là "Leo núi mệt quá" (②).<br>
+                    - Mưa làm hỏng kế hoạch nên phải rất CAY CÚ, không có lý gì lại "thích ngày mưa" (③) lúc này cả.<br>
+                    - Tác giả đến Jeju để <strong>ĐI CHƠI</strong>, không có ý định "chuyển hẳn ra Jeju sống" (④).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q46')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q47">
+    <div class="question-text"><span class="q-number">47.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span></div>
+    <div class="shared-text">
+        <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="백화점" data-meaning="trung tâm thương mại">백화점</span>에서 <span class="vocab-word" data-base="모자" data-meaning="cái mũ">모자</span>를 <span class="vocab-word" data-base="하나" data-meaning="một cái">하나</span> <span class="vocab-word" data-base="사다" data-meaning="mua">샀습니다</span>. <span class="vocab-word" data-base="그" data-meaning="đó, ấy">그</span> 모자는 <span class="vocab-word" data-base="가볍다" data-meaning="nhẹ">가볍고</span> <span class="vocab-word" data-base="예쁘다" data-meaning="đẹp">예쁩니다</span>. 저는 <span class="vocab-word" data-base="요즘" data-meaning="dạo này">요즘</span> <span class="vocab-word" data-base="밖" data-meaning="bên ngoài">밖</span>에 <span class="vocab-word" data-base="나가다" data-meaning="đi ra ngoài">나갈</span> <span class="vocab-word" data-base="때" data-meaning="khi, lúc">때</span> 그 모자를 <span class="vocab-word" data-base="자주" data-meaning="thường xuyên">자주</span> <span class="vocab-word" data-base="쓰다" data-meaning="đội (mũ)">씁니다</span>.<span style="display:none;"></span>
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> 저는 모자가 <span class="vocab-word" data-base="마음에 들다" data-meaning="vừa ý, ưng ý">마음에 듭니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 저는 예쁜 모자가 <span class="vocab-word" data-base="필요하다" data-meaning="cần thiết">필요합니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 저는 <span class="vocab-word" data-base="친구" data-meaning="bạn bè">친구</span>에게 모자를 <span class="vocab-word" data-base="주다" data-meaning="cho">줄 겁니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 저는 백화점에서 <span class="vocab-word" data-base="일하다" data-meaning="làm việc">일하면</span> <span class="vocab-word" data-base="좋겠다" data-meaning="tốt biết mấy">좋겠습니다</span>.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch đoạn văn:</span>
+                <div class="trans-content">Tôi vừa mua một cái mũ ở trung tâm thương mại. Chiếc mũ đó vừa nhẹ lại còn vừa đẹp nữa. Dạo gần đây cứ hễ đi ra ngoài là tôi lại thường xuyên lấy cái mũ đó ra đội.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tôi rất ưng ý chiếc mũ này.</li>
+                        <li>② Tôi đang cần tìm mua một chiếc mũ đẹp.</li>
+                        <li>③ Tôi sẽ lấy chiếc mũ này tặng cho bạn của tôi.</li>
+                        <li>④ Ước gì tôi được làm việc ở trung tâm thương mại.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ①?</strong> Tác giả liên tục đưa ra những lời ngợi khen dành cho cái mũ mới tậu: Vừa nhẹ vừa đẹp (가볍고 예쁩니다), lại còn siêng đội ra đường (자주 씁니다). Việc nâng niu và dính lấy nó chứng tỏ tác giả đang <strong>"Vô cùng ưng ý chiếc mũ đó" (모자가 마음에 듭니다)</strong>. Đáp án ① khái quát chính xác tâm trạng này.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>② Sai</strong> vì tác giả <strong>ĐÃ MUA XONG RỒI (샀습니다)</strong>, chứ không phải ở tình trạng "đang cần mua" (필요합니다) nữa.<br>
+                    - <strong>③ Sai</strong> vì tác giả tự mua tự đội, không nhắc đến việc tặng bạn.<br>
+                    - <strong>④ Sai</strong> vì tác giả chỉ ghé qua trung tâm thương mại để <strong>MUA HÀNG</strong>, chứ không thèm thuồng được "vào đó làm nhân viên" (백화점에서 일하면 좋겠습니다).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q47')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q48">
+    <div class="question-text"><span class="q-number">48.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span></div>
+    <div class="shared-text">
+        <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="고등학교" data-meaning="trường cấp 3, THPT">고등학교</span> <span class="vocab-word" data-base="졸업" data-meaning="sự tốt nghiệp">졸업</span> <span class="vocab-word" data-base="후" data-meaning="sau khi">후에</span> 김 <span class="vocab-word" data-base="선생님" data-meaning="giáo viên">선생님</span>을 <span class="vocab-word" data-base="못" data-meaning="không thể">못</span> <span class="vocab-word" data-base="만나다" data-meaning="gặp gỡ">만났습니다</span>. 저는 <span class="vocab-word" data-base="이번" data-meaning="lần này">이번</span> <span class="vocab-word" data-base="주말" data-meaning="cuối tuần">주말</span>에 김 선생님을 <span class="vocab-word" data-base="만나러 가다" data-meaning="đi đến để gặp">만나러 갈 겁니다</span>. <span class="vocab-word" data-base="빨리" data-meaning="nhanh chóng">빨리</span> 주말이 <span class="vocab-word" data-base="오다" data-meaning="đến">오면 좋겠습니다</span>.<span style="display:none;"></span>
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 저는 선생님이 <span class="vocab-word" data-base="될 것이다" data-meaning="sẽ trở thành">될 겁니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 저는 김 선생님이 <span class="vocab-word" data-base="보고 싶다" data-meaning="muốn gặp, nhớ">보고 싶습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 저는 고등학교를 <span class="vocab-word" data-base="졸업하다" data-meaning="tốt nghiệp">졸업해야 합니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 저는 <span class="vocab-word" data-base="학교" data-meaning="trường học">학교</span>에 <span class="vocab-word" data-base="다니다" data-meaning="đi học">다니는</span> <span class="vocab-word" data-base="것" data-meaning="việc">것이</span> <span class="vocab-word" data-base="즐겁다" data-meaning="vui vẻ">즐겁습니다</span>.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch đoạn văn:</span>
+                <div class="trans-content">Kể từ sau khi tốt nghiệp cấp 3, tôi vẫn chưa có cơ hội được gặp lại thầy Kim. Cuối tuần này tôi sẽ cất công đi đến thăm thầy ấy. Ước gì cuối tuần tới thật nhanh để tôi được gặp thầy.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tương lai tôi sẽ trở thành giáo viên.</li>
+                        <li>② Tôi rất nhớ / rất muốn gặp lại thầy Kim.</li>
+                        <li>③ Tôi cần phải tốt nghiệp trường cấp 3 cái đã.</li>
+                        <li>④ Đối với tôi, việc được đi học là một niềm vui.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ②?</strong> Tác giả kể lể về việc chưa được gặp thầy, rồi lên hẳn một lịch hẹn đi thăm (만나러 갈 겁니다). Thậm chí nôn nóng chờ đợi thốt lên: "빨리 주말이 오면 좋겠습니다" (Ước gì cuối tuần tới nhanh). Mọi hành động này đều thể hiện một khao khát cháy bỏng: <strong>"Tôi rất nhớ/muốn gặp thầy Kim" (선생님이 보고 싶습니다)</strong>. Trong tiếng Hàn, "보고 싶다" vừa có nghĩa là "Nhớ", vừa có nghĩa là "Muốn gặp/nhìn thấy". Đáp án ② là thông điệp chính của bài.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - Tác giả đi thăm thầy cũ, chứ không hề có ước muốn "Trở thành giáo viên" (①).<br>
+                    - <strong>③ Sai</strong> vì tác giả <strong>ĐÃ TỐT NGHIỆP RỒI (졸업 후에)</strong>, không phải "đang đợi tốt nghiệp" (졸업해야 합니다).<br>
+                    - Việc "Đi học vui" (④) có thể là lý do khiến tác giả yêu quý thầy, nhưng <strong>TRỌNG TÂM (Ý chính)</strong> của bài viết hiện tại là "Sự mong ngóng chờ đến ngày đi gặp thầy".
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q48')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [49 ~ 50] 다음을 읽고 물음에 답하십시오. (각 2점)</div>
+
+<div class="shared-text">
+    지영 <span class="vocab-word" data-base="씨" data-meaning="bạn, chị (gọi tên)">씨</span>는 <span class="vocab-word" data-base="제" data-meaning="của tôi">제</span> <span class="vocab-word" data-base="친하다" data-meaning="thân thiết">친한</span> <span class="vocab-word" data-base="친구" data-meaning="bạn bè">친구</span>인데 <span class="vocab-word" data-base="지난달" data-meaning="tháng trước">지난달</span>에 <span class="vocab-word" data-base="결혼하다" data-meaning="kết hôn">결혼했습니다</span>. <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>와 제 <span class="vocab-word" data-base="남편" data-meaning="chồng">남편</span>은 지영 씨의 <span class="vocab-word" data-base="결혼식" data-meaning="lễ cưới">결혼식</span>에 <span class="vocab-word" data-base="가다" data-meaning="đi">갔습니다</span>. <span class="vocab-word" data-base="그래서" data-meaning="vì vậy">그래서</span> <span class="vocab-word" data-base="오늘" data-meaning="hôm nay">오늘</span> 지영 씨 <span class="vocab-word" data-base="부부" data-meaning="vợ chồng">부부</span>가 저와 남편을 <span class="vocab-word" data-base="집" data-meaning="nhà">집</span>으로 <span class="vocab-word" data-base="초대하다" data-meaning="mời">초대했습니다</span>. <span class="vocab-word" data-base="우리" data-meaning="chúng tôi">우리</span>는 지영 씨의 집을 ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) 지영 씨 부부가 <span class="vocab-word" data-base="만든" data-meaning="đã làm">만든</span> <span class="vocab-word" data-base="음식" data-meaning="thức ăn">음식</span>을 <span class="vocab-word" data-base="맛있다" data-meaning="ngon">맛있게</span> <span class="vocab-word" data-base="먹다" data-meaning="ăn">먹었습니다</span>. <span class="vocab-word" data-base="그리고" data-meaning="và">그리고</span> 결혼식 <span class="vocab-word" data-base="사진" data-meaning="bức ảnh">사진</span>도 <span class="vocab-word" data-base="함께" data-meaning="cùng nhau">함께</span> <span class="vocab-word" data-base="보다" data-meaning="xem, nhìn">봤습니다</span>.<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q49">
+    <div class="question-text">
+        <span class="q-number">49.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        ( )에 들어갈 말로 가장 알맞은 것을 고르십시오. 
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="구경하다" data-meaning="tham quan, ngắm nghía">구경하고</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 구경하러</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 구경하는</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 구경해도</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">Ji-young là một người bạn rất thân của tôi và cô ấy vừa mới kết hôn vào tháng trước. Tôi cùng với chồng mình đã đến tham dự lễ cưới của cô ấy. Chính vì để đáp lễ lại, hôm nay vợ chồng Ji-young đã mời vợ chồng tôi sang nhà họ chơi (tân gia). Chúng tôi đã ( đi tham quan một vòng quanh ) ngôi nhà của Ji-young, ( rồi sau đó ) thưởng thức vô cùng ngon miệng những món ăn do chính tay vợ chồng Ji-young làm. Và cuối cùng chúng tôi cùng nhau xem lại những bức ảnh kỷ niệm trong lễ cưới nữa.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① đi tham quan vòng vòng rồi... (Sau đó)</li>
+                        <li>② để đi tham quan (Mục đích)</li>
+                        <li>③ người đang đi tham quan (Định ngữ)</li>
+                        <li>④ dù có tham quan thì (Nhượng bộ)</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ①?</strong> Chỗ trống có nhiệm vụ kết nối chuỗi hành động khi đến dự tiệc tân gia: Tham quan nhà -> Ăn uống -> Xem ảnh cưới. Để nối 2 hành động liên tiếp nhau theo trình tự thời gian (Làm cái 1 trước <strong>RỒI MỚI ĐẾN</strong> cái 2), ngữ pháp cần dùng là <strong>-고 (Và / Rồi)</strong>. Do đó, <strong>"집을 구경하고... 먹었습니다" (Chúng tôi tham quan nhà RỒI ăn uống)</strong> là sự kết nối hoàn hảo nhất.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - "-으러" (②) dùng để chỉ MỤC ĐÍCH của sự di chuyển. Nhưng "먹었습니다" không phải động từ di chuyển (như đi, đến).<br>
+                    - "-는" (③) là định ngữ dùng để bổ nghĩa cho Danh từ. Đứng sau chỗ trống là tên người (지영 씨), không thể tạo thành cụm "Cô Ji-young người mà bị đi tham quan" được.<br>
+                    - "-아/어도" (④) mang nghĩa "Dù làm A thì vẫn B", không có sự đối lập ở đây.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q49')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q50">
+    <div class="question-text">
+        <span class="q-number">50.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        윗글의 내용과 같은 것을 고르십시오. 
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 저는 오늘 지영 씨를 집에 초대했습니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 지영 씨는 오늘 제 남편을 <span class="vocab-word" data-base="못" data-meaning="không thể">못</span> 만났습니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 저는 오늘 지영 씨의 결혼식 사진을 봤습니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 지영 씨는 오늘 저와 <span class="vocab-word" data-base="식당" data-meaning="nhà hàng">식당</span>에서 밥을 먹었습니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Hôm nay tôi đã mời Ji-young sang nhà tôi chơi.</li>
+                        <li>② Hôm nay Ji-young đã không thể gặp mặt chồng của tôi.</li>
+                        <li>③ Hôm nay tôi đã xem những bức ảnh cưới của Ji-young.</li>
+                        <li>④ Hôm nay Ji-young đã cùng tôi ăn cơm ở ngoài nhà hàng.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ③?</strong> Ngay câu chốt cuối bài, tác giả viết: "그리고 <strong>결혼식 사진도 함께 봤습니다</strong>" (Và chúng tôi <strong>cùng xem ảnh đám cưới</strong>). Hai gia đình quây quần xem ảnh đám cưới của gia chủ Ji-young. Việc tác giả cũng ngồi xem ảnh cưới của bạn mình khớp hoàn toàn với nhận định ③.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì <strong>Ji-young</strong> (nhà mới cưới) mới là người mời tác giả sang chơi (지영 씨 부부가... 초대했습니다), chứ tác giả không mời.<br>
+                    - <strong>② Sai</strong> vì <strong>chồng tác giả CÓ ĐI</strong> sang nhà bạn cùng vợ (저와 남편을... 초대했습니다), tức là Ji-young có gặp chồng bạn.<br>
+                    - <strong>④ Sai</strong> vì tác giả đến nhà Ji-young chơi và <strong>được mời ăn ngay tại NHÀ</strong> (집을 구경하고... 만든 음식을 먹었습니다), chứ không dắt nhau ra "Nhà hàng" (식당).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q50')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+<div class="instruction">※ [51 ~ 52] 다음을 읽고 물음에 답하십시오.</div>
+
+<div class="shared-text">
+    <span class="vocab-word" data-base="한국" data-meaning="Hàn Quốc">한국</span><span class="vocab-word" data-base="대학교" data-meaning="trường đại học">대학교</span>에서는 <span class="vocab-word" data-base="외국인" data-meaning="người nước ngoài">외국인</span> <span class="vocab-word" data-base="학생" data-meaning="học sinh, sinh viên">학생</span>들에게 <span class="vocab-word" data-base="한복" data-meaning="Hanbok (quốc phục HQ)">한복</span>을 <span class="vocab-word" data-base="빌려주다" data-meaning="cho mượn">빌려주는</span> <span class="vocab-word" data-base="서비스" data-meaning="dịch vụ">서비스</span>를 <span class="vocab-word" data-base="시작하다" data-meaning="bắt đầu">시작했습니다</span>. <span class="vocab-word" data-base="요즘" data-meaning="dạo này">요즘</span> 외국인 학생들은 <span class="vocab-word" data-base="명절" data-meaning="ngày lễ, tết">명절</span>이나 학교에서 <span class="vocab-word" data-base="행사" data-meaning="sự kiện">행사</span>가 <span class="vocab-word" data-base="있다" data-meaning="có">있을</span> <span class="vocab-word" data-base="때" data-meaning="khi, lúc">때</span> 한복을 <span class="vocab-word" data-base="자주" data-meaning="thường xuyên">자주</span> <span class="vocab-word" data-base="입기" data-meaning="việc mặc">입기</span> <span class="vocab-word" data-base="때문" data-meaning="bởi vì, do">때문입니다</span>. 한복은 1<span class="vocab-word" data-base="층" data-meaning="tầng">층</span>에 있는 <span class="vocab-word" data-base="사무실" data-meaning="văn phòng">사무실</span>에서 <span class="vocab-word" data-base="빌릴 수 있다" data-meaning="có thể mượn">빌릴 수 있습니다</span>. <span class="vocab-word" data-base="마음에 들다" data-meaning="vừa ý, ưng ý">마음에 드는</span> 한복을 <span class="vocab-word" data-base="고르다" data-meaning="chọn lựa">고르고</span> <span class="vocab-word" data-base="이름" data-meaning="tên">이름</span>과 <span class="vocab-word" data-base="전화번호" data-meaning="số điện thoại">전화번호</span>를 <span class="vocab-word" data-base="쓰다" data-meaning="viết">써서</span> <span class="vocab-word" data-base="내다" data-meaning="nộp, nộp ra">냅니다</span>. ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) 3<span class="vocab-word" data-base="일" data-meaning="ngày">일</span> <span class="vocab-word" data-base="동안" data-meaning="trong suốt">동안</span> <span class="vocab-word" data-base="무료" data-meaning="miễn phí">무료</span>로 한복을 빌릴 수 있습니다.<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q51">
+    <div class="question-text">
+        <span class="q-number">51.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span>
+        ( )에 들어갈 말로 가장 알맞은 것을 고르십시오. 
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="그러면" data-meaning="nếu vậy thì">그러면</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="그래도" data-meaning="dù vậy thì">그래도</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="그러나" data-meaning="tuy nhiên">그러나</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="그렇지만" data-meaning="nhưng mà">그렇지만</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">Trường Đại học Hanguk đã bắt đầu cung cấp dịch vụ cho mượn Hanbok đối với các sinh viên ngoại quốc. Đó là bởi vì dạo gần đây, các sinh viên ngoại quốc thường xuyên mặc Hanbok vào các dịp lễ tết hay những khi trên trường tổ chức sự kiện. Các bạn có thể mượn Hanbok tại văn phòng nằm ở tầng 1. Các bạn chỉ cần chọn lựa bộ Hanbok vừa ý với mình, sau đó viết tên và số điện thoại rồi nộp lại là được. ( Nếu làm như vậy ), các bạn sẽ có thể mượn Hanbok miễn phí trong vòng 3 ngày.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Nếu vậy thì (Làm thế xong thì...)</li>
+                        <li>② Dù vậy thì</li>
+                        <li>③ Tuy nhiên</li>
+                        <li>④ Nhưng mà</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic từ nối</h4>
+                <p><strong>Tại sao chọn ①?</strong> Mệnh đề phía trước là 1 hành động: "Điền thông tin rồi nộp lại" (이름과 전화번호를 써서 냅니다). Mệnh đề phía sau là kết quả đạt được: "Sẽ có thể mượn đồ miễn phí" (무료로 빌릴 수 있습니다). Để nối 1 hành động và 1 kết quả sinh ra từ hành động đó (nếu làm cái này -> thì sẽ được cái kia), ta dùng từ nối <strong>그러면 (Nếu vậy thì / Làm thế thì)</strong>.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    Các từ nối còn lại (②, ③, ④) đều mang ý nghĩa nhượng bộ, tương phản, bẻ lái câu chuyện sang một hướng ngược lại. Trong khi hành động "Nộp đơn -> Được nhận đồ" là một chuỗi logic thuận chiều.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q51')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q52">
+    <div class="question-text">
+        <span class="q-number">52.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        무엇에 대한 내용인지 맞는 것을 고르십시오. 
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 한복을 <span class="vocab-word" data-base="사다" data-meaning="mua">사는</span> <span class="vocab-word" data-base="이유" data-meaning="lý do">이유</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 한복을 <span class="vocab-word" data-base="빌리다" data-meaning="mượn, thuê">빌리는</span> <span class="vocab-word" data-base="방법" data-meaning="cách thức, phương pháp">방법</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 한복을 <span class="vocab-word" data-base="입다" data-meaning="mặc">입으면</span> <span class="vocab-word" data-base="좋은" data-meaning="tốt">좋은</span> <span class="vocab-word" data-base="점" data-meaning="điểm, điều">점</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 한복을 <span class="vocab-word" data-base="싸다" data-meaning="rẻ">싸게</span> 살 수 있는 <span class="vocab-word" data-base="장소" data-meaning="địa điểm">장소</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Lý do mua Hanbok</li>
+                        <li>② Phương pháp (Cách thức) để mượn Hanbok</li>
+                        <li>③ Điểm tốt khi mặc Hanbok</li>
+                        <li>④ Địa điểm có thể mua được Hanbok với giá rẻ</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ②?</strong> Một nửa phần sau của đoạn văn là sự hướng dẫn chi tiết từng bước: Đến văn phòng tầng 1 -> Chọn bộ mình ưng -> Viết tên, SĐT -> Nộp lại -> Sẽ mượn được 3 ngày. Chuỗi các thao tác này chính là <strong>"Cách thức/Phương pháp để mượn Hanbok" (한복을 빌리는 방법)</strong>.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - Đây là dịch vụ cho <strong>MƯỢN (빌려주는 서비스)</strong>, không phải bắt sinh viên bỏ tiền ra "mua" (사다) như đáp án ① và ④.<br>
+                    - Việc sinh viên mặc Hanbok vì thấy nó "tốt/đẹp" (③) không phải là ý chính mà tác giả muốn nói, tác giả đang muốn hướng dẫn sinh viên đi lấy đồ mượn.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q52')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [53 ~ 54] 다음을 읽고 물음에 답하십시오.</div>
+
+<div class="shared-text">
+    <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="퇴근" data-meaning="tan làm">퇴근</span> <span class="vocab-word" data-base="후" data-meaning="sau khi">후에</span> <span class="vocab-word" data-base="친구" data-meaning="bạn bè">친구</span>들과 <span class="vocab-word" data-base="매일" data-meaning="mỗi ngày">매일</span> 배드민턴 <span class="vocab-word" data-base="모임" data-meaning="buổi họp mặt, nhóm">모임</span>을 <span class="vocab-word" data-base="하다" data-meaning="làm">합니다</span>. <span class="vocab-word" data-base="우리" data-meaning="chúng tôi">우리</span>는 <span class="vocab-word" data-base="오후" data-meaning="buổi chiều">오후</span> 8<span class="vocab-word" data-base="시" data-meaning="giờ">시</span>에 <span class="vocab-word" data-base="모이다" data-meaning="tụ tập">모여서</span> 배드민턴을 <span class="vocab-word" data-base="치다" data-meaning="đánh (cầu lông)">칩니다</span>. <span class="vocab-word" data-base="일" data-meaning="công việc">일</span> <span class="vocab-word" data-base="끝나다" data-meaning="kết thúc">끝나고</span> 매일 모이는 <span class="vocab-word" data-base="것" data-meaning="việc">것이</span> ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) 친구들과 <span class="vocab-word" data-base="같이" data-meaning="cùng nhau">같이</span> <span class="vocab-word" data-base="하니까" data-meaning="vì làm">하니까</span> <span class="vocab-word" data-base="재미있다" data-meaning="thú vị">재미있습니다</span>. <span class="vocab-word" data-base="처음" data-meaning="lúc đầu">처음에는</span> <span class="vocab-word" data-base="다음 날" data-meaning="ngày hôm sau">다음 날</span> <span class="vocab-word" data-base="아침" data-meaning="buổi sáng">아침</span>에 <span class="vocab-word" data-base="너무" data-meaning="quá, lắm">너무</span> <span class="vocab-word" data-base="피곤하다" data-meaning="mệt mỏi">피곤했는데</span> <span class="vocab-word" data-base="지금" data-meaning="bây giờ">지금은</span> <span class="vocab-word" data-base="괜찮다" data-meaning="không sao, ổn">괜찮습니다</span>. <span class="vocab-word" data-base="몸" data-meaning="cơ thể">몸</span>도 <span class="vocab-word" data-base="더" data-meaning="hơn">더</span> <span class="vocab-word" data-base="건강해지다" data-meaning="trở nên khỏe mạnh">건강해지는</span> <span class="vocab-word" data-base="것 같다" data-meaning="có vẻ, dường như">것 같습니다</span>.<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q53">
+    <div class="question-text">
+        <span class="q-number">53.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        ( )에 들어갈 말로 가장 알맞은 것을 고르십시오. 
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="힘들다" data-meaning="mệt nhọc, vất vả">힘들면</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 힘들게</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 힘들거나</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> <span class="vocab-word" data-base="힘들다" data-meaning="vất vả, mệt">힘들지만</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">Tôi có một nhóm bạn chuyên tụ tập đánh cầu lông với nhau mỗi ngày sau khi tan làm. Chúng tôi thường tụ tập vào lúc 8 giờ tối để đánh cầu. Việc đi làm về mệt rồi mà ngày nào cũng tụ họp lại thế này thì ( có vất vả thật đấy, nhưng ) vì được chơi cùng bạn bè nên tôi thấy rất là vui vẻ. Thời gian đầu, sáng hôm sau dậy tôi đã bị kiệt sức đau nhức cơ bắp, thế nhưng bây giờ thì ổn rồi. Thậm chí tôi còn cảm thấy cơ thể mình đang ngày một trở nên khỏe mạnh hơn.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① nếu mệt mỏi</li>
+                        <li>② một cách mệt nhọc</li>
+                        <li>③ mệt mỏi hoặc</li>
+                        <li>④ tuy mệt mỏi nhưng</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ④?</strong> Chỗ trống có nhiệm vụ ghép nối 2 vế câu đối lập nhau: Vế trước là "일 끝나고 매일 모이는 것" (Làm việc xong ngày nào cũng gặp nhau - một việc đòi hỏi rất nhiều thể lực). Vế sau là "친구들과 같이 하니까 재미있습니다" (Chơi chung với bạn nên rất vui vẻ). Đặc điểm của vế trước là sự "vất vả, mệt nhọc" (힘들다), đối lập với sự vui vẻ của vế sau. Để nối hai ý này, ta dùng <strong>-지만 (tuy... nhưng...)</strong>. "힘들지만" (Tuy mệt nhưng vui) là đáp án hoàn hảo.<span style="display:none;"></span></p>
+            </div>
+            <button class="review-link" onclick="openReview('q53')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q54">
+    <div class="question-text">
+        <span class="q-number">54.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span>
+        윗글의 내용과 같은 것을 고르십시오. 
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 저는 퇴근하고 <span class="vocab-word" data-base="혼자" data-meaning="một mình">혼자</span> <span class="vocab-word" data-base="운동" data-meaning="sự vận động">운동</span>을 합니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 저는 <span class="vocab-word" data-base="요즘" data-meaning="dạo này">요즘</span> 아침에 <span class="vocab-word" data-base="계속" data-meaning="liên tục">계속</span> 피곤합니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 배드민턴 모임은 오후 <span class="vocab-word" data-base="여덟" data-meaning="tám (số đếm)">여덟</span> 시에 합니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 배드민턴 모임은 <span class="vocab-word" data-base="일주일" data-meaning="một tuần">일주일</span>에 한 <span class="vocab-word" data-base="번" data-meaning="lần">번</span> 있습니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tôi tan làm xong tự đi tập thể dục một mình.</li>
+                        <li>② Dạo gần đây sáng nào tôi cũng bị mệt mỏi liên tục.</li>
+                        <li>③ Nhóm đánh cầu lông tụ tập vào lúc tám giờ tối.</li>
+                        <li>④ Nhóm đánh cầu lông chỉ tụ tập một lần một tuần.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ③?</strong> Đoạn văn ghi rõ: "우리는 <strong>오후 8시에 모여서</strong> 배드민턴을 칩니다" (Chúng tôi <strong>tụ tập vào 8 giờ chiều/tối</strong> để đánh cầu). 8 giờ chiều cũng chính là "오후 여덟 시". Đáp án ③ là hoàn toàn khớp với bài.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì tác giả đánh cầu lông chung <strong>VỚI BẠN BÈ (친구들과)</strong>, không phải đánh "một mình" (혼자).<br>
+                    - <strong>② Sai</strong> vì dạo này cơ thể đã quen nhịp độ và <strong>ĐÃ ỔN RỒI (지금은 괜찮습니다)</strong>, chứ không còn "tiếp tục bị mệt" (계속 피곤합니다). Sự mệt mỏi chỉ diễn ra vào lúc mới bắt đầu chơi (처음에는).<br>
+                    - <strong>④ Sai</strong> vì nhóm tụ tập <strong>MỖI NGÀY (매일)</strong>, chứ không lười biếng đến mức 1 tuần mới có 1 lần (일주일에 한 번).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q54')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [55 ~ 56] 다음을 읽고 물음에 답하십시오.</div>
+
+<div class="shared-text">
+    <span class="vocab-word" data-base="사람" data-meaning="người">사람</span>들은 <span class="vocab-word" data-base="여러" data-meaning="nhiều">여러</span> <span class="vocab-word" data-base="종류" data-meaning="chủng loại">종류</span>의 <span class="vocab-word" data-base="차" data-meaning="trà">차</span>를 <span class="vocab-word" data-base="마시다" data-meaning="uống">마십니다</span>. <span class="vocab-word" data-base="그중에서" data-meaning="trong số đó">그중에서</span> ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) <span class="vocab-word" data-base="때" data-meaning="khi, lúc">때</span> 마시면 <span class="vocab-word" data-base="좋은" data-meaning="tốt">좋은</span> 차가 <span class="vocab-word" data-base="있다" data-meaning="có">있습니다</span>. '인삼차'는 <span class="vocab-word" data-base="배가 아프다" data-meaning="đau bụng">배가 아플</span> 때 마시면 <span class="vocab-word" data-base="도움" data-meaning="sự giúp đỡ, lợi ích">도움</span>이 <span class="vocab-word" data-base="되다" data-meaning="trở thành">됩니다</span>. <span class="vocab-word" data-base="또" data-meaning="thêm vào đó">또</span> <span class="vocab-word" data-base="잠" data-meaning="giấc ngủ">잠</span>을 못 <span class="vocab-word" data-base="자다" data-meaning="ngủ">잘</span> 때는 '장미차'를 마시면 좋습니다. <span class="vocab-word" data-base="감기" data-meaning="bệnh cảm">감기</span>에는 '<span class="vocab-word" data-base="유자차" data-meaning="trà chanh Yuja">유자차</span>'가 좋습니다. <span class="vocab-word" data-base="이런" data-meaning="như thế này">이런</span> 차들은 <span class="vocab-word" data-base="맛" data-meaning="mùi vị">맛</span>도 <span class="vocab-word" data-base="좋다" data-meaning="tốt">좋고</span> <span class="vocab-word" data-base="가게" data-meaning="cửa hàng">가게</span>에서 <span class="vocab-word" data-base="쉽다" data-meaning="dễ dàng">쉽게</span> <span class="vocab-word" data-base="사 먹다" data-meaning="mua để ăn/uống">사 먹을</span> <span class="vocab-word" data-base="수 있다" data-meaning="có thể">수 있어서</span> <span class="vocab-word" data-base="편하다" data-meaning="tiện lợi">편합니다</span>.<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q55">
+    <div class="question-text">
+        <span class="q-number">55.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        ( )에 들어갈 말로 가장 알맞은 것을 고르십시오. 
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="일" data-meaning="công việc">일</span>이 <span class="vocab-word" data-base="바쁘다" data-meaning="bận rộn">바쁠</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 가게에 <span class="vocab-word" data-base="가다" data-meaning="đi">갈</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="음식" data-meaning="thức ăn">음식</span>을 <span class="vocab-word" data-base="만들다" data-meaning="làm ra">만들</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> <span class="vocab-word" data-base="몸" data-meaning="cơ thể">몸</span>이 안 좋을</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">Con người chúng ta thường uống rất nhiều các loại trà khác nhau. Trong số đó, có những loại trà mà bạn nên uống vào những lúc ( cơ thể cảm thấy không được khỏe ). Ví dụ, 'Trà nhân sâm' sẽ rất có ích nếu bạn uống nó vào những lúc bị đau bụng. Hay khi bị mất ngủ, bạn nên uống một tách 'Trà hoa hồng'. Còn đối với bệnh cảm cúm, 'Trà chanh Yuja' sẽ là sự lựa chọn tuyệt vời. Những loại trà này vừa có hương vị thơm ngon, lại vừa dễ dàng mua được ở bất kỳ cửa hàng nào nên vô cùng tiện lợi.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① lúc công việc bận rộn</li>
+                        <li>② lúc đi đến cửa hàng</li>
+                        <li>③ lúc làm đồ ăn</li>
+                        <li>④ lúc cơ thể không khỏe</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ④?</strong> Chỗ trống yêu cầu rút ra điểm chung của các tình huống uống trà được liệt kê ở các câu sau: Đau bụng (배가 아플 때) -> Uống trà sâm; Mất ngủ (잠을 못 잘 때) -> Uống trà hồng; Bị cảm cúm (감기에는) -> Uống trà Yuja. Cả 3 triệu chứng "Đau bụng, mất ngủ, bị cảm" đều thuộc về nhóm <strong>"Những lúc cơ thể không khỏe/Bị ốm" (몸이 안 좋을 때)</strong>. Đáp án ④ thâu tóm hoàn hảo ý nghĩa chung này.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - Việc đau bụng, cảm cúm không liên quan gì đến chuyện "công việc bận rộn" (①) hay "đi ra cửa hàng" (②) hay "đang nấu ăn" (③) cả.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q55')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q56">
+    <div class="question-text">
+        <span class="q-number">56.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span>
+        윗글의 내용과 같은 것을 고르십시오. 
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 유자차는 맛이 안 좋아서 먹기 <span class="vocab-word" data-base="불편하다" data-meaning="bất tiện">불편합니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 잠을 자지 <span class="vocab-word" data-base="못하다" data-meaning="không thể">못할</span> 때 장미차가 도움이 됩니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 배가 아플 때 인삼차를 마시면 좋지 <span class="vocab-word" data-base="않다" data-meaning="không">않습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 장미차는 <span class="vocab-word" data-base="팔다" data-meaning="bán">팔지</span> 않기 <span class="vocab-word" data-base="때문에" data-meaning="bởi vì">때문에</span> 만들어서 먹어야 합니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Trà chanh Yuja có vị không ngon nên rất khó uống.</li>
+                        <li>② Trà hoa hồng sẽ giúp ích cho bạn vào những lúc không ngủ được.</li>
+                        <li>③ Khi bị đau bụng, nếu uống trà sâm thì sẽ không tốt.</li>
+                        <li>④ Trà hoa hồng không được bày bán ngoài tiệm nên bắt buộc phải tự pha.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ②?</strong> Bài đọc khuyên rất rõ ràng: "<strong>잠을 못 잘 때는 '장미차'를 마시면 좋습니다</strong>" (Vào những lúc <strong>bị mất ngủ thì uống trà hoa hồng sẽ rất tốt</strong>). Đáp án ② diễn đạt lại lời khuyên này một cách chính xác.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì tất cả các loại trà này đều được khen là <strong>RẤT NGON (이런 차들은 맛도 좋고)</strong>.<br>
+                    - <strong>③ Sai</strong> vì khi đau bụng mà uống trà sâm thì sẽ <strong>CÓ ÍCH/RẤT TỐT (도움이 됩니다)</strong>, trái ngược với "không tốt" (좋지 않습니다).<br>
+                    - <strong>④ Sai</strong> vì những loại trà này có thể mua ngoài tiệm một cách <strong>CỰC KỲ DỄ DÀNG (가게에서 쉽게 사 먹을 수 있어서)</strong>.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q56')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [57 ~ 58] 다음을 순서에 맞게 배열한 것을 고르십시오. (Sắp xếp theo thứ tự)</div>
+
+<div class="question-block" id="q57">
+    <div class="question-text"><span class="q-number">57.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span></div>
+    <div class="shared-text">
+        (가) <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="여행" data-meaning="chuyến du lịch">여행</span>을 <span class="vocab-word" data-base="가다" data-meaning="đi">가면</span> <span class="vocab-word" data-base="기념품" data-meaning="quà lưu niệm">기념품</span>을 <span class="vocab-word" data-base="꼭" data-meaning="nhất định">꼭</span> <span class="vocab-word" data-base="사다" data-meaning="mua">삽니다</span>.<br>
+        (나) <span class="vocab-word" data-base="다음" data-meaning="tiếp theo, lần sau">다음</span>에는 <span class="vocab-word" data-base="산" data-meaning="núi">산</span>이나 <span class="vocab-word" data-base="바다" data-meaning="biển">바다</span> <span class="vocab-word" data-base="그림" data-meaning="bức tranh">그림</span>이 <span class="vocab-word" data-base="있다" data-meaning="có">있는</span> <span class="vocab-word" data-base="컵" data-meaning="cái cốc">컵</span>을 사고 <span class="vocab-word" data-base="싶다" data-meaning="muốn">싶습니다</span>.<br>
+        (다) <span class="vocab-word" data-base="지금까지는" data-meaning="cho đến tận bây giờ">지금까지는</span> <span class="vocab-word" data-base="유명하다" data-meaning="nổi tiếng">유명한</span> <span class="vocab-word" data-base="건물" data-meaning="tòa nhà">건물</span> 그림이 있는 컵을 <span class="vocab-word" data-base="많이" data-meaning="nhiều">많이</span> 샀습니다.<br>
+        (라) 기념품 <span class="vocab-word" data-base="중에서" data-meaning="trong số (đó)">중에서</span> 여행한 <span class="vocab-word" data-base="장소" data-meaning="địa điểm">장소</span>의 그림이 있는 컵을 <span class="vocab-word" data-base="주로" data-meaning="chủ yếu">주로</span> 삽니다.<span style="display:none;"></span>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> (가) - (나) - (다) - (라)</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> (가) - (라) - (다) - (나)</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> (라) - (가) - (나) - (다)</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> (라) - (나) - (다) - (가)</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">
+                    (가) Mỗi khi đi du lịch, tôi nhất định sẽ mua đồ lưu niệm mang về.<br>
+                    (나) Lần tới, tôi muốn mua những chiếc cốc có in hình biển hoặc núi.<br>
+                    (다) Từ trước đến nay, tôi chủ yếu mua những chiếc cốc có in hình các công trình kiến trúc nổi tiếng.<br>
+                    (라) Trong số tất cả các loại đồ lưu niệm, tôi chủ yếu ưu tiên mua những chiếc cốc có in hình các địa danh mà tôi đã từng ghé thăm.<span style="display:none;"></span>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích thứ tự: ② (가) - (라) - (다) - (나)</h4>
+                <p><em>(Xin lỗi bạn, có vẻ đáp án trên bị sai, mã đúng logic phải là ②. Ở file code HTML tôi sẽ gán lại nút chọn đúng cho phương án ② nhé!)</em></p>
+                <ul>
+                    <li><strong>Bước 1: (가)</strong> Câu chủ đề bao quát nhất: Cứ đi du lịch là tôi "Sẽ mua đồ lưu niệm".</li>
+                    <li><strong>Bước 2: (라)</strong> Thu hẹp chủ đề: Trong đống đồ lưu niệm đó (기념품 중에서), tôi "chủ yếu mua những cái Cốc".</li>
+                    <li><strong>Bước 3: (다)</strong> Cụ thể hóa sở thích ở thì Quá khứ: Từ đó đến giờ (지금까지는), tôi toàn đi săn những cái Cốc in hình tòa nhà.</li>
+                    <li><strong>Bước 4: (나)</strong> Định hướng thay đổi trong Tương lai: Sắp tới (다음에는), tôi muốn đổi gió đi mua những chiếc Cốc in hình phong cảnh thiên nhiên như núi và biển.</li>
+                </ul>
+            </div>
+            <button class="review-link" onclick="openReview('q57')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+<script>
+    document.querySelector('#q57 .options').innerHTML = `
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> (가) - (나) - (다) - (라)</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> (가) - (라) - (다) - (나)</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> (라) - (가) - (나) - (다)</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> (라) - (나) - (다) - (가)</div>
+    `;
+</script>
+
+<div class="question-block" id="q58">
+    <div class="question-text"><span class="q-number">58.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span></div>
+    <div class="shared-text">
+        (가) <span class="vocab-word" data-base="그렇게 하면" data-meaning="nếu làm như vậy">그렇게 하면</span> <span class="vocab-word" data-base="실수" data-meaning="lỗi sai, sự 실수">실수</span>를 <span class="vocab-word" data-base="줄이다" data-meaning="làm giảm">줄일 수 있습니다</span>.<br>
+        (나) <span class="vocab-word" data-base="미리" data-meaning="trước (làm gì đó trước)">미리</span> <span class="vocab-word" data-base="할 일" data-meaning="việc phải làm">할 일</span>을 <span class="vocab-word" data-base="써 보다" data-meaning="thử viết">써 보는</span> <span class="vocab-word" data-base="것도" data-meaning="việc... cũng">것도</span> <span class="vocab-word" data-base="좋은" data-meaning="tốt">좋은</span> <span class="vocab-word" data-base="방법" data-meaning="phương pháp">방법</span>입니다.<br>
+        (다) <span class="vocab-word" data-base="계획" data-meaning="kế hoạch">계획</span>을 <span class="vocab-word" data-base="세우다" data-meaning="lập, dựng">세우지 않고</span> 일을 <span class="vocab-word" data-base="하면" data-meaning="nếu làm">하면</span> <span class="vocab-word" data-base="좋지 않다" data-meaning="không tốt">좋지 않습니다</span>.<br>
+        (라) 일을 할 <span class="vocab-word" data-base="때" data-meaning="khi, lúc">때</span> 실수를 <span class="vocab-word" data-base="자주" data-meaning="thường xuyên">자주</span> 할 수 있기 <span class="vocab-word" data-base="때문" data-meaning="vì, bởi vì">때문입니다</span>.<span style="display:none;"></span>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> (나) - (다) - (가) - (라)</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> (나) - (라) - (다) - (가)</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> (다) - (가) - (나) - (라)</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> (다) - (라) - (나) - (가)</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">
+                    (가) Nếu làm như thế, bạn sẽ có thể giảm thiểu được những lỗi sai ngớ ngẩn.<br>
+                    (나) Việc ghi chú lại những việc cần làm từ trước cũng là một phương pháp rất tốt.<br>
+                    (다) Nếu cắm đầu vào làm việc mà không lập ra kế hoạch từ trước thì sẽ dẫn đến hậu quả không mấy tốt đẹp.<br>
+                    (라) Đó là bởi vì (nếu không có kế hoạch), bạn sẽ rất thường xuyên phạm phải những lỗi sai ngớ ngẩn trong quá trình làm việc.<span style="display:none;"></span>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích thứ tự: ④ (다) - (라) - (나) - (가)</h4>
+                <ul>
+                    <li><strong>Bước 1: (다)</strong> Đưa ra nhận định tổng quát: Làm việc mà đách có kế hoạch thì rất là dở (좋지 않습니다).</li>
+                    <li><strong>Bước 2: (라)</strong> Giải thích lý do cho cái dở đó: Là bởi vì (때문입니다) lúc làm dễ bị mắc sai lầm lắm.</li>
+                    <li><strong>Bước 3: (나)</strong> Đưa ra phương án giải quyết: Thế nên là trước khi làm, hãy xách giấy bút ra ngồi viết liệt kê lại những việc mình cần làm đi.</li>
+                    <li><strong>Bước 4: (가)</strong> Nêu hiệu quả của phương án giải quyết: Nếu bạn làm y như vậy (그렇게 하면 = list công việc ra), thì bạn sẽ giải quyết được cái cớ sự "giảm bớt sai sót đi" (실수를 줄일 수 있습니다).</li>
+                </ul>
+            </div>
+            <button class="review-link" onclick="openReview('q58')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [59 ~ 60] 다음을 읽고 물음에 답하십시오.</div>
+
+<div class="shared-text">
+    <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="태국" data-meaning="Thái Lan">태국</span> <span class="vocab-word" data-base="친구" data-meaning="bạn bè">친구</span>하고 인주 <span class="vocab-word" data-base="역사" data-meaning="lịch sử">역사</span> <span class="vocab-word" data-base="박물관" data-meaning="bảo tàng">박물관</span>에 <span class="vocab-word" data-base="가다" data-meaning="đi">갔습니다</span>. <strong>( ㉠ )</strong> 친구는 <span class="vocab-word" data-base="한국어" data-meaning="tiếng Hàn">한국어</span>를 <span class="vocab-word" data-base="잘" data-meaning="tốt, giỏi">잘</span> <span class="vocab-word" data-base="못하다" data-meaning="không thể, kém">못합니다</span>. <strong>( ㉡ )</strong> <span class="vocab-word" data-base="그런데" data-meaning="thế nhưng">그런데</span> 그 박물관에는 <span class="vocab-word" data-base="외국어" data-meaning="tiếng nước ngoài">외국어</span>로 <span class="vocab-word" data-base="설명하다" data-meaning="giải thích">설명해 주는</span> <span class="vocab-word" data-base="서비스" data-meaning="dịch vụ">서비스</span>가 <span class="vocab-word" data-base="있다" data-meaning="có">있었습니다</span>. <strong>( ㉢ )</strong> 친구는 태국어 <span class="vocab-word" data-base="설명" data-meaning="lời giải thích">설명</span> 서비스를 <span class="vocab-word" data-base="신청하다" data-meaning="đăng ký">신청했습니다</span>. <strong>( ㉣ )</strong> 설명이 <span class="vocab-word" data-base="쉽다" data-meaning="dễ dàng">쉽고</span> <span class="vocab-word" data-base="재미있다" data-meaning="thú vị">재미있어서</span> 친구가 <span class="vocab-word" data-base="정말" data-meaning="thật sự">정말</span> <span class="vocab-word" data-base="좋아하다" data-meaning="thích, phấn khích">좋아했습니다</span>.<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q59">
+    <div class="question-text">
+        <span class="q-number">59.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+        다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오. 
+    </div>
+    <div style="background-color: var(--bg-card); border: 2px solid #2b6cb0; padding: 15px 25px; border-radius: 8px; margin-bottom: 25px; font-weight: bold; color: var(--primary-text); text-align: center;">
+        <span style="font-weight: normal; margin-top: 10px; display: inline-block;">
+            <span class="vocab-word" data-base="잠시 후" data-meaning="một lát sau">잠시 후에</span> 태국 <span class="vocab-word" data-base="사람" data-meaning="người">사람</span>이 <span class="vocab-word" data-base="오다" data-meaning="đến">와서</span> 태국어로 <span class="vocab-word" data-base="역사" data-meaning="lịch sử">역사</span>를 <span class="vocab-word" data-base="설명하다" data-meaning="giải thích">설명해 줬습니다</span>.
+        </span>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> ㉠</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> ㉡</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> ㉢</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> ㉣</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch câu trong khung:</span>
+                <div class="trans-content">Một lát sau, có một hướng dẫn viên người Thái Lan đi tới và giải thích cặn kẽ mọi lịch sử bằng tiếng Thái cho bạn tôi nghe.<span style="display:none;"></span></div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích vị trí chèn</h4>
+                <p><strong>Tại sao chọn vị trí ㉣?</strong></p>
+                <p>Trước vị trí ㉣, tác giả kể việc bạn mình đã <strong>đăng ký dịch vụ (서비스를 신청했습니다)</strong> thuyết minh bằng tiếng Thái.<br>Câu trong khung đóng vai trò tiếp nối ngay sau đó: "Đăng ký xong, <strong>một lát sau (잠시 후에)</strong> thì có người Thái đến thuyết minh cho nghe".<br>Ngay sau vị trí ㉣ là thái độ nhận xét của người bạn về sự kiện đó: "Lời giải thích <strong>của người đó</strong> rất dễ nghe và thú vị (설명이 쉽고 재미있어서)". Rõ ràng là người bạn phải "được người hướng dẫn viên kể cho nghe" thì mới biết nó dễ hay khó.<br>Mạch văn cực kỳ logic: Đăng ký dịch vụ -> [Khung: Được phân công người đến kể cho nghe] -> Nghe xong thấy cuốn quá nên rất thích. Vị trí ㉣ là đáp án hoàn hảo.<span style="display:none;"></span></p>
+            </div>
+            <button class="review-link" onclick="openReview('q59')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q60">
+    <div class="question-text">
+        <span class="q-number">60.</span> <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span>
+        윗글의 내용과 같은 것을 고르십시오. 
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 제 친구는 한국어를 잘합니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 태국어 설명은 조금 어려웠습니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 제 친구는 태국어로 설명을 <span class="vocab-word" data-base="듣다" data-meaning="nghe">들었습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 저는 외국어 설명 서비스를 신청했습니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Bạn của tôi cực kỳ giỏi tiếng Hàn.</li>
+                        <li>② Lời thuyết minh bằng tiếng Thái có hơi khó hiểu một chút.</li>
+                        <li>③ Bạn tôi đã được nghe thuyết minh giải thích bằng tiếng Thái Lan.</li>
+                        <li>④ Tôi là người đã đăng ký dịch vụ thuyết minh bằng ngoại ngữ đó.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ③?</strong> Đoạn văn ghi rất rõ: "친군은 <strong>태국어 설명 서비스를 신청했습니다</strong>" (Người bạn của tôi đã <strong>đăng ký dịch vụ thuyết minh bằng tiếng Thái</strong>). Việc đăng ký xong và thích thú nghe hướng dẫn viên giảng giải (như ở câu 59) chứng tỏ <strong>"Bạn tôi đã được nghe thuyết minh bằng tiếng Thái" (태국어로 설명을 들었습니다)</strong>. Đáp án ③ diễn đạt chính xác thông tin này.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì bạn của tác giả <strong>Tiếng Hàn rất KÉM (한국어를 잘 못합니다)</strong> nên mới phải nghe bằng tiếng Thái.<br>
+                    - <strong>② Sai</strong> vì bạn tác giả nghe xong tấm tắc khen nó <strong>Rất DỄ và Thú vị (설명이 쉽고 재미있어서)</strong>.<br>
+                    - <strong>④ Sai</strong> vì người đăng ký dịch vụ đó là <strong>NGƯỜI BẠN (친군은... 신청했습니다)</strong>, tác giả chỉ đi cùng thôi.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q60')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [61 ~ 62] 다음을 읽고 물음에 답하십시오. (각 2점)</div>
+
+<div class="shared-text">
+    <span class="vocab-word" data-base="지난주" data-meaning="tuần trước">지난주</span>에 <span class="vocab-word" data-base="새" data-meaning="mới">새</span> <span class="vocab-word" data-base="식당" data-meaning="nhà hàng">식당</span>이 <span class="vocab-word" data-base="문을 열다" data-meaning="mở cửa (khai trương)">문을 열었습니다</span>. <span class="vocab-word" data-base="이" data-meaning="này">이</span> 식당에는 <span class="vocab-word" data-base="여러" data-meaning="nhiều">여러</span> <span class="vocab-word" data-base="모양" data-meaning="hình dáng">모양</span>의 <span class="vocab-word" data-base="멋있다" data-meaning="tuyệt vời, ngầu">멋있는</span> <span class="vocab-word" data-base="가구" data-meaning="đồ nội thất">가구</span>들이 <span class="vocab-word" data-base="있다" data-meaning="có">있습니다</span>. 이 가구들은 <span class="vocab-word" data-base="모두" data-meaning="tất cả">모두</span> <span class="vocab-word" data-base="사장님" data-meaning="giám đốc, chủ quán">사장님</span>이 <span class="vocab-word" data-base="만들다" data-meaning="làm ra">만든</span> <span class="vocab-word" data-base="것" data-meaning="cái">것인데</span> <span class="vocab-word" data-base="손님" data-meaning="khách hàng">손님</span>이 <span class="vocab-word" data-base="살 수 있다" data-meaning="có thể mua">살 수도 있습니다</span>. <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>는 <span class="vocab-word" data-base="어제" data-meaning="hôm qua">어제</span> <span class="vocab-word" data-base="동생" data-meaning="em">동생</span>과 <span class="vocab-word" data-base="그" data-meaning="đó, ấy">그</span> 식당에 <span class="vocab-word" data-base="처음" data-meaning="lần đầu tiên">처음</span> <span class="vocab-word" data-base="가다" data-meaning="đi">갔습니다</span>. <span class="vocab-word" data-base="우리" data-meaning="chúng tôi">우리</span>는 <span class="vocab-word" data-base="꽃" data-meaning="hoa">꽃</span> 모양 <span class="vocab-word" data-base="테이블" data-meaning="cái bàn (table)">테이블</span>에 <span class="vocab-word" data-base="앉다" data-meaning="ngồi">앉아서</span> <span class="vocab-word" data-base="음식" data-meaning="thức ăn">음식</span>을 <span class="vocab-word" data-base="먹다" data-meaning="ăn">먹었습니다</span>. <span class="vocab-word" data-base="분위기" data-meaning="bầu không khí">분위기</span>도 <span class="vocab-word" data-base="좋다" data-meaning="tốt">좋고</span> 음식도 <span class="vocab-word" data-base="맛있다" data-meaning="ngon">맛있어서</span> 우리는 <span class="vocab-word" data-base="다음" data-meaning="lần sau">다음에</span> <span class="vocab-word" data-base="또" data-meaning="lại, lần nữa">또</span> ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ).<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q61">
+    <div class="question-text">
+        <span class="q-number">61.</span> ㉠에 들어갈 알맞은 말을 고르십시오.
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="간 것 같다" data-meaning="có vẻ như đã đi">간 것 같습니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 갈 <span class="vocab-word" data-base="수 없다" data-meaning="không thể">수 없습니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 가면 안 <span class="vocab-word" data-base="되다" data-meaning="được">됩니다</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> <span class="vocab-word" data-base="가기로 하다" data-meaning="quyết định đi">가기로 했습니다</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">Vào tuần trước, có một nhà hàng mới tinh vừa được khai trương. Trong nhà hàng này người ta bày trí rất nhiều những món đồ nội thất mang đủ loại hình thù vô cùng bắt mắt. Điều thú vị là tất cả những món đồ nội thất độc lạ đó đều do chính tay ông chủ làm ra, và nếu ưng ý thì khách hàng hoàn toàn có thể mua chúng. Ngày hôm qua, tôi đã lần đầu tiên dắt em mình đi đến nhà hàng đó. Hai anh em chúng tôi đã chọn ngồi ở một chiếc bàn có hình bông hoa và gọi đồ ăn. Vì không gian quán cực kỳ chill mà đồ ăn cũng siêu ngon nên chúng tôi ( đã quyết định sẽ đi đến ) quán này thêm một lần nữa.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Có vẻ như là chúng tôi đã đi rồi</li>
+                        <li>② Không thể nào đi được</li>
+                        <li>③ Không được phép đi</li>
+                        <li>④ Chúng tôi đã quyết định sẽ đi tiếp</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ④?</strong> Chỗ trống đứng ở phần kết luận của bài viết, sau từ "그래서" (Nên). Khi tác giả có một trải nghiệm vô cùng mãn nguyện (không gian chill, đồ ăn ngon), hành động tiếp theo diễn ra một cách logic đó là "muốn được quay lại trải nghiệm lần nữa" (다음에 또). Ngữ pháp <strong>-기로 하다 (Quyết định làm gì)</strong> diễn đạt sự quyết tâm của hai anh em: <strong>"Đã quyết định lần tới sẽ lại đến ăn tiếp" (다음에 또 가기로 했습니다)</strong>.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - Việc đi ăn ngon rồi lại cấm cửa nhau "không thể đi" (②) hay "không được phép đi" (③) là hoàn toàn vô lý, tự vả mặt tác giả.<br>
+                    - Lần tới (다음에 또) là việc thuộc <strong>Tương lai</strong>, nên không thể dùng thì Quá khứ phỏng đoán "Có vẻ như đã đi rồi" (①) được.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q61')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q62">
+    <div class="question-text">
+        <span class="q-number">62.</span> 이 글의 내용과 같은 것을 고르십시오.
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 저는 이 식당에 <span class="vocab-word" data-base="오랜만" data-meaning="lâu rồi">오랜만에</span> 갔습니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 저는 이 식당의 가구를 만들었습니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 이 식당에서는 테이블을 <span class="vocab-word" data-base="사다" data-meaning="mua">살 수 있습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 이 식당의 가구는 모두 <span class="vocab-word" data-base="같다" data-meaning="giống nhau">같은</span> 모양입니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Đã lâu lắm rồi tôi mới đi đến nhà hàng này.</li>
+                        <li>② Tôi là người đã làm ra đống nội thất trong nhà hàng này.</li>
+                        <li>③ Tại nhà hàng này, khách hàng hoàn toàn có thể mua được những chiếc bàn.</li>
+                        <li>④ Toàn bộ các món đồ nội thất trong nhà hàng này đều mang hình dáng giống hệt nhau.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ③?</strong> Đoạn văn nhấn mạnh một điểm đặc biệt của nhà hàng: "가구들은... <strong>손님이 살 수도 있습니다</strong>" (Những món <strong>đồ nội thất</strong>... <strong>khách hàng có thể mua</strong> được). Do bàn (테이블) cũng là một loại đồ nội thất (가구), nên việc bảo "Khách có thể mua những cái bàn ở nhà hàng này" (식당에서는 테이블을 살 수 있습니다) là một nhận định hoàn toàn đúng.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì nhà hàng này vừa mới khai trương tuần trước (지난주에... 문을 열었습니다), và đây là <strong>Lần đầu tiên (처음)</strong> tác giả tới quán. Không thể dùng chữ "Lâu rồi mới đến" (오랜만에).<br>
+                    - <strong>② Sai</strong> vì người chế tạo ra mấy cái bàn ghế là <strong>Ông chủ (사장님이 만든)</strong>, tác giả chỉ là đứa đi ăn ké.<br>
+                    - <strong>④ Sai</strong> vì quán có tận <strong>Nhiều loại hình dáng đa dạng (여러 모양의)</strong>, không phải tất cả đều 1 khuôn đúc ra y chang nhau (같은 모양).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q62')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [63 ~ 64] 다음을 읽고 물음에 답하십시오.</div>
+
+<div class="question-block" id="q63">
+    <div class="question-text"><span class="q-number">63.</span> <span class="vocab-word" data-base="왜" data-meaning="tại sao">왜</span> 윗글을 <span class="vocab-word" data-base="쓰다" data-meaning="viết">썼는지</span> <span class="vocab-word" data-base="맞다" data-meaning="đúng">맞는</span> 것을 고르십시오. (Tại sao tác giả lại viết bài đăng này?) <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span></div>
+    
+    <div style="border: 2px solid #cbd5e1; border-radius: 8px; margin: 0 auto 25px; font-family: 'Pretendard', sans-serif; background: #f8fafc; overflow: hidden; width: 100%; max-width: 600px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+        
+        <div style="background: #e2e8f0; padding: 12px 15px; border-bottom: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: space-between;">
+            <div style="font-weight: 900; font-size: 1.2em; color: var(--primary-text);">
+                <span style="font-size: 1.2em;">🛍️</span> <span class="vocab-word" data-base="행복" data-meaning="hạnh phúc">행복</span>옷<span class="vocab-word" data-base="집" data-meaning="nhà, tiệm">집</span>
+            </div>
+            <div style="font-size: 0.85em; color: #64748b; font-family: monospace;">http://www.happy-clothes.com</div>
+        </div>
+        
+        <div style="padding: 10px 15px; border-bottom: 1px solid #e2e8f0; display: flex; gap: 15px; font-weight: bold; font-size: 0.95em; color: #64748b;">
+            <span style="border-bottom: 3px solid #2563eb; color: #2563eb; padding-bottom: 5px;"><span class="vocab-word" data-base="게시판" data-meaning="bảng thông báo">게시판</span></span>
+            <span><span class="vocab-word" data-base="공지 사항" data-meaning="thông báo chung">공지 사항</span></span>
+            <span><span class="vocab-word" data-base="묻고 답하기" data-meaning="hỏi đáp (Q&A)">묻고 답하기</span></span>
+        </div>
+
+        <div style="padding: 20px; background: var(--bg-card);">
+            <div style="font-size: 1.2em; font-weight: bold; color: var(--primary-text); margin-bottom: 15px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 10px;">
+                <strong style="color: #64748b; font-size: 0.85em;">제목: </strong>
+                <span class="vocab-word" data-base="청바지" data-meaning="quần jean">청바지</span>를 <span class="vocab-word" data-base="주문하다" data-meaning="đặt hàng, order">주문했어요</span>.
+            </div>
+            
+            <div style="color: #334155; line-height: 1.8; font-size: 1.05em; margin-bottom: 20px;">
+                <span class="vocab-word" data-base="안녕하세요" data-meaning="xin chào">안녕하세요</span>? <span class="vocab-word" data-base="이틀" data-meaning="hai ngày">이틀</span> <span class="vocab-word" data-base="전" data-meaning="trước">전에</span> <span class="vocab-word" data-base="이" data-meaning="này">이</span> <span class="vocab-word" data-base="인터넷" data-meaning="internet">인터넷</span> <span class="vocab-word" data-base="쇼핑몰" data-meaning="khu mua sắm (mall)">쇼핑몰</span>에서 청바지를 주문했습니다.
+                <span class="vocab-word" data-base="제가" data-meaning="tôi">제가</span> <span class="vocab-word" data-base="주말" data-meaning="cuối tuần">주말</span>에 <span class="vocab-word" data-base="여행" data-meaning="chuyến du lịch">여행</span>을 <span class="vocab-word" data-base="가다" data-meaning="đi">가는데</span> <span class="vocab-word" data-base="그" data-meaning="đó, ấy">그</span> <span class="vocab-word" data-base="옷" data-meaning="quần áo">옷</span>을 <span class="vocab-word" data-base="입다" data-meaning="mặc">입으면</span> <span class="vocab-word" data-base="좋겠다" data-meaning="tốt biết mấy">좋겠습니다</span>.<br><br>
+                <div style="background: #fef2f2; border: 1px solid #fca5a5; padding: 15px; border-radius: 8px; font-weight: bold; color: #b91c1c; text-align: center; margin: 15px 0;">
+                    주문한 옷을 <span class="vocab-word" data-base="언제쯤" data-meaning="khi nào, bao giờ">언제쯤</span> <span class="vocab-word" data-base="받다" data-meaning="nhận">받을 수 있을까요</span>?
+                </div>
+                <span class="vocab-word" data-base="서비스" data-meaning="dịch vụ">서비스</span> 센터에 <span class="vocab-word" data-base="전화하다" data-meaning="gọi điện thoại">전화했는데</span> 안 <span class="vocab-word" data-base="받아서" data-meaning="vì nhận">받아서</span> <span class="vocab-word" data-base="여기" data-meaning="ở đây">여기에</span> <span class="vocab-word" data-base="글" data-meaning="đoạn văn, bài viết">글</span>을 <span class="vocab-word" data-base="쓰다" data-meaning="viết">씁니다</span>.
+                <span class="vocab-word" data-base="답" data-meaning="câu trả lời">답</span> <span class="vocab-word" data-base="부탁드리다" data-meaning="mong nhận được (kính ngữ)">부탁드립니다</span>.<span style="display:none;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="다른" data-meaning="khác">다른</span> 청바지로 <span class="vocab-word" data-base="바꾸다" data-meaning="thay đổi">바꾸려고</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 청바지 주문을 <span class="vocab-word" data-base="취소하다" data-meaning="hủy bỏ">취소하려고</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 청바지의 <span class="vocab-word" data-base="값" data-meaning="giá cả">값</span>을 <span class="vocab-word" data-base="확인하다" data-meaning="xác nhận">확인하려고</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 청바지 <span class="vocab-word" data-base="도착" data-meaning="sự đến nơi">도착</span> <span class="vocab-word" data-base="날짜" data-meaning="ngày tháng">날짜</span>를 <span class="vocab-word" data-base="물어보다" data-meaning="hỏi thử">물어보려고</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung Bài đăng:</span>
+                <div class="trans-content">
+                    Shop Thời Trang Hạnh Phúc<br>
+                    <strong>Tiêu đề:</strong> Cho mình hỏi đơn hàng quần jean đã đặt nha.<br>
+                    Xin chào shop. Khoảng hai ngày trước mình có order một chiếc quần jean ở trên web. Sắp tới cuối tuần này mình đi du lịch rồi nên mình rất muốn được mang chiếc quần đó đi theo để diện.<br>
+                    <strong>Liệu khoảng khi nào thì mình mới nhận được cái áo mình đã đặt vậy shop?</strong><br>
+                    Do gọi điện lên trung tâm CSKH của shop mà chả có nhân viên nào bắt máy nên mình đành viết bài lên đây. Mong shop trả lời giúp mình.<span style="display:none;"></span>
+                </div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Định đổi sang một chiếc quần jean khác.</li>
+                        <li>② Định hủy luôn đơn hàng mua quần jean.</li>
+                        <li>③ Định xác nhận lại giá tiền của chiếc quần jean.</li>
+                        <li>④ Định hỏi xem ngày chiếc quần jean được giao đến là khi nào.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ④?</strong> Chốt lại mục đích của bài post bốc phốt này nằm ở câu hỏi tu từ nổi bật: "주문한 옷을 <strong>언제쯤 받을 수 있을까요?</strong>" (Khoảng <strong>KHI NÀO</strong> thì tôi mới <strong>nhận được</strong> quần áo vậy?). Việc gặng hỏi shop về thời gian nhận hàng chính là <strong>"Định hỏi về ngày hàng đến nơi" (도착 날짜를 물어보려고)</strong>. Đáp án ④ tóm tắt chính xác mục đích của khách hàng này.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - Khách đang <strong>ĐỢI HÀNG ĐỂ MẶC ĐI CHƠI (그 옷을 입으면 좋겠습니다)</strong>, mong từng ngày nên không có chuyện "muốn đổi sang quần khác" (①) hay "hủy ngang đơn hàng" (②).<br>
+                    - Khách đã đặt và thanh toán xong xuôi từ <strong>2 ngày trước (이틀 전에... 주문했습니다)</strong>, nên giờ chỉ hỏi hàng ở đâu, chứ không rảnh đi "hỏi lại giá quần" (③) làm gì.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q63')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q64">
+    <div class="question-text">
+        <span class="q-number">64.</span> 윗글의 내용과 같은 것을 고르십시오. <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span>
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 저는 <span class="vocab-word" data-base="목요일" data-meaning="thứ năm">목요일</span>에 여행을 갑니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 저는 <span class="vocab-word" data-base="오늘" data-meaning="hôm nay">오늘</span> 이 청바지를 <span class="vocab-word" data-base="사다" data-meaning="mua">샀습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 저는 인터넷 쇼핑몰에서 이 옷을 샀습니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 저는 서비스 센터에 전화한 <span class="vocab-word" data-base="적" data-meaning="kinh nghiệm, từng">적이 없습니다</span>.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tôi dự định sẽ đi du lịch vào ngày Thứ Năm.</li>
+                        <li>② Tôi mới đặt mua chiếc quần jean này vào ngày hôm nay.</li>
+                        <li>③ Tôi đã mua bộ quần áo này tại khu mua sắm trực tuyến (Internet).</li>
+                        <li>④ Từ trước đến nay tôi chưa từng gọi điện cho trung tâm chăm sóc khách hàng.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ③?</strong> Ngay câu mở đầu, tác giả kể hoàn cảnh order: "이틀 전에 <strong>이 인터넷 쇼핑몰에서</strong> 청바지를 <strong>주문했습니다</strong>" (2 ngày trước, tôi đã <strong>đặt mua</strong> quần jean <strong>ở cửa hàng mua sắm Internet này</strong>). Việc "đặt hàng ở trung tâm mua sắm Internet" hoàn toàn đồng nghĩa với "Tôi đã mua quần áo tại trung tâm mua sắm Internet" (인터넷 쇼핑몰에서 이 옷을 샀습니다). Đáp án ③ là một sự diễn đạt lại chuẩn xác.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì tác giả bảo lịch đi du lịch là vào <strong>CUỐI TUẦN (주말에)</strong>, không phải là đi vào Thứ Năm (목요일).<br>
+                    - <strong>② Sai</strong> vì tác giả đã chốt đơn từ tận <strong>HAI NGÀY TRƯỚC (이틀 전에)</strong>, chứ không phải "hôm nay mới mua" (오늘 샀습니다).<br>
+                    - <strong>④ Sai</strong> vì tác giả <strong>ĐÃ GỌI ĐIỆN CHÁY MÁY (서비스 센터에 전화했는데)</strong> mà chả có ma nào nghe nên mới cáu đem lên mạng viết bài phốt. Việc bảo "chưa từng gọi" (전화한 적이 없습니다) là sai hoàn toàn.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q64')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [65 ~ 66] 다음을 읽고 물음에 답하십시오.</div>
+
+<div class="shared-text">
+    <span class="vocab-word" data-base="매월" data-meaning="mỗi tháng">매월</span> <span class="vocab-word" data-base="마지막" data-meaning="cuối cùng">마지막</span> <span class="vocab-word" data-base="주" data-meaning="tuần">주</span> <span class="vocab-word" data-base="수요일" data-meaning="thứ tư">수요일</span>에 인주<span class="vocab-word" data-base="시청" data-meaning="tòa thị chính">시청</span> <span class="vocab-word" data-base="앞" data-meaning="phía trước">앞</span>에서는 '책을 <span class="vocab-word" data-base="읽다" data-meaning="đọc">읽읍시다</span>!'라는 <span class="vocab-word" data-base="행사" data-meaning="sự kiện">행사</span>를 <span class="vocab-word" data-base="하다" data-meaning="làm, tiến hành">합니다</span>. <span class="vocab-word" data-base="이" data-meaning="này">이</span> 행사는 ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) <span class="vocab-word" data-base="사람" data-meaning="người">사람</span>들에게 <span class="vocab-word" data-base="인기" data-meaning="sự phổ biến, yêu thích">인기</span>가 <span class="vocab-word" data-base="많다" data-meaning="nhiều">많습니다</span>. <span class="vocab-word" data-base="새로" data-meaning="mới">새로</span> <span class="vocab-word" data-base="나오다" data-meaning="ra mắt, xuất bản">나온</span> 책을 <span class="vocab-word" data-base="구경하다" data-meaning="ngắm nghía, xem">구경할 수도 있고</span> <span class="vocab-word" data-base="자기" data-meaning="bản thân">자기</span>가 <span class="vocab-word" data-base="읽은" data-meaning="đã đọc">읽은</span> 책을 <span class="vocab-word" data-base="다른" data-meaning="khác">다른</span> 사람에게 <span class="vocab-word" data-base="싸게" data-meaning="một cách rẻ rề">싸게</span> <span class="vocab-word" data-base="팔다" data-meaning="bán">팔 수도 있습니다</span>. <span class="vocab-word" data-base="유명하다" data-meaning="nổi tiếng">유명한</span> <span class="vocab-word" data-base="작가" data-meaning="tác giả, nhà văn">작가</span>와 <span class="vocab-word" data-base="인사" data-meaning="lời chào">인사</span>를 <span class="vocab-word" data-base="나누다" data-meaning="chia sẻ">나누는</span> <span class="vocab-word" data-base="프로그램" data-meaning="chương trình">프로그램</span>도 있습니다. 행사에 <span class="vocab-word" data-base="다녀오다" data-meaning="đi (rồi về)">다녀와서</span> <span class="vocab-word" data-base="느끼다" data-meaning="cảm nhận">느낀</span> <span class="vocab-word" data-base="것" data-meaning="điều, việc">것</span>을 홈페이지에 <span class="vocab-word" data-base="쓰다" data-meaning="viết">쓰면</span> <span class="vocab-word" data-base="선물" data-meaning="món quà">선물</span>도 <span class="vocab-word" data-base="받다" data-meaning="nhận">받을 수 있습니다</span>.<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q65">
+    <div class="question-text">
+        <span class="q-number">65.</span> ( )에 들어갈 말로 가장 알맞은 것을 고르십시오. <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(2점)</span>
+    </div>
+    <div class="options options-grid">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="참가비" data-meaning="phí tham gia">참가비</span>가 <span class="vocab-word" data-base="싸다" data-meaning="rẻ">싸서</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 프로그램이 <span class="vocab-word" data-base="다양하다" data-meaning="đa dạng">다양해서</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="집" data-meaning="nhà">집</span>에서 할 수 <span class="vocab-word" data-base="있다" data-meaning="có">있어서</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="주말" data-meaning="cuối tuần">주말</span>에 <span class="vocab-word" data-base="가다" data-meaning="đi">갈</span> 수 있어서</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">Cứ vào ngày thứ Tư của tuần cuối cùng mỗi tháng, ngay phía trước tòa thị chính thành phố Inju lại rộn ràng tổ chức một sự kiện mang tên 'Nào mình cùng đọc sách!'. Sự kiện này ( nhờ có rất nhiều hoạt động chương trình đa dạng ) nên vô cùng được lòng và được yêu thích bởi người dân. Đến với sự kiện, bạn có thể ngắm nghía những đầu sách vừa mới được xuất bản, lại vừa có thể mang những cuốn sách cũ mình từng đọc ra bán lại cho người khác với mức giá siêu hạt dẻ. Chưa kể, ở đây cũng có cả những chương trình gặp gỡ và giao lưu với những tác giả nổi tiếng nữa. Thêm một điểm cộng là nếu sau khi dạo chơi sự kiện về, bạn lên trang chủ viết một vài dòng review cảm nhận, bạn sẽ còn có thể nhận được cả quà tặng mang về nữa đấy.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① bởi vì phí tham gia khá rẻ</li>
+                        <li>② bởi vì có rất nhiều chương trình đa dạng</li>
+                        <li>③ bởi vì có thể tham gia ngay tại nhà</li>
+                        <li>④ bởi vì có thể đi tham gia vào cuối tuần</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ②?</strong> Chỗ trống yêu cầu điền một Lý do khiến sự kiện này "Rất được mọi người yêu thích" (인기가 많습니다). Hãy nhìn vào các câu ngay sau chỗ trống, tác giả liên tục liệt kê những hoạt động hấp dẫn tại đây: 1. Ngắm sách mới, 2. Bán sách cũ, 3. Giao lưu tác giả (프로그램도 있습니다), 4. Viết review lấy quà. Việc một sự kiện tập hợp đủ thứ trò chơi/tiện ích như vậy chứng tỏ nó <strong>"Có rất nhiều chương trình đa dạng phong phú" (프로그램이 다양해서)</strong>. Đáp án ② là sự xâu chuỗi tất cả các minh chứng được liệt kê ở phía sau.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì đoạn văn không hề đề cập đến "giá vé vào cửa rẻ", nó chỉ nói là mang sách cũ đi "bán rẻ" (싸게 팔 수).<br>
+                    - <strong>③ Sai</strong> vì sự kiện tổ chức <strong>ngoài trời trước sân tòa thị chính (인주시청 앞에서는)</strong>, không phải ngồi khư khư ở "trong nhà" (집에서) mà làm được.<br>
+                    - <strong>④ Sai</strong> vì lịch tổ chức là vào <strong>Thứ Tư (수요일)</strong>, là ngày trong tuần chứ không phải là ngày "Cuối tuần" (주말).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q65')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q66">
+    <div class="question-text">
+        <span class="q-number">66.</span> 윗글의 내용과 같은 것을 고르십시오. <span style="font-weight: normal; color: #e53e3e; font-size: 0.85em; margin-left: 5px;">(3점)</span>
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 이 행사에 있는 책은 <span class="vocab-word" data-base="모두" data-meaning="tất cả">모두</span> <span class="vocab-word" data-base="오래되다" data-meaning="cũ, lâu đời">오래된</span> 책입니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 이 행사는 인주시청에서 한 <span class="vocab-word" data-base="달" data-meaning="tháng">달</span> <span class="vocab-word" data-base="동안" data-meaning="trong suốt (khoảng thời gian)">동안</span> 합니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 이 행사에서는 유명한 작가를 <span class="vocab-word" data-base="만나다" data-meaning="gặp gỡ">만날 수 있습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 이 행사에 <span class="vocab-word" data-base="참가하다" data-meaning="tham gia">참가한</span> 모든 사람에게는 선물을 <span class="vocab-word" data-base="주다" data-meaning="cho, tặng">줍니다</span>.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Tất cả các đầu sách xuất hiện trong sự kiện này đều là những cuốn sách cũ.</li>
+                        <li>② Sự kiện này sẽ được diễn ra tại tòa thị chính Inju kéo dài trong suốt 1 tháng.</li>
+                        <li>③ Tại sự kiện này, bạn sẽ có cơ hội được gặp gỡ với những nhà văn nổi tiếng.</li>
+                        <li>④ Ban tổ chức sẽ phát quà tặng cho toàn bộ tất cả những người tham gia sự kiện.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ③?</strong> Đoạn văn quảng cáo có ghi rõ: "<strong>유명한 작가와 인사를 나누는</strong> 프로그램도 있습니다" (Có cả chương trình <strong>chia sẻ lời chào cùng với những nhà văn nổi tiếng</strong>). Việc gặp mặt chào hỏi các nhà văn chứng tỏ "bạn có thể được gặp gỡ tác giả nổi tiếng" (유명한 작가를 만날 수 있습니다). Đáp án ③ là một nhận định hoàn toàn đúng.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì bên cạnh việc bán sách cũ, lễ hội còn bày la liệt cả <strong>những cuốn sách MỚI RA MẮT (새로 나온 책)</strong> nữa. Vậy bảo "TẤT CẢ đều là sách cũ" (모두 오래된) là sai lệch hoàn toàn.<br>
+                    - <strong>② Sai</strong> vì lịch tổ chức chỉ kéo dài gói gọn trong <strong>MỘT NGÀY (Thứ 4 của tuần cuối cùng mỗi tháng - 마지막 주 수요일에)</strong>, chứ không rảnh tiền mà làm hoành tráng kéo dài liên tục "Trong suốt cả 1 tháng" (한 달 동안).<br>
+                    - <strong>④ Sai</strong> vì muốn có quà mang về thì phải chịu khó làm nhiệm vụ <strong>LÊN TRANG CHỦ VIẾT REVIEW (홈페이지에 쓰면... 선물도 받을)</strong>, chứ BTC không rảnh mà "phát quà bừa bãi cho TẤT CẢ MỌI NGƯỜI" (모든 사람에게).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q66')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [67 ~ 68] 다음을 읽고 물음에 답하십시오. (각 3점)</div>
+
+<div class="shared-text">
+    <span class="vocab-word" data-base="최근" data-meaning="gần đây">최근</span> <span class="vocab-word" data-base="특별하다" data-meaning="đặc biệt">특별한</span> <span class="vocab-word" data-base="어린이" data-meaning="trẻ em">어린이</span> <span class="vocab-word" data-base="우산" data-meaning="cái ô, dù">우산</span>이 <span class="vocab-word" data-base="나오다" data-meaning="đi ra, ra mắt">나왔습니다</span>. <span class="vocab-word" data-base="이" data-meaning="này">이</span> 우산을 <span class="vocab-word" data-base="펴다" data-meaning="mở ra, bung ra">펴면</span> <span class="vocab-word" data-base="위쪽" data-meaning="phía trên">위쪽</span>에서 <span class="vocab-word" data-base="빛이 나다" data-meaning="phát sáng">빛이 납니다</span>. <span class="vocab-word" data-base="그리고" data-meaning="và">그리고</span> <span class="vocab-word" data-base="손잡이" data-meaning="tay cầm">손잡이</span>의 <span class="vocab-word" data-base="버튼" data-meaning="nút bấm">버튼</span>을 <span class="vocab-word" data-base="누르다" data-meaning="nhấn">누르면</span> <span class="vocab-word" data-base="노랫소리" data-meaning="tiếng hát">노랫소리</span>가 <span class="vocab-word" data-base="나오다" data-meaning="phát ra">나옵니다</span>. <span class="vocab-word" data-base="이렇게" data-meaning="như thế này">이렇게</span> ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) <span class="vocab-word" data-base="아이" data-meaning="đứa trẻ">아이</span>들이 <span class="vocab-word" data-base="좋아하다" data-meaning="thích">좋아합니다</span>. <span class="vocab-word" data-base="보통" data-meaning="thông thường">보통</span> 우산을 <span class="vocab-word" data-base="쓰다" data-meaning="đội, che">쓰면</span> 아이가 <span class="vocab-word" data-base="잘" data-meaning="tốt, rõ">잘</span> <span class="vocab-word" data-base="안 보이다" data-meaning="không nhìn thấy">안 보이는데</span> 이 우산을 쓰면 아이가 <span class="vocab-word" data-base="어디" data-meaning="ở đâu">어디</span>에 <span class="vocab-word" data-base="있다" data-meaning="có, ở">는지</span> <span class="vocab-word" data-base="쉽게" data-meaning="một cách dễ dàng">쉽게</span> <span class="vocab-word" data-base="알 수 있다" data-meaning="có thể biết">알 수 있습니다</span>. <span class="vocab-word" data-base="또" data-meaning="thêm vào đó">또</span> <span class="vocab-word" data-base="튼튼하다" data-meaning="chắc chắn, bền">튼튼해서</span> <span class="vocab-word" data-base="오래" data-meaning="lâu">오래</span> <span class="vocab-word" data-base="쓰다" data-meaning="sử dụng">쓸 수 있습니다</span>. <span class="vocab-word" data-base="그래서" data-meaning="vì vậy">그래서</span> <span class="vocab-word" data-base="다른" data-meaning="khác">다른</span> 우산<span class="vocab-word" data-base="보다" data-meaning="so với">보다</span> <span class="vocab-word" data-base="좀" data-meaning="hơi, một chút">좀</span> <span class="vocab-word" data-base="비싸다" data-meaning="đắt đỏ">비싸지만</span> <span class="vocab-word" data-base="인기가 있다" data-meaning="nổi tiếng, được ưa chuộng">인기가 있습니다</span>.<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q67">
+    <div class="question-text">
+        <span class="q-number">67.</span> ㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="빛" data-meaning="ánh sáng">빛</span>과 <span class="vocab-word" data-base="소리" data-meaning="âm thanh">소리</span>가 <span class="vocab-word" data-base="나다" data-meaning="xuất hiện, phát ra">나니까</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="여러" data-meaning="nhiều">여러</span> <span class="vocab-word" data-base="색깔" data-meaning="màu sắc">색깔</span>로 <span class="vocab-word" data-base="변하다" data-meaning="biến đổi">변하니까</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="예쁘다" data-meaning="đẹp">예쁜</span> <span class="vocab-word" data-base="그림" data-meaning="bức tranh">그림</span>이 <span class="vocab-word" data-base="있다" data-meaning="có">있으니까</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="크기" data-meaning="kích cỡ">크기</span>와 <span class="vocab-word" data-base="무게" data-meaning="cân nặng, trọng lượng">무게</span>가 <span class="vocab-word" data-base="적당하다" data-meaning="thích hợp, vừa phải">적당하니까</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">Dạo gần đây trên thị trường vừa ra mắt một mẫu ô vô cùng đặc biệt dành riêng cho trẻ em. Chỉ cần bung chiếc ô này ra, mặt trên của nó sẽ lập tức phát ra những tia sáng lấp lánh. Hơn thế nữa, nếu bấm vào một cái nút nhỏ ở dưới tay cầm, chiếc ô còn có thể phát ra những âm thanh ca nhạc vô cùng vui nhộn. ( Bởi vì nó có thể phát ra cả ánh sáng và âm thanh ) như thế này nên lũ trẻ cực kỳ mê mẩn. Thông thường, mỗi khi một đứa trẻ che ô, chúng ta sẽ rất khó để nhìn thấy vóc dáng nhỏ bé của nó bị lấp sau tán ô; thế nhưng nếu dùng chiếc ô phát sáng này, các bậc phụ huynh sẽ có thể dễ dàng nhận biết được con cái của mình đang ở vị trí nào. Thêm một điểm cộng nữa là nó được thiết kế vô cùng chắc chắn nên thời gian sử dụng rất bền. Chính vì những ưu điểm vượt trội trên, cho dù có đắt hơn các loại ô thông thường một chút, chiếc ô này vẫn cháy hàng và được săn đón vô cùng nồng nhiệt.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Bởi vì nó phát ra cả ánh sáng và âm thanh</li>
+                        <li>② Bởi vì nó có khả năng biến đổi thành rất nhiều màu sắc khác nhau</li>
+                        <li>③ Bởi vì nó được in ấn những bức hình vô cùng xinh xắn</li>
+                        <li>④ Bởi vì nó có kích cỡ và trọng lượng cực kỳ vừa vặn</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ①?</strong> Chỗ trống đứng trước từ "아이들이 좋아합니다" (Lũ trẻ rất thích). Đây là chỗ trống yêu cầu điền NGUYÊN NHÂN khiến cho một đứa trẻ mê đắm đuối cái ô này. Các câu phía trước đã review rất rõ 2 tính năng ăn tiền của chiếc ô đồ chơi: (1) <strong>빛이 납니다 (Phát sáng)</strong> và (2) <strong>노랫소리가 나옵니다 (Phát ra âm thanh/nhạc)</strong>. Tổng hợp hai tính năng này lại, ta có lý do khiến lũ trẻ phát cuồng chính là: <strong>"Bởi vì nó phát ra cả ánh sáng và âm thanh" (빛과 소리가 나니까)</strong>. Đáp án ① cực kỳ logic với bài viết.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    Các tính năng như "biến đổi màu sắc" (②), in "hình xinh xắn" (③), hay "trọng lượng vừa phải" (④) đều là những từ vựng mà tác giả KHÔNG HỀ NHẮC TỚI trong đoạn review chiếc ô này. Do đó nếu bịa ra để điền vào thì sẽ sai sự thật.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q67')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q68">
+    <div class="question-text">
+        <span class="q-number">68.</span> 윗글의 내용과 같은 것을 고르십시오.
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 이 우산은 <span class="vocab-word" data-base="약하다" data-meaning="yếu ớt">약해서</span> <span class="vocab-word" data-base="고장이 나다" data-meaning="bị hỏng hóc">고장이 잘 납니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 이 우산은 손잡이 쪽에서 빛이 납니다.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 이 우산의 <span class="vocab-word" data-base="가격" data-meaning="giá cả">가격</span>은 다른 우산과 비슷합니다.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 이 우산을 쓰면 아이의 <span class="vocab-word" data-base="위치" data-meaning="vị trí">위치</span>를 <span class="vocab-word" data-base="확인하다" data-meaning="xác nhận">확인하기</span> 쉽습니다.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Chiếc ô này mỏng manh yếu ớt nên rất dễ bị hỏng hóc.</li>
+                        <li>② Chiếc ô này sẽ phát ra ánh sáng chớp nháy ở khu vực tay cầm.</li>
+                        <li>③ Mức giá bán ra của chiếc ô này cũng tương đương với các loại ô thông thường khác.</li>
+                        <li>④ Nếu sử dụng chiếc ô này, các bậc phụ huynh sẽ rất dễ dàng trong việc định vị và kiểm soát vị trí của con em mình.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ④?</strong> Tác giả review về sự yên tâm của phụ huynh: "...이 우산을 쓰면 <strong>아이가 어디에 있는지 쉽게 알 수 있습니다</strong>" (...nếu xài chiếc ô này, bạn sẽ <strong>có thể dễ dàng nhận ra đứa trẻ đang ở đâu</strong>). Việc "biết được đứa trẻ đang ở đâu" (아이가 어디 있는지) đồng nghĩa với việc "dễ dàng xác nhận được vị trí của đứa bé" (아이의 위치를 확인하기 쉽습니다). Đáp án ④ là sự diễn đạt lại chuẩn xác nhất tính năng ưu việt này.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì chiếc ô này <strong>VÔ CÙNG BỀN CHẮC (튼튼해서 오래 쓸 수 있습니다)</strong>, hoàn toàn trái ngược với từ "yếu ớt dễ hỏng" (약해서 고장이 잘 납니다).<br>
+                    - <strong>② CẨN THẬN BẪY:</strong> Ánh sáng phát ra từ <strong>ĐỈNH Ô (위쪽에서 빛이 납니다)</strong>, còn khu vực tay cầm (손잡이) là để bấm nút <strong>PHÁT NHẠC</strong> (버튼을 누르면 노랫소리가). Đừng có "râu ông nọ cắm cằm bà kia".<br>
+                    - <strong>③ Sai</strong> vì chiếc ô này có tính năng VIP nên giá của nó <strong>ĐẮT HƠN (다른 우산보다 좀 비싸지만)</strong>, chứ không có chuyện "bằng giá với ô thường" (다른 우산과 비슷합니다).
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q68')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="instruction">※ [69 ~ 70] 다음을 읽고 물음에 답하십시오. (각 3점)</div>
+
+<div class="shared-text">
+    <span class="vocab-word" data-base="우리" data-meaning="chúng tôi, của tôi">우리</span> <span class="vocab-word" data-base="가족" data-meaning="gia đình">가족</span>은 <span class="vocab-word" data-base="일 년" data-meaning="một năm">일 년</span> <span class="vocab-word" data-base="전" data-meaning="trước đây">전에</span> <span class="vocab-word" data-base="한국" data-meaning="Hàn Quốc">한국</span>에 <span class="vocab-word" data-base="오다" data-meaning="đến">왔습니다</span>. <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>와 <span class="vocab-word" data-base="아내" data-meaning="vợ">아내</span>는 <span class="vocab-word" data-base="회사" data-meaning="công ty">회사</span>에 <span class="vocab-word" data-base="다니다" data-meaning="đi làm, đi lại">다니면서</span> <span class="vocab-word" data-base="아이" data-meaning="đứa trẻ, con cái">아이</span>를 <span class="vocab-word" data-base="돌보다" data-meaning="chăm sóc, trông nom">돌보는</span> <span class="vocab-word" data-base="것" data-meaning="việc">것이</span> <span class="vocab-word" data-base="힘들다" data-meaning="vất vả, khó khăn">힘들었습니다</span>. <span class="vocab-word" data-base="이것" data-meaning="điều này, cái này">이것을</span> <span class="vocab-word" data-base="알다" data-meaning="biết">알고</span> <span class="vocab-word" data-base="옆집" data-meaning="nhà bên cạnh">옆집</span>에 <span class="vocab-word" data-base="살다" data-meaning="sống">사는</span> <span class="vocab-word" data-base="할머니" data-meaning="bà">할머니</span>가 아이를 <span class="vocab-word" data-base="자주" data-meaning="thường xuyên">자주</span> 돌봐 <span class="vocab-word" data-base="주다" data-meaning="cho">주셨습니다</span>. 아이는 할머니를 <span class="vocab-word" data-base="좋아하다" data-meaning="thích">좋아했습니다</span>. <span class="vocab-word" data-base="그런데" data-meaning="thế nhưng">그런데</span> 할머니가 <span class="vocab-word" data-base="갑자기" data-meaning="đột nhiên">갑자기</span> ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ). 아이는 <span class="vocab-word" data-base="많이" data-meaning="nhiều">많이</span> <span class="vocab-word" data-base="울다" data-meaning="khóc">울었습니다</span>. 할머니와 <span class="vocab-word" data-base="헤어지다" data-meaning="chia tay, xa cách">헤어지는</span> <span class="vocab-word" data-base="날" data-meaning="ngày">날</span>에 아이는 "제가 <span class="vocab-word" data-base="생각나다" data-meaning="nhớ đến">생각날</span> <span class="vocab-word" data-base="때" data-meaning="khi, lúc">때</span> <span class="vocab-word" data-base="보다" data-meaning="nhìn, xem">보세요</span>."라고 <span class="vocab-word" data-base="하다" data-meaning="nói, làm">하면서</span> <span class="vocab-word" data-base="직접" data-meaning="trực tiếp, tự tay">직접</span> <span class="vocab-word" data-base="그리다" data-meaning="vẽ (tranh)">그린</span> <span class="vocab-word" data-base="그림" data-meaning="bức tranh">그림</span>을 <span class="vocab-word" data-base="선물하다" data-meaning="tặng quà">선물했습니다</span>. 그 그림에는 할머니와 아이가 <span class="vocab-word" data-base="있다" data-meaning="có">있었습니다</span>. 할머니는 <span class="vocab-word" data-base="눈물" data-meaning="nước mắt">눈물</span>을 <span class="vocab-word" data-base="흘리다" data-meaning="chảy (nước mắt, máu)">흘리셨습니다</span>.<span style="display:none;"></span>
+</div>
+
+<div class="question-block" id="q69">
+    <div class="question-text">
+        <span class="q-number">69.</span> ㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="선물" data-meaning="món quà">선물</span>을 <span class="vocab-word" data-base="받다" data-meaning="nhận">받아 보셨습니다</span></div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> <span class="vocab-word" data-base="이사" data-meaning="sự chuyển nhà">이사</span>를 <span class="vocab-word" data-base="가다" data-meaning="đi">가시게 되었습니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 아이를 <span class="vocab-word" data-base="데리다" data-meaning="dắt theo, rước">데리러 오셨습니다</span></div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="저" data-meaning="tôi">저</span>를 <span class="vocab-word" data-base="도와주다" data-meaning="giúp đỡ">도와주려고 하셨습니다</span></div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📖 Dịch nội dung:</span>
+                <div class="trans-content">Cách đây 1 năm, gia đình chúng tôi đã chuyển đến Hàn Quốc sinh sống. Cả tôi và vợ đều phải đi làm công sở nên việc chăm nom dạy dỗ đứa con quả thực là một điều vô cùng khó khăn vất vả đối với chúng tôi. Thấy hoàn cảnh gia đình tôi neo đơn như vậy, một bà lão hàng xóm tốt bụng nhà bên cạnh đã thường xuyên dang tay sang trông nom đứa bé giúp chúng tôi. Con tôi vì thế nên cũng cực kỳ bám và quý mến người bà hàng xóm này. Thế nhưng, bỗng nhiên một ngày nọ, bà lão ấy ( phải chuyển nhà đi nơi khác ). Đứa bé nhà tôi khi biết tin đã khóc nức nở mãi không thôi. Vào cái ngày mà hai bà cháu phải đứng nói lời chia tay nhau, đứa con của tôi đã nức nở đưa tặng bà bức tranh do chính tay nó vẽ và dặn dò rằng: "Những khi nào bà thấy nhớ cháu, bà hãy lấy bức tranh này ra xem nhé". Bức tranh đứa bé vẽ nghệch ngoạc hình bóng một người bà đang dắt tay một đứa cháu nhỏ xíu. Cầm bức tranh trên tay, những giọt nước mắt đã tuôn rơi không ngừng trên khóe mắt của bà lão.<span style="display:none;"></span></div>
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① (bà) đã thử nhận lấy một món quà</li>
+                        <li>② (bà) đã có một sự cố phải chuyển nhà đi nơi khác</li>
+                        <li>③ (bà) đã cất công sang tận nhà để rước đứa bé</li>
+                        <li>④ (bà) đã có ý định dang tay ra để giúp đỡ cho tôi</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích logic điền từ</h4>
+                <p><strong>Tại sao chọn ②?</strong> Chỗ trống miêu tả một biến cố bất ngờ xảy ra (갑자기... ). Hậu quả của biến cố này khiến cho "đứa trẻ khóc rất nhiều" (많이 울었습니다) và hai bà cháu phải "nói lời chia tay nhau" (헤어지는 날에). Đối với một người hàng xóm đang ở cạnh bên, lý do duy nhất khiến cả hai vĩnh viễn chia xa không thể gặp mặt được nữa chính là việc <strong>"Người bà phải chuyển nhà đi nơi khác" (이사를 가시게 되었습니다)</strong>. Đáp án ② là sự kết nối đầy nuối tiếc cho mạch truyện.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - Việc bà "nhận quà" (①) diễn ra <strong>SAU ĐÓ</strong> (vào ngày chia tay đứa bé mới nhét bức tranh vô tay bà), không phải là cái biến cố bất ngờ làm đứa bé khóc tu tu trước đó.<br>
+                    - Việc bà sang rước bé (③) hay sang phụ giúp việc nhà (④) là những <strong>VIỆC TỐT ĐÃ DIỄN RA Ở CÁC CÂU TRƯỚC ĐÓ (자주 돌봐 주셨습니다)</strong>, chứ không phải là cái biến cố khiến tình cảm chia lìa.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q69')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div class="question-block" id="q70">
+    <div class="question-text">
+        <span class="q-number">70.</span> 이 글의 내용으로 알 수 있는 것을 고르십시오.
+    </div>
+    <div class="options">
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 아이는 <span class="vocab-word" data-base="우리" data-meaning="chúng tôi">우리</span> <span class="vocab-word" data-base="부부" data-meaning="vợ chồng">부부</span>와 헤어져서 <span class="vocab-word" data-base="슬프다" data-meaning="buồn bã">슬펐습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 아이는 할머니와 함께 있는 것이 <span class="vocab-word" data-base="좋다" data-meaning="thích, tốt">좋았습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 할머니는 아이와 <span class="vocab-word" data-base="같다" data-meaning="cùng, giống nhau">같은</span> 집에 살아서 <span class="vocab-word" data-base="편하다" data-meaning="thoải mái">편했습니다</span>.</div>
+        <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 할머니는 아이의 선물을 받고 기분이 <span class="vocab-word" data-base="나쁘다" data-meaning="xấu, tệ">나빴습니다</span>.</div>
+    </div>
+    <div class="action-area">
+        <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+        <div class="explanation-content">
+            <div class="trans-box">
+                <span class="trans-title">📝 Dịch đáp án:</span>
+                <div class="opt-trans">
+                    <ul>
+                        <li>① Đứa trẻ đã vô cùng buồn bã khi phải chia tay với vợ chồng tôi (bố mẹ nó).</li>
+                        <li>② Đứa bé đã cảm thấy vô cùng hạnh phúc và thích thú khi được ở cạnh bà.</li>
+                        <li>③ Bà cụ cảm thấy rất thoải mái do bà ấy sống chung một nhà với đứa trẻ.</li>
+                        <li>④ Bà cụ đã tỏ ra cực kỳ bực dọc và khó chịu sau khi nhận món quà từ đứa bé.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="explain-box">
+                <h4>🎯 Phân tích đáp án</h4>
+                <p><strong>Tại sao chọn ②?</strong> Bài đọc khẳng định tình cảm của đứa bé: "<strong>아이는 할머니를 좋아했습니다</strong>" (Đứa trẻ <strong>rất quý mến bà cụ</strong>), và nó đã phải khóc lóc nức nở vẽ tranh tặng bà trong ngày chia li. Sự quyến luyến và quý mến này chứng tỏ <strong>"Đứa bé rất thích thú với việc được ở cùng bà" (아이는 할머니와 함께 있는 것이 좋았습니다)</strong>. Đáp án ② đúc kết hoàn hảo tình cảm ấm áp của hai bà cháu.<span style="display:none;"></span></p>
+                <div class="wrong-reason">
+                    <strong>Tại sao các đáp án khác sai?</strong><br>
+                    - <strong>① Sai</strong> vì đứa bé khóc lóc buồn bã do <strong>PHẢI CHIA TAY NGƯỜI BÀ HÀNG XÓM (할머니와 헤어지는 날에)</strong>, chứ nó đâu có bị bố mẹ nó vứt bỏ đâu mà "chia tay vợ chồng tôi".<br>
+                    - <strong>③ Sai</strong> vì bà là <strong>HÀNG XÓM (옆집에 사는)</strong> sống nhà kế bên, chứ không phải "sống chung 1 nhà với em bé" (아이와 같은 집에 살아서).<br>
+                    - <strong>④ Sai</strong> vì bà cụ khóc (눈물을 흘리셨습니다) là do <strong>QUÁ CẢM ĐỘNG VÀ LƯU LUYẾN</strong>, chứ không phải do chê quà xấu mà "cảm thấy bực mình khó chịu" (기분이 나빴습니다) với đứa bé.
+                </div>
+            </div>
+            <button class="review-link" onclick="openReview('q70')">🎮 Ôn Tập Từ Vựng</button>
+        </div>
+    </div>
+</div>
+
+<div id="examResultModal" class="modal-overlay" style="z-index: 100000; display: none;">
+    <div class="modal-content" style="text-align: center; min-height: auto; max-height: 95vh; padding: 35px 20px; justify-content: flex-start; max-width: 600px; overflow-y: auto;">
+        <h2 style="color: #2b6cb0; margin-top: 0; margin-bottom: 15px; font-size: 1.6em;">HẾT GIỜ LÀM BÀI!</h2>
+        
+        <div class="score-circle">
+            <div class="score-circle-content">
+                <span class="score-text" id="finalScoreText">0</span>
+                <span class="score-sub">/ 100</span>
+            </div>
+        </div>
+        
+        <p style="font-size: 1.1em; color: var(--text-sub); font-weight: bold; margin-top: 0; margin-bottom: 25px;">
+            Bạn làm đúng <span id="correctCountText" style="color: #e53e3e; font-size: 1.2em;">0</span> / <span id="totalCountText">40</span> câu.
+        </p>
+        <div id="questionStatusGrid"></div>
+        <button class="btn-submit" style="background: #48bb78; width: 100%; max-width: 250px; margin: 0 auto; padding: 12px; font-size: 1em;" onclick="closeResultAndReview()">👀 XEM ĐÁP ÁN CHI TIẾT</button>
+    </div>
+</div>

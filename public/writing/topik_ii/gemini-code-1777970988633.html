@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Dạng Câu 51 | TOPIK II - Vui Học Tiếng Hàn</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <link rel="stylesheet" href="../../assets/css/exam-layout.css">
+    <link rel="stylesheet" href="../../assets/css/exam-controls.css">
+    
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+
+    <style>
+        /* ===== SỬA LỖI CHỮ TÀNG HÌNH TRONG DARK MODE ===== */
+        [data-theme="dark"] .writing-box, body.dark .writing-box,
+        [data-theme="dark"] .ans-block, body.dark .ans-block,
+        [data-theme="dark"] details, body.dark details { 
+            background: rgba(30, 41, 59, 0.6) !important; 
+            color: #f1f5f9 !important; 
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        [data-theme="dark"] .section-title, body.dark .section-title,
+        [data-theme="dark"] .ans-block-title, body.dark .ans-block-title,
+        [data-theme="dark"] summary, body.dark summary { color: #60a5fa !important; }
+        [data-theme="dark"] .exam-instruction, body.dark .exam-instruction,
+        [data-theme="dark"] .details-content, body.dark .details-content { color: #cbd5e1 !important; }
+        [data-theme="dark"] .writing-input, body.dark .writing-input { 
+            background: rgba(15, 23, 42, 0.8) !important; 
+            color: #f8fafc !important; 
+            border-color: rgba(255, 255, 255, 0.2) !important; 
+        }
+        [data-theme="dark"] .explanation-box, body.dark .explanation-box { 
+            background: rgba(6, 78, 59, 0.4) !important; 
+            border-color: #059669 !important; 
+            color: #d1fae5 !important; 
+        }
+
+        /* Ẩn các nút công cụ không dùng đến của môn Viết */
+        .btn-study, .study-btn-wrapper, .vocab-action-btn { display: none !important; }
+    </style>
+
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/block.js"></script>
+</head>
+
+<body class="app-started">
+
+    <nav class="global-nav">
+        <div class="nav-top-row">
+            <div class="nav-left">
+                <button class="nav-icon-btn" id="openSidebar"><i class="fas fa-bars"></i></button>
+                <a href="/" class="nav-logo">TOPIK II</a>
+            </div>
+            <div class="nav-right">
+                <div id="theme-toggle"></div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="main-layout">
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar-container" id="sidebarContainer">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">Danh sách câu hỏi</h2>
+                <button class="close-sidebar" id="closeSidebar">&times;</button>
+            </div>
+            <div class="sidebar-content" id="sidebarContent">
+                </div>
+        </aside>
+
+        <div class="content-wrapper">
+            <div class="type-header">
+                <h1 class="type-title">Luyện tập Câu 51</h1>
+                <p class="type-desc">Tổng hợp các câu 51 (Điền từ vào chỗ trống) từ các đề thi viết.</p>
+                <div class="exam-controls">
+                    <div class="control-group">
+                        <label class="control-label">Chế độ từ vựng</label>
+                        <label class="switch">
+                            <input type="checkbox" id="vocabToggle" checked onchange="toggleVocab()">
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="dynamic-questions-container">
+                <div style="text-align:center; padding:50px; color:#64748b;">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i><br><br>Đang tải dữ liệu Câu 51...
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="global-footer">
+        <div class="footer-container">
+            <div class="footer-links">
+                <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer" class="footer-link">
+                    <i class="fab fa-facebook"></i> Vui Học Tiếng Hàn
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="exam-logic.js"></script>
+
+    <script>
+        const examsToFetch = [
+            'topik35.html', 'topik36.html', 'topik37.html', 'topik41.html',
+            'topik47.html', 'topik52.html', 'topik60.html', 'topik64.html',
+            'topik83.html', 'topik91.html', 'topik96.html', 'topik102.html'
+        ];
+
+        async function fetchQuestionsByType() {
+            const container = document.getElementById('dynamic-questions-container');
+            let totalQuestions = 0;
+            let tempHTML = '';
+            let collectedScripts = '';
+
+            // Bắt lỗi khi mở chay không qua Server
+            if (window.location.protocol === 'file:') {
+                container.innerHTML = '<div class="wrapper" style="text-align:center; color:#dc2626;">Vui lòng mở file bằng Live Server để tải dữ liệu!</div>';
+                return;
+            }
+
+            for (let examFile of examsToFetch) {
+                try {
+                    let response = await fetch(examFile);
+                    if (!response.ok) continue;
+
+                    let htmlString = await response.text();
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(htmlString, 'text/html');
+
+                    let wrappers = doc.querySelectorAll('.wrapper');
+                    let examNumMatch = examFile.match(/\d+/);
+                    let examNum = examNumMatch ? examNumMatch[0] : 'XX';
+
+                    wrappers.forEach((wrapper, idx) => {
+                        let titleEl = wrapper.querySelector('.section-title');
+                        
+                        if (titleEl && titleEl.textContent.includes('Câu 51')) {
+                            
+                            // 1. Clone node để không làm hỏng chuỗi HTML
+                            let clone = wrapper.cloneNode(true);
+                            
+                            // 2. Thêm class bắt buộc để file type-navigator.js của bạn quét được
+                            clone.classList.add('question-block');
+                            
+                            // 3. Đổi tiêu đề để hiện lên mục lục Navigator rõ ràng
+                            let cloneTitle = clone.querySelector('.section-title');
+                            if (cloneTitle) {
+                                cloneTitle.innerHTML = `Câu 51 - Đề ${examNum} <span class="badge">10 Điểm</span>`;
+                            }
+
+                            // 4. Đổi ID cực kỳ an toàn
+                            const uid = `e${examNum}_${idx}`;
+                            clone.querySelectorAll('[id]').forEach(el => {
+                                el.id = el.id + '_' + uid;
+                            });
+
+                            // 5. Đổi hàm onClick an toàn
+                            clone.querySelectorAll('[onclick]').forEach(el => {
+                                let oc = el.getAttribute('onclick');
+                                if (oc) {
+                                    oc = oc.replace('grade51A()', `grade51A_${uid}()`);
+                                    oc = oc.replace('grade51B()', `grade51B_${uid}()`);
+                                    oc = oc.replace(/'ans-51-a'/g, `'ans-51-a_${uid}'`);
+                                    oc = oc.replace(/'ans-51-b'/g, `'ans-51-b_${uid}'`);
+                                    oc = oc.replace(/'btn-exp-51-a'/g, `'btn-exp-51-a_${uid}'`);
+                                    oc = oc.replace(/'btn-exp-51-b'/g, `'btn-exp-51-b_${uid}'`);
+                                    oc = oc.replace(/'exp-51-a'/g, `'exp-51-a_${uid}'`);
+                                    oc = oc.replace(/'exp-51-b'/g, `'exp-51-b_${uid}'`);
+                                    oc = oc.replace(/'score-51-a'/g, `'score-51-a_${uid}'`);
+                                    oc = oc.replace(/'score-51-b'/g, `'score-51-b_${uid}'`);
+                                    el.setAttribute('onclick', oc);
+                                }
+                            });
+
+                            tempHTML += clone.outerHTML;
+                            totalQuestions++;
+                        }
+                    });
+
+                    // 6. Bóc tách Script và đổi tên hàm
+                    let scripts = doc.querySelectorAll('script');
+                    scripts.forEach(script => {
+                        let code = script.textContent;
+                        if (code.includes('function grade51A') || code.includes('function grade51B')) {
+                            wrappers.forEach((w, idx) => {
+                                let tEl = w.querySelector('.section-title');
+                                if (tEl && tEl.textContent.includes('Câu 51')) {
+                                    const uid = `e${examNum}_${idx}`;
+                                    let modCode = code
+                                        .replace(/function\s+grade51A\s*\(\)/g, `function grade51A_${uid}()`)
+                                        .replace(/function\s+grade51B\s*\(\)/g, `function grade51B_${uid}()`)
+                                        .replace(/'ans-51-a'/g, `'ans-51-a_${uid}'`)
+                                        .replace(/'ans-51-b'/g, `'ans-51-b_${uid}'`)
+                                        .replace(/'btn-exp-51-a'/g, `'btn-exp-51-a_${uid}'`)
+                                        .replace(/'btn-exp-51-b'/g, `'btn-exp-51-b_${uid}'`)
+                                        .replace(/'exp-51-a'/g, `'exp-51-a_${uid}'`)
+                                        .replace(/'exp-51-b'/g, `'exp-51-b_${uid}'`)
+                                        .replace(/'score-51-a'/g, `'score-51-a_${uid}'`)
+                                        .replace(/'score-51-b'/g, `'score-51-b_${uid}'`);
+                                    collectedScripts += modCode + '\n';
+                                }
+                            });
+                        }
+                    });
+
+                } catch (error) { console.error("Lỗi:", examFile, error); }
+            }
+
+            if (totalQuestions > 0) {
+                container.innerHTML = tempHTML;
+
+                // Gắn code logic chấm điểm
+                let finalScript = document.createElement('script');
+                finalScript.textContent = collectedScripts;
+                document.body.appendChild(finalScript);
+
+                // PHÁT TÍN HIỆU CHO FILE TYPE-NAVIGATOR.JS TẠO MỤC LỤC
+                setTimeout(() => {
+                    document.dispatchEvent(new Event('typeQuestionsLoaded'));
+                }, 500);
+
+            } else {
+                container.innerHTML = '<div style="text-align:center; padding:30px;">Không tìm thấy dữ liệu Câu 51!</div>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchQuestionsByType);
+
+        // Vô hiệu hóa đếm giờ ngầm (giống file gốc)
+        window.startTimer = function () { };
+
+        // Hàm Tắt/bật từ vựng (giống file gốc)
+        function toggleVocab() {
+            const isChecked = document.getElementById('vocabToggle').checked;
+            const styleId = 'vocab-toggle-style';
+            let styleEl = document.getElementById(styleId);
+            if (!isChecked) {
+                if (!styleEl) {
+                    styleEl = document.createElement('style');
+                    styleEl.id = styleId;
+                    styleEl.innerHTML = '.vocab-word { pointer-events: none !important; border-bottom: none !important; text-decoration: none !important; color: inherit !important; }';
+                    document.head.appendChild(styleEl);
+                }
+            } else {
+                if (styleEl) styleEl.remove();
+            }
+        }
+    </script>
+
+    <script src="../../assets/js/type-navigator.js"></script>
+
+</body>
+</html>

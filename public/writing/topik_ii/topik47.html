@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 읽기 - 제47회 - Vui Học Tiếng Hàn</title>
+    
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+<style>
+    /* ===== HEADER BADGE ===== */
+    .header-badge-container {
+        text-align: center;
+        margin: 40px auto 50px auto;
+        width: 100%;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 12px 50px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* ===== HỆ THỐNG BULLETPROOF GRID CÂU 53 (CHỐNG RỚT TUYỆT ĐỐI) ===== */
+    .t47-bulletproof-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* Ép cứng 2 cột bằng nhau */
+        gap: 30px;
+        align-items: start; /* Bám sát mép trên */
+        width: 100%;
+    }
+    
+    /* Biểu đồ Đường (Line Chart) */
+    .line-chart-47 { position: relative; height: 180px; border-left: 2px solid #cbd5e1; border-bottom: 2px solid #cbd5e1; margin: 15px 15px 25px 15px; }
+    .data-point { position: absolute; background: white; border: 3px solid #2563eb; width: 14px; height: 14px; border-radius: 50%; transform: translate(-50%, 50%); z-index: 3; }
+    .point-val { position: absolute; font-weight: 800; font-size: 0.95rem; color: #1e293b; transform: translate(-50%, -150%); z-index: 4; white-space: nowrap; }
+    .svg-line-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; overflow: visible; }
+    .year-label { display: flex; justify-content: space-between; margin-top: 10px; font-weight: 700; color: #64748b; font-size: 0.95rem; padding: 0 10px; }
+
+    /* Box Nguyên nhân & Kỳ vọng */
+    .cause-card { background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 20px; }
+    .cause-title { display: inline-block; background: #64748b; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; margin-bottom: 12px; }
+    .forecast-box { border: 2px dashed #3b82f6; background: #eff6ff; color: #1d4ed8; padding: 15px; text-align: center; border-radius: 12px; font-weight: 800; font-size: 1.1rem; margin-top: 10px;}
+
+    /* FIX LỖI MOBILE */
+    @media (max-width: 768px) {
+        .t47-bulletproof-grid { grid-template-columns: 1fr; } /* Chỉ trên điện thoại mới xếp dọc */
+        .header-badge-container { margin: 20px auto 30px auto; }
+        .topik-header-badge { font-size: 1.5rem; padding: 10px 30px; border-width: 1.5px; }
+    }
+</style>
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제47회</div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        <div style="margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between;">
+            <b>제목: 선배님, 빅토르입니다.</b>
+            <span style="color:#64748b; font-size:0.9rem;">2016. 7. 12.</span>
+        </div>
+        <div>
+            선배님, 안녕하십니까? 빅토르입니다.<br>
+            부탁드릴 일이 있어 메일을 씁니다.<br>
+            제가 인터넷으로 <b>( ㉠ )</b>.<br>
+            그런데 카메라가 이번 주 금요일에 배달된다고 합니다.<br>
+            제가 그날 고향에 가야 해서 카메라를 직접 받을 수 없을 것 같습니다.<br>
+            혹시 저 대신에 <b>( ㉡ )</b>?<br>
+            어려운 부탁을 드려서 죄송합니다.<br>
+            그럼 답장 기다리겠습니다.<br><br>
+            <span style="color:#64748b; font-size:0.9rem;">빅토르 드림</span>
+        </div>
+
+        <details style="margin-top: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+            <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+            <div class="details-content" style="font-size: 0.95rem; color: #111; line-height: 1.6;">
+                Tiền bối, xin chào anh. Em là Victor đây ạ.<br>
+                Em có việc muốn nhờ nên viết mail này cho anh.<br>
+                Em <b>(đã đặt mua camera / đã mua máy ảnh)</b> trên mạng.<br>
+                Nhưng mà nghe nói thứ Sáu tuần này camera sẽ được giao đến.<br>
+                Ngày hôm đó em phải về quê nên có lẽ không thể trực tiếp nhận camera được.<br>
+                Không biết anh có thể <b>(nhận giúp em / nhận hộ em được không)</b> ạ?<br>
+                Em xin lỗi vì đã nhờ vả một việc khó khăn.<br>
+                Vậy em sẽ đợi hồi âm của anh ạ.
+            </div>
+        </details>
+    </div>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-51-a" style="display:none;" onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-a" class="explanation-box">
+                <div id="score-51-a" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Phía sau có câu "카메라가 금요일에 배달된다고 합니다" (Nghe nói camera sẽ được giao vào thứ Sáu). Phía trước có từ "인터넷으로" (Qua mạng / Bằng internet). Do đó, hành động ở đây là việc mua sắm hoặc đặt hàng một chiếc camera trên mạng. Sự việc đã xảy ra nên phải dùng thì quá khứ.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Danh từ <code>카메라</code> + Động từ <code>주문하다 / 구입하다 / 사다</code> + Thì quá khứ <code>-았/었습니다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 카메라를 주문했습니다 / 카메라를 구입했습니다 / 카메라를 샀습니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 카메라를 하나 샀습니다 / 카메라를 주문해 두었습니다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-51-b" style="display:none;" onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-b" class="explanation-box">
+                <div id="score-51-b" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Tác giả không thể trực tiếp nhận hàng nên nói "저 대신에" (Thay cho em). Kết hợp với ngữ cảnh nhờ vả tiền bối ("부탁드릴 일이 있어..."), chỗ trống cần một yêu cầu nhận đồ giúp một cách lịch sự.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>받다</code> (Nhận) + Ngữ pháp nhờ vả lịch sự <code>-아/어 주실 수 있습니까? / -아/어 주시겠습니까? / -아/어 주시면 안 되겠습니까?</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 카메라를 받아 주실 수 있으십니까 / 받아 주시겠습니까 / 받아 주시면 안 되겠습니까.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 받아 주실 수 있는지요 / 택배를 받아 주시겠습니까.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        사람의 손에는 눈에 보이지 않는 세균이 많다. 그래서 병을 예방하기 위해서는 자주 <b>( ㉠ )</b>. 그런데 전문가들은 손을 씻을 때 꼭 <b>( ㉡ )</b>. 비누 없이 물로만 씻으면 손에 있는 세균을 제대로 없애기 어렵기 때문이다.
+    </div>
+
+    <details style="margin-bottom: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+        <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+        <div class="details-content" style="font-size: 0.95rem; color: #111;">
+            Trên bàn tay con người có rất nhiều vi khuẩn không thể nhìn thấy bằng mắt thường. Vì vậy để phòng ngừa bệnh tật thì chúng ta phải thường xuyên <b>(rửa tay)</b>. Thế nhưng các chuyên gia <b>(khuyên/bảo rằng)</b> khi rửa tay nhất định <b>(phải sử dụng xà phòng)</b>. Đó là bởi vì nếu không có xà phòng mà chỉ rửa bằng nước thì khó có thể loại bỏ đúng cách các vi khuẩn trên tay.
+        </div>
+    </details>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-52-a" style="display:none;" onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-a" class="explanation-box">
+                <div id="score-52-a" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Đoạn văn nói về việc tay có nhiều vi khuẩn. Cấu trúc `예방하기 위해서는` (Để phòng ngừa bệnh...) mang ý nghĩa điều kiện bắt buộc, do đó vế sau phải khuyên nhủ một hành động phòng ngừa. Rửa tay là hành động hiển nhiên được suy ra từ câu sau `손을 씻을 때` (Khi rửa tay).<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>손을 씻다</code> + Ngữ pháp khuyên bảo/bắt buộc <code>-아/어야 한다 / -는 것이 좋다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 손을 씻어야 한다 / 씻어야 한다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 손을 씻는 것이 좋다 / 씻어야만 한다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-52-b" style="display:none;" onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-b" class="explanation-box">
+                <div id="score-52-b" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Chủ ngữ là `전문가들은` (Các chuyên gia), do đó đuôi câu bắt buộc phải là dạng trích dẫn gián tiếp (chuyên gia nói rằng...). Phía sau có từ `비누 없이` (Không có xà phòng thì khó diệt khuẩn), vậy lời khuyên phải là yêu cầu/mệnh lệnh sử dụng xà phòng.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>비누를 사용하다 / 비누로 씻다</code> + Trích dẫn gián tiếp dạng mệnh lệnh <code>-(으)라고 한다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 비누를 사용하라고 한다 / 비누로 씻으라고 한다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 비누를 쓰라고 조언한다 / 비누를 써서 씻으라고 한다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [53] 다음을 참고하여 '국내 외국인 유학생 현황'에 대한 글을 200~300자로 쓰시오. 단, 글의 제목은 쓰지 마시오. (30점)
+    </div>
+
+    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        
+        <div style="font-weight: 800; font-size: 1.2rem; color: #1e40af; text-align: center; margin-bottom: 25px;">국내 외국인 유학생 현황</div>
+        
+        <div class="t47-bulletproof-grid">
+            
+            <div>
+                <div style="font-weight: 800; color: #0f172a; margin-bottom: 15px; font-size: 1.05rem; padding-left: 10px;">유학생 수의 변화</div>
+                <div class="line-chart-47">
+                    <svg class="svg-line-container" viewBox="0 0 100 100" preserveAspectRatio="none">
+                        <path d="M 15 85 Q 40 40 60 55 T 85 15" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"/>
+                        <line x1="15" y1="85" x2="15" y2="100" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4"/>
+                        <line x1="85" y1="15" x2="85" y2="100" stroke="#cbd5e1" stroke-width="1" stroke-dasharray="4"/>
+                    </svg>
+                    <div class="data-point" style="bottom: 15%; left: 15%;"></div>
+                    <div class="point-val" style="bottom: 15%; left: 15%;">4천 명</div>
+                    
+                    <div class="data-point" style="bottom: 85%; left: 85%;"></div>
+                    <div class="point-val" style="bottom: 85%; left: 85%;">10만 명</div>
+                </div>
+                <div class="year-label" style="justify-content: space-between; border-top: 2px solid #cbd5e1; margin-top: 0; padding-top: 10px;">
+                    <span style="margin-left: 10%;">2000</span>
+                    <span style="margin-right: 8%;">2016<br><span style="font-size: 0.8rem; font-weight: 500;">(연도)</span></span>
+                </div>
+            </div>
+
+            <div style="padding-top: 10px; display: flex; flex-direction: column; gap: 20px;">
+                <div class="cause-card">
+                    <div class="cause-title">증가 원인</div>
+                    <ul style="margin: 0; padding-left: 20px; line-height: 1.8; font-weight: 600; font-size: 0.95rem; color: #1e293b;">
+                        <li>한국·한국어에 대한 관심 증가</li>
+                        <li>한국 대학의 유학생 유치 노력</li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a; margin-bottom: 10px;">기대 (2023년)</div>
+                    <div class="forecast-box">
+                        외국인 유학생 20만 명
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+        <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+        <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+        <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+    </div>
+
+    <div id="t53-guide" class="tab-content t53-content active">
+        <div class="guide-box">
+            <b>Dàn ý phân tích biểu đồ (Miêu tả biểu đồ cong & Dự báo):</b><br><br>
+            1. <b>Mở bài:</b> Nêu sự gia tăng chung (최근 국내에서 유학하는 외국인 유학생이 급증했다).<br>
+            2. <b>Thân bài 1 (Biểu đồ đường):</b> Miêu tả sự lên xuống của đường cong. Năm 2000 là 4 nghìn, tăng dốc (가파른 상승세), chững lại một chút (잠시 주춤하더니), sau đó tiếp tục tăng (다시 증가세) đạt 10 vạn vào năm 2016.<br>
+            3. <b>Thân bài 2 (Nguyên nhân):</b> Nêu 2 lý do. Đầu tiên là do sự quan tâm tiếng Hàn tăng (우선... 증가한 것을 들 수 있다). Nỗ lực của đại học cũng ảnh hưởng lớn (유치하려는 노력도... 큰 영향을 미친 것으로 보인다).<br>
+            4. <b>Kết luận (Kỳ vọng):</b> Dự báo (기대된다). Nếu xu hướng này tiếp diễn, kỳ vọng sẽ đạt 20 vạn vào năm 2023 (2023년에는... 20만 명에 이를 것으로 기대된다).
+        </div>
+    </div>
+
+    <div id="t53-grammar" class="tab-content t53-content">
+        <details><summary>1. ~이/가 급증하다</summary><div class="details-content">Tăng đột biến. <i>(Dùng để mở bài nhận xét chung về xu hướng)</i></div></details>
+        <details><summary>2. ~년에 N이던 ~이/가</summary><div class="details-content">[Chủ thể] từng đạt mức [N] vào năm... <i>(Cách dẫn dắt mốc thời gian cũ rất hay)</i></div></details>
+        <details><summary>3. 가파른 상승세를 보이다</summary><div class="details-content">Cho thấy xu hướng tăng dốc / tăng mạnh mẽ.</div></details>
+        <details><summary>4. 잠시 주춤하더니 다시 증가세를 보이며</summary><div class="details-content">Chững lại một chút rồi sau đó lại cho thấy xu hướng gia tăng và...</div></details>
+        <details><summary>5. ~년에 이르러 ~이/가 되었다.</summary><div class="details-content">Đạt đến năm... thì trở thành [Kết quả].</div></details>
+        <details><summary>6. 이러한 증가의 원인으로 우선 ~이/가 증가한 것을 들 수 있다.</summary><div class="details-content">Có thể kể đến nguyên nhân của sự gia tăng này trước tiên là do sự gia tăng của...</div></details>
+        <details><summary>7. ~려는 노력도 ~의 증가에 큰 영향을 미친 것으로 보인다.</summary><div class="details-content">Nỗ lực nhằm... cũng được xem là đã gây ảnh hưởng lớn đến sự gia tăng của...</div></details>
+        <details><summary>8. 이러한 영향이 계속 이어진다면 ~년에는 ~이/가 N에 이를 것으로 기대된다.</summary><div class="details-content">Nếu ảnh hưởng này tiếp tục kéo dài, người ta kỳ vọng rằng vào năm... thì [Chủ thể] sẽ đạt tới mức [N].</div></details>
+    </div>
+
+    <div id="t53-answer" class="tab-content t53-content">
+        <table class="bilingual-table">
+            <tr><td>최근 국내에서 유학하는 외국인 유학생이 급증했다.</td><td>Gần đây, số lượng du học sinh nước ngoài du học tại Hàn Quốc đã tăng đột biến.</td></tr>
+            <tr><td>2000년에 4천 명이던 유학생이 가파른 상승세를 보이다 잠시 주춤하더니 다시 증가세를 보이며 2016년에 이르러 10만 명이 되었다.</td><td>Số lượng du học sinh từng ở mức 4.000 người vào năm 2000 đã cho thấy xu hướng tăng dốc, sau đó chững lại một chút rồi lại tiếp tục tăng, đạt mức 100.000 người vào năm 2016.</td></tr>
+            <tr><td>이러한 증가의 원인으로 우선 외국인들의 한국과 한국어에 대한 관심이 증가한 것을 들 수 있다.</td><td>Có thể kể đến nguyên nhân của sự gia tăng này trước tiên là do sự quan tâm đến Hàn Quốc và tiếng Hàn của người nước ngoài đã tăng lên.</td></tr>
+            <tr><td>한국 대학에서 유학생을 유치하려는 노력도 유학생의 증가에 큰 영향을 미친 것으로 보인다.</td><td>Nỗ lực thu hút du học sinh của các trường đại học Hàn Quốc cũng được cho là đã gây ảnh hưởng lớn đến sự gia tăng số lượng du học sinh.</td></tr>
+            <tr><td>이러한 영향이 계속 이어진다면 2023년에는 외국인 유학생이 20만 명에 이를 것으로 기대된다.</td><td>Nếu ảnh hưởng này tiếp tục kéo dài, người ta kỳ vọng rằng số lượng du học sinh nước ngoài sẽ đạt tới 200.000 người vào năm 2023.</td></tr>
+        </table>
+    </div>
+
+    <div id="t53-practice" class="tab-content t53-content">
+        <div class="book-container">
+            <div class="book-page page-left">
+                <div class="book-title">Tiếng Việt</div>
+                <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+            </div>
+            <div class="book-page page-right">
+                <div class="book-title">Tiếng Hàn</div>
+                <div id="book-ko-text" style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                <div id="book-ko-input-area" style="display: none;">
+                    <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                    <div id="diff-result-box" style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;"></div>
+                    <div id="diff-correct-ans" style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="book-nav-wrapper">
+            <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+            <span id="book-page-indicator" class="page-indicator">1 / 5</span>
+            <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+            <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper" style="margin-bottom:0;">
+    <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [54] 다음을 주제로 하여 자신의 생각을 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+    </div>
+    
+    <div class="writing-box">
+        '칭찬은 고래도 춤추게 한다'는 말처럼 칭찬에는 강한 힘이 있습니다. 그러나 칭찬이 항상 긍정적인 영향을 주는 것은 아닙니다. 아래의 내용을 중심으로 <b>'칭찬에 대한 자신의 생각'</b>을 쓰십시오.
+        <ul style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+            <li>칭찬이 미치는 긍정적인 영향은 무엇입니까?</li>
+            <li>부정적인 영향은 무엇입니까?</li>
+            <li>효과적인 칭찬의 방법은 무엇입니까?</li>
+        </ul>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+        <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+        <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+        <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+    </div>
+
+    <div id="t54-intro" class="tab-content t54-content active">
+        <div class="guide-box">
+            <b>Trọng tâm: 칭찬이 미치는 긍정적인 영향은 무엇입니까? (Ảnh hưởng tích cực của lời khen?)</b><br>
+            - Động lực: Muốn làm tốt hơn và trở thành người tốt hơn.<br>
+            - Kết quả: Tạo sự tự tin, đem lại kết quả tốt trong học tập và công việc.<br>
+            - Phát triển: Kích thích tinh thần thử thách, vượt qua giới hạn của bản thân.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>우리는 칭찬을 들으면 일을 더 잘하고 싶어질 뿐만 아니라 좀 더 나은 사람이 되고 싶은 마음이 든다.</td><td>Khi nghe lời khen, chúng ta không những muốn làm việc tốt hơn mà còn nảy sinh cảm giác muốn trở thành một người tốt hơn nữa.</td></tr>
+            <tr><td>그리고 자신감이 생겨 공부나 일의 성과에도 긍정적인 영향을 미친다.</td><td>Và sự tự tin sẽ được sinh ra, gây ảnh hưởng tích cực đến thành quả của học tập hay công việc.</td></tr>
+            <tr><td>그래서 자신이 가진 능력 이상을 발휘하고 싶어지는 도전 정신이 생기기도 하는 것이다.</td><td>Chính vì vậy, cũng có khi làm nảy sinh tinh thần thử thách, khiến chúng ta muốn phát huy vượt lên trên cả mức năng lực mà bản thân sẵn có.</td></tr>
+            <tr><td>한 마디로 말해 칭찬은 사람을 한 단계 더 발전시키는 힘을 가지고 있다.</td><td>Nói tóm lại, lời khen mang trong mình sức mạnh giúp con người phát triển tiến lên thêm một bậc.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-body" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 부정적인 영향은 무엇입니까? (Ảnh hưởng tiêu cực của lời khen?)</b><br>
+            - Áp lực: Lời khen trở thành thuốc độc khi nó mang lại gánh nặng thay vì niềm vui.<br>
+            - Sợ hãi: Sợ không đáp ứng được kỳ vọng nên không thể phát huy hết thực lực.<br>
+            - Lệch lạc: Chỉ coi trọng kết quả bề ngoài để được khen, phớt lờ ý nghĩa của quá trình.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>그런데 이러한 칭찬이 독이 되는 경우가 있다. 바로 칭찬이 상대에게 기쁨을 주는 것이 아니라 부담을 안겨 주는 경우이다.</td><td>Thế nhưng, cũng có những trường hợp lời khen này trở thành thuốc độc. Đó chính là trường hợp lời khen không mang lại niềm vui cho đối phương mà lại mang đến sự gánh nặng.</td></tr>
+            <tr><td>칭찬을 들으면 그 기대에 부응해야 한다는 압박감 때문에 자신의 실력을 제대로 발휘하지 못하게 되는 일이 생기게 된다.</td><td>Khi nghe lời khen, do áp lực phải đáp ứng được kỳ vọng đó nên sẽ nảy sinh việc không thể phát huy được thực lực của bản thân một cách đúng đắn.</td></tr>
+            <tr><td>칭찬의 또 다른 부정적인 면은 칭찬 받고 싶다는 생각에 결과만을 중시하게 되는 점이다.</td><td>Một mặt tiêu cực khác của lời khen là nó khiến người ta trở nên chỉ coi trọng kết quả vì ý nghĩ muốn được nhận lời khen.</td></tr>
+            <tr><td>일반적으로 칭찬이 일의 과정보다 결과에 중점을 두고 행해지는 경우가 많기 때문이다.</td><td>Bởi vì thông thường, có rất nhiều trường hợp lời khen được thực hiện bằng cách đặt trọng tâm vào kết quả thay vì quá trình của công việc.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-conclusion" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 효과적인 칭찬의 방법은 무엇입니까? (Phương pháp khen ngợi hiệu quả?)</b><br>
+            - Thay đổi tiêu điểm: Khen ngợi sự nỗ lực và quá trình thay vì chỉ nhìn vào kết quả đạt được.<br>
+            - Hiệu quả: Giúp người nghe tận hưởng công việc và cởi bỏ được áp lực tâm lý.<br>
+            - Chốt luận: Không chỉ số lượng lời khen mà cách thức khen ngợi cũng vô cùng quan trọng.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>그래서 우리가 상대를 칭찬할 때에는 그 사람이 해낸 일의 결과가 아닌, 그 일을 해내기까지의 과정과 노력에 초점을 맞추는 것이 중요하다.</td><td>Vì vậy, khi chúng ta khen ngợi đối phương, việc tập trung vào quá trình và sự nỗ lực cho đến khi hoàn thành công việc đó, chứ không phải kết quả của công việc mà người đó đã làm được, là rất quan trọng.</td></tr>
+            <tr><td>그래야 칭찬을 듣는 사람도 일 그 자체를 즐길 수 있다.</td><td>Có như vậy thì người nghe lời khen mới có thể tận hưởng chính bản thân công việc đó.</td></tr>
+            <tr><td>또한 칭찬을 듣고 잘 해내야 한다는 부담에서도 벗어날 수 있을 것이다.</td><td>Ngoài ra, họ cũng sẽ có thể thoát khỏi gánh nặng rằng phải làm thật tốt sau khi nghe lời khen.</td></tr>
+            <tr><td>우리는 보통 칭찬을 많이 해 주는 것이 중요하다고 생각하는데 칭찬은 그 방법 역시 중요하다는 것을 잊지 말아야 할 것이다.</td><td>Chúng ta thường nghĩ rằng việc dành nhiều lời khen là quan trọng, nhưng chúng ta không được quên rằng đối với lời khen, phương pháp của nó cũng quan trọng không kém.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-grammar" class="tab-content t54-content">
+        <details><summary>1. ~을/를 들으면 ~고 싶어질 뿐만 아니라 ~고 싶은 마음이 든다.</summary><div class="details-content">Khi nghe... không những muốn... mà còn nảy sinh cảm giác muốn... <i>(Cấu trúc liệt kê cảm xúc kép)</i></div></details>
+        <details><summary>2. ~에 긍정적인 영향을 미친다.</summary><div class="details-content">Gây ảnh hưởng tích cực đến [Chủ đề].</div></details>
+        <details><summary>3. ~능력 이상을 발휘하고 싶어지는 ~이/가 생기기도 하는 것이다.</summary><div class="details-content">Cũng có khi làm nảy sinh [tinh thần/động lực] muốn phát huy vượt lên trên mức năng lực vốn có...</div></details>
+        <details><summary>4. 한 마디로 말해 ~은/는 ~를 발전시키는 힘을 가지고 있다.</summary><div class="details-content">Nói tóm lại, ... mang trong mình sức mạnh giúp con người phát triển.</div></details>
+        <details><summary>5. 그런데 이러한 ~이/가 독이 되는 경우가 있다.</summary><div class="details-content">Thế nhưng cũng có những trường hợp ... này trở thành thuốc độc. <i>(Câu lật ngược vấn đề cực gắt)</i></div></details>
+        <details><summary>6. 바로 ~이/가 ~에게 ~을/를 주는 것이 아니라 ~을/를 안겨 주는 경우이다.</summary><div class="details-content">Đó chính là trường hợp... không mang lại... cho đối phương mà lại mang đến/gánh thêm...</div></details>
+        <details><summary>7. ~에 부응해야 한다는 압박감 때문에 ~하지 못하게 되는 일이 생기게 된다.</summary><div class="details-content">Do áp lực phải đáp ứng được kỳ vọng đó nên sẽ nảy sinh việc không thể...</div></details>
+        <details><summary>8. ~의 또 다른 부정적인 면은 ~다는 생각에 ~만을 중시하게 되는 점이다.</summary><div class="details-content">Một mặt tiêu cực khác của... là điểm khiến người ta trở nên chỉ coi trọng... vì ý nghĩ muốn...</div></details>
+        <details><summary>9. ~할 때에는 ~가 아닌, ~에 초점을 맞추는 것이 중요하다.</summary><div class="details-content">Khi... thì việc tập trung vào... chứ không phải... là rất quan trọng.</div></details>
+        <details><summary>10. 그래야 ~도 ~그 자체를 즐길 수 있다.</summary><div class="details-content">Có như vậy thì [Đối tượng] mới có thể tận hưởng chính bản thân cái...</div></details>
+        <details><summary>11. ~다는 부담에서도 벗어날 수 있을 것이다.</summary><div class="details-content">Cũng sẽ có thể thoát khỏi gánh nặng rằng phải...</div></details>
+        <details><summary>12. ~는 것이 중요하다고 생각하는데 ~은/는 그 방법 역시 중요하다는 것을 잊지 말아야 할 것이다.</summary><div class="details-content">Người ta thường nghĩ rằng việc... là quan trọng, nhưng không được quên rằng phương pháp của nó cũng quan trọng không kém.</div></details>
+    </div>
+</div>
+
+<script src="exam-logic.js"></script>
+
+<script>
+    // CÂU 51A
+    function grade51A() {
+        let val = document.getElementById('ans-51-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['주문하', '구입하', '사'];
+        let validEndings = ['았습니다', '이었습니다', '샀습니다', '했습니다']; // Catch-all for past tense
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(val.includes('습니다')) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng việc đặt mua/mua hàng trong quá khứ."); }
+            else if(val.includes('어요')) { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa và thì quá khứ nhưng dùng đuôi -아/어요 (nên dùng 습니다)."); }
+            else { score = 2; feedback.push("Đạt 2/5 Điểm: Có từ khóa mua/đặt hàng nhưng sai thì quá khứ."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'đặt hàng / mua' (주문하다, 구입하다)."); }
+
+        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+    }
+
+    // CÂU 51B
+    function grade51B() {
+        let val = document.getElementById('ans-51-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['받'];
+        let validEndings = ['아 주실 수 있', '아 주시겠', '아 주시면 안 되', '아 주실래요'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc nhờ vả nhận hàng hộ."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu đuôi câu nhờ vả lịch sự (-아/어 주시겠습니까)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'nhận' (받다)."); }
+
+        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+    }
+
+    // CÂU 52A
+    function grade52A() {
+        let val = document.getElementById('ans-52-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['손', '씻'];
+        let validEndings = ['어야 한', '는 것이 좋', '어야만 한'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng giải pháp rửa tay và cấu trúc khuyên bảo bắt buộc."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu khuyên bảo/bắt buộc (-아야 한다)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ 'rửa tay' (손을 씻다)."); }
+
+        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+    }
+
+    // CÂU 52B
+    function grade52B() {
+        let val = document.getElementById('ans-52-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['비누', '사용하', '이용하', '쓰', '씻'];
+        let validEndings = ['라고 한', '라고 조언한', '라고 말한'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(val.includes('비누') && (val.includes('사용') || val.includes('씻') || val.includes('이용') || val.includes('쓰'))) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Cấu trúc trích dẫn gián tiếp mệnh lệnh chuẩn xác."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu cấu trúc trích dẫn gián tiếp mệnh lệnh (chuyên gia bảo phải dùng...) -(으)라고 한다."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ 'xà phòng' (비누) và động từ 'sử dụng / rửa bằng'."); }
+
+        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+    }
+
+    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 47 ---
+    const bookData_47 = [
+        { vi: "Gần đây, số lượng du học sinh nước ngoài du học tại Hàn Quốc đã tăng đột biến.", ko: "최근 국내에서 유학하는 외국인 유학생이 급증했다." },
+        { vi: "Số lượng du học sinh từng ở mức 4.000 người vào năm 2000 đã cho thấy xu hướng tăng dốc, sau đó chững lại một chút rồi lại tiếp tục tăng, đạt mức 100.000 người vào năm 2016.", ko: "2000년에 4천 명이던 유학생이 가파른 상승세를 보이다 잠시 주춤하더니 다시 증가세를 보이며 2016년에 이르러 10만 명이 되었다." },
+        { vi: "Có thể kể đến nguyên nhân của sự gia tăng này trước tiên là do sự quan tâm đến Hàn Quốc và tiếng Hàn của người nước ngoài đã tăng lên.", ko: "이러한 증가의 원인으로 우선 외국인들의 한국과 한국어에 대한 관심이 증가한 것을 들 수 있다." },
+        { vi: "Nỗ lực thu hút du học sinh của các trường đại học Hàn Quốc cũng được cho là đã gây ảnh hưởng lớn đến sự gia tăng số lượng du học sinh.", ko: "한국 대학에서 유학생을 유치하려는 노력도 유학생의 증가에 큰 영향을 미친 것으로 보인다." },
+        { vi: "Nếu ảnh hưởng này tiếp tục kéo dài, người ta kỳ vọng rằng số lượng du học sinh nước ngoài sẽ đạt tới 200.000 người vào năm 2023.", ko: "이러한 영향이 계속 이어진다면 2023년에는 외국인 유학생이 20만 명에 이를 것으로 기대된다." }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initBook(bookData_47);
+    });
+</script>

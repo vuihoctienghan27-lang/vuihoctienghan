@@ -1,0 +1,519 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 쓰기 - 제96회 - Vui Học Tiếng Hàn</title>
+
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제96회</div>
+</div>
+
+    
+       <style>
+        .info-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); height: 100%; }
+        .info-title { font-size: 1.05rem; font-weight: 800; color: #0f172a; text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; }
+        
+/* ===== HEADER BADGE THEO ẢNH MẪU ===== */
+    .header-badge-container {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd; /* Màu nền xám xanh nhạt giống hình */
+        border: 2px solid #1a1a1a;
+        border-radius: 99px;
+        padding: 12px 40px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }        
+/* Responsive cho điện thoại */
+    @media (max-width: 768px) {
+        .header-badge-container {
+            margin: 20px auto 30px auto;
+        }
+        .topik-header-badge {
+            font-size: 1.5rem;
+            padding: 10px 30px;
+            border-width: 1.5px;
+        }
+    }
+
+/* Cấu trúc Grid cho biểu đồ Câu 53 */
+        .q53-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Máy tính 2 cột */
+            gap: 20px;
+        }
+
+        /* Box 1: Biểu đồ đường mô phỏng */
+        .line-chart-box { position: relative; height: 140px; border-left: 2px solid #cbd5e1; border-bottom: 2px solid #cbd5e1; margin: 10px 15px 25px 15px; }
+        .data-point { position: absolute; background: #2563eb; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; transform: translate(-50%, -50%); box-shadow: 0 2px 5px rgba(37,99,235,0.3); z-index: 2; }
+        .data-point.p1 { bottom: 10%; left: 10%; }
+        .data-point.p2 { top: 10%; left: 90%; }
+        .line-connect { position: absolute; top: 50%; left: 50%; width: 105%; height: 2px; background: #2563eb; transform: translate(-50%, -50%) rotate(-25deg); transform-origin: center; z-index: 1; }
+        .growth-badge { position: absolute; top: 15%; left: 40%; font-weight: 800; color: #ef4444; background: white; padding: 4px 12px; border-radius: 12px; border: 2px solid #ef4444; z-index: 3; box-shadow: 0 2px 5px rgba(239, 68, 68, 0.2); }
+        .year-label { display: flex; justify-content: space-between; margin-top: 10px; font-weight: 700; color: #64748b; font-size: 0.95rem; padding: 0 10px; }
+        
+        /* Box 2: Biểu đồ cột mô phỏng */
+        .bar-chart-box { display: flex; justify-content: space-around; align-items: flex-end; height: 140px; border-bottom: 2px solid #cbd5e1; margin: 10px 10px 25px 10px; padding-bottom: 5px; position: relative;}
+        .bar-group { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 45px; position: relative; }
+        .bar { width: 100%; border-radius: 4px 4px 0 0; background: #94a3b8; }
+        .bar.color-main { background: #2563eb; }
+        .bar-arrow-text { position: absolute; top: -35px; font-weight: 800; color: #ef4444; font-size: 0.9rem; background: #fee2e2; padding: 2px 8px; border-radius: 6px; white-space: nowrap;}
+        
+        /* Nguyên nhân */
+        .cause-box { border: 1px solid #cbd5e1; padding: 20px; border-radius: 12px; background: #f8fafc; margin-top: 20px;}
+        .cause-title-badge { display: inline-block; background: #64748b; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; margin-bottom: 15px; }
+        .cause-list { margin: 0; padding-left: 20px; line-height: 1.8; font-weight: 600; font-size: 0.95rem; color: #1e293b; }
+        
+        /* FIX LỖI MOBILE CHO CÂU 53 */
+        @media (max-width: 768px) {
+            .q53-info-grid {
+                grid-template-columns: 1fr; /* Điện thoại 1 cột xếp dọc */
+                gap: 15px;
+            }
+            .line-connect { transform: translate(-50%, -50%) rotate(-20deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+        
+        <div class="exam-instruction">
+            ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+        </div>
+        
+        <div class="writing-box">
+            <div style="margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                <span style="background:#f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; color:#475569; font-weight: 700; margin-right: 10px;">자유 게시판</span>
+                <b>제목 : 어디로 이사하는 것이 좋을까요?</b>
+            </div>
+            <div>
+                안녕하세요. 외국인 유학생입니다.<br>
+                기숙사 생활이 불편해서 이번 방학에 이사를 <b>( ㉠ )</b>.<br>
+                집값이 싸고 좀 깨끗한 동네면 좋겠습니다.<br>
+                그런데 어느 <b>( ㉡ )</b> 잘 모르겠습니다.<br>
+                좋은 곳을 아시면 추천 부탁드립니다.<br>
+                작성자: 에르덴
+            </div>
+            
+            <details style="margin-top: 15px; background: rgba(255,255,255,0.8); border:none; box-shadow:none;">
+                <summary style="padding: 10px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+                <div class="details-content" style="font-size: 0.95rem; color: #111;">
+                    <b>Bảng tin tự do | Tiêu đề: Nên chuyển nhà đi đâu thì tốt nhỉ?</b><br>
+                    Xin chào. Tôi là du học sinh nước ngoài.<br>
+                    Vì sinh hoạt ở ký túc xá bất tiện nên kỳ nghỉ này tôi <b>(định chuyển nhà)</b>.<br>
+                    Nếu là khu phố giá nhà rẻ và hơi sạch sẽ một chút thì tốt.<br>
+                    Thế nhưng tôi không rõ <b>(khu nào thì tốt / nên đi đâu)</b>.<br>
+                    Nếu biết nơi nào tốt xin hãy giới thiệu cho tôi.<br>
+                    Người viết: Erdene
+                </div>
+            </details>
+        </div>
+
+        <div class="answer-area">
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉠</div>
+                <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                    <button class="btn-outline" id="btn-exp-51-a" style="display:none;" onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-51-a" class="explanation-box">
+                    <div id="score-51-a" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Phía trước đã có từ `이사를` (Việc chuyển nhà). Động từ đi kèm luôn là `하다`. Ngữ cảnh nói về một ý định trong tương lai gần (kỳ nghỉ này).<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>하</code> + Ngữ pháp ý định/kế hoạch <code>-려고 합니다 / -고 싶습니다 / -(으)ㄹ 계획입니다</code>.<br><br>
+                    <b>[Các đáp án được chấp nhận]</b><br>
+                    <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 하려고 합니다 / 하고 싶습니다.<br>
+                    <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 할 계획입니다 / 할 예정입니다 / 하기로 했습니다.
+                </div>
+            </div>
+
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉡</div>
+                <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                    <button class="btn-outline" id="btn-exp-51-b" style="display:none;" onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-51-b" class="explanation-box">
+                    <div id="score-51-b" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Phía trước có chữ `어느` (Nào / nơi nào). Phía sau có `잘 모르겠습니다` (Không biết rõ). Do đó cần một cấu trúc thắc mắc "Không biết khu phố nào tốt / Không biết nên đi đâu".<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> <code>동네 / 곳 / 데</code> + <code>좋은지 / 좋을지 / 갈지 / 가야 할지</code>.<br><br>
+                    <b>[Các đáp án được chấp nhận]</b><br>
+                    <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 동네가 좋을지 / 곳이 좋을지.<br>
+                    <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 곳으로 갈지 / 곳으로 가야 할지 / 곳으로 이사하면 좋을지 / 데가 좋을지.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+        
+        <div class="exam-instruction">
+            ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+        </div>
+        
+        <div class="writing-box">
+            개구리가 겨울에 추위를 피해 겨울잠을 잔다는 것은 잘 알려져 있다. 그런데 개구리가 꼭 추운 겨울에만 긴 잠을 <b>( ㉠ )</b>. 더운 지역에 사는 개구리는 기온이 매우 높은 기간에 긴 잠을 자기도 한다. 왜냐하면 개구리는 사람과 달리 체내에서 체온 조절을 <b>( ㉡ )</b>. 개구리처럼 체온 조절을 못하는 동물에게는 추위뿐만 아니라 더위도 생존에 위협이 되는 것이다.
+            
+            <details style="margin-top: 15px; background: rgba(255,255,255,0.8); border:none; box-shadow:none;">
+                <summary style="padding: 10px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+                <div class="details-content" style="font-size: 0.95rem; color: #111;">
+                    Việc ếch ngủ đông để tránh cái lạnh vào mùa đông đã được biết đến rộng rãi. Thế nhưng không phải ếch <b>(chỉ ngủ)</b> giấc dài vào mùa đông lạnh giá. Những loài ếch sống ở khu vực nóng nực cũng ngủ giấc dài vào thời kỳ nhiệt độ lên rất cao. Bởi vì khác với con người, ếch <b>(không thể)</b> điều hòa thân nhiệt trong cơ thể. Đối với những loài động vật không thể điều hòa thân nhiệt như ếch thì không chỉ cái lạnh mà cả cái nóng cũng trở thành mối đe dọa tới sự sinh tồn.
+                </div>
+            </details>
+        </div>
+
+        <div class="answer-area">
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉠</div>
+                <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                    <button class="btn-outline" id="btn-exp-52-a" style="display:none;" onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-52-a" class="explanation-box">
+                    <div id="score-52-a" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Phía trước có từ `꼭 ~ 에만` (Nhất định chỉ vào...). Câu sau lại bổ sung ý: "Trời nóng nó cũng ngủ". Rõ ràng vị trí này dùng để PHỦ ĐỊNH lại định kiến ở câu trước.<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>자다</code> + Ngữ pháp phủ định một phần <code>-는 것은 아니다 / -지는 않다</code>.<br><br>
+                    <b>[Các đáp án được chấp nhận]</b><br>
+                    <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 자는 것은 아니다.<br>
+                    <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 자지는 않는다 / 자는 것만은 아니다.
+                </div>
+            </div>
+
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉡</div>
+                <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                    <button class="btn-outline" id="btn-exp-52-b" style="display:none;" onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-52-b" class="explanation-box">
+                    <div id="score-52-b" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Câu bắt đầu bằng `왜냐하면` (Bởi vì). Phía sau có từ `체온 조절을` (Việc điều hòa thân nhiệt). Ở câu cuối cùng tác giả đã viết rõ `체온 조절을 못하는 동물` (Động vật không thể điều hòa thân nhiệt). Lấy thẳng Keyword đó đưa lên!<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> <code>못하다 / 안 되다 / 할 수 없다</code> + Ngữ pháp giải thích lý do <code>-기 때문이다</code>.<br><br>
+                    <b>[Các đáp án được chấp nhận]</b><br>
+                    <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 못하기 때문이다 / 하지 못하기 때문이다.<br>
+                    <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 안 되기 때문이다 / 할 수 없기 때문이다 / 스스로 조절할 수 없기 때문이다.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+        
+        <div class="exam-instruction">
+            ※ [53] 다음은 '인주시 마라톤 대회 참가자 수의 변화'에 대한 자료이다. 이 내용을 200~300자의 글로 쓰시오. 단, 글의 제목은 쓰지 마시오. (30점)
+        </div>
+
+        <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div style="font-weight: 700; color: #475569; margin-bottom: 20px; font-size: 0.95rem;">■ 조사 기관: 한국스포츠연구소</div>
+            
+            <div class="q53-info-grid">
+                <div class="info-card">
+                    <div class="info-title">인주시 마라톤 대회 참가자 수<br><span style="font-size: 0.8rem; color: #64748b; font-weight:500;">(단위: 명)</span></div>
+                    <div class="line-chart-box">
+                        <div class="data-point p1">40만</div>
+                        <div class="growth-badge">2.5배 ↗</div>
+                        <div class="line-connect"></div>
+                        <div class="data-point p2">100만</div>
+                    </div>
+                    <div class="year-label"><span>2013년</span><span>2023년</span></div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-title">연령별 참가자 수</div>
+                    <div class="bar-chart-box">
+                        <div style="display:flex; gap:5px; height:100%; align-items:flex-end; position:relative;">
+                            <div class="bar-arrow-text" style="left:5px;">4배 ↗</div>
+                            <div class="bar group" style="height: 20%; width: 25px;"></div>
+                            <div class="bar group color-main" style="height: 80%; width: 25px;"></div>
+                        </div>
+                        <div style="display:flex; gap:5px; height:100%; align-items:flex-end; position:relative;">
+                            <div class="bar-arrow-text" style="left:5px;">1.3배 ↗</div>
+                            <div class="bar group" style="height: 60%; width: 25px;"></div>
+                            <div class="bar group color-main" style="height: 78%; width: 25px;"></div>
+                        </div>
+                    </div>
+                    <div class="year-label" style="justify-content: space-around;">
+                        <span>20~30대</span><span>40~50대</span>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:15px; margin-top:10px; font-size:0.8rem; color:#64748b; font-weight:600;">
+                        <div style="display:flex; align-items:center; gap:5px;"><div style="width:12px; height:12px; background:#94a3b8; border-radius:3px;"></div>2013년</div>
+                        <div style="display:flex; align-items:center; gap:5px;"><div style="width:12px; height:12px; background:#2563eb; border-radius:3px;"></div>2023년</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cause-box">
+                <div class="cause-title-badge">원인</div>
+                <ul class="cause-list">
+                    <li>건강 관리에 대한 관심 ↑ ➔ 달리기 문화 확산</li>
+                    <li>SNS를 통한 마라톤 모임 활성화 ➔ 20~30대 참가자 ↑</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+            <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+            <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+            <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+        </div>
+
+        <div id="t53-guide" class="tab-content t53-content active">
+            <div class="guide-box">
+                <b>Dàn ý phân tích biểu đồ:</b><br><br>
+                1. <b>Mở bài:</b> Nêu cơ quan khảo sát và chủ đề (한국스포츠연구소에서... 조사하였다).<br>
+                2. <b>Thân bài 1 (Biểu đồ đường):</b> Nêu số liệu tổng thể (Tăng gấp 2.5 lần, từ 40 vạn lên 100 vạn).<br>
+                3. <b>Thân bài 2 (Biểu đồ cột):</b> Phân tích theo độ tuổi (이를 연령별로 살펴보면). Độ tuổi 20~30 tăng mạnh 4 lần. Trong khi đó (반면) 40~50 chỉ dừng ở mức tăng 1.3 lần.<br>
+                4. <b>Kết luận (Nguyên nhân):</b> Giải thích lý do (이러한 변화의 원인은... 보인다). Quan tâm sức khỏe -> văn hóa chạy lan rộng. Và SNS hoạt hóa -> 20-30 tham gia nhiều.
+            </div>
+        </div>
+
+        <div id="t53-grammar" class="tab-content t53-content">
+            <details><summary>1. ~에서 ~의 변화를 조사하였다.</summary><div class="details-content">Tại [Cơ quan] đã tiến hành khảo sát sự thay đổi của [Chủ đề].</div></details>
+            <details><summary>2. 그 결과 ~은/는 ~에서 ~으로 N배 증가한 것으로 나타났다.</summary><div class="details-content">Kết quả cho thấy, [Chủ đề] đã tăng gấp N lần từ [Số A] lên [Số B].</div></details>
+            <details><summary>3. 이를 연령별로 살펴보면</summary><div class="details-content">Nếu xem xét điều này theo từng độ tuổi thì... <i>(Câu dẫn để bắt đầu phân tích biểu đồ 2)</i></div></details>
+            <details><summary>4. ~은/는 N배 증가한 반면 ~은/는 N배 증가하는 데에 그쳤다.</summary><div class="details-content">Trong khi A tăng N lần thì B chỉ dừng lại ở mức tăng N lần. <i>(Cấu trúc đối chiếu kinh điển cực ăn điểm)</i></div></details>
+            <details><summary>5. 이러한 변화의 원인은 ~아/어/여 ~고 ~아/어/여 ~기 때문인 것으로 보인다.</summary><div class="details-content">Nguyên nhân của sự thay đổi này được cho là vì A nên B, và vì C nên D.</div></details>
+            <details><summary>6. 명사 + 에 대한 관심이 높아지다</summary><div class="details-content">Sự quan tâm đối với [Danh từ] tăng cao.</div></details>
+            <details><summary>7. 명사 + 문화가 확산되다</summary><div class="details-content">Văn hóa [Danh từ] được lan rộng.</div></details>
+            <details><summary>8. 명사 + 을/를 통한 모임이 활성화되다</summary><div class="details-content">Các hội nhóm thông qua [Danh từ] được hoạt hóa/phát triển. <i>(Ví dụ: SNS를 통한 = Thông qua mạng xã hội)</i></div></details>
+        </div>
+
+        <div id="t53-answer" class="tab-content t53-content">
+            <table class="bilingual-table">
+                <tr><td>한국스포츠연구소에서 인주시 마라톤 대회 참가자 수의 변화를 조사하였다.</td><td>Viện Nghiên cứu Thể thao Hàn Quốc đã khảo sát sự thay đổi số lượng người tham gia giải chạy marathon thành phố Inju.</td></tr>
+                <tr><td>그 결과 인주시 마라톤 대회 참가자 수는 2013년 40만 명에서 2023년 100만 명으로 2.5배 증가한 것으로 나타났다.</td><td>Kết quả cho thấy, số lượng người tham gia đã tăng gấp 2.5 lần, từ 400.000 người năm 2013 lên 1.000.000 người năm 2023.</td></tr>
+                <tr><td>이를 연령별로 살펴보면 20~30대는 지난 10년간 4배 증가한 반면 40~50대는 같은 기간에 1.3배 증가하는 데에 그쳤다.</td><td>Xét theo độ tuổi, trong khi độ tuổi 20~30 tăng gấp 4 lần trong 10 năm qua, thì độ tuổi 40~50 chỉ dừng ở mức tăng 1.3 lần trong cùng kỳ.</td></tr>
+                <tr><td>이러한 변화의 원인은 건강 관리에 대한 관심이 높아져 달리기 문화가 확산되었고 SNS를 통한 마라톤 모임이 활성화되어 20~30대 참가자가 증가하였기 때문인 것으로 보인다.</td><td>Nguyên nhân của sự thay đổi này được cho là do sự quan tâm đến quản lý sức khỏe tăng cao làm văn hóa chạy bộ lan rộng, và các hội nhóm thông qua SNS được hoạt hóa khiến người tham gia tuổi 20~30 tăng lên.</td></tr>
+            </table>
+        </div>
+
+        <div id="t53-practice" class="tab-content t53-content">
+            <div class="book-container">
+                <div class="book-page page-left">
+                    <div class="book-title">Tiếng Việt</div>
+                    <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+                </div>
+                <div class="book-page page-right">
+                    <div class="book-title">Tiếng Hàn</div>
+                    <div id="book-ko-text" style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                    <div id="book-ko-input-area" style="display: none;">
+                        <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                        <div id="diff-result-box" style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;"></div>
+                        <div id="diff-correct-ans" style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="book-nav-wrapper">
+                <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+                <span id="book-page-indicator" class="page-indicator">1 / 4</span>
+                <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+                <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="wrapper" style="margin-bottom:0;">
+        <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+        
+        <div class="exam-instruction">
+            ※ [54] 다음을 참고하여 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+        </div>
+        
+        <div class="writing-box">
+            오늘날 직장 내에서 복장, 출퇴근 시간, 업무 방식 등에 대해 개인의 자율성을 원하는 사람들이 많다. 회사에서 이런 자율성이 보장될 때 생기는 장점이 있다. 그러나 개인의 자율성만을 중시하는 사람이 많아지면 여러 문제가 발생할 우려도 있다. 아래의 내용을 중심으로 <b>'직장과 개인의 자율성'</b>에 대한 자신의 생각을 쓰라.
+            <ul style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+                <li>직장에서 개인의 자율성이 보장될 때의 장점은 무엇인가?</li>
+                <li>직장 내 사람들이 개인의 자율성만 중시할 때 생기는 문제는 무엇인가?</li>
+                <li>이런 문제를 해결하기 위해서는 어떻게 해야 하는가?</li>
+            </ul>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+            <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+            <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+            <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+        </div>
+
+        <div id="t54-intro" class="tab-content t54-content active">
+            <div class="guide-box">
+                <b>Trọng tâm: 직장에서 개인의 자율성이 보장될 때의 장점은 무엇인가? (Ưu điểm khi được tự chủ tại nơi làm việc?)</b><br>
+                - Nêu bối cảnh: Xã hội thay đổi, công ty cũng áp dụng giờ làm việc linh hoạt.<br>
+                - Ưu điểm 1: Môi trường mềm dẻo -> Phát huy tính sáng tạo.<br>
+                - Ưu điểm 2: Cân bằng công việc & cuộc sống -> Tăng hiệu suất -> Giúp tổ chức đạt mục tiêu.
+            </div>
+            <table class="bilingual-table">
+                <tr><td>사회의 변화로 개인의 자율성을 중시하는 사람들이 많아졌다. 이에 따라 기업에서도 유연근무제를 실시하는 등 직장 내 자율성을 높이고자 노력하고 있다.</td><td>Do sự thay đổi của xã hội, số người coi trọng tính tự chủ cá nhân đã tăng lên. Kéo theo đó, các doanh nghiệp cũng đang nỗ lực nâng cao tính tự chủ tại nơi làm việc như áp dụng chế độ làm việc linh hoạt.</td></tr>
+                <tr><td>직장에서 개인의 자율성이 보장되면 직장 내 문화가 유연해져 개인이 창의성을 발휘할 수 있는 근무 환경이 만들어진다.</td><td>Nếu tính tự chủ của cá nhân tại nơi làm việc được bảo đảm, văn hóa công sở sẽ trở nên mềm dẻo, tạo ra một môi trường làm việc mà cá nhân có thể phát huy tính sáng tạo.</td></tr>
+                <tr><td>또한 개인이 자신에게 적합한 근무 여건을 조성하여 일할 수 있어 일과 삶의 균형이 생긴다.</td><td>Hơn nữa, cá nhân có thể kiến tạo điều kiện làm việc phù hợp với bản thân để làm việc, từ đó sinh ra sự cân bằng giữa công việc và cuộc sống.</td></tr>
+                <tr><td>이것이 구성원의 업무 효율을 높이는 데 기여하여 조직의 목표를 달성하는 데에 도움이 된다.</td><td>Điều này đóng góp vào việc nâng cao hiệu suất công việc của các thành viên, giúp ích cho việc đạt được mục tiêu của tổ chức.</td></tr>
+            </table>
+        </div>
+
+        <div id="t54-body" class="tab-content t54-content">
+            <div class="guide-box">
+                <b>Trọng tâm: 직장 내 사람들이 개인의 자율성만 중시할 때 생기는 문제는 무엇인가? (Vấn đề khi CHỈ coi trọng tự chủ?)</b><br>
+                - Dùng liên từ chuyển ý (그러나). Cảnh báo tác dụng phụ.<br>
+                - Vấn đề 1: Đặt lập trường cá nhân lên trên tập thể -> Tự chủ biến chất thành sự ích kỷ -> Xung đột thế hệ, đội nhóm.<br>
+                - Vấn đề 2: Quen làm việc cá nhân -> Thiếu giao tiếp -> Khó tìm điểm chung và khó tạo thành quả hợp tác.
+            </div>
+            <table class="bilingual-table">
+                <tr><td>그러나 직장 내 사람들이 개인의 자율성만 중시하면 부작용이 발생할 수 있다.</td><td>Tuy nhiên, nếu những người trong nơi làm việc chỉ coi trọng tính tự chủ cá nhân thì có thể phát sinh tác dụng phụ.</td></tr>
+                <tr><td>먼저, 개인이 공동의 목표보다는 자신의 입장만을 생각하다 보면 자율성이 이기주의로 변질될 수 있다.</td><td>Trước tiên, nếu cá nhân chỉ nghĩ đến lập trường của mình hơn là mục tiêu chung, thì tính tự chủ có thể bị biến chất thành chủ nghĩa ích kỷ.</td></tr>
+                <tr><td>이러한 상황이 계속되면 책임자와 팀원 간 갈등, 세대 간 갈등이 발생할 수도 있다.</td><td>Nếu tình huống này tiếp diễn, có thể phát sinh mâu thuẫn giữa người phụ trách và thành viên nhóm, cũng như mâu thuẫn giữa các thế hệ.</td></tr>
+                <tr><td>또한 업무의 자율성이 높아져 개별적으로 일할 수 있는 환경이 익숙해지면 소통이 부재하여 합의점을 찾기 어렵고 협력을 통한 성과를 내기 어려울 수 있다.</td><td>Ngoài ra, khi tính tự chủ công việc tăng cao và quen với môi trường làm việc cá nhân hóa, sự thiếu vắng giao tiếp sẽ khiến việc tìm điểm chung trở nên khó khăn và khó có thể tạo ra thành quả thông qua sự hợp tác.</td></tr>
+            </table>
+        </div>
+
+        <div id="t54-conclusion" class="tab-content t54-content">
+            <div class="guide-box">
+                <b>Trọng tâm: 이런 문제를 해결하기 위해서는 어떻게 해야 하는가? (Giải pháp?)</b><br>
+                - Phía cá nhân: Vừa giữ tự chủ nhưng khi làm việc phải hợp tác và biết bao dung đồng nghiệp.<br>
+                - Phía tổ chức: Phải trăn trở tìm phương án vừa tăng tự chủ vừa đạt mục tiêu chung. Sắp xếp phương thức giao tiếp hiệu quả.
+            </div>
+            <table class="bilingual-table">
+                <tr><td>이러한 문제를 해결하기 위해서는 직장 내 개개인이 자율성을 가지면서도 업무를 수행할 때는 최대한 동료와 협업하고 서로를 배려하는 마음을 가질 필요가 있다.</td><td>Để giải quyết vấn đề này, mỗi cá nhân trong nơi làm việc vừa giữ tính tự chủ nhưng khi thực hiện công việc cần có tấm lòng hợp tác tối đa với đồng nghiệp và quan tâm lẫn nhau.</td></tr>
+                <tr><td>또한 조직은 구성원의 자율성을 높이면서 조직의 목표를 성취하는 데 도움이 되는 방안을 고민해야 한다.</td><td>Bên cạnh đó, tổ chức phải trăn trở các phương án giúp ích cho việc đạt được mục tiêu của tổ chức trong khi vẫn nâng cao được tính tự chủ của thành viên.</td></tr>
+                <tr><td>나아가 효율적인 의사소통 방안을 마련하여 구성원 간 원활한 협력이 가능하도록 해야 할 것이다.</td><td>Tiến xa hơn, sẽ cần phải chuẩn bị phương án giao tiếp hiệu quả để việc hợp tác suôn sẻ giữa các thành viên mang tính khả thi.</td></tr>
+            </table>
+        </div>
+
+        <div id="t54-grammar" class="tab-content t54-content">
+            <details><summary>1. 사회의 변화로 ~는 사람들이 많아졌다.</summary><div class="details-content">Do sự thay đổi của xã hội, số người... đã tăng lên. <i>(Cấu trúc mỏ bài kinh điển cho dạng đề thay đổi xu hướng xã hội)</i></div></details>
+            <details><summary>2. 이에 따라 ~에서도 ~고자 노력하고 있다.</summary><div class="details-content">Kéo theo đó, tại [Chủ ngữ] cũng đang nỗ lực thực hiện ý đồ... thông qua việc áp dụng...</div></details>
+            <details><summary>3. ~이/가 보장되면 ~아/어/여져 ~(으)ㄹ 수 있는 환경이 만들어진다.</summary><div class="details-content">Nếu... được đảm bảo, ... sẽ trở nên... tạo ra môi trường mà cá nhân có thể...</div></details>
+            <details><summary>4. 또한 ~아/어/여 일할 수 있어 ~의 균형이 생긴다.</summary><div class="details-content">Hơn nữa, có thể làm việc bằng cách... nên tạo ra sự cân bằng của...</div></details>
+            <details><summary>5. 이것이 ~를 높이는 데 기여하여 ~는 데에 도움이 된다.</summary><div class="details-content">Điều này đóng góp vào việc nâng cao... giúp ích cho việc...</div></details>
+            <details><summary>6. 그러나 ~만 중시하면 부작용이 발생할 수 있다.</summary><div class="details-content">Tuy nhiên, nếu chỉ coi trọng... thì có thể phát sinh tác dụng phụ. <i>(Câu chuyển ý cực mạnh để báo hiệu phần Nhược điểm)</i></div></details>
+            <details><summary>7. 먼저, ~보다는 ~만을 생각하다 보면 ~로 변질될 수 있다.</summary><div class="details-content">Trước tiên, nếu cứ chỉ nghĩ đến... hơn là... thì có thể bị biến chất thành...</div></details>
+            <details><summary>8. 이러한 상황이 계속되면 ~ 간 갈등이 발생할 수도 있다.</summary><div class="details-content">Nếu tình trạng này tiếp diễn, có thể phát sinh mâu thuẫn giữa...</div></details>
+            <details><summary>9. ~기 위해서는 ~면서도 ~ㄹ 때는 최대한 ~고 ~는 마음을 가질 필요가 있다.</summary><div class="details-content">Để giải quyết việc này... trong khi vẫn duy trì... nhưng khi làm... thì cần có tấm lòng... tối đa.</div></details>
+            <details><summary>10. 나아가 ~ 방안을 마련하여 ~ 가능하도록 해야 할 것이다.</summary><div class="details-content">Tiến xa hơn, cần chuẩn bị phương án... để có thể...</div></details>
+        </div>
+    </div>
+
+    <script src="exam-logic.js"></script>
+
+    <script>
+        // CÂU 51A
+        function grade51A() {
+            let val = document.getElementById('ans-51-a').value.trim();
+            let score = 0; let feedback = [];
+            
+            let validRoots = ['하'];
+            let validEndings = ['려고 합', '고 싶', '기로 했', '계획', '예정'];
+
+            if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if(checkKeywords(val, validRoots)) {
+                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý định chuyển nhà chia rất chuẩn."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng sai đuôi câu ý định."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có động từ '하다' để nối với chữ '이사를' ở trước."); }
+
+            document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        }
+
+        // CÂU 51B
+        function grade51B() {
+            let val = document.getElementById('ans-51-b').value.trim();
+            let score = 0; let feedback = [];
+            
+            let validRoots = ['동네', '곳', '데'];
+            let validEndings = ['좋은지', '좋을지', '갈지', '가야 할지'];
+
+            if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if(checkKeywords(val, validRoots)) {
+                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng sự phân vân chưa biết nơi nào."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp thắc mắc/nghi vấn -(으)ㄴ/는지."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần từ chỉ địa điểm/khu phố."); }
+
+            document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        }
+
+        // CÂU 52A
+        function grade52A() {
+            let val = document.getElementById('ans-52-a').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['자'];
+            let validNegatives = ['않', '아니', '못하'];
+
+            if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if(checkKeywords(val, validRoots) && checkKeywords(val, validNegatives)) {
+                score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định lại việc 'chỉ ngủ vào mùa đông' rất tốt.");
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'Ngủ' và ý phủ định một phần."); }
+
+            document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        }
+
+        // CÂU 52B
+        function grade52B() {
+            let val = document.getElementById('ans-52-b').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['못하', '안 되', '할 수 없'];
+            let validEndings = ['기 때문'];
+
+            if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if(checkKeywords(val, validRoots)) {
+                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu lý do chính xác."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu cấu trúc giải thích lý do -기 때문이다."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ mang nghĩa 'Không thể' làm được việc đó."); }
+
+            document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        }
+
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 96 ---
+        const bookData_96 = [
+            { vi: "Viện Nghiên cứu Thể thao Hàn Quốc đã khảo sát sự thay đổi số lượng người tham gia giải chạy marathon thành phố Inju.", ko: "한국스포츠연구소에서 인주시 마라톤 대회 참가자 수의 변화를 조사하였다." },
+            { vi: "Kết quả cho thấy, số lượng người tham gia đã tăng gấp 2.5 lần, từ 400.000 người năm 2013 lên 1.000.000 người năm 2023.", ko: "그 결과 인주시 마라톤 대회 참가자 수는 2013년 40만 명에서 2023년 100만 명으로 2.5배 증가한 것으로 나타났다." },
+            { vi: "Xét theo độ tuổi, trong khi độ tuổi 20~30 tăng gấp 4 lần trong 10 năm qua, thì độ tuổi 40~50 chỉ dừng ở mức tăng 1.3 lần trong cùng kỳ.", ko: "이를 연령별로 살펴보면 20~30대는 지난 10년간 4배 증가한 반면 40~50대는 같은 기간에 1.3배 증가하는 데에 그쳤다." },
+            { vi: "Nguyên nhân của sự thay đổi này được cho là do sự quan tâm đến quản lý sức khỏe tăng cao làm văn hóa chạy bộ lan rộng, và các hội nhóm thông qua SNS được hoạt hóa khiến người tham gia tuổi 20~30 tăng lên.", ko: "이러한 변화의 원인은 건강 관리에 대한 관심이 높아져 달리기 문화가 확산되었고 SNS를 통한 마라톤 모임이 활성화되어 20~30대 참가자가 증가하였기 때문인 것으로 보인다." }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initBook(bookData_96);
+        });
+    </script>
+    <script src="../../assets/js/study-timer.js"></script>
+</body>
+</html>

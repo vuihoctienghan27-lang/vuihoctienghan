@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Dạng Câu 51 | TOPIK II Viết - Vui Học Tiếng Hàn</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- CSS chung của hệ thống -->
+    <link rel="stylesheet" href="../../assets/css/style.css">
+    <!-- CSS riêng cho bài viết -->
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <link rel="stylesheet" href="../../assets/css/exam-layout.css">
+    <link rel="stylesheet" href="../../assets/css/exam-controls.css">
+
+    <style>
+        /* ===== KẾ THỪA PHONG CÁCH GLASSMORPHISM (Giống Reading) ===== */
+        :root {
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --primary: #2563eb;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0 0 40px 0;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        /* ===== NAVBAR KÍNH MỜ ===== */
+        .global-nav {
+            position: sticky;
+            top: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+            max-width: 900px;
+            margin: 20px auto 30px auto;
+        }
+
+        .nav-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            height: 55px;
+            position: relative;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            border-radius: 8px;
+            transition: 0.2s;
+            color: #0f172a;
+        }
+
+        .nav-icon-btn:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-logo {
+            font-size: 1.3em;
+            font-weight: 800;
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-desktop-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--text-sub);
+            font-weight: 700;
+            font-size: 1.15em;
+            transition: 0.2s;
+        }
+
+        .nav-link.active {
+            color: var(--primary);
+            font-weight: 800;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ===== WRAPPER KÍNH MỜ ===== */
+        .wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            padding: 30px 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        /* ===== HERO SECTION (BANNER) ===== */
+        .hero-section {
+            background: var(--random-bg-gradient, linear-gradient(135deg, #1e40af 0%, #3b82f6 100%));
+            border-radius: 16px;
+            padding: 25px 36px;
+            color: white;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.18);
+            color: #dbeafe;
+            font-size: 0.9em;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 99px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        /* Nhãn báo nguồn gốc đề */
+        .exam-source-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.6);
+            color: #0284c7;
+            font-size: 0.85em;
+            font-weight: 800;
+            padding: 6px 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .loading-text {
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: #64748b;
+            padding: 50px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        /* ===== FOOTER KÍNH MỜ ===== */
+        .global-footer {
+            max-width: 900px;
+            margin: 10px auto 30px auto;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        .footer-link {
+            display: flex; align-items: center; gap: 10px; text-decoration: none;
+            color: var(--text-main); font-weight: 700; font-size: 1.05em; transition: 0.2s;
+        }
+        .footer-link:hover { transform: translateY(-2px); color: #1877f2; }
+        .footer-fb-icon { width: 22px; height: 22px; fill: currentColor; }
+
+        @media (max-width: 768px) {
+            .nav-top-row { height: 50px; padding: 0 15px; }
+            .nav-logo-wrapper { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
+            .nav-logo { font-size: 1.15em; }
+            .nav-desktop-links { display: none; }
+        }
+
+        @media (max-width: 600px) {
+            .global-nav, .wrapper, .global-footer { margin-left: 5px; margin-right: 5px; border-radius: 16px; }
+            .wrapper { padding: 20px 16px; }
+            .hero-section { padding: 24px 20px; margin-bottom: 20px; }
+            .hero-title { font-size: 1.6em; }
+        }
+
+        /* ===== DARK MODE DÀNH CHO WRITING ===== */
+        body.dark-mode { color: #e2e8f0 !important; }
+        body.dark-mode .wrapper { background: rgba(15,23,42,0.75) !important; border-color: rgba(255,255,255,0.1) !important; }
+        body.dark-mode .section-title { color: #93c5fd !important; border-bottom-color: rgba(255,255,255,0.1) !important; }
+        body.dark-mode .badge { background: rgba(59,130,246,0.2) !important; color: #93c5fd !important; border-color: rgba(59,130,246,0.3) !important; }
+        body.dark-mode .writing-box { background: rgba(30,41,59,0.7) !important; border-color: rgba(255,255,255,0.1) !important; color: #e2e8f0 !important; }
+        body.dark-mode .exam-instruction { color: #cbd5e1 !important; }
+        body.dark-mode .ans-block { background: rgba(15,23,42,0.6) !important; border-color: rgba(255,255,255,0.08) !important; }
+        body.dark-mode .ans-block-title { color: #93c5fd !important; }
+        body.dark-mode .writing-input { background: rgba(15,23,42,0.8) !important; color: #f1f5f9 !important; border-color: rgba(255,255,255,0.15) !important; }
+        body.dark-mode .writing-input::placeholder { color: #64748b !important; }
+        body.dark-mode .writing-input:focus { border-color: #3b82f6 !important; box-shadow: 0 0 0 3px rgba(59,130,246,0.2) !important; }
+        body.dark-mode .btn-outline { background: rgba(30,41,59,0.8) !important; color: #93c5fd !important; border-color: #3b82f6 !important; }
+        body.dark-mode .explanation-box { background: rgba(16,185,129,0.08) !important; border-color: rgba(16,185,129,0.3) !important; color: #e2e8f0 !important; }
+        body.dark-mode details { background: rgba(30,41,59,0.6) !important; border-color: rgba(255,255,255,0.08) !important; color: #e2e8f0 !important; }
+        body.dark-mode summary { color: #93c5fd !important; }
+        body.dark-mode .details-content { color: #cbd5e1 !important; }
+        body.dark-mode .exam-source-badge { background: rgba(30,41,59,0.8) !important; color: #93c5fd !important; border-color: rgba(255,255,255,0.1) !important; }
+    </style>
+
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/type-navigator.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+</head>
+
+<body class="app-started">
+
+
+
+    <div class="wrapper">
+        <div class="hero-section">
+            <h1 class="hero-title"> DẠNG CÂU 51</h1>
+            <div class="hero-tag">Điền vào chỗ trống</div>
+        </div>
+        
+        <div id="dynamic-questions-container">
+            <div class="loading-text">⏳ Đang gom nhặt câu hỏi từ các đề...</div>
+        </div>
+    </div>
+
+    <footer class="global-footer">
+        <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer" class="footer-link">
+            <span>📚 Vui Học Tiếng Hàn</span>
+            <svg class="footer-fb-icon" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+        </a>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="../../auth.js"></script>
+
+    <script>
+        const examsToFetch = [
+            'topik35.html', 'topik36.html', 'topik37.html', 'topik41.html',
+            'topik47.html', 'topik52.html', 'topik60.html', 'topik64.html',
+            'topik83.html', 'topik91.html', 'topik96.html', 'topik102.html'
+        ];
+
+        async function fetchQuestionsByType() {
+            const container = document.getElementById('dynamic-questions-container');
+            if (window.location.protocol === 'file:') {
+                container.innerHTML = '<div style="text-align:center; color:red; font-weight:800; padding: 30px;">LỖI: Cần mở bằng Live Server để tải dữ liệu!</div>';
+                return;
+            }
+
+            let totalQuestions = 0;
+            let tempHTML = '';
+            let finalScripts = '';
+
+            for (let examFile of examsToFetch) {
+                try {
+                    let response = await fetch(examFile);
+                    if (!response.ok) continue;
+                    let htmlString = await response.text();
+
+                    let parser = new DOMParser();
+                    let doc = parser.parseFromString(htmlString, 'text/html');
+
+                    let wrappers = doc.querySelectorAll('.wrapper');
+                    let examName = examFile.replace('.html', '').replace('topik', 'Đề ');
+
+                    wrappers.forEach((wrapper, idx) => {
+                        let title = wrapper.querySelector('.section-title');
+                        if (title && title.textContent.includes('Câu 51')) {
+                            // Sửa lại wrapper thành question-block để navigator nhận diện
+                            wrapper.classList.add('question-block');
+
+                            // Thêm thẻ q-number ẩn để navigator lấy số câu hỏi
+                            let uid = `q51_${examName.replace(/\s/g, '')}_${idx}`;
+                            wrapper.id = uid;
+                            wrapper.insertAdjacentHTML('afterbegin', `<div class="q-number" style="display:none;">51</div>`);
+
+                            let contentHTML = wrapper.outerHTML
+                                .replace(/ans-51-a/g, `ans-a-${uid}`)
+                                .replace(/ans-51-b/g, `ans-b-${uid}`)
+                                .replace(/btn-exp-51-a/g, `btn-a-${uid}`)
+                                .replace(/btn-exp-51-b/g, `btn-b-${uid}`)
+                                .replace(/exp-51-a/g, `exp-a-${uid}`)
+                                .replace(/exp-51-b/g, `exp-b-${uid}`)
+                                .replace(/score-51-a/g, `score-a-${uid}`)
+                                .replace(/score-51-b/g, `score-b-${uid}`)
+                                .replace(/grade51A\(\)/g, `gradeA_${uid}()`)
+                                .replace(/grade51B\(\)/g, `gradeB_${uid}()`);
+
+                            let badge = `<div class="exam-source-badge">📚 Trích từ: ${examName.toUpperCase()}</div>`;
+                            tempHTML += `<div>${badge}${contentHTML}</div>`;
+
+                            // Clone script
+                            doc.querySelectorAll('script').forEach(s => {
+                                if (s.textContent.includes('grade51A') || s.textContent.includes('grade51B')) {
+                                    let sText = s.textContent
+                                        .replace(/grade51A/g, `gradeA_${uid}`)
+                                        .replace(/grade51B/g, `gradeB_${uid}`)
+                                        .replace(/'ans-51-a'/g, `'ans-a-${uid}'`)
+                                        .replace(/'ans-51-b'/g, `'ans-b-${uid}'`)
+                                        .replace(/'btn-exp-51-a'/g, `'btn-a-${uid}'`)
+                                        .replace(/'btn-exp-51-b'/g, `'btn-b-${uid}'`)
+                                        .replace(/'exp-51-a'/g, `'exp-a-${uid}'`)
+                                        .replace(/'exp-51-b'/g, `'exp-b-${uid}'`)
+                                        .replace(/'score-51-a'/g, `'score-a-${uid}'`)
+                                        .replace(/'score-51-b'/g, `'score-b-${uid}'`);
+                                    finalScripts += sText + '\n';
+                                }
+                            });
+                            totalQuestions++;
+                        }
+                    });
+                } catch (error) {
+                    console.error("Lỗi khi tải đề:", examFile, error);
+                }
+            }
+
+            if (totalQuestions > 0) {
+                container.innerHTML = tempHTML;
+                const scriptNode = document.createElement('script');
+                scriptNode.text = finalScripts;
+                document.body.appendChild(scriptNode);
+
+                // Kích hoạt navigator dạng sách
+                document.dispatchEvent(new Event('typeQuestionsLoaded'));
+            } else {
+                container.innerHTML = '<div style="text-align:center; color:red; padding: 30px;">Không tìm thấy dữ liệu!</div>';
+            }
+        }
+
+        // Chạy khi load trang
+        document.addEventListener('DOMContentLoaded', fetchQuestionsByType);
+    </script>
+    <script src="../../assets/js/study-timer.js"></script>
+</body>
+
+</html>

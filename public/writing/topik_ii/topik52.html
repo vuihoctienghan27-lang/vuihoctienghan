@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 읽기 - 제52회 - Vui Học Tiếng Hàn</title>
+    
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+<style>
+    /* ===== HEADER BADGE ===== */
+    .header-badge-container {
+        text-align: center;
+        margin: 40px auto 50px auto;
+        width: 100%;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 12px 50px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* ===== HỆ THỐNG BIỂU ĐỒ CÂU 53 CHỐNG RỚT & LỆCH ===== */
+    .q53-container-white {
+        background: #ffffff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .q53-flex-wrapper {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        gap: 35px;
+        align-items: flex-start !important; /* Ép bám đỉnh trên, không cho rơi xuống giữa */
+        width: 100%;
+    }
+    .q53-col-left { flex: 1.1; min-width: 0; }
+    .q53-col-right { flex: 0.9; min-width: 0; padding-top: 10px; }
+
+    /* Bar Chart Styling */
+    .h-bar-row { display: flex; align-items: center; margin-bottom: 15px; }
+    .h-bar-label { width: 65px; font-weight: 800; color: #1e293b; font-size: 0.95rem; text-align: right; padding-right: 15px; flex-shrink: 0; }
+    .h-bar-track { flex: 1; display: flex; flex-direction: column; gap: 6px; border-left: 2px solid #cbd5e1; padding-left: 15px; }
+    .h-bar-item { height: 26px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; color: white; font-weight: 700; font-size: 0.85rem; border-radius: 4px; transition: width 0.5s; }
+    .bg-nam { background: #334155; }
+    .bg-nu { background: #94a3b8; }
+    .val-out { font-weight: 800; color: #334155; margin-left: 8px; font-size: 0.9rem; }
+
+    /* Ranking Box Styling */
+    .reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 12px; padding: 20px; }
+    .reason-col { display: flex; flex-direction: column; gap: 12px; }
+    .reason-badge-title { text-align: center; font-weight: 800; color: #fff; border-radius: 6px; padding: 4px 0; font-size: 0.95rem; margin-bottom: 5px; }
+    .reason-card { display: flex; align-items: center; gap: 10px; font-size: 0.9rem; font-weight: 700; color: #1e293b; background: white; padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; }
+    .rank-num { background: #e2e8f0; color: #475569; font-weight: 800; padding: 2px 8px; border-radius: 6px; font-size: 0.85rem; }
+
+    /* Responsive Mobile */
+    @media (max-width: 768px) {
+        .q53-flex-wrapper { flex-direction: column !important; flex-wrap: wrap !important; }
+        .reason-grid { grid-template-columns: 1fr; }
+        .header-badge-container { margin: 20px auto 30px auto; }
+        .topik-header-badge { font-size: 1.5rem; padding: 10px 30px; }
+    }
+</style>
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제52회</div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        <div style="margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between;">
+            <b>받는 사람: 수미</b>
+            <span style="color:#64748b; font-size:0.9rem;">보낸 사람: 마이클</span>
+        </div>
+        <div>
+            수미 씨,<br>
+            지난번에 책을 <b>( ㉠ )</b> 고맙습니다.<br>
+            수미 씨의 책 덕분에 과제를 잘할 수 있었습니다.<br>
+            그런데 책을 언제 <b>( ㉡ )</b>?<br>
+            시간을 말씀해 주시면 찾아가겠습니다.<br>
+            그럼 답장 기다리겠습니다.
+        </div>
+
+        <details style="margin-top: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+            <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+            <div class="details-content" style="font-size: 0.95rem; color: #111;">
+                Sumi à,<br>
+                Cảm ơn bạn vì lần trước <b>(đã cho mượn)</b> sách nhé.<br>
+                Nhờ có sách của Sumi mà tôi đã có thể làm tốt bài tập.<br>
+                Nhưng mà khi nào thì <b>(tôi trả lại sách được / tôi nên trả lại sách)</b> nhỉ?<br>
+                Nếu bạn cho tôi biết thời gian thì tôi sẽ tìm đến gặp.<br>
+                Vậy tôi sẽ đợi hồi âm nhé.
+            </div>
+        </details>
+    </div>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-51-a" style="display:none;" onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-a" class="explanation-box">
+                <div id="score-51-a" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Phía sau có từ `고맙습니다` (Cảm ơn). Lời cảm ơn này là dành cho hành động của Sumi trong quá khứ liên quan đến cuốn sách (`책을`). Vì nhờ cuốn sách đó mà tác giả làm được bài tập, nên hành động của Sumi là "cho mượn sách".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>빌려 주다</code> + Ngữ pháp chỉ lý do <code>-아/어서</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 빌려 줘서 / 빌려 주셔서.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 빌려주신 덕분에 / 빌려주신 것에 대해.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-51-b" style="display:none;" onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-b" class="explanation-box">
+                <div id="score-51-b" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Phía trước có từ `언제` (Khi nào)와 phía sau có dấu hỏi chấm `?`. Câu tiếp theo là `시간을 말씀해 주시면 찾아가겠습니다` (Cho biết thời gian thì tôi sẽ tới). Nghĩa là tác giả đang hỏi "Khi nào thì tôi NÊN TRẢ lại sách?".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>돌려주다 / 반납하다 / 드리다</code> + Ngữ pháp hỏi ý kiến/điều kiện <code>-(으)면 됩니까? / -아/어야 합니까?</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 돌려주면 됩니까 / 돌려 드리면 되겠습니까.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 돌려 드려야 합니까 / 반납하면 됩니까 / 갖다 드리면 될까요.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        우리는 기분이 좋으면 밝은 표정을 짓는다. 그리고 기분이 좋지 않으면 표정이 어두워진다. 왜냐하면 <b>( ㉠ )</b>. 그런데 이와 반대로 표정이 우리의 감정에 영향을 주기도 한다. 그래서 기분이 안 좋을 때 밝은 표정을 지으면 기분도 따라서 좋아진다. 그러므로 우울할 때일수록 <b>( ㉡ )</b> 것이 좋다.
+    </div>
+
+    <details style="margin-bottom: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+        <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+        <div class="details-content" style="font-size: 0.95rem; color: #111;">
+            Khi tâm trạng vui vẻ, chúng ta sẽ nở một biểu cảm tươi sáng. Và khi tâm trạng không tốt thì biểu cảm sẽ tối lại. Đó là bởi vì <b>(cảm xúc tác động đến biểu cảm / biểu cảm phản ánh tâm trạng)</b>. Thế nhưng ngược lại, biểu cảm cũng gây ảnh hưởng đến cảm xúc của chúng ta. Vì vậy, khi tâm trạng không tốt mà ta nở một nụ cười tươi thì tâm trạng cũng theo đó mà tốt lên. Do đó, càng những lúc u buồn thì càng nên <b>(nở một biểu cảm tươi sáng / mỉm cười)</b>.
+        </div>
+    </details>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-52-a" style="display:none;" onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-a" class="explanation-box">
+                <div id="score-52-a" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Câu bắt đầu bằng `왜냐하면` (Bởi vì) nên kết thúc phải là `-기 때문이다`. Đoạn tiếp theo có câu lật ngược vấn đề: `이와 반대로 표정이 감정에 영향을 주기도 한다` (Ngược lại biểu cảm CŨNG ảnh hưởng đến cảm xúc). Vậy câu trước phải là "Cảm xúc ảnh hưởng đến biểu cảm". Lật ngược chủ ngữ và tân ngữ là xong!<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>감정(이) 표정(에) 영향을 주다</code> + <code>-기 때문이다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 감정이 표정에 영향을 주기 때문이다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 기분이 표정으로 나타나기 때문이다 / 감정이 표정으로 드러나기 때문이다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-52-b" style="display:none;" onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-b" class="explanation-box">
+                <div id="score-52-b" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Tác giả khuyên: `기분이 안 좋을 때 밝은 표정을 지으면...` (Lúc buồn mà tươi cười thì...). Đoạn cuối chốt lại `그러므로 우울할 때일수록` (Do đó càng lúc u sầu thì càng...). Ta chỉ cần lặp lại hành động "nở biểu cảm tươi sáng" ở câu trước vào chỗ trống.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>밝은 표정을 짓다 / 웃다</code> + Đuôi định ngữ <code>-는</code> (để đi với chữ '것이 좋다').<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 밝은 표정을 짓는 / 표정을 밝게 하는.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 웃는 표정을 짓는 / 일부러라도 웃는 / 표정을 밝게 짓는.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [53] 다음을 참고하여 '아이를 꼭 낳아야 하는가'에 대한 글을 200~300자로 쓰시오. 단, 글의 제목은 쓰지 마시오. (30점)
+    </div>
+
+    <div class="q53-container-white">
+        <div style="font-weight: 700; color: #475569; margin-bottom: 20px; font-size: 0.9rem; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">
+            ■ 조사 기관: 결혼문화연구소 | 대상: 성인 남녀 3,000명
+        </div>
+
+        <div class="q53-flex-wrapper">
+            <div class="q53-col-left">
+                <div style="background:#334155; color:white; border-radius:99px; display:inline-block; padding:5px 20px; font-size:0.95rem; font-weight:800; margin-bottom:20px;">아이를 꼭 낳아야 하는가</div>
+                <div class="h-bar-container">
+                    <div class="h-bar-row">
+                        <div class="h-bar-label">그렇다</div>
+                        <div class="h-bar-track">
+                            <div class="h-bar bg-nam" style="width: 80%;">80%</div>
+                            <div class="h-bar bg-nu" style="width: 67%;">67%</div>
+                        </div>
+                    </div>
+                    <div class="h-bar-row">
+                        <div class="h-bar-label">아니다</div>
+                        <div class="h-bar-track">
+                            <div style="display:flex; align-items:center; width:100%;">
+                                <div class="h-bar bg-nam" style="width: 20%;"></div><span class="val-out">20%</span>
+                            </div>
+                            <div class="h-bar bg-nu" style="width: 33%;">33%</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; justify-content:center; gap:20px; margin-top:10px; font-weight:800; font-size:0.85rem;">
+                        <div style="display:flex; align-items:center; gap:5px;"><div style="width:12px;height:12px;background:#334155;"></div>남</div>
+                        <div style="display:flex; align-items:center; gap:5px;"><div style="width:12px;height:12px;background:#94a3b8;"></div>여</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="q53-col-right">
+                <div style="font-weight:900; margin-bottom:12px; font-size:1rem; color:#0f172a;">'아니다' 라고 응답한 이유</div>
+                <div class="reason-grid">
+                    <div class="reason-col">
+                        <div class="reason-badge-title bg-nam">남</div>
+                        <div class="reason-card"><span class="rank-num">1위</span>양육비 부담</div>
+                        <div class="reason-card"><span class="rank-num">2위</span>자유로운 생활</div>
+                    </div>
+                    <div class="reason-col">
+                        <div class="reason-badge-title bg-nu">여</div>
+                        <div class="reason-card"><span class="rank-num">1위</span>자유로운 생활</div>
+                        <div class="reason-card"><span class="rank-num">2위</span>직장 생활 유지</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+        <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+        <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+        <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+    </div>
+
+    <div id="t53-guide" class="tab-content t53-content active">
+        <div class="guide-box">
+            <b>Dàn ý phân tích biểu đồ (So sánh Nam/Nữ và Xếp hạng):</b><br><br>
+            1. <b>Mở bài:</b> Nêu cơ quan, đối tượng và chủ đề khảo sát (결혼문화연구소에서 20대 이상 성인 남녀 3,000명을 대상으로... 조사하였다).<br>
+            2. <b>Thân bài 1 (Biểu đồ ngang):</b> Đối chiếu tỷ lệ 'Có' và 'Không' giữa hai giới. Trả lời 'Có' nam chiếm 80%, nữ 67%. Trả lời 'Không' nam chiếm 20%, nữ 33%.<br>
+            3. <b>Thân bài 2 (Lý do trả lời Không):</b> Phân tích lý do phản đối theo thứ tự ưu tiên (1위, 2위.<br>
+            - Đứng vị trí số 1: Nam vì gánh nặng nuôi dưỡng (양육비가 부담스러워서), Nữ vì muốn sống tự do (자유로운 생활을 원해서).<br>
+            - Vị trí số 2 (Dùng từ nối 이어): Nam vì muốn sống tự do, Nữ vì muốn duy trì công việc (직장 생활을 유지하고 싶어서).
+        </div>
+    </div>
+
+    <div id="t53-grammar" class="tab-content t53-content">
+        <details><summary>1. ~에서 ~명을 대상으로 ~에 대해 조사하였다.</summary><div class="details-content">Tại [Cơ quan] đã tiến hành khảo sát [Số lượng] người về [Chủ đề].</div></details>
+        <details><summary>2. 그 결과 ~라고 응답한 남자는 N%, 여자는 N%였고, ~라고 응답한 남자는 N%, 여자는 N%였다.</summary><div class="details-content">Kết quả là, số nam giới trả lời... chiếm N%, nữ chiếm N%, và nam giới trả lời... chiếm N%, nữ chiếm N%. <i>(Cấu trúc đối chiếu chéo rất gọn gàng)</i></div></details>
+        <details><summary>3. 이들이 ~라고 응답한 이유에 대해 남자는 ~아/어서, 여자는 ~아/어서라고 응답한 경우가 가장 많았다.</summary><div class="details-content">Về lý do họ trả lời là..., trường hợp nam giới đáp do..., còn nữ giới đáp do... là nhiều nhất (chiếm vị trí số 1).</div></details>
+        <details><summary>4. 이어 남자는 ~아서, 여자는 ~고 싶어서라고 응답하였다.</summary><div class="details-content">Tiếp theo đó, nam giới trả lời là do..., còn nữ giới trả lời là do... <i>(Dùng để miêu tả vị trí số 2)</i></div></details>
+        <details><summary>5. 형용사 + 아/어서 (부담스러워서)</summary><div class="details-content">Đuôi câu nguyên nhân: Vì cảm thấy gánh nặng nên...</div></details>
+    </div>
+
+    <div id="t53-answer" class="tab-content t53-content">
+        <table class="bilingual-table">
+            <tr><td>결혼문화연구소에서 20대 이상 성인 남녀 3,000명을 대상으로 '아이를 꼭 낳아야 하는가'에 대해 조사하였다.</td><td>Viện Nghiên cứu Văn hóa Hôn nhân đã tiến hành khảo sát 3.000 nam nữ trưởng thành từ 20 tuổi trở lên về việc 'Có nhất thiết phải sinh con hay không?'.</td></tr>
+            <tr><td>그 결과 '그렇다'라고 응답한 남자는 80%, 여자는 67%였고, '아니다'라고 응답한 남자는 20%, 여자는 33%였다.</td><td>Kết quả cho thấy, nam giới trả lời 'Có' chiếm 80%, nữ giới chiếm 67%, và nam giới trả lời 'Không' chiếm 20%, nữ giới chiếm 33%.</td></tr>
+            <tr><td>이들이 '아니다'라고 응답한 이유에 대해 남자는 양육비가 부담스러워서, 여자는 자유로운 생활을 원해서라고 응답한 경우가 가장 많았다.</td><td>Về lý do nhóm người này trả lời 'Không', trường hợp nam giới đáp do gánh nặng chi phí nuôi dưỡng và nữ giới đáp do muốn cuộc sống tự do là chiếm nhiều nhất.</td></tr>
+            <tr><td>이어 남자는 자유로운 생활을 원해서, 여자는 직장 생활을 유지하고 싶어서라고 응답하였다.</td><td>Tiếp theo đó, nam giới trả lời do muốn cuộc sống tự do, còn nữ giới trả lời do muốn duy trì cuộc sống công sở.</td></tr>
+        </table>
+    </div>
+
+    <div id="t53-practice" class="tab-content t53-content">
+        <div class="book-container">
+            <div class="book-page page-left">
+                <div class="book-title">Tiếng Việt</div>
+                <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+            </div>
+            <div class="book-page page-right">
+                <div class="book-title">Tiếng Hàn</div>
+                <div id="book-ko-text" style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                <div id="book-ko-input-area" style="display: none;">
+                    <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                    <div id="diff-result-box" style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;"></div>
+                    <div id="diff-correct-ans" style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="book-nav-wrapper">
+            <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+            <span id="book-page-indicator" class="page-indicator">1 / 4</span>
+            <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+            <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper" style="margin-bottom:0;">
+    <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [54] 다음을 주제로 하여 자신의 생각을 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+    </div>
+    
+    <div class="writing-box">
+        우리는 살면서 서로의 생각이 달라 갈등을 겪는 경우가 많다. 이러한 갈등은 의사소통이 부족해서 생기는 경우가 대부분이다. 의사소통은 서로의 관계를 유지하고 발전시키는 데 중요한 요인이 된다. <b>'의사소통의 중요성과 방법'</b>에 대해 아래의 내용을 중심으로 자신의 생각을 쓰라.
+        <ul style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+            <li>의사소통은 왜 중요한가?</li>
+            <li>의사소통이 잘 이루어지지 않는 이유는 무엇인가?</li>
+            <li>의사소통을 원활하게 하는 방법은 무엇인가?</li>
+        </ul>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+        <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+        <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+        <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+    </div>
+
+    <div id="t54-intro" class="tab-content t54-content active">
+        <div class="guide-box">
+            <b>Trọng tâm: 의사소통은 왜 중요한가? (Tại sao giao tiếp lại quan trọng?)</b><br>
+            - Giao tiếp là nền tảng của các mối quan hệ con người (인간관계). Để làm việc chung cần giao tiếp hiệu quả.<br>
+            - Nếu thiếu giao tiếp sẽ dẫn đến hiểu lầm, bất tín, thậm chí là xung đột, tranh chấp.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>어떤 일을 다른 사람들과 함께 계획하고 추진하기 위해서는 그 사람들과의 원활한 인간관계가 필요하다.</td><td>Để cùng nhau lên kế hoạch và thúc đẩy một công việc nào đó với người khác, ta cần phải có mối quan hệ con người suôn sẻ với họ.</td></tr>
+            <tr><td>다만 인간관계를 원활하게 하는 데에는 많은 대화가 요구되며, 이 과정에서 의사소통 능력이 중요한 역할을 한다.</td><td>Tuy nhiên, để làm cho các mối quan hệ trở nên trôi chảy thì đòi hỏi phải có nhiều cuộc trò chuyện, và trong quá trình này, năng lực giao tiếp đóng một vai trò vô cùng quan trọng.</td></tr>
+            <tr><td>일반적으로 의사소통은 타인과의 소통의 시작이어서 의사소통이 제대로 이루어지지 않는 경우 오해가 생기고 불신이 생기며 경우에 따라서는 분쟁으로까지 이어질 수 있게 된다.</td><td>Nói chung, giao tiếp là sự khởi đầu của việc kết nối với người khác, do đó nếu giao tiếp không được thực hiện đúng cách, những hiểu lầm và sự bất tín sẽ nảy sinh, và tùy từng trường hợp, nó thậm chí có thể dẫn đến tranh chấp.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-body" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 의사소통이 잘 이루어지지 않는 이유는 무엇인가? (Lý do khiến giao tiếp không hiệu quả?)</b><br>
+            - Bối cảnh: Mỗi người sống trong một môi trường khác nhau, kinh nghiệm khác nhau.<br>
+            - Hệ quả: Dẫn đến sự khác biệt về lối tư duy (사고방식의 차이).<br>
+            - Kết luận: Sự khác biệt này làm cho giao tiếp khó khăn và gây ra mâu thuẫn.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>그런데 이러한 의사소통이 항상 원활히 이루어지는 것은 아니다.</td><td>Thế nhưng việc giao tiếp này không phải lúc nào cũng diễn ra suôn sẻ.</td></tr>
+            <tr><td>사람들은 서로 다른 생활환경과 경험을 가지고 있고, 이는 사고방식의 차이로 이어지게 된다.</td><td>Con người ai cũng có môi trường sống và kinh nghiệm khác nhau, và điều này dẫn đến sự khác biệt về lối tư duy.</td></tr>
+            <tr><td>이러한 차이들이 의사소통을 어렵게 함과 동시에 새로운 갈등을 야기하기도 한다.</td><td>Chính những sự khác biệt này làm cho giao tiếp trở nên khó khăn, đồng thời cũng gây ra những mâu thuẫn mới.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-conclusion" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 의사소통을 원활하게 하는 방법은 무엇인가? (Phương pháp để giao tiếp suôn sẻ?)</b><br>
+            - Phương pháp 1: Nói chuyện trên lập trường biết quan tâm đến đối phương (상대를 배려하는 입장). Suy nghĩ xem lời nói của mình có làm họ khó chịu không.<br>
+            - Phương pháp 2: Lắng nghe giỏi (말을 잘 듣는 자세). Mở lòng thấu hiểu.<br>
+            - Phương pháp 3: Nhìn nhận vấn đề từ góc độ của đối phương để xóa bỏ định kiến và hiểu lầm (서로의 입장에서 현상을 바라보는 자세).
+        </div>
+        <table class="bilingual-table">
+            <tr><td>따라서 원활한 의사소통을 위한 적극적인 노력이 필요하다. 우선 상대를 배려하는 입장에서 말을 하는 자세가 필요하다.</td><td>Do đó, cần có những nỗ lực tích cực để giao tiếp một cách suôn sẻ. Trước tiên, cần có thái độ nói chuyện trên lập trường biết quan tâm đến đối phương.</td></tr>
+            <tr><td>나의 말이 상대를 불편하게 만드는 것은 아닌지 항상 생각하며 이야기하여야 한다. 다음으로 다른 사람의 말을 잘 듣는 자세가 필요하다.</td><td>Chúng ta phải luôn suy nghĩ xem liệu lời nói của mình có đang làm cho đối phương cảm thấy khó chịu hay không khi trò chuyện. Tiếp theo, cần có thái độ lắng nghe tốt lời nói của người khác.</td></tr>
+            <tr><td>마음을 열고 다른 사람의 이야기를 듣는 것은 상대를 이해하는 데 꼭 필요하기 때문이다.</td><td>Đó là bởi vì việc mở rộng cõi lòng và lắng nghe câu chuyện của người khác là điều tuyệt đối cần thiết để thấu hiểu đối phương.</td></tr>
+            <tr><td>마지막으로 서로의 입장에서 현상을 바라보는 자세가 필요하다. 이는 서로가 가질 수 있는 편견과 오해를 해결할 수 있는 역할을 하기 때문이다.</td><td>Cuối cùng, cần có thái độ nhìn nhận hiện tượng từ lập trường của nhau. Bởi vì điều này đóng vai trò giúp giải quyết những định kiến và hiểu lầm mà đôi bên có thể mắc phải.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-grammar" class="tab-content t54-content">
+        <details><summary>1. ~기 위해서는 ~이/가 필요하다.</summary><div class="details-content">Để làm được [Mục đích] thì cần phải có...</div></details>
+        <details><summary>2. ~게 하는 데에는 ~이/가 요구되며, 이 과정에서 ~이/가 중요한 역할을 한다.</summary><div class="details-content">Để làm cho... thì đòi hỏi phải có... và trong quá trình này, [Chủ đề] đóng một vai trò quan trọng.</div></details>
+        <details><summary>3. ~이/가 제대로 이루어지지 않는 경우 ~고 ~며 경우에 따라서는 ~로까지 이어질 수 있게 된다.</summary><div class="details-content">Trong trường hợp... không được thực hiện đúng cách, thì sẽ nảy sinh... và tùy từng trường hợp, nó thậm chí có thể dẫn đến...</div></details>
+        <details><summary>4. 그런데 이러한 ~이/가 항상 원활히 이루어지는 것은 아니다.</summary><div class="details-content">Thế nhưng việc... này không phải lúc nào cũng diễn ra suôn sẻ. <i>(Cấu trúc phủ định một phần để chuyển ý cực kỳ xuất sắc)</i></div></details>
+        <details><summary>5. 이는 ~의 차이로 이어지게 된다.</summary><div class="details-content">Điều này dẫn đến sự khác biệt của...</div></details>
+        <details><summary>6. ~이/가 ~을/를 어렵게 함과 동시에 새로운 갈등을 야기하기도 한다.</summary><div class="details-content">...làm cho... trở nên khó khăn, đồng thời cũng gây ra những mâu thuẫn mới.</div></details>
+        <details><summary>7. 우선 ~하는 입장에서 ~하는 자세가 필요하다.</summary><div class="details-content">Trước tiên, cần có thái độ... trên lập trường...</div></details>
+        <details><summary>8. ~는 것은 아닌지 항상 생각하며 ~아/어야 한다.</summary><div class="details-content">Phải luôn suy nghĩ xem liệu có phải đang... hay không khi...</div></details>
+        <details><summary>9. ~는 것은 ~하는 데 꼭 필요하기 때문이다.</summary><div class="details-content">Đó là bởi vì việc... là điều tuyệt đối cần thiết để...</div></details>
+        <details><summary>10. 이는 ~이/가 가질 수 있는 편견과 오해를 해결할 수 있는 역할을 하기 때문이다.</summary><div class="details-content">Bởi vì điều này đóng vai trò giúp giải quyết những định kiến và hiểu lầm mà... có thể mắc phải.</div></details>
+    </div>
+</div>
+
+<script src="exam-logic.js"></script>
+
+<script>
+    // CÂU 51A
+    function grade51A() {
+        let val = document.getElementById('ans-51-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['빌려'];
+        let validEndings = ['줘서', '주셔서', '주신 덕분', '주신 것'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý cảm ơn vì đã cho mượn."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu ngữ pháp chỉ lý do (-아/어서)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'cho mượn' (빌려주다)."); }
+
+        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+    }
+
+    // CÂU 51B
+    function grade51B() {
+        let val = document.getElementById('ans-51-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['돌려주', '돌려드리', '반납하', '갖다주', '갖다드리'];
+        let validEndings = ['면 됩니까', '면 되겠습니까', '야 합니까', '야 됩니까'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hỏi ý kiến về thời gian trả sách chuẩn xác."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp điều kiện/hỏi ý kiến -(으)면 됩니까."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'trả lại / đưa lại'."); }
+
+        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+    }
+
+    // CÂU 52A
+    function grade52A() {
+        let val = document.getElementById('ans-52-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['감정', '기분'];
+        let validTargets = ['표정', '얼굴'];
+        let validEffects = ['영향을 주', '나타나', '드러나'];
+        let validEndings = ['기 때문'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets) && checkKeywords(val, validEffects)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng lý do cảm xúc ảnh hưởng biểu cảm."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu chỉ nguyên nhân -기 때문이다."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có đủ cụm 'Cảm xúc' ảnh hưởng/hiện ra 'Biểu cảm'."); }
+
+        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+    }
+
+    // CÂU 52B
+    function grade52B() {
+        let val = document.getElementById('ans-52-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['밝은 표정', '표정을 밝게', '웃는 표정', '웃'];
+        let validEndings = ['짓는', '하는'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings) || val.includes('웃는')) { score = 5; feedback.push("Đạt 5/5 Điểm: Lời khuyên nở nụ cười/biểu cảm sáng sủa rất chính xác."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu dạng định ngữ -는 để nối với chữ '것이 좋다'."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ mang nghĩa 'tươi cười / làm khuôn mặt sáng sủa'."); }
+
+        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+    }
+
+    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 52 ---
+    const bookData_52 = [
+        { vi: "Viện Nghiên cứu Văn hóa Hôn nhân đã tiến hành khảo sát 3.000 nam nữ trưởng thành từ 20 tuổi trở lên về việc 'Có nhất thiết phải sinh con hay không?'.", ko: "결혼문화연구소에서 20대 이상 성인 남녀 3,000명을 대상으로 '아이를 꼭 낳아야 하는가'에 대해 조사하였다." },
+        { vi: "Kết quả cho thấy, nam giới trả lời 'Có' chiếm 80%, nữ giới chiếm 67%, và nam giới trả lời 'Không' chiếm 20%, nữ giới chiếm 33%.", ko: "그 결과 '그렇다'라고 응답한 남자는 80%, 여자는 67%였고, '아니다'라고 응답한 남자는 20%, 여자는 33%였다." },
+        { vi: "Về lý do nhóm người này trả lời 'Không', trường hợp nam giới đáp do gánh nặng chi phí nuôi dưỡng và nữ giới đáp do muốn cuộc sống tự do là chiếm nhiều nhất.", ko: "이들이 '아니다'라고 응답한 이유에 대해 남자는 양육비가 부담스러워서, 여자는 자유로운 생활을 원해서라고 응답한 경우가 가장 많았다." },
+        { vi: "Tiếp theo đó, nam giới trả lời do muốn cuộc sống tự do, còn nữ giới trả lời do muốn duy trì cuộc sống công sở.", ko: "이어 남자는 자유로운 생활을 원해서, 여자는 직장 생활을 유지하고 싶어서라고 응답하였다." }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initBook(bookData_52);
+    });
+</script>

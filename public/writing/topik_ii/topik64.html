@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 읽기 - 제64회 - Vui Học Tiếng Hàn</title>
+    
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+
+<style>
+    /* ===== HEADER BADGE THEO SOP ===== */
+    .header-badge-container {
+        text-align: center;
+        margin: 40px auto 50px auto;
+        width: 100%;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 12px 50px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* ===== CSS INFOGRAPHIC ĐỀ 64 & FIX MOBILE ===== */
+    .info-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .info-title { font-size: 1.05rem; font-weight: 800; color: #0f172a; text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; }
+    
+    .q53-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Máy tính 2 cột */
+        gap: 20px;
+    }
+
+    /* Biểu đồ 1: Cột (Bar Chart) */
+    .bar-chart-64 { display: flex; justify-content: space-around; align-items: flex-end; height: 160px; border-bottom: 2px solid #cbd5e1; margin: 10px 10px 0 10px; padding-bottom: 5px; position: relative;}
+    .bar-group { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; width: 45px; position: relative; }
+    .bar { width: 100%; border-radius: 4px 4px 0 0; background: #94a3b8; transition: 0.4s; }
+    .bar.color-main { background: #10b981; }
+    .bar-val { position: absolute; top: -25px; font-weight: 800; color: #334155; font-size: 0.95rem; }
+
+/* Biểu đồ 2: Đường chéo (Line Chart Cross) */
+    .line-chart-64 { 
+        position: relative; height: 160px; 
+        border-left: 2px solid #cbd5e1; border-bottom: 2px solid #cbd5e1; 
+        margin: 10px 25px 0 25px; /* Giãn lề để chống cắt chữ */
+        overflow: visible; 
+    }
+    .data-point { position: absolute; background: white; border: 2px solid #cbd5e1; width: 12px; height: 12px; border-radius: 50%; transform: translate(-50%, 50%); z-index: 2; }
+    .point-val { position: absolute; font-weight: 800; font-size: 0.9rem; color: #334155; transform: translateY(-50%); z-index: 3; white-space: nowrap;}
+    .point-label { position: absolute; padding: 3px 10px; border-radius: 6px; font-weight: 700; font-size: 0.85rem; z-index: 4; transform: translate(-50%, -50%); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    
+    .svg-line-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .year-label { display: flex; justify-content: space-between; margin-top: 10px; font-weight: 700; color: #64748b; font-size: 0.95rem; padding: 0 10px; }
+    
+    .svg-line-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .year-label { display: flex; justify-content: space-between; margin-top: 10px; font-weight: 700; color: #64748b; font-size: 0.95rem; padding: 0 10px; }    
+    .svg-line-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .year-label { display: flex; justify-content: space-between; margin-top: 10px; font-weight: 700; color: #64748b; font-size: 0.95rem; padding: 0 10px; }
+    
+    /* Box Nguyên nhân */
+    .cause-box { border: 1px solid #cbd5e1; padding: 20px; border-radius: 12px; background: #f8fafc; margin-top: 20px; display: flex; align-items: center; gap: 20px;}
+    .cause-title-badge { display: flex; align-items: center; justify-content: center; background: #475569; color: white; padding: 10px 15px; border-radius: 8px; font-weight: 700; font-size: 1rem; height: 100%; text-align: center; }
+    .cause-list { margin: 0; padding-left: 15px; line-height: 1.8; font-weight: 600; font-size: 0.95rem; color: #1e293b; }
+    
+    /* FIX LỖI MOBILE */
+    @media (max-width: 768px) {
+        .header-badge-container { margin: 20px auto 30px auto; }
+        .topik-header-badge { font-size: 1.5rem; padding: 10px 30px; border-width: 1.5px; }
+        .q53-info-grid { grid-template-columns: 1fr; gap: 15px; } /* Điện thoại 1 cột xếp dọc */
+        .cause-box { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .cause-title-badge { width: 100%; padding: 8px; }
+    }
+</style>
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제64회</div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        수미 씨, 그동안 고마웠습니다.<br>
+        저는 다음 달이면 홍콩으로 일을 <b>( ㉠ )</b>.<br>
+        제가 원하는 회사에 취직을 해서 기쁘지만<br>
+        수미 씨를 자주 못 볼 것 같아 아쉽습니다.<br>
+        선물을 준비했는데 선물이 수미 씨 마음에 <b>( ㉡ )</b>.
+    </div>
+
+    <details style="margin-bottom: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+        <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+        <div class="details-content" style="font-size: 0.95rem; color: #111;">
+            Sumi à, cảm ơn bạn trong suốt thời gian qua.<br>
+            Tháng sau tôi <b>(sẽ đi làm)</b> ở Hồng Kông.<br>
+            Tôi rất vui vì xin được vào công ty mà mình mong muốn,<br>
+            nhưng cũng rất tiếc vì có lẽ sẽ không thể thường xuyên gặp Sumi nữa.<br>
+            Tôi có chuẩn bị một món quà, <b>(hi vọng)</b> món quà này <b>(sẽ vừa)</b> lòng Sumi.
+        </div>
+    </details>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-51-a" style="display:none;" onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-a" class="explanation-box">
+                <div id="score-51-a" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Tác giả nói "Tháng sau" (다음 달이면) và đi đến Hồng Kông để làm "công việc" (일을). Ở câu sau lại bổ sung thêm là "đã xin được việc" (취직을 해서). Vậy ㉠ là việc sẽ di chuyển đi làm/bắt đầu công việc.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>하다</code> (làm) + Ngữ pháp mục đích di chuyển <code>-(으)러 가다</code> + Đuôi câu tương lai/kế hoạch <code>-ㅂ/습니다 / -(으)ㄹ 예정입니다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 하러 갑니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 하러 갈 예정입니다 / 하러 가게 되었습니다 / 시작하게 되었습니다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-51-b" style="display:none;" onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-b" class="explanation-box">
+                <div id="score-51-b" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Phía trước có cụm từ cố định `마음에` (Vào trong lòng). Đây là một quán dụng ngữ trong tiếng Hàn: `마음에 들다` (Vừa lòng, ưng ý). Việc tặng quà luôn đi kèm với nguyện vọng/mong muốn người nhận thích nó.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>들다</code> + Ngữ pháp mong ước <code>-(으)면 좋겠습니다 / -기를 바랍니다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 들면/들었으면 좋겠습니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 들기를 바랍니다 / 들면 기쁘겠습니다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        별은 지구에서 멀리 떨어져 있다. 그래서 별빛이 지구까지 오는 데 많은 시간이 걸린다. 지구와 가장 가까운 별의 빛도 지구까지 오는 데 4억 년이 걸린다. 만약 우리가 이 별을 본다면 우리는 이 별의 현재 모습이 아니라 4억 년 전의 <b>( ㉠ )</b>. 이처럼 별빛은 오랜 시간이 지나야 지구에 도달한다. 그래서 어떤 별이 사라져도 우리는 그 사실을 바로 알지 못하고 아주 오랜 시간이 <b>( ㉡ )</b>.
+    </div>
+
+    <details style="margin-bottom: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+        <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+        <div class="details-content" style="font-size: 0.95rem; color: #111;">
+            Các ngôi sao nằm cách rất xa Trái Đất. Vì thế ánh sáng của sao mất rất nhiều thời gian để truyền tới Trái Đất. Ngay cả ánh sáng từ ngôi sao gần Trái Đất nhất cũng mất tới 400 triệu năm để truyền đến Trái Đất. Giả sử chúng ta nhìn thấy ngôi sao này thì không phải chúng ta đang nhìn thấy diện mạo hiện tại của nó, mà là <b>(chúng ta đang nhìn thấy diện mạo)</b> của 400 triệu năm trước. Giống như vậy, ánh sáng của sao phải trải qua một thời gian rất dài mới đến được Trái Đất. Vì vậy, cho dù một ngôi sao nào đó biến mất, chúng ta cũng không thể biết ngay sự thật đó, mà phải <b>(trôi qua)</b> một thời gian rất dài <b>(thì chúng ta mới biết được)</b>.
+        </div>
+    </details>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-52-a" style="display:none;" onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-a" class="explanation-box">
+                <div id="score-52-a" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Cấu trúc tương phản `A이/가 아니라 B` (Không phải A mà là B). Vế trước đã cho sẵn `현재 모습이 아니라` (Không phải dáng vẻ hiện tại mà là...), vậy vế sau phải lặp lại từ khóa `모습` kèm động từ `본다` đã xuất hiện ở vế điều kiện "별을 본다면".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Danh từ <code>모습</code> + Động từ <code>보다</code> + Đuôi định nghĩa/nhấn mạnh <code>-는 것이다 / -는 셈이다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 모습을 보는 것이다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 모습을 보는 셈이다 / 상태를 보는 것이다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-52-b" style="display:none;" onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-b" class="explanation-box">
+                <div id="score-52-b" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Câu cuối mang tính hệ quả của toàn đoạn. Phía trước có `알지 못하고` (Không thể biết ngay). Phía sau cần một điều kiện thời gian "phải trôi qua bao lâu thì MỚI CÓ THỂ biết". Cụm từ `시간이 지나다` (Thời gian trôi qua) là bắt buộc.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>시간이 지나다 / 흐르다</code> + Ngữ pháp điều kiện cần <code>-아/어야</code> + Kết quả <code>알 수 있다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 지나야 알 수 있다 / 지난 후에야 알 수 있다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 흘러야 알게 된다 / 지나야 깨닫게 된다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [53] 다음을 참고하여 '온라인 쇼핑 시장의 변화'에 대한 글을 200~300자로 쓰시오. 단, 글의 제목은 쓰지 마시오. (30점)
+    </div>
+
+    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        
+        <div class="q53-info-grid">
+            <div class="info-card">
+                <div class="info-title">전체 매출액 <span style="font-size: 0.8rem; color: #64748b; font-weight:500;">(단위: 원)</span></div>
+                <div class="bar-chart-64">
+                    <div class="bar-group">
+                        <div class="bar-val">46조</div>
+                        <div class="bar" style="height: 46%;"></div>
+                    </div>
+                    <div class="bar-group">
+                        <div class="bar-val">92조</div>
+                        <div class="bar color-main" style="height: 92%;"></div>
+                    </div>
+                </div>
+                <div class="year-label" style="justify-content: space-around; border-top: 2px solid #cbd5e1; margin-top: 0; padding-top: 10px;">
+                    <span>2014년</span><span>2018년</span>
+                </div>
+            </div>
+
+<div class="info-card">
+                <div class="info-title">사용 기기에 따른 매출액 <span style="font-size: 0.8rem; color: #64748b; font-weight:500;">(단위: 원)</span></div>
+                <div class="line-chart-64">
+                    <div class="data-point" style="bottom: 40%; left: 15%; border-color: #94a3b8;"></div>
+                    <div class="point-val" style="bottom: 40%; right: 90%; color:#64748b;">32조</div>
+                    
+                    <div class="data-point" style="bottom: 50%; left: 85%; border-color: #94a3b8;"></div>
+                    <div class="point-val" style="bottom: 50%; left: 90%; color:#64748b;">39조</div>
+                    
+                    <div class="point-label" style="top: 30%; left: 35%; background: #f1f5f9; color: #475569; border-color: #cbd5e1;">컴퓨터</div>
+                    
+                    <div class="data-point" style="bottom: 10%; left: 15%; border-color: #2563eb;"></div>
+                    <div class="point-val" style="bottom: 10%; right: 90%; color:#2563eb;">14조</div>
+                    
+                    <div class="data-point" style="bottom: 85%; left: 85%; border-color: #2563eb;"></div>
+                    <div class="point-val" style="bottom: 85%; left: 90%; color:#2563eb;">53조</div>
+                    
+                    <div class="point-label" style="top: 75%; left: 50%; background: #2563eb; color: white; border: none;">스마트폰</div>
+
+                    <svg class="svg-line-container" preserveAspectRatio="none">
+                        <line x1="15%" y1="60%" x2="85%" y2="50%" stroke="#cbd5e1" stroke-width="3"/>
+                        <line x1="15%" y1="90%" x2="85%" y2="15%" stroke="#2563eb" stroke-width="3"/>
+                    </svg>
+                </div>
+                <div class="year-label" style="justify-content: space-between; border-top: 2px solid #cbd5e1; margin-top: 0; padding-top: 10px;">
+                    <span style="margin-left: 5%;">2014년</span><span style="margin-right: 5%;">2018년</span>
+                </div>
+            </div>
+        </div>   
+
+<div class="cause-box">
+            <div class="cause-title-badge">변화 원인</div>
+            <ul class="cause-list" style="flex: 1;">
+                <li>온라인으로 다양한 상품 구매 가능</li>
+                <li>쇼핑 접근성: <span style="background: #e2e8f0; padding: 2px 8px; border-radius: 12px; margin-left: 5px;">스마트폰</span> <span style="color: #ef4444; font-weight: 900; margin: 0 5px;">></span> <span style="background: #f1f5f9; padding: 2px 8px; border-radius: 12px;">컴퓨터</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+        <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+        <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+        <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+    </div>
+
+    <div id="t53-guide" class="tab-content t53-content active">
+        <div class="guide-box">
+            <b>Dàn ý phân tích biểu đồ (So sánh tỷ lệ tăng trưởng):</b><br><br>
+            1. <b>Mở bài (Biểu đồ 1):</b> Giới thiệu chủ đề khảo sát (온라인 쇼핑 시장의 변화에 대해 조사한 결과). Nêu tổng doanh thu tăng mạnh gấp đôi từ 46 nghìn tỷ won (2014) lên 92 nghìn tỷ won (2018) chỉ trong 4 năm.<br>
+            2. <b>Thân bài (Biểu đồ 2):</b> Phân tích đối chiếu theo thiết bị sử dụng (사용 기기에 따른 매출액은). Máy tính tăng nhẹ (소폭 증가한 반면) từ 32 lên 39 nghìn tỷ. Ngược lại, smartphone tăng vọt (큰 폭으로 증가하였다) từ 14 lên 53 nghìn tỷ.<br>
+            3. <b>Kết luận (Nguyên nhân):</b> Giải thích lý do (이와 같이... 원인은). Thứ nhất là có thể mua đa dạng hàng hóa online. Thứ hai là khả năng tiếp cận mua sắm của smartphone cao hơn máy tính (스마트폰이 컴퓨터에 비해 쇼핑 접근성이 높아졌기 때문이다).
+        </div>
+    </div>
+
+    <div id="t53-grammar" class="tab-content t53-content">
+        <details><summary>1. ~에 대해 조사한 결과, ~은/는 ~년에 N, ~년에 N으로 N년 만에 크게 증가한 것으로 나타났다.</summary><div class="details-content">Kết quả khảo sát về [Chủ đề] cho thấy, [A] đạt [Số 1] vào năm..., [Số 2] vào năm..., tăng mạnh chỉ trong [N] năm.</div></details>
+        <details><summary>2. ~에 따른 ~은/는 [A]의 경우 N에서 N으로 소폭 증가한 반면, [B]은/는 N에서 N으로 큰 폭으로 증가하였다.</summary><div class="details-content">Theo tiêu chí..., trong trường hợp của [A] tăng nhẹ từ N lên N, thì trái lại [B] tăng mạnh từ N lên N. <i>(Cấu trúc đối chiếu mức độ tăng trưởng kinh điển)</i></div></details>
+        <details><summary>3. 이와 같이 ~이/가 변화한 원인은 ~아/어/여졌고 ~이/가 ~에 비해 ~아/어/여졌기 때문이다.</summary><div class="details-content">Nguyên nhân khiến cho... thay đổi như thế này là vì [Lý do 1] và [Lý do 2 so sánh hơn].</div></details>
+        <details><summary>4. 명사 + 에 비해</summary><div class="details-content">So với [Danh từ]. <i>(Ví dụ: 스마트폰이 컴퓨터에 비해 = Smartphone so với Máy tính)</i></div></details>
+    </div>
+
+    <div id="t53-answer" class="tab-content t53-content">
+        <table class="bilingual-table">
+            <tr><td>온라인 쇼핑 시장의 변화에 대해 조사한 결과, 온라인 쇼핑 매출액은 2014년에 46조 원, 2018년에 92조 원으로 4년 만에 크게 증가한 것으로 나타났다.</td><td>Kết quả khảo sát về sự thay đổi của thị trường mua sắm trực tuyến cho thấy, doanh thu mua sắm trực tuyến đạt 46 nghìn tỷ won vào năm 2014 và 92 nghìn tỷ won vào năm 2018, tăng mạnh chỉ sau 4 năm.</td></tr>
+            <tr><td>사용 기기에 따른 매출액은 컴퓨터의 경우 2014년에 32조 원, 2018년에 39조 원으로 소폭 증가한 반면 스마트폰은 2014년에 14조 원, 2018년에 53조 원으로 매출액이 큰 폭으로 증가하였다.</td><td>Doanh thu theo thiết bị sử dụng, trong trường hợp của máy tính tăng nhẹ từ 32 nghìn tỷ won năm 2014 lên 39 nghìn tỷ won năm 2018, trong khi đó smartphone ghi nhận mức tăng doanh thu mạnh mẽ từ 14 nghìn tỷ won năm 2014 lên 53 nghìn tỷ won năm 2018.</td></tr>
+            <tr><td>이와 같이 온라인 쇼핑 시장이 변화한 원인은 온라인으로 다양한 상품 구매가 가능해졌고 스마트폰이 컴퓨터에 비해 쇼핑 접근성이 높아졌기 때문이다.</td><td>Nguyên nhân thị trường mua sắm trực tuyến thay đổi như vậy là do việc mua sắm đa dạng các loại hàng hóa trực tuyến trở nên khả thi, và khả năng tiếp cận mua sắm của smartphone trở nên cao hơn so với máy tính.</td></tr>
+        </table>
+    </div>
+
+    <div id="t53-practice" class="tab-content t53-content">
+        <div class="book-container">
+            <div class="book-page page-left">
+                <div class="book-title">Tiếng Việt</div>
+                <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+            </div>
+            <div class="book-page page-right">
+                <div class="book-title">Tiếng Hàn</div>
+                <div id="book-ko-text" style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                <div id="book-ko-input-area" style="display: none;">
+                    <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                    <div id="diff-result-box" style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;"></div>
+                    <div id="diff-correct-ans" style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="book-nav-wrapper">
+            <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+            <span id="book-page-indicator" class="page-indicator">1 / 3</span>
+            <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+            <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper" style="margin-bottom:0;">
+    <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [54] 다음을 주제로 하여 자신의 생각을 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+    </div>
+    
+    <div class="writing-box">
+        사람은 누구나 청소년기를 거쳐 어른이 된다. 아동에서 어른으로 넘어가는 이 시기에 많은 청소년들은 혼란과 방황을 겪으며 성장한다. 아래의 내용을 중심으로 <b>'청소년기의 중요성'</b>에 대한 자신의 생각을 쓰라.
+        <ul style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+            <li>청소년기가 중요한 이유는 무엇인가?</li>
+            <li>청소년들은 이 시기에 주로 어떤 특징을 보이는가?</li>
+            <li>청소년의 올바른 성장을 돕기 위해 어떤 노력이 필요한가?</li>
+        </ul>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+        <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+        <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+        <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+    </div>
+
+    <div id="t54-intro" class="tab-content t54-content active">
+        <div class="guide-box">
+            <b>Trọng tâm: 청소년기가 중요한 이유는 무엇인가? (Tại sao thời kỳ thanh thiếu niên lại quan trọng?)</b><br>
+            - Xác định bản chất: Là thời kỳ quá độ (과도기) để tìm kiếm bản ngã/căn tính (자아 정체성).<br>
+            - Tầm quan trọng 1: Bản ngã được hình thành ở đây sẽ ảnh hưởng đến suốt cuộc đời (sự nghiệp, quan hệ).<br>
+            - Tầm quan trọng 2: Là thời kỳ chuẩn bị để trở thành một thành viên đúng đắn của xã hội.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>청소년기는 자아 정체성을 찾아가는 과도기라는 점에서 사람의 생애 중 중요한 시기이다.</td><td>Thời kỳ thanh thiếu niên là một thời kỳ quan trọng trong cuộc đời con người ở khía cạnh nó là thời kỳ quá độ đi tìm bản ngã (căn tính).</td></tr>
+            <tr><td>청소년기에 형성된 자아 정체성은 진로나 인간관계뿐 아니라 삶의 전 영역에 지속적인 영향을 미친다.</td><td>Bản ngã được hình thành trong thời kỳ thanh thiếu niên có tác động liên tục không chỉ đến định hướng nghề nghiệp, quan hệ con người mà còn đến toàn bộ các lĩnh vực của cuộc sống.</td></tr>
+            <tr><td>또한 이 시기는 청소년이 올바른 사회 구성원이 되기 위해 준비하는 시기이기도 하다.</td><td>Ngoài ra, đây cũng là thời kỳ mà thanh thiếu niên chuẩn bị để trở thành một thành viên đúng đắn của xã hội.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-body" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 청소년들은 이 시기에 주로 어떤 특징을 보이는가? (Thanh thiếu niên thể hiện những đặc điểm gì trong thời kỳ này?)</b><br>
+            - Dùng liên từ (그러나). Nêu hiện trạng: Cái tôi chưa hoàn thiện nên tâm lý bất ổn.<br>
+            - Nguyên nhân bất ổn: Hỗn loạn giá trị quan, đánh giá của người khác, áp lực đồng trang lứa.<br>
+            - Biểu hiện: Phản kháng người lớn, dễ bị môi trường xấu tác động do chưa có tiêu chuẩn đúng sai. Dẫn đến bốc đồng, lệch chuẩn.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>그러나 청소년은 아직 자아가 형성되지 않았기 때문에 심리적으로 불안정해지기 쉽다.</td><td>Tuy nhiên, vì thanh thiếu niên vẫn chưa hình thành cái tôi một cách hoàn thiện nên về mặt tâm lý rất dễ trở nên bất ổn.</td></tr>
+            <tr><td>특히 가치관의 혼란, 타인의 평가, 또래 집단 내의 압박감 등은 청소년들이 불안정함을 느끼게 되는 주된 요인이다.</td><td>Đặc biệt, sự hỗn loạn về giá trị quan, đánh giá của người khác, hay áp lực trong nhóm bạn đồng trang lứa là những yếu tố chính khiến thanh thiếu niên cảm thấy bất ổn.</td></tr>
+            <tr><td>또한 청소년은 기존의 제도에 저항하거나 자신을 억압하는 어른에 대해 강한 반항심을 보이기도 한다.</td><td>Hơn nữa, thanh thiếu niên cũng thường thể hiện sự phản kháng mạnh mẽ đối với những thể chế sẵn có hoặc với những người lớn áp bức mình.</td></tr>
+            <tr><td>뿐만 아니라 청소년은 아직 옳고 그름의 기준이 정립되지 않았기 때문에 주변 환경의 영향을 받기 쉽다.</td><td>Không những thế, vì thanh thiếu niên vẫn chưa thiết lập được tiêu chuẩn đúng sai nên rất dễ bị ảnh hưởng bởi môi trường xung quanh.</td></tr>
+            <tr><td>이러한 특성으로 인하여 어떤 청소년은 일탈이나 돌발적인 행동을 하며 극단적인 경우 자신과 사회에 해를 끼치는 행동을 하기도 한다.</td><td>Do những đặc tính này, một số thanh thiếu niên có những hành động bốc đồng, lệch chuẩn, và trong những trường hợp cực đoan, chúng có thể có những hành động gây hại cho bản thân và xã hội.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-conclusion" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 청소년의 올바른 성장을 돕기 위해 어떤 노력이 필요한가? (Cần những nỗ lực nào để giúp thanh thiếu niên trưởng thành đúng đắn?)</b><br>
+            - Tổng quan: Cần sự nỗ lực đa chiều từ cả gia đình và xã hội.<br>
+            - Về phía Gia đình: Thấu hiểu đây là quá trình trưởng thành tất yếu, hỗ trợ về mặt cảm xúc để con trẻ ổn định tâm lý.<br>
+            - Về phía Xã hội: Xây dựng hệ thống thể chế, lập các trung tâm tư vấn tâm lý, cơ sở bảo trợ cho những em đi lạc lối.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>청소년이 건강하게 청소년기를 보내고 미래의 인재로 성장하도록 돕기 위해서는 가정과 사회의 다각적인 노력이 필요하다.</td><td>Để giúp thanh thiếu niên trải qua thời kỳ thanh xuân một cách khỏe mạnh và trưởng thành thành nhân tài của tương lai, cần có sự nỗ lực đa chiều từ gia đình và xã hội.</td></tr>
+            <tr><td>가정에서는 청소년의 특성을 성장을 위한 하나의 과정으로 이해하고 청소년이 건강한 자아 정체성을 형성할 수 있도록 정서적으로 지원할 필요가 있다.</td><td>Ở gia đình, cần hiểu những đặc tính của thanh thiếu niên như một phần của quá trình trưởng thành và hỗ trợ về mặt cảm xúc để chúng có thể hình thành một bản ngã khỏe mạnh.</td></tr>
+            <tr><td>사회에서는 청소년 심리 상담 센터나 방황하는 청소년을 위한 위탁 시설을 운영하는 등의 제도적 지원을 통해 청소년의 올바른 성장을 도울 수 있을 것이다.</td><td>Về phía xã hội, có thể giúp đỡ sự trưởng thành đúng đắn của thanh thiếu niên thông qua những hỗ trợ về mặt thể chế như vận hành trung tâm tư vấn tâm lý thanh thiếu niên hay các cơ sở ủy thác dành cho thanh thiếu niên đang lạc lối.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-grammar" class="tab-content t54-content">
+        <details><summary>1. ~은/는 ~라는 점에서 사람의 생애 중 중요한 시기이다.</summary><div class="details-content">Ở khía cạnh là..., [Chủ đề] là một thời kỳ quan trọng trong cuộc đời con người.</div></details>
+        <details><summary>2. ~은/는 ~뿐 아니라 삶의 전 영역에 지속적인 영향을 미친다.</summary><div class="details-content">...không những ảnh hưởng đến... mà còn có tác động liên tục đến toàn bộ các lĩnh vực của cuộc sống.</div></details>
+        <details><summary>3. ~은/는 아직 ~되지 않았기 때문에 심리적으로 ~해지기 쉽다.</summary><div class="details-content">Vì... vẫn chưa được... nên về mặt tâm lý rất dễ trở nên...</div></details>
+        <details><summary>4. 특히 A, B, C 등은 ~들이 ~함을 느끼게 되는 주된 요인이다.</summary><div class="details-content">Đặc biệt, các yếu tố như A, B, C là những yếu tố chính khiến [đối tượng] cảm thấy...</div></details>
+        <details><summary>5. 뿐만 아니라 ~은/는 아직 옳고 그름의 기준이 정립되지 않았기 때문에 ~의 영향을 받기 쉽다.</summary><div class="details-content">Không những thế, vì... chưa thiết lập được tiêu chuẩn đúng sai nên rất dễ bị ảnh hưởng bởi...</div></details>
+        <details><summary>6. 이러한 특성으로 인하여 극단적인 경우 해를 끼치는 행동을 하기도 한다.</summary><div class="details-content">Do những đặc tính này... trong trường hợp cực đoan có thể có những hành động gây hại cho...</div></details>
+        <details><summary>7. ~이/가 건강하게 ~을/를 보내고 ~로 성장하도록 돕기 위해서는 다각적인 노력이 필요하다.</summary><div class="details-content">Để giúp cho [Đối tượng] trải qua một cách khỏe mạnh và trưởng thành thành... thì cần có sự nỗ lực đa chiều.</div></details>
+        <details><summary>8. ~을/를 ~을/를 위한 하나의 과정으로 이해하고 정서적으로 지원할 필요가 있다.</summary><div class="details-content">Cần hiểu... như một phần của quá trình nhằm... và hỗ trợ về mặt cảm xúc.</div></details>
+        <details><summary>9. ~센터나 ~시설을 운영하는 등의 제도적 지원을 통해 ~성장을 도울 수 있을 것이다.</summary><div class="details-content">Có thể giúp đỡ sự trưởng thành của... thông qua những hỗ trợ về mặt thể chế như vận hành trung tâm... hay cơ sở...</div></details>
+        <details><summary>10. 명사 + 에 저항하거나 ~에 대해 강한 반항심을 보이다</summary><div class="details-content">Chống cự lại [Danh từ] hoặc thể hiện sự phản kháng mạnh mẽ đối với...</div></details>
+    </div>
+</div>
+
+<script src="exam-logic.js"></script>
+
+<script>
+    // CÂU 51A
+    function grade51A() {
+        let val = document.getElementById('ans-51-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['하', '가', '시작하'];
+        let validEndings = ['러 갑니다', '러 갈 예정입니다', '러 가기로 했습니다', '게 되었습니다'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc mục đích di chuyển/tương lai."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu đuôi câu -(으)러 가다 / tương lai."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'đi làm / bắt đầu làm'."); }
+
+        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+    }
+
+    // CÂU 51B
+    function grade51B() {
+        let val = document.getElementById('ans-51-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['들', '맞'];
+        let validEndings = ['면 좋겠', '었으면 좋겠', '기를 바랍'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng nguyện vọng tặng quà."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp mong muốn -(으)면 좋겠다."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'vừa lòng / ưng ý' (들다)."); }
+
+        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+    }
+
+    // CÂU 52A
+    function grade52A() {
+        let val = document.getElementById('ans-52-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['모습', '상태'];
+        let validEndings = ['보는 것', '보는 셈'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) {
+            score = 5; feedback.push("Đạt 5/5 Điểm: Áp dụng đúng cấu trúc tương phản.");
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần danh từ '모습' và động từ '보다'."); }
+
+        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+    }
+
+    // CÂU 52B
+    function grade52B() {
+        let val = document.getElementById('ans-52-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['지나야', '지난 후', '흘러야'];
+        let validEndings = ['알 수 있', '깨닫게 되'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Cấu trúc điều kiện thời gian hoàn hảo."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu kết quả 'mới có thể biết'."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ chỉ sự 'trôi qua' của thời gian."); }
+
+        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+    }
+
+    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 64 ---
+    const bookData_64 = [
+        { vi: "Kết quả khảo sát về sự thay đổi của thị trường mua sắm trực tuyến cho thấy, doanh thu mua sắm trực tuyến đạt 46 nghìn tỷ won vào năm 2014 và 92 nghìn tỷ won vào năm 2018, tăng mạnh chỉ sau 4 năm.", ko: "온라인 쇼핑 시장의 변화에 대해 조사한 결과, 온라인 쇼핑 매출액은 2014년에 46조 원, 2018년에 92조 원으로 4년 만에 크게 증가한 것으로 나타났다." },
+        { vi: "Doanh thu theo thiết bị sử dụng, trong trường hợp của máy tính tăng nhẹ từ 32 nghìn tỷ won năm 2014 lên 39 nghìn tỷ won năm 2018, trong khi đó smartphone ghi nhận mức tăng doanh thu mạnh mẽ từ 14 nghìn tỷ won năm 2014 lên 53 nghìn tỷ won năm 2018.", ko: "사용 기기에 따른 매출액은 컴퓨터의 경우 2014년에 32조 원, 2018년에 39조 원으로 소폭 증가한 반면 스마트폰은 2014년에 14조 원, 2018년에 53조 원으로 매출액이 큰 폭으로 증가하였다." },
+        { vi: "Nguyên nhân thị trường mua sắm trực tuyến thay đổi như vậy là do việc mua sắm đa dạng các loại hàng hóa trực tuyến trở nên khả thi, và khả năng tiếp cận mua sắm của smartphone trở nên cao hơn so với máy tính.", ko: "이와 같이 온라인 쇼핑 시장이 변화한 원인은 온라인으로 다양한 상품 구매가 가능해졌고 스마트폰이 컴퓨터에 비해 쇼핑 접근성이 높아졌기 때문이다." }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initBook(bookData_64);
+    });
+</script>

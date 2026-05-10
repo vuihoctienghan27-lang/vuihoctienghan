@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 쓰기 - 제91회 - Vui Học Tiếng Hàn</title>
+
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+
+    <style>
+        /* ===== HEADER BADGE ===== */
+        .header-badge-container {
+            text-align: center;
+            margin: 40px auto 50px auto;
+            width: 100%;
+        }
+
+        .topik-header-badge {
+            display: inline-block;
+            background-color: #dce3dd;
+            border: 2px solid #1a1a1a;
+            border-radius: 999px;
+            padding: 12px 50px;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a1a1a;
+            letter-spacing: -0.5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* ===== CSS TÙY CHỈNH INFOGRAPHIC ĐỀ 91 & FIX MOBILE ===== */
+        .info-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .info-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #0f172a;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .q53-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            /* Máy tính 2 cột */
+            gap: 20px;
+        }
+
+        /* Biểu đồ đường (Line Chart) mô phỏng Đề 91 */
+        .chart-svg {
+            width: 100%;
+            height: 160px;
+            overflow: visible;
+            margin-top: 10px;
+        }
+
+        .year-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+            font-weight: 700;
+            color: #64748b;
+            font-size: 0.95rem;
+            padding: 0 10px;
+        }
+
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        /* Box Nguyên nhân & Triển vọng */
+        .cause-box,
+        .forecast-box {
+            border: 1px solid #cbd5e1;
+            padding: 20px;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .cause-title-badge {
+            display: inline-block;
+            background: #64748b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .cause-list {
+            margin: 0;
+            padding-left: 20px;
+            line-height: 1.8;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+
+        .forecast-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .circle-badge {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.9rem;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        /* FIX LỖI MOBILE CHO CÂU 53 */
+        @media (max-width: 768px) {
+            .header-badge-container {
+                margin: 20px auto 30px auto;
+            }
+
+            .topik-header-badge {
+                font-size: 1.5rem;
+                padding: 10px 30px;
+                border-width: 1.5px;
+            }
+
+            .q53-info-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            /* Điện thoại 1 cột xếp dọc */
+        }
+
+/* Vòng tròn Xanh (Cửa hàng tiện lợi) */
+    .circle-badge { 
+        width: 75px; height: 75px; border-radius: 50%; 
+        display: flex; align-items: center; justify-content: center; 
+        font-weight: 800; color: white; font-size: 0.95rem; text-align: center; line-height: 1.3; 
+        background: #2563eb; /* Đổ màu nền xanh */
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); 
+    }
+    /* Vòng tròn Xám (Đại siêu thị) */
+    .circle-badge.gray { 
+        background: #94a3b8; /* Đổ màu nền xám */
+        box-shadow: 0 4px 10px rgba(148, 163, 184, 0.3); 
+    }
+    /* Làm đẹp dấu Lớn hơn */
+    .greater-than {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: #ef4444; /* Cho màu đỏ để nhấn mạnh sự vượt lên */
+    }
+    </style>
+
+    <div class="header-badge-container">
+        <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제91회</div>
+    </div>
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+
+        <div class="exam-instruction">
+            ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+        </div>
+
+        <div class="writing-box">
+            <div
+                style="background:#f1f5f9; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 1.5rem;">💬</span>
+                <div>
+                    <div style="font-weight: 800; color: #1e40af;">인주 피부과 병원입니다.</div>
+                    <div style="font-size: 0.9rem; color: #475569;">11월 13일 오전 10시에 진료 예약이 되어 있습니다.</div>
+                </div>
+            </div>
+            <div>
+                안녕하세요. 제가 13일에 일이 생겨서 병원에 못 가게 되었습니다.<br>
+                그래서 예약을 14일 오전 10시로 <b>( ㉠ )</b>.<br>
+                만약에 이날 예약이 <b>( ㉡ )</b> 저는 15일 오전도 괜찮습니다.
+            </div>
+
+            <details style="margin-top: 15px; background: rgba(255,255,255,0.8); border:none; box-shadow:none;">
+                <summary style="padding: 10px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+                <div class="details-content" style="font-size: 0.95rem; color: #111;">
+                    <b>(Tin nhắn từ bệnh viện): Bệnh viện da liễu Inju xin chào. Bạn có lịch hẹn khám vào 10 giờ sáng
+                        ngày 13 tháng 11.</b><br>
+                    Xin chào. Ngày 13 tôi có việc bận nên không thể đến bệnh viện được.<br>
+                    Vì vậy tôi <b>(muốn thay đổi)</b> lịch hẹn sang 10 giờ sáng ngày 14.<br>
+                    Giả sử ngày hôm đó lịch hẹn <b>(không được / bất khả thi)</b> thì sáng ngày 15 tôi cũng không sao.
+                </div>
+            </details>
+        </div>
+
+        <div class="answer-area">
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉠</div>
+                <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                    <button class="btn-outline" id="btn-exp-51-a" style="display:none;"
+                        onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-51-a" class="explanation-box">
+                    <div id="score-51-a" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Người viết nhắn tin cho bệnh viện báo bận vào ngày 13, nên muốn "dời/đổi" lịch hẹn sang ngày 14. Câu
+                    này thể hiện ý muốn, nguyện vọng yêu cầu bệnh viện giúp đỡ.<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>변경하다 / 바꾸다 / 미루다</code> + Ngữ pháp ý muốn/yêu cầu
+                    <code>-고 싶습니다 / -려고 합니다 / -아/어 주시기 바랍니다</code>.<br><br>
+                    <b>[Các đáp án được chấp nhận]</b><br>
+                    <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 변경하고 싶습니다 / 바꾸고 싶습니다.<br>
+                    <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 변경하려고 합니다 / 바꿔 주시기 바랍니다 /
+                    미루고 싶습니다.
+                </div>
+            </div>
+
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉡</div>
+                <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                    <button class="btn-outline" id="btn-exp-51-b" style="display:none;"
+                        onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-51-b" class="explanation-box">
+                    <div id="score-51-b" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Phía trước có từ `만약에` (Giả sử), phía sau có câu chữa cháy "sáng ngày 15 cũng được". Nghĩa là nếu
+                    ngày 14 "không được/không có lịch trống" thì đổi sang ngày 15.<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> <code>어렵다 / 불가능하다 / 안 되다</code> + Cấu trúc giả định
+                    <code>-(으)면</code>.<br><br>
+                    <b>[Các đáp án được chấp nhận]</b><br>
+                    <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 불가능하면 / 어려우면.<br>
+                    <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 안 되면 / 불가능하다면 / 힘들면.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+
+        <div class="exam-instruction">
+            ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+        </div>
+
+        <div class="writing-box">
+            스트레스를 받았을 때 사탕이나 과자와 같이 단 음식을 먹으면 기분이 좋아진다. 단 음식으로 인해 뇌에서 기분을 좋게 만드는 호르몬이 나오기 때문이다. 그런데 전문가들은 사람들이 술이나 담배에
+            중독되는 것처럼 단맛에도 <b>( ㉠ )</b>. 따라서 평소에 단 음식을 지나치게 많이 <b>( ㉡ )</b> 주의할 필요가 있다.
+
+            <details style="margin-top: 15px; background: rgba(255,255,255,0.8); border:none; box-shadow:none;">
+                <summary style="padding: 10px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+                <div class="details-content" style="font-size: 0.95rem; color: #111;">
+                    Khi bị căng thẳng, nếu ăn đồ ngọt như kẹo hay bánh thì tâm trạng sẽ trở nên tốt hơn. Đó là bởi vì
+                    thông qua đồ ngọt, não bộ sẽ tiết ra hormone làm cho tâm trạng vui vẻ. Thế nhưng các chuyên gia cho
+                    biết, giống như việc con người nghiện rượu hay thuốc lá, con người cũng <b>(bị nghiện)</b> vị ngọt.
+                    Theo đó, thông thường chúng ta cần chú ý <b>(để không ăn)</b> quá nhiều đồ ngọt.
+                </div>
+            </details>
+        </div>
+
+        <div class="answer-area">
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉠</div>
+                <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                    <button class="btn-outline" id="btn-exp-52-a" style="display:none;"
+                        onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-52-a" class="explanation-box">
+                    <div id="score-52-a" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Câu này có cấu trúc so sánh tương đồng `~에 중독되는 것처럼 ~에도...` (Giống như bị nghiện [cái A] thì cũng...
+                    vào [cái B]). Hơn nữa chủ ngữ là `전문가들은` (Các chuyên gia...) nên đuôi câu bắt buộc phải là dạng
+                    trích dẫn gián tiếp.<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>중독되다 / 빠지다</code> + Ngữ pháp trích dẫn gián tiếp
+                    <code>-ㄴ/는다고 한다</code>.<br><br>
+                    <b>[Các đáp án được chấp nhận]</b><br>
+                    <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 중독된다고 한다.<br>
+                    <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 중독될 수 있다고 한다 / 중독되기 쉽다고 한다.
+                </div>
+            </div>
+
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉡</div>
+                <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                    <button class="btn-outline" id="btn-exp-52-b" style="display:none;"
+                        onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-52-b" class="explanation-box">
+                    <div id="score-52-b" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Đoạn trước đã cảnh báo đồ ngọt gây nghiện. Do đó câu kết luận `따라서` (Theo đó) mang ý khuyên răn: Cần
+                    chú ý ĐỂ KHÔNG ĂN đồ ngọt quá mức.<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> <code>먹다 / 섭취하다</code> + Phủ định <code>-지 않도록 / -지 않게</code>.<br><br>
+                    <b>[Các đáp án được chấp nhận]</b><br>
+                    <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 먹지 않도록.<br>
+                    <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 먹지 않게 / 섭취하지 않도록 / 먹지 않아야
+                    한다고.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+
+        <div class="exam-instruction">
+            ※ [53] 다음은 '편의점 매출액 변화'에 대한 자료이다. 이 내용을 200~300자의 글로 쓰시오. 단, 글의 제목은 쓰지 마시오. (30점)
+        </div>
+
+        <div
+            style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+            <div style="font-weight: 700; color: #475569; margin-bottom: 20px; font-size: 0.95rem;">■ 조사 기관: 산업경제연구소
+            </div>
+
+            <div class="q53-info-grid">
+                <div class="info-card" style="grid-row: span 2;">
+                    <div class="info-title">편의점과 대형 마트 매출액<br><span
+                            style="font-size: 0.8rem; color: #64748b; font-weight:500;">(단위: 원)</span></div>
+
+                    <svg class="chart-svg" viewBox="0 0 200 120">
+                        <line x1="15" y1="105" x2="185" y2="105" stroke="#cbd5e1" stroke-width="2" />
+                        <line x1="15" y1="105" x2="15" y2="5" stroke="#cbd5e1" stroke-width="2" />
+
+                        <line x1="50" y1="20" x2="150" y2="15" stroke="#64748b" stroke-width="3" />
+                        <circle cx="50" cy="20" r="4" fill="#ffffff" stroke="#64748b" stroke-width="2" />
+                        <circle cx="150" cy="15" r="4" fill="#ffffff" stroke="#64748b" stroke-width="2" />
+                        <text x="50" y="10" font-size="9" font-family="sans-serif" font-weight="bold" fill="#64748b"
+                            text-anchor="middle">24조 2천억</text>
+                        <text x="150" y="5" font-size="9" font-family="sans-serif" font-weight="bold" fill="#64748b"
+                            text-anchor="middle">24조 3천억</text>
+                        <rect x="80" y="7" width="40" height="12" fill="white" stroke="#64748b" rx="2" />
+                        <text x="100" y="16" font-size="8" font-family="sans-serif" font-weight="bold" fill="#64748b"
+                            text-anchor="middle">대형 마트</text>
+
+                        <line x1="50" y1="90" x2="150" y2="40" stroke="#2563eb" stroke-width="3" />
+                        <circle cx="50" cy="90" r="4" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+                        <circle cx="150" cy="40" r="4" fill="#ffffff" stroke="#2563eb" stroke-width="2" />
+                        <text x="50" y="80" font-size="9" font-family="sans-serif" font-weight="bold" fill="#2563eb"
+                            text-anchor="middle">17조 2천억</text>
+                        <text x="150" y="30" font-size="9" font-family="sans-serif" font-weight="bold" fill="#2563eb"
+                            text-anchor="middle">22조 3천억</text>
+                        <rect x="105" y="75" width="35" height="12" fill="white" stroke="#2563eb" rx="2" />
+                        <text x="122.5" y="84" font-size="8" font-family="sans-serif" font-weight="bold" fill="#2563eb"
+                            text-anchor="middle">편의점</text>
+
+                        <path d="M 55 85 Q 90 40 145 40" fill="none" stroke="#e11d48" stroke-width="2"
+                            marker-end="url(#arrow)" />
+                        <defs>
+                            <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6"
+                                orient="auto-start-reverse">
+                                <path d="M 0 0 L 10 5 L 0 10 z" fill="#e11d48" />
+                            </marker>
+                        </defs>
+
+                        <text x="50" y="118" font-size="10" font-family="sans-serif" font-weight="bold" fill="#1e293b"
+                            text-anchor="middle">2015년</text>
+                        <text x="150" y="118" font-size="10" font-family="sans-serif" font-weight="bold" fill="#1e293b"
+                            text-anchor="middle">2022년</text>
+                    </svg>
+                </div>
+
+                <div class="cause-box" style="margin-top: 0;">
+                    <div class="cause-title-badge">원인</div>
+                    <ul class="cause-list">
+                        <li>편의점 수 ↑ ➔ 고객 접근성 향상</li>
+                        <li>소포장 상품 수요 증가</li>
+                    </ul>
+                </div>
+
+                <div class="forecast-box">
+                    <div class="cause-title-badge" style="background: #0ea5e9;">전망</div>
+                    <div class="forecast-content">
+                        <div style="font-weight:700; color:#1e293b; font-size:0.95rem; text-align:left;">2023년<br>매출액
+                        </div>
+                        <div class="circle-badge">편의점</div>
+                        <div class="greater-than">></div>
+                        <div class="circle-badge gray">대형<br>마트</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+            <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+            <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+            <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+        </div>
+
+        <div id="t53-guide" class="tab-content t53-content active">
+            <div class="guide-box">
+                <b>Dàn ý phân tích biểu đồ (So sánh đường & Triển vọng):</b><br><br>
+                1. <b>Mở bài (Biểu đồ đường 1):</b> Nêu cơ quan khảo sát và so sánh mốc thời gian của Đại siêu thị (대형
+                마트). Từ 24.2 nghìn tỷ (2015) lên 24.3 nghìn tỷ (2022) -> Không có biến động lớn (큰 변화가 없었다).<br>
+                2. <b>Thân bài 1 (Biểu đồ đường 2):</b> Dùng từ nối đối chiếu (그에 비해). Cửa hàng tiện lợi (편의점) từ 17.2
+                lên 22.3 nghìn tỷ -> Tăng trưởng mạnh (크게 증가한 것을 알 수 있었다).<br>
+                3. <b>Thân bài 2 (Nguyên nhân):</b> Nêu rõ 2 nguyên nhân (첫째, ... 둘째...). Nguyên nhân 1: Số lượng tăng
+                -> nâng cao khả năng tiếp cận. Nguyên nhân 2: Nhu cầu mua hàng đóng gói nhỏ (소포장) tăng.<br>
+                4. <b>Kết luận (Triển vọng):</b> Dự báo (전망된다). Nhìn vào xu thế này (이런 추세로 볼 때), năm 2023 Cửa hàng tiện
+                lợi sẽ vượt qua (넘어설 것으로) Đại siêu thị.
+            </div>
+        </div>
+
+        <div id="t53-grammar" class="tab-content t53-content">
+            <details>
+                <summary>1. ~의 조사에 따르면</summary>
+                <div class="details-content">Theo khảo sát của [Cơ quan]... </div>
+            </details>
+            <details>
+                <summary>2. ~은/는 ~년에 N원이었던 것이 ~년에 N원으로 큰 변화가 없었다.</summary>
+                <div class="details-content">...đã từng là [Số A] vào năm... thì đến năm... đạt [Số B], cho thấy không
+                    có sự thay đổi lớn. </div>
+            </details>
+            <details>
+                <summary>3. 그에 비해 ~은/는 크게 증가한 것을 알 수 있었다.</summary>
+                <div class="details-content">Trái lại so với điều đó, có thể thấy rõ sự gia tăng mạnh mẽ của... </div>
+            </details>
+            <details>
+                <summary>4. 이렇게 ~이/가 증가한 원인은 첫째, ~고, 둘째, ~기 때문이다.</summary>
+                <div class="details-content">Nguyên nhân khiến cho... gia tăng mạnh như vậy, thứ nhất là do... và thứ
+                    hai là do... </div>
+            </details>
+            <details>
+                <summary>5. 명사 + 이/가 향상되다</summary>
+                <div class="details-content">[Danh từ] được nâng cao/cải thiện. <i>(Ví dụ: 접근성이 향상되다 = Tính tiếp cận
+                        được nâng cao)</i> </div>
+            </details>
+            <details>
+                <summary>6. 이런 추세로 볼 때</summary>
+                <div class="details-content">Nếu nhìn vào xu hướng này thì... <i>(Từ nối hoàn hảo để mở đầu phần Triển
+                        vọng tương lai)</i> </div>
+            </details>
+            <details>
+                <summary>7. ~이/가 ~을/를 넘어설 것으로 전망된다.</summary>
+                <div class="details-content">Được dự báo là A sẽ vượt qua B. </div>
+            </details>
+        </div>
+
+        <div id="t53-answer" class="tab-content t53-content">
+            <table class="bilingual-table">
+                <tr>
+                    <td>산업경제연구소의 조사에 따르면 대형 마트의 매출액은 2015년에 24조 2천억 원이었던 것이 2022년에 24조 3천억 원으로 큰 변화가 없었다.</td>
+                    <td>Theo khảo sát của Viện Nghiên cứu Kinh tế Công nghiệp, doanh thu của siêu thị lớn không có sự
+                        thay đổi lớn, từ 24.2 nghìn tỷ won năm 2015 lên 24.3 nghìn tỷ won năm 2022. </td>
+                </tr>
+                <tr>
+                    <td>그에 비해 편의점 매출액은 2015년에 17조 2천억 원이었던 것이 2022년에 22조 3천억 원으로 크게 증가한 것을 알 수 있었다.</td>
+                    <td>Trái lại, doanh thu của cửa hàng tiện lợi có thể thấy đã tăng mạnh từ 17.2 nghìn tỷ won năm 2015
+                        lên 22.3 nghìn tỷ won năm 2022. </td>
+                </tr>
+                <tr>
+                    <td>이렇게 편의점 매출액이 크게 증가한 원인은 첫째, 편의점 수가 증가하여 고객 접근성이 향상되고, 둘째, 소포장 상품의 수요가 증가했기 때문이다.</td>
+                    <td>Nguyên nhân doanh thu cửa hàng tiện lợi tăng mạnh như vậy, thứ nhất là do số lượng cửa hàng tiện
+                        lợi tăng làm nâng cao khả năng tiếp cận của khách hàng, và thứ hai là do nhu cầu về sản phẩm
+                        đóng gói nhỏ tăng lên. </td>
+                </tr>
+                <tr>
+                    <td>이런 추세로 볼 때 2023년에는 편의점의 매출액이 대형 마트를 넘어설 것으로 전망된다.</td>
+                    <td>Nhìn vào xu hướng này, người ta dự báo rằng vào năm 2023, doanh thu của cửa hàng tiện lợi sẽ
+                        vượt qua siêu thị lớn. </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="t53-practice" class="tab-content t53-content">
+            <div class="book-container">
+                <div class="book-page page-left">
+                    <div class="book-title">Tiếng Việt</div>
+                    <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+                </div>
+                <div class="book-page page-right">
+                    <div class="book-title">Tiếng Hàn</div>
+                    <div id="book-ko-text"
+                        style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                    <div id="book-ko-input-area" style="display: none;">
+                        <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                        <div id="diff-result-box"
+                            style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;">
+                        </div>
+                        <div id="diff-correct-ans"
+                            style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book-nav-wrapper">
+                <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+                <span id="book-page-indicator" class="page-indicator">1 / 4</span>
+                <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+                <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper" style="margin-bottom:0;">
+        <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+
+        <div class="exam-instruction">
+            ※ [54] 다음을 참고하여 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+        </div>
+
+        <div class="writing-box">
+            오늘날 우리는 정보 통신 기술의 발달로 누구나 쉽게 정보를 생산하고 대중에게 전달할 수 있다. 그런데 정보의 생산과 유통을 통해 개인과 집단이 이익을 얻을 수도 있게 되면서 사실과 다른 가짜
+            뉴스가 늘어나고 있다. 아래의 내용을 중심으로 <b>'가짜 뉴스의 등장이 사회에 미치는 영향'</b>에 대한 자신의 생각을 쓰라.
+            <ul
+                style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+                <li>가짜 뉴스가 생겨나는 사회적 배경은 무엇인가?</li>
+                <li>가짜 뉴스로 인해 어떤 문제가 생길 수 있는가?</li>
+                <li>이런 문제들을 해결하기 위해서 어떤 방안이 필요한가?</li>
+            </ul>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+            <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+            <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+            <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+        </div>
+
+        <div id="t54-intro" class="tab-content t54-content active">
+            <div class="guide-box">
+                <b>Trọng tâm: 가짜 뉴스가 생겨나는 사회적 배경은 무엇인가? (Bối cảnh xã hội làm phát sinh tin giả?)</b><br>
+                - Bối cảnh công nghệ: Mạng xã hội đại chúng hóa giúp ai cũng có thể chia sẻ thông tin dễ dàng.<br>
+                - Bối cảnh truyền thông: Phương tiện truyền tải mở rộng từ báo chí truyền thống sang nền tảng kỹ thuật
+                số.<br>
+                - Bối cảnh kinh tế (Cốt lõi): Quá trình lan truyền thông tin tạo ra lợi ích kinh tế (câu view kiếm
+                tiền), dẫn đến sự ra đời của tin giả để thu hút sự chú ý.
+            </div>
+            <table class="bilingual-table">
+                <tr>
+                    <td>정보 통신 기술의 발달과 소셜 미디어의 대중화로 인해 이 시대에는 누구나 쉽게 정보를 생산하고 불특정 다수와 공유할 수 있게 되었다.</td>
+                    <td>Nhờ sự phát triển của công nghệ thông tin truyền thông và sự đại chúng hóa của mạng xã hội,
+                        trong thời đại này bất kỳ ai cũng có thể dễ dàng sản xuất thông tin và chia sẻ với đa số những
+                        người không xác định. </td>
+                </tr>
+                <tr>
+                    <td>이는 정보를 생산하고 유통하는 매체가 신문이나 방송과 같은 전통적 미디어에서 디지털 미디어 플랫폼으로 확장되면서 가능해진 것이다.</td>
+                    <td>Điều này trở nên khả thi khi các phương tiện sản xuất và phân phối thông tin được mở rộng từ các
+                        phương tiện truyền thông truyền thống như báo chí hay phát thanh sang các nền tảng truyền thông
+                        kỹ thuật số. </td>
+                </tr>
+                <tr>
+                    <td>나아가 그 과정에서 경제적 가치를 창출하는 것 역시 가능해지면서 다양한 문제가 양산되고 있다.</td>
+                    <td>Tiến xa hơn, trong quá trình đó việc sáng tạo ra giá trị kinh tế cũng trở nên khả thi, kéo theo
+                        hàng loạt vấn đề đa dạng đang bị sản sinh ra. </td>
+                </tr>
+                <tr>
+                    <td>사람들의 이목을 끌기 위한 가짜 뉴스의 등장도 그 문제 중 하나이다.</td>
+                    <td>Sự xuất hiện của tin tức giả nhằm thu hút sự chú ý của mọi người cũng là một trong số những vấn
+                        đề đó. </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="t54-body" class="tab-content t54-content">
+            <div class="guide-box">
+                <b>Trọng tâm: 가짜 뉴스로 인해 어떤 문제가 생길 수 있는가? (Tin giả gây ra những vấn đề gì?)</b><br>
+                - Đối với người đọc: Nhận thức sai lệch, hình thành định kiến bảo thủ.<br>
+                - Đối với nạn nhân (cá nhân/doanh nghiệp): Tổn hại danh dự, thiệt hại kinh tế không thể gượng dậy.<br>
+                - Đối với toàn xã hội: Lan truyền sự thù ghét, cản trở đoàn kết, trầm trọng hóa thành vấn đề chính
+                trị/ngoại giao.
+            </div>
+            <table class="bilingual-table">
+                <tr>
+                    <td>가짜 뉴스는 정보 수용자로 하여금 잘못된 지식과 선입견, 편협한 사고를 형성하게 한다.</td>
+                    <td>Tin tức giả khiến cho người tiếp nhận thông tin hình thành những kiến thức sai lệch, định kiến
+                        và suy nghĩ phiến diện/bảo thủ. </td>
+                </tr>
+                <tr>
+                    <td>가짜 뉴스의 소재가 되는 개인이나 기업, 단체의 경우 이미지 타격과 경제적 피해는 물론이고 사회적으로 재기가 어려울 정도로 명예가 훼손되기도 한다.</td>
+                    <td>Đối với cá nhân, doanh nghiệp hay tổ chức trở thành chủ đề của tin giả, không những họ phải chịu
+                        đòn giáng vào hình ảnh và thiệt hại kinh tế, mà danh dự còn bị hủy hoại đến mức khó có thể vươn
+                        lên lại trong xã hội. </td>
+                </tr>
+                <tr>
+                    <td>또한 가짜 뉴스는 혐오를 확산하고 사회적 불안을 야기하며 사회 구성원들의 통합을 방해한다.</td>
+                    <td>Thêm vào đó, tin giả làm lan truyền sự thù ghét, gây ra sự bất an trong xã hội và cản trở sự
+                        đoàn kết của các thành viên trong xã hội. </td>
+                </tr>
+                <tr>
+                    <td>나아가 정치 및 외교적 문제로 심화될 가능성도 있기 때문에 심각한 사회 문제라 말할 수 있다.</td>
+                    <td>Hơn nữa, vì có khả năng trầm trọng hóa thành các vấn đề chính trị và ngoại giao, nên có thể nói
+                        đây là một vấn đề xã hội vô cùng nghiêm trọng. </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="t54-conclusion" class="tab-content t54-content">
+            <div class="guide-box">
+                <b>Trọng tâm: 이런 문제들을 해결하기 위해서 어떤 방안이 필요한가? (Giải pháp khắc phục?)</b><br>
+                - Về mặt Thể chế/Luật pháp: Quy định đây là hành vi bất hợp pháp, lập cơ quan kiểm duyệt và thắt chặt
+                quy chế.<br>
+                - Về mặt Nhận thức: Tuyên truyền rủi ro qua các chiến dịch giáo dục.<br>
+                - Về mặt Công nghệ: Phát triển AI/kỹ thuật lọc tin giả trước khi nó tiếp cận người dùng.
+            </div>
+            <table class="bilingual-table">
+                <tr>
+                    <td>가짜 뉴스를 근절하기 위해서는 우선 제도적으로 가짜 뉴스의 생산과 유통이 불법적 행위임을 규정하고, 가짜 뉴스 단속을 위한 기구를 만들어 가짜 뉴스가 확산되지 않도록 규제를
+                        강화해야 한다.</td>
+                    <td>Để tiệt trừ tin giả, trước tiên về mặt thể chế, cần phải quy định việc sản xuất và phân phối tin
+                        giả là hành vi bất hợp pháp, đồng thời lập ra các cơ quan chuyên trấn áp tin giả nhằm tăng cường
+                        quy chế để tin giả không thể phát tán. </td>
+                </tr>
+                <tr>
+                    <td>또한 각종 캠페인이나 교육을 통해 가짜 뉴스의 위험성과 위법성을 알리는 것 역시 필요하다.</td>
+                    <td>Ngoài ra, việc thông báo về tính nguy hiểm và tính vi phạm pháp luật của tin giả thông qua các
+                        chiến dịch hoặc giáo dục các loại cũng là điều cần thiết. </td>
+                </tr>
+                <tr>
+                    <td>나아가 정보의 진위를 판단하는 기술을 개발해 가짜 뉴스가 정보 수용자에게 전달되는 것을 방지하는 것도 좋은 방법일 것이다.</td>
+                    <td>Tiến xa hơn, việc phát triển các công nghệ phán đoán tính thật-giả của thông tin để ngăn chặn
+                        việc tin giả được truyền tải đến người tiếp nhận thông tin cũng sẽ là một phương pháp tốt. </td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="t54-grammar" class="tab-content t54-content">
+            <details>
+                <summary>1. ~로 인해 ~게 되었다.</summary>
+                <div class="details-content">Nhờ vào/Do... nên đã có thể... <i>(Ví dụ: Nhờ sự phát triển CNTT nên dễ
+                        chia sẻ)</i> </div>
+            </details>
+            <details>
+                <summary>2. 이는 ~에서 ~으로 확장되면서 가능해진 것이다.</summary>
+                <div class="details-content">Điều này trở nên khả thi khi được mở rộng từ [A] sang [B]. </div>
+            </details>
+            <details>
+                <summary>3. ~하는 것 역시 가능해지면서 ~가 양산되고 있다.</summary>
+                <div class="details-content">Việc... cũng trở nên khả thi, kéo theo... đang bị sản sinh ra hàng loạt.
+                </div>
+            </details>
+            <details>
+                <summary>4. ~의 등장도 그 문제 중 하나이다.</summary>
+                <div class="details-content">Sự xuất hiện của... cũng là một trong số những vấn đề đó. </div>
+            </details>
+            <details>
+                <summary>5. ~로 하여금 ~게 한다.</summary>
+                <div class="details-content">Khiến cho/Làm cho đối tượng nào đó thực hiện hành động/rơi vào trạng
+                    thái... <i>(Cấu trúc sai khiến cực kỳ cao cấp)</i> </div>
+            </details>
+            <details>
+                <summary>6. ~은/는 물론이고 ~(으)ㄹ 정도로 ~기도 한다.</summary>
+                <div class="details-content">...thì đã đành (đương nhiên rồi), mà thậm chí còn... đến mức độ... </div>
+            </details>
+            <details>
+                <summary>7. ~를 야기하며 ~를 방해한다.</summary>
+                <div class="details-content">Gây ra... và cản trở... </div>
+            </details>
+            <details>
+                <summary>8. ~기 위해서는 우선 제도적으로 ~임을 규정하고 ~도록 규제를 강화해야 한다.</summary>
+                <div class="details-content">Để... trước tiên về mặt thể chế cần quy định rằng việc... là..., và cần
+                    tăng cường quy chế để không... </div>
+            </details>
+            <details>
+                <summary>9. ~는 것 역시 필요하다.</summary>
+                <div class="details-content">Việc... cũng là điều cần thiết. </div>
+            </details>
+            <details>
+                <summary>10. ~는 것을 방지하는 것도 좋은 방법일 것이다.</summary>
+                <div class="details-content">Việc ngăn chặn... cũng sẽ là một phương pháp tốt. </div>
+            </details>
+        </div>
+    </div>
+
+    <script src="exam-logic.js"></script>
+
+    <script>
+        // CÂU 51A
+        function grade51A() {
+            let val = document.getElementById('ans-51-a').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['변경하', '바꾸', '미루', '늦추'];
+            let validEndings = ['고 싶', '려고 합', '아/어 주시기 바랍', '면 좋겠'];
+
+            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if (checkKeywords(val, validRoots)) {
+                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý định thay đổi lịch khám chia rất chuẩn."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng sai đuôi câu ý muốn/yêu cầu."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'thay đổi / dời lịch'."); }
+
+            document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        }
+
+        // CÂU 51B
+        function grade51B() {
+            let val = document.getElementById('ans-51-b').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['안 되', '어려우', '불가능하', '힘드'];
+            let validEndings = ['면', '다면'];
+
+            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if (checkKeywords(val, validRoots)) {
+                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc giả định."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp giả định -(으)면."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần tính từ mang nghĩa 'không được / bất khả thi'."); }
+
+            document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        }
+
+        // CÂU 52A
+        function grade52A() {
+            let val = document.getElementById('ans-52-a').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['중독되', '빠지'];
+            let validEndings = ['ㄴ다고 한', '는다고 한', 'ㄹ 수 있다고 한', '기 쉽다고 한'];
+
+            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if (checkKeywords(val, validRoots)) {
+                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý nghiện và trích dẫn gián tiếp."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Có từ 'nghiện' nhưng thiếu đuôi trích dẫn gián tiếp -ㄴ/는다고 한다 của 'chuyên gia nói'."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'bị nghiện'."); }
+
+            document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        }
+
+        // CÂU 52B
+        function grade52B() {
+            let val = document.getElementById('ans-52-b').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['먹', '섭취하'];
+            let validEndings = ['지 않도록', '지 않게', '지 않아야'];
+
+            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if (checkKeywords(val, validRoots)) {
+                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu chính xác ý ngăn cấm hành động."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Có động từ 'ăn' nhưng thiếu cấu trúc phủ định mục đích -지 않도록."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý khuyên 'không ăn/tiêu thụ'."); }
+
+            document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        }
+
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 91 ---
+        const bookData_91 = [
+            { vi: "Theo khảo sát của Viện Nghiên cứu Kinh tế Công nghiệp, doanh thu của siêu thị lớn không có sự thay đổi lớn, từ 24.2 nghìn tỷ won năm 2015 lên 24.3 nghìn tỷ won năm 2022.", ko: "산업경제연구소의 조사에 따르면 대형 마트의 매출액은 2015년에 24조 2천억 원이었던 것이 2022년에 24조 3천억 원으로 큰 변화가 없었다." },
+            { vi: "Trái lại, doanh thu của cửa hàng tiện lợi có thể thấy đã tăng mạnh từ 17.2 nghìn tỷ won năm 2015 lên 22.3 nghìn tỷ won năm 2022.", ko: "그에 비해 편의점 매출액은 2015년에 17조 2천억 원이었던 것이 2022년에 22조 3천억 원으로 크게 증가한 것을 알 수 있었다." },
+            { vi: "Nguyên nhân doanh thu cửa hàng tiện lợi tăng mạnh như vậy, thứ nhất là do số lượng cửa hàng tiện lợi tăng làm nâng cao khả năng tiếp cận của khách hàng, và thứ hai là do nhu cầu về sản phẩm đóng gói nhỏ tăng lên.", ko: "이렇게 편의점 매출액이 크게 증가한 원인은 첫째, 편의점 수가 증가하여 고객 접근성이 향상되고, 둘째, 소포장 상품의 수요가 증가했기 때문이다." },
+            { vi: "Nhìn vào xu hướng này, người ta dự báo rằng vào năm 2023, doanh thu của cửa hàng tiện lợi sẽ vượt qua siêu thị lớn.", ko: "이런 추세로 볼 때 2023년에는 편의점의 매출액이 대형 마트를 넘어설 것으로 전망된다." }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initBook(bookData_91);
+        });
+    </script>

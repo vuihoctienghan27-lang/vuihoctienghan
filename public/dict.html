@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Từ Điển TOPIK Thông Minh - Vui Học Tiếng Hàn</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/base.css">
+
+    <!-- Navbar Scripts -->
+    <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/navbar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/js/vocab-external.js"></script>
+
+    <style>
+        :root {
+            --text-main: #1e293b;
+            --text-sub: #64748b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-color: #f1f5f9;
+        }
+
+        /* ===== SEARCH ROW TÍCH HỢP VÀO NAVBAR ===== */
+        .nav-dict-row {
+            padding: 0 20px 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-dict-input {
+            flex: 1;
+            border: 1.5px solid rgba(59, 130, 246, 0.25);
+            border-radius: 10px;
+            outline: none;
+            font-size: 1em;
+            padding: 9px 14px;
+            background: rgba(255, 255, 255, 0.7);
+            color: #1e293b;
+            font-family: 'Pretendard', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-dict-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+            background: #fff;
+        }
+
+        .nav-dict-input::placeholder {
+            color: #94a3b8;
+        }
+
+        body.dark-mode .nav-dict-input {
+            background: rgba(15, 23, 42, 0.6);
+            color: #f9fafb;
+            border-color: #334155;
+        }
+
+        body.dark-mode .nav-dict-input::placeholder {
+            color: #64748b;
+        }
+
+        body.dark-mode .nav-dict-input:focus {
+            background: #1e293b;
+            border-color: #60a5fa;
+        }
+
+        .nav-dict-btn {
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 9px 20px;
+            font-size: 0.95em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        .nav-dict-btn:hover {
+            background: #2563eb;
+        }
+
+        .nav-dict-btn:active {
+            transform: scale(0.97);
+        }
+
+        @media (max-width: 600px) {
+            .nav-dict-row {
+                padding: 0 12px 10px 12px;
+                gap: 8px;
+            }
+
+            .nav-dict-input {
+                font-size: 0.9em;
+                padding: 8px 10px;
+            }
+
+            .nav-dict-btn {
+                padding: 8px 14px;
+                font-size: 0.85em;
+            }
+        }
+
+        /* ===== WRAPPER ===== */
+        .wrapper { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 30px 40px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box; }
+
+        .hero-section {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            border-radius: 16px;
+            padding: 32px 36px;
+            color: white;
+            margin-bottom: 28px;
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .hero-title {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.18);
+            color: #dbeafe;
+            font-size: 0.9em;
+            font-weight: 700;
+            padding: 5px 14px;
+            border-radius: 99px;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .hero-desc {
+            font-size: 1.05em;
+            color: rgba(255, 255, 255, 0.9);
+            margin: 10px 0 0 0;
+        }
+
+        .result-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            display: none;
+            animation: slideUp 0.4s ease-out forwards;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-sub);
+            display: none;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px auto;
+        }
+
+        .word-title {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .word-title h2 {
+            font-size: 2.5em;
+            color: var(--primary);
+            margin: 0;
+            line-height: 1;
+        }
+
+        .word-pos {
+            background: #f1f5f9;
+            color: #475569;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        /* Dịch tên từ sang tiếng Việt */
+        .word-vi-name {
+            font-size: 1.05em;
+            color: #10b981;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .word-vi-name .vi-label {
+            font-size: 0.8em;
+            background: #d1fae5;
+            color: #065f46;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-weight: 700;
+        }
+
+        .definition-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .def-box {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 12px 12px 0;
+        }
+
+        .def-ko {
+            font-size: 1.15em;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .def-vi {
+            font-size: 1.05em;
+            color: #10b981;
+            font-weight: 500;
+        }
+
+        .examples-section h3 {
+            font-size: 1.25em;
+            color: #334155;
+            margin: 0 0 15px 0;
+        }
+
+        .example-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .example-item:last-child {
+            border-bottom: none;
+        }
+
+        .ex-ko {
+            font-size: 1.1em;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .ex-vi {
+            font-size: 0.95em;
+            color: #64748b;
+        }
+
+        .highlight {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .global-nav, .wrapper {
+                margin-left: 15px !important;
+                margin-right: 15px !important;
+                width: auto !important;
+                box-sizing: border-box;
+            }
+            .nav-desktop-links { display: none !important; }
+        }
+        @media (max-width: 600px) {
+            .wrapper {
+                margin: 12px 15px 20px 15px;
+                padding: 20px 15px;
+                border-radius: 16px;
+            }
+
+            .hero-section {
+                padding: 24px 20px;
+            }
+
+            .hero-title {
+                font-size: 1.6em;
+            }
+
+            .hero-desc {
+                font-size: 0.95em;
+            }
+
+            .word-title {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+
+            .word-title h2 {
+                font-size: 2em;
+            }
+
+            .result-card {
+                padding: 20px;
+            }
+
+            .def-ko {
+                font-size: 1em;
+            }
+        }
+    
+</style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="hero-section" id="dictHeroSection">
+            <div class="hero-tag">Tính Năng Mới</div>
+            <h1 class="hero-title">📚 Tra Từ Tự Động</h1>
+            <p class="hero-desc">Hệ thống tự dịch nghĩa và ví dụ ứng dụng vào bối cảnh thực tế</p>
+        </div>
+
+        <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <div>Đang tra từ...</div>
+        </div>
+
+        <div class="result-card" id="resultCard">
+            <div class="word-title">
+                <h2 id="resWord">Đang tải</h2>
+                <span class="word-pos" id="resPos">Danh từ</span>
+                <button onclick="speakWord()"
+                    style="background:none;border:none;cursor:pointer;color:#64748b;margin-left:auto;">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </button>
+                <div class="word-vi-name" id="resWordVi" style="display:none;">
+                    <span class="vi-label">🇻🇳 Tiếng Việt</span>
+                    <span id="resWordViText"></span>
+                </div>
+            </div>
+
+            <div class="definition-section" id="resDef">
+                <!-- Nội dung giải thích chèn bằng JS -->
+            </div>
+
+            <div class="examples-section" id="resExamples" style="display:none;">
+                <h3>Ví dụ:</h3>
+                <div id="exList"></div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        let currentWordRaw = '';
+
+        function speakWord() {
+            if (!currentWordRaw) return;
+            const utt = new SpeechSynthesisUtterance(currentWordRaw);
+            utt.lang = 'ko-KR';
+            window.speechSynthesis.speak(utt);
+        }
+
+        async function searchDict() {
+            const inp = document.getElementById('dictNavInput') || document.getElementById('searchInput');
+            const query = inp ? inp.value.trim() : '';
+            if (!query) return;
+
+            const resCard = document.getElementById('resultCard');
+            const loadBox = document.getElementById('loadingState');
+
+            resCard.style.display = 'none';
+            loadBox.style.display = 'block';
+            const heroSec = document.getElementById('dictHeroSection');
+            if (heroSec && query) heroSec.style.display = 'none';
+
+            try {
+                if (typeof VocabExternal === 'undefined') throw new Error("Chưa tải xong hệ thống dữ liệu.");
+
+                // ── Bước 1: Gọi Nguồn 1 (Nhanh & Ẩn danh) ──────────────────────────
+                const dataRes = await VocabExternal._naverKoViSearch(query);
+
+                if (dataRes) {
+                    currentWordRaw = dataRes.word;
+
+                    document.getElementById('resWord').textContent = dataRes.word;
+                    document.getElementById('resPos').textContent  = dataRes.pos || '—';
+
+                    const wordViEl   = document.getElementById('resWordVi');
+                    const wordViText = document.getElementById('resWordViText');
+
+                    if (dataRes.viMeaning) {
+                        wordViEl.querySelector('.vi-label').textContent = '🇻🇳 Tiếng Việt';
+                        wordViText.textContent = dataRes.viMeaning;
+                        wordViEl.style.display = 'flex';
+                    } else {
+                        wordViEl.style.display = 'none';
+                    }
+
+                    document.getElementById('resDef').innerHTML = '';
+                    document.getElementById('resExamples').style.display = 'none';
+
+                    let finalExamples = dataRes.examples || [];
+                    
+                    if (finalExamples.length === 0) {
+                        try {
+                            const fallbackEx = await VocabExternal.fetchExamples(dataRes.word, query);
+                            if (fallbackEx && fallbackEx.status === 'ok' && fallbackEx.examples) {
+                                finalExamples = fallbackEx.examples;
+                            }
+                        } catch (e) {
+                            console.warn("Fallback examples error:", e);
+                        }
+                    }
+
+                    if (finalExamples.length > 0) {
+                        let exHtml = '';
+                        finalExamples.forEach(ex => {
+                            const stem = dataRes.word.replace(/다$/, '');
+                            const hl = ex.ko.replace(new RegExp(stem, 'g'), m => `<span class="highlight">${m}</span>`);
+                            exHtml += `<div class="example-item">
+                                <div class="ex-ko">${hl}</div>
+                                ${ex.vi ? `<div class="ex-vi">→ ${ex.vi}</div>` : ''}
+                            </div>`;
+                        });
+                        document.getElementById('exList').innerHTML = exHtml;
+                        document.getElementById('resExamples').style.display = 'block';
+                    }
+
+                    loadBox.style.display = 'none';
+                    resCard.style.display = 'block';
+                    return;
+                }
+
+                // ── Bước 2: Fallback Nguồn 2 ───────────────────────────────────
+                const key = VocabExternal.getKey();
+                if (!key) {
+                    VocabExternal.promptForKey(() => { searchDict(); });
+                    loadBox.style.display = 'none';
+                    return;
+                }
+
+                // URL được giấu bên trong file js sẽ gọi đến nguồn ẩn danh
+                const shUrl = `https://krdict.korean.go.kr/api/search?key=${key}&q=${encodeURIComponent(query)}&part=word&method=exact&num=10`;
+                const searchXml = await VocabExternal._fetchText(shUrl);
+                if (!searchXml) throw new Error("Vui lòng thử lại");
+
+                const parser = new DOMParser();
+                const sDoc   = parser.parseFromString(searchXml, 'text/xml');
+                const errTag = sDoc.querySelector('error');
+                if (errTag) throw new Error("Chưa tìm thấy từ này trong hệ thống");
+
+                const item = sDoc.querySelector('item');
+                if (!item) {
+                    Swal.fire({ icon: 'info', title: 'Không tìm thấy', text: `Không tìm thấy từ "${query}". Thử nhập dạng nguyên mẫu (-다).` });
+                    loadBox.style.display = 'none';
+                    return;
+                }
+
+                const targetCode = item.querySelector('target_code')?.textContent;
+                const baseWord   = item.querySelector('word')?.textContent;
+                const pos        = item.querySelector('pos')?.textContent || '—';
+                const koDef      = item.querySelector('sense definition')?.textContent;
+
+                currentWordRaw = baseWord;
+
+                const [viWord, viDef] = await Promise.all([
+                    VocabExternal._translate(baseWord),
+                    koDef ? VocabExternal._translate(koDef) : Promise.resolve('')
+                ]);
+
+                document.getElementById('resWord').textContent = baseWord;
+                document.getElementById('resPos').textContent  = pos;
+
+                const wordViEl   = document.getElementById('resWordVi');
+                const wordViText = document.getElementById('resWordViText');
+                wordViEl.querySelector('.vi-label').textContent = '🇻🇳 Tiếng Việt';
+                if (viWord && viWord !== baseWord) {
+                    wordViText.textContent = viWord;
+                    wordViEl.style.display = 'flex';
+                } else {
+                    wordViEl.style.display = 'none';
+                }
+
+                document.getElementById('resDef').innerHTML = `
+                    <div class="def-box">
+                        <div class="def-ko">${koDef || ''}</div>
+                        <div class="def-vi">→ ${viDef}</div>
+                    </div>`;
+
+                loadBox.style.display = 'none';
+                resCard.style.display = 'block';
+
+                document.getElementById('resExamples').style.display = 'none';
+                if (targetCode) {
+                    const vXml = await VocabExternal._fetchText(`https://krdict.korean.go.kr/api/view?key=${key}&q=${targetCode}&method=target_code`);
+                    if (vXml) {
+                        const parsedEx = VocabExternal._parseViewXML(vXml);
+                        if (parsedEx?.length > 0) {
+                            const mappedEx = await Promise.all(parsedEx.slice(0, 3).map(async e => ({
+                                ko: e.ko, vi: await VocabExternal._translate(e.ko)
+                            })));
+                            let exHtml = '';
+                            mappedEx.forEach(ex => {
+                                const hl = ex.ko.replace(new RegExp(baseWord.replace(/다$/, ''), 'g'), m => `<span class="highlight">${m}</span>`);
+                                exHtml += `<div class="example-item"><div class="ex-ko">${hl}</div><div class="ex-vi">→ ${ex.vi}</div></div>`;
+                            });
+                            document.getElementById('exList').innerHTML = exHtml;
+                            document.getElementById('resExamples').style.display = 'block';
+                        }
+                    }
+                }
+
+
+            } catch (error) {
+                console.error(error);
+                loadBox.style.display = 'none';
+                Swal.fire({ icon: 'error', title: 'Lỗi bộ từ điển', text: error.message });
+            }
+        }
+    </script>
+
+
+    <script>
+        // Tích hợp thanh tra từ vào navbar
+        (function injectDictRowToNavbar() {
+            const tryInject = () => {
+                const nav = document.getElementById('globalNavbar');
+                if (!nav) return false;
+                if (nav.querySelector('.nav-dict-row')) return true;
+
+                const row = document.createElement('div');
+                row.className = 'nav-dict-row';
+                row.innerHTML = `
+                    <input
+                        type="text"
+                        id="dictNavInput"
+                        class="nav-dict-input"
+                        placeholder="Nhập từ tiếng Hàn để tra..."
+                        autocomplete="off"
+                    >
+                    <button class="nav-dict-btn" onclick="searchDict()">🔎 Tra</button>
+                `;
+                nav.appendChild(row);
+
+                // Xử lý Enter
+                row.querySelector('#dictNavInput').addEventListener('keypress', e => {
+                    if (e.key === 'Enter') searchDict();
+                });
+
+                return true;
+            };
+
+            // Thử ngay (nếu DOMContentLoaded đã xong)
+            if (!tryInject()) {
+                // Dùng MutationObserver nếu navbar chưa được inject
+                const obs = new MutationObserver(() => {
+                    if (tryInject()) obs.disconnect();
+                });
+                obs.observe(document.body, { childList: true, subtree: false });
+            }
+        })();
+    </script>
+</body>
+
+</html>

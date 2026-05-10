@@ -1,0 +1,970 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 쓰기 - 제102회 - Vui Học Tiếng Hàn</title>
+
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제102회</div>
+</div>
+
+    <style>
+        .info-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+        }
+
+        .info-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #111;
+            text-align: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+/* ===== HEADER BADGE THEO ẢNH MẪU ===== */
+    .header-badge-container {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd; /* Màu nền xám xanh nhạt giống hình */
+        border: 2px solid #1a1a1a;
+        border-radius: 99px;
+        padding: 12px 40px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+
+/* Responsive cho điện thoại */
+    @media (max-width: 768px) {
+        .header-badge-container {
+            margin: 20px auto 30px auto;
+        }
+        .topik-header-badge {
+            font-size: 1.5rem;
+            padding: 10px 30px;
+            border-width: 1.5px;
+        }
+    }
+
+        /* Mô phỏng biểu đồ đường */
+        .line-chart-box {
+            position: relative;
+            height: 120px;
+            border-left: 2px solid #cbd5e1;
+            border-bottom: 2px solid #cbd5e1;
+            margin: 20px 10px 10px 10px;
+        }
+
+        .data-point {
+            position: absolute;
+            background: var(--primary);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 2px 5px rgba(37, 99, 235, 0.3);
+        }
+
+        .data-point.p1 {
+            bottom: 10%;
+            left: 0%;
+        }
+
+        .data-point.p2 {
+            top: 10%;
+            left: 100%;
+        }
+
+        .svg-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .year-label {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        /* Khối xếp hạng */
+        .rank-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+
+        .rank-badge {
+            background: #f1f5f9;
+            color: #475569;
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .rank-item {
+            flex: 1;
+            background: #e0f2fe;
+            color: #0369a1;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .rank-item.highlight {
+            background: #10b981;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+
+        <div class="exam-instruction">
+            ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+        </div>
+
+        <div class="writing-box">
+            <div style="margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+                <span
+                    style="background:#f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; color:#475569; font-weight: 700; margin-right: 10px;">Email</span>
+                <b>제목 : 개인 물건 정리 요청</b>
+            </div>
+            <div>
+                안녕하세요. 동아리 회장 흐엉입니다.<br>
+                학생회관 공사 때문에 동아리 방을 옮기게 되었습니다. 그런데 현재 개인 물건들이 너무 많습니다.<br>
+                동아리 방을 옮기려면 이 물건들부터 먼저 <b>( ㉠ )</b>.<br>
+                방학을 하자마자 공사가 시작됩니다. 방학이 <b>( ㉡ )</b> 개인 물건을 모두 가져가 주십시오.<br>
+                2025.10.10.(금)
+            </div>
+
+            <details style="margin-top: 15px;">
+                <summary style="padding: 10px; font-size: 0.95rem;">🌐 Xem bản dịch tiếng Việt</summary>
+                <div class="details-content" style="font-size: 0.95rem;">
+                    <b>Tiêu đề: Yêu cầu dọn dẹp đồ cá nhân</b><br>
+                    Xin chào. Tôi là hội trưởng câu lạc bộ Hương.<br>
+                    Do công trình thi công ở tòa nhà sinh viên nên chúng ta sẽ chuyển phòng câu lạc bộ. Nhưng hiện tại
+                    đồ cá nhân đang có quá nhiều.<br>
+                    Để chuyển phòng thì những đồ đạc này phải được <b>(dọn dẹp)</b> trước.<br>
+                    Ngay khi nghỉ hè thì công trình sẽ bắt đầu. Xin hãy mang toàn bộ đồ cá nhân đi trước khi kỳ nghỉ hè
+                    <b>(bắt đầu)</b>.<br>
+                    Ngày 10/10/2025 (Thứ Sáu)
+                </div>
+            </details>
+        </div>
+
+        <div class="answer-area">
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉠</div>
+                <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                    <button class="btn-outline" id="btn-exp-51-a" style="display:none;"
+                        onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-51-a" class="explanation-box">
+                    <div id="score-51-a" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Phía trước có từ `옮기려면` (Nếu định chuyển đi) và `물건들부터 먼저` (Phải làm gì đó với đống đồ này trước).
+                    Do đó cần một động từ chỉ việc dọn dẹp kèm cấu trúc bắt buộc "Phải".<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> <code>정리하다 / 치우다 / 빼다</code> + <code>-아/어야 합니다</code>.<br>
+                    <div style="margin-top: 10px; color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED: 정리해야 합니다.</div>
+                </div>
+            </div>
+
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉡</div>
+                <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                    <button class="btn-outline" id="btn-exp-51-b" style="display:none;"
+                        onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-51-b" class="explanation-box">
+                    <div id="score-51-b" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Câu trước báo "Vừa nghỉ hè là công trình bắt đầu ngay". Câu sau giục lấy đồ đi. Vị trí ㉡ nối sau từ
+                    `방학이` nên cần một điều kiện thời gian "Trước khi kỳ nghỉ hè bắt đầu".<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> <code>시작되다 / 오다</code> + <code>-기 전에</code>.<br>
+                    <div style="margin-top: 10px; color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED: 시작되기 전에.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+
+        <div class="exam-instruction">
+            ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+        </div>
+
+        <div class="writing-box">
+            큰 항공기는 주로 고도가 높은 하늘에서 비행을 한다. 높이 올라가면 날씨의 영향을 별로 <b>( ㉠ )</b> 흔들림이 적다. 반면 작은 항공기는 날씨의 영향을 받더라도 낮은 고도에서 비행을
+            해야 한다. 왜냐하면 높은 고도에서 <b>( ㉡ )</b> 항공기의 엔진이 크고 좋아야 하며 연료도 많이 필요하기 때문이다.
+
+            <details style="margin-top: 15px;">
+                <summary style="padding: 10px; font-size: 0.95rem;">🌐 Xem bản dịch tiếng Việt</summary>
+                <div class="details-content" style="font-size: 0.95rem;">
+                    Máy bay lớn chủ yếu bay ở bầu trời có độ cao lớn. Nếu bay lên cao thì vì <b>(không chịu)</b> ảnh
+                    hưởng của thời tiết mấy nên ít bị rung lắc. Trái lại máy bay nhỏ dù chịu ảnh hưởng thời tiết vẫn
+                    phải bay ở độ cao thấp. Bởi vì <b>(để bay)</b> ở độ cao lớn thì động cơ máy bay phải to, tốt và cần
+                    nhiều nhiên liệu.
+                </div>
+            </details>
+        </div>
+
+        <div class="answer-area">
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉠</div>
+                <textarea id="ans-52-a" class="writing-input" rows="2"></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                    <button class="btn-outline" id="btn-exp-52-a" style="display:none;"
+                        onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-52-a" class="explanation-box">
+                    <div id="score-52-a" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Phía trước có từ `영향을 별로` (Không chịu ảnh hưởng mấy). Đây là cấu trúc nguyên nhân kết quả: Vì không
+                    chịu ảnh hưởng nên mới ít rung lắc.<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> <code>받다</code> + Phủ định <code>-지 않다 / 안</code> + Nguyên nhân
+                    <code>-아/어서</code>.<br>
+                    <div style="margin-top: 10px; color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED: 받지 않아서.</div>
+                </div>
+            </div>
+
+            <div class="ans-block">
+                <div class="ans-block-title">👉 Đáp án ㉡</div>
+                <textarea id="ans-52-b" class="writing-input" rows="2"></textarea>
+                <div style="margin-top: 15px; display: flex; gap: 12px;">
+                    <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                    <button class="btn-outline" id="btn-exp-52-b" style="display:none;"
+                        onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+                </div>
+                <div id="exp-52-b" class="explanation-box">
+                    <div id="score-52-b" class="score-display"></div>
+                    <b>[Phân tích ngữ cảnh]</b><br>
+                    Đuôi câu kết thúc bằng `-아야 하며... 기 때문이다` (Phải... thì mới...). Câu này giải thích điều kiện: Để làm
+                    gì đó ở độ cao lớn, thì động cơ phải to.<br><br>
+                    <b>[Từ khóa & Ngữ pháp]</b> <code>비행(을) 하다 / 날다</code> + Mục đích <code>-기 위해서는 / -(으)려면</code>.<br>
+                    <div style="margin-top: 10px; color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED: 비행을 하기 위해서는 /
+                        날기 위해서는.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper">
+        <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+
+        <div class="exam-instruction">
+            ※ [53] 다음은 '한국 캠핑 인구의 변화'에 대한 자료이다. 이 내용을 200~300자의 글로 쓰시오. 단, 글의 제목은 쓰지 마시오. (30점)
+        </div>
+
+        <style>
+            /* Reset và làm đẹp riêng cho Infographic Câu 53 Đề 102 */
+            .infographic-container {
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 16px;
+                padding: 30px;
+                margin-bottom: 25px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+                color: #1e293b;
+            }
+
+            .info-header {
+                text-align: center;
+                margin-bottom: 30px;
+                position: relative;
+            }
+
+            .info-title {
+                font-size: 1.3rem;
+                font-weight: 800;
+                margin: 0;
+                color: #0f172a;
+            }
+
+            .info-source {
+                font-size: 0.85rem;
+                color: #64748b;
+                font-weight: 600;
+                position: absolute;
+                right: 0;
+                top: 50%;
+                transform: translateY(-50%);
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+                margin-bottom: 25px;
+            }
+
+            .info-box {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 24px;
+            }
+
+            .box-title {
+                font-weight: 800;
+                text-align: center;
+                margin-bottom: 25px;
+                color: #334155;
+                font-size: 1.05rem;
+            }
+
+            /* --- BIỂU ĐỒ CỘT (BAR CHART) SIÊU MƯỢT --- */
+            .bar-chart {
+                display: flex;
+                justify-content: space-around;
+                align-items: flex-end;
+                height: 150px;
+                position: relative;
+                padding-bottom: 30px;
+            }
+
+            .bar-group {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: flex-end;
+                height: 100%;
+                width: 60px;
+                position: relative;
+                z-index: 2;
+            }
+
+            .bar {
+                width: 45px;
+                border-radius: 6px 6px 0 0;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            }
+
+            .bar-value {
+                font-weight: 800;
+                font-size: 1rem;
+                margin-bottom: 8px;
+                color: #0f172a;
+            }
+
+            .bar-label {
+                position: absolute;
+                bottom: 0;
+                font-weight: 700;
+                color: #ff0000;
+                font-size: 0.95rem;
+            }
+
+            .growth-arrow {
+                position: absolute;
+                top: 25px;
+                left: 50%;
+                transform: translateX(-50%);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                color: #ef4444;
+                font-weight: 800;
+                font-size: 0.9rem;
+                z-index: 1;
+            }
+
+            .growth-arrow svg {
+                width: 80px;
+                height: 25px;
+                margin-top: 5px;
+            }
+
+            /* --- BẢNG XẾP HẠNG (RANKING CARDS) --- */
+            .rank-container {
+                display: flex;
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            .rank-header {
+                display: flex;
+                justify-content: space-between;
+                padding: 0 40px;
+                font-weight: 800;
+                color: #64748b;
+                font-size: 0.95rem;
+                margin-bottom: 5px;
+            }
+
+            .rank-row {
+                display: flex;
+                align-items: center;
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 10px;
+                padding: 12px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+            }
+
+            .rank-num {
+                background: #f1f5f9;
+                color: #334155;
+                font-weight: 800;
+                width: 32px;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+                margin-right: 12px;
+                font-size: 0.95rem;
+            }
+
+            .rank-item {
+                flex: 1;
+                text-align: center;
+                font-weight: 700;
+                color: #0f172a;
+                font-size: 0.95rem;
+            }
+
+            .rank-arrow {
+                color: #cbd5e1;
+                margin: 0 10px;
+                font-weight: 800;
+            }
+
+            .highlight-text {
+                color: #2563eb;
+            }
+
+            /* --- KHỐI NGUYÊN NHÂN (CAUSES) --- */
+            .cause-section {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 12px;
+                padding: 24px;
+            }
+
+            .cause-title {
+                display: inline-block;
+                background: #475569;
+                color: white;
+                font-weight: 700;
+                padding: 6px 14px;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                margin-bottom: 16px;
+            }
+
+            .cause-list {
+                margin: 0;
+                padding-left: 20px;
+                color: #1e293b;
+                font-weight: 600;
+                line-height: 1.8;
+            }
+
+            .cause-list li {
+                margin-bottom: 8px;
+            }
+
+            .cause-arrow-icon {
+                color: #94a3b8;
+                margin: 0 6px;
+            }
+
+            /* Mobile Responsive */
+            @media (max-width: 768px) {
+                .info-grid {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+
+                .info-source {
+                    position: static;
+                    display: block;
+                    margin-top: 8px;
+                    transform: none;
+                    text-align: center;
+                }
+
+                .infographic-container {
+                    padding: 20px;
+                }
+            }
+        </style>
+
+        <div class="infographic-container">
+            <div class="info-header">
+                <h3 class="info-title">한국 캠핑 인구의 변화</h3>
+                <span class="info-source">(조사 기관: 한국관광공사)</span>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-box">
+                    <div class="box-title">캠핑 인구 변화 <span style="font-size:0.8rem; color:#64748b; font-weight:600;">(단위:
+                            명)</span></div>
+                    <div class="bar-chart">
+                        <div class="growth-arrow">
+                            약 2배 증가
+                            <svg viewBox="0 0 100 20" preserveAspectRatio="none">
+                                <path d="M0,10 Q50,-10 95,10" fill="none" stroke="#ef4444" stroke-width="2.5"
+                                    stroke-dasharray="4,4" />
+                                <polygon points="90,5 100,10 90,15" fill="#ef4444" />
+                            </svg>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-value">340만</div>
+                            <div class="bar" style="height: 52%; background:#94a3b8;"></div>
+                            <div class="bar-label">2019년</div>
+                        </div>
+                        <div class="bar-group">
+                            <div class="bar-value">650만</div>
+                            <div class="bar" style="height: 100%; background:#2563eb;"></div>
+                            <div class="bar-label">2024년</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <div class="box-title">연령별 순위 변화</div>
+                    <div class="rank-container">
+                        <div class="rank-header">
+                            <span>2019년</span>
+                            <span>2024년</span>
+                        </div>
+                        <div class="rank-row">
+                            <div class="rank-num">1위</div>
+                            <div class="rank-item">20대~30대</div>
+                            <div class="rank-arrow">➔</div>
+                            <div class="rank-item highlight-text">40대~50대</div>
+                        </div>
+                        <div class="rank-row">
+                            <div class="rank-num">2위</div>
+                            <div class="rank-item highlight-text">40대~50대</div>
+                            <div class="rank-arrow">➔</div>
+                            <div class="rank-item">20대~30대</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cause-section">
+                <div class="cause-title">원인</div>
+                <ul class="cause-list">
+                    <li>캠핑 장비의 고급화와 캠핑장 대여료 증가 <span class="cause-arrow-icon">➔</span> 경제력 요구됨</li>
+                    <li>자녀와의 여가 활동을 위한 가족 단위 캠핑 증가</li>
+                </ul>
+            </div>
+        </div>
+        ```
+
+        **Tại sao bản này lại hoàn hảo?**
+        1. **Biểu đồ cột CSS tinh khiết:** Không sử dụng họa tiết SVG tọa độ cứng ngắc nữa, các cột tự động co giãn theo
+        màn hình điện thoại mà vẫn rõ ràng tỷ lệ `340` và `650`.
+        2. **Khối Xếp hạng siêu trực quan:** Nhìn hệt như thiết kế của các ứng dụng học tập hiện đại. Chữ màu xanh
+        (`highlight-text`) giúp người học lập tức chú ý vào sự hoán đổi vị trí của độ tuổi `40대~50대`.
+        3. Khung bo viền 16px, background xám nhạt đan xen background trắng mang lại chiều sâu (Depth) rất "tương thích"
+        với phong cách Kính mờ tổng thể của website!
+
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+            <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+            <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+            <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+        </div>
+
+        <div id="t53-guide" class="tab-content t53-content active">
+            <div class="guide-box">
+                <b>Dàn ý phân tích biểu đồ (Thay đổi Dân số & Xếp hạng):</b><br><br>
+                1. <b>Mở bài:</b> Nêu cơ quan khảo sát và chủ đề (한국관광공사에서... 조사한 자료에 따르면). Nêu số liệu tổng (Tăng từ
+                3.4tr lên 6.5tr, gấp 2 lần).<br>
+                2. <b>Thân bài (Xếp hạng):</b> Nhìn vào thay đổi thứ hạng, năm 2019 độ tuổi 20-30 đứng đầu. Trái lại (이와
+                달리), năm 2024 độ tuổi 40-50 vươn lên đứng đầu.<br>
+                3. <b>Kết luận (Nguyên nhân):</b> Nêu 2 gạch đầu dòng nguyên nhân. Nối bằng `-(으)로 인해` (do) và `-(기)
+                때문으로 나타났다` (là bởi vì).
+            </div>
+        </div>
+
+        <div id="t53-grammar" class="tab-content t53-content">
+            <details>
+                <summary>1. ~에서 ~에 대해 조사한 자료에 따르면</summary>
+                <div class="details-content">Theo dữ liệu điều tra của [Cơ quan] về [Chủ đề]...</div>
+            </details>
+            <details>
+                <summary>2. ~에 N명이었던 것이 ~에 N명으로 약 2배 증가하였다.</summary>
+                <div class="details-content">Từ việc đạt N người vào năm..., đã tăng khoảng gấp 2 lần lên N người vào
+                    năm...</div>
+            </details>
+            <details>
+                <summary>3. 이를 ~ 변화로 보면</summary>
+                <div class="details-content">Nếu nhìn điều này qua sự thay đổi về [Tiêu chí]...</div>
+            </details>
+            <details>
+                <summary>4. 이와 달리</summary>
+                <div class="details-content">Trái lại với điều này...</div>
+            </details>
+            <details>
+                <summary>5. 이렇게 변화한 것은 ~로 인해 ~고 ~기 때문으로 나타났다.</summary>
+                <div class="details-content">Sự thay đổi như vậy được cho là do... và bởi vì...</div>
+            </details>
+        </div>
+
+        <div id="t53-answer" class="tab-content t53-content">
+            <table class="bilingual-table">
+                <tr>
+                    <td>한국관광공사에서 한국 캠핑 인구의 변화에 대해 조사한 자료에 따르면 캠핑 인구는 2019년에 340만 명이었던 것이 2024년에 650만 명으로 약 2배나 증가하였다.
+                    </td>
+                    <td>Theo dữ liệu điều tra của Tổng cục Du lịch Hàn Quốc về sự thay đổi dân số đi cắm trại ở Hàn
+                        Quốc, dân số cắm trại từ 3.4 triệu người năm 2019 đã tăng khoảng gấp 2 lần lên 6.5 triệu người
+                        vào năm 2024.</td>
+                </tr>
+                <tr>
+                    <td>이를 연령별 순위 변화로 보면 2019년에는 20대~30대가 1위를 차지하였고 2위는 40대~50대로 나타났다.</td>
+                    <td>Nếu nhìn vào sự thay đổi thứ hạng theo độ tuổi, năm 2019 độ tuổi 20~30 chiếm vị trí số 1 và vị
+                        trí số 2 là độ tuổi 40~50.</td>
+                </tr>
+                <tr>
+                    <td>이와 달리 2024년에는 40대~50대가 1위로 가장 많았고 2위는 20대~30대로 나타났다.</td>
+                    <td>Trái lại, năm 2024 độ tuổi 40~50 lại đông nhất với vị trí số 1 và vị trí số 2 là độ tuổi 20~30.
+                    </td>
+                </tr>
+                <tr>
+                    <td>이렇게 변화한 것은 캠핑 장비의 고급화와 캠핑장 대여료 증가로 인해 경제력이 요구되었고 자녀와의 여가 활동을 위한 가족 단위 캠핑이 증가하였기 때문으로 나타났다.</td>
+                    <td>Sự thay đổi như vậy được cho là do sự cao cấp hóa trang thiết bị và gia tăng phí thuê bãi đòi
+                        hỏi phải có năng lực kinh tế, và vì sự gia tăng cắm trại theo gia đình để hoạt động 여가 với con
+                        cái.</td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="t53-practice" class="tab-content t53-content">
+            <div class="book-container">
+                <div class="book-page page-left">
+                    <div class="book-title">Tiếng Việt</div>
+                    <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+                </div>
+
+                <div class="book-page page-right">
+                    <div class="book-title">Tiếng Hàn</div>
+                    <div id="book-ko-text"
+                        style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+
+                    <div id="book-ko-input-area" style="display: none;">
+                        <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                        <div id="diff-result-box"
+                            style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;">
+                        </div>
+                        <div id="diff-correct-ans"
+                            style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="book-nav-wrapper">
+                <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+                <span id="book-page-indicator" class="page-indicator">1 / 4</span>
+                <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+                <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="wrapper" style="margin-bottom:0;">
+        <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+
+        <div class="exam-instruction">
+            ※ [54] 다음을 참고하여 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+        </div>
+
+        <div class="writing-box">
+            최근에는 식당에서부터 은행, 병원에 이르기까지 많은 곳에서 다양한 디지털 기기를 사용하고 있다. 하지만 디지털 기기를 활용하지 못해서 소외되는 사람들도 있다. 아래의 내용을 중심으로
+            <b>'디지털 소외 문제와 해결 방안'</b>에 대한 자신의 생각을 쓰라.
+            <ul
+                style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+                <li>디지털 기술은 우리 생활에서 어떻게 활용되고 있는가?</li>
+                <li>디지털 사회에서 소외되는 사람들은 누구이며, 어떤 문제를 겪을 수 있는가?</li>
+                <li>디지털 소외 문제를 해결하기 위해 개인과 사회는 어떻게 해야 하는가?</li>
+            </ul>
+        </div>
+
+        <div class="tab-container">
+            <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+            <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+            <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+            <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+        </div>
+
+        <div id="t54-intro" class="tab-content t54-content active">
+            <div class="guide-box">
+                <b>Trọng tâm: 디지털 기술은 우리 생활에서 어떻게 활용되고 있는가? (Kỹ thuật số đang được tận dụng thế nào?)</b><br>
+                - Nêu sự phát triển nhanh chóng của khoa học kỹ thuật.<br>
+                - Đưa ví dụ cụ thể về sự tiện lợi: Gọi món bằng Kiosk, dùng app ngân hàng thay vì ra quầy, đặt vé
+                mạng...
+            </div>
+            <table class="bilingual-table">
+                <tr>
+                    <td>과학 기술이 빠르게 발달하면서 과거와는 달리 일상생활에서 디지털 기술의 활용이 일반화되고 있다.</td>
+                    <td>Khi khoa học công nghệ phát triển nhanh chóng, khác với quá khứ, việc tận dụng kỹ thuật số trong
+                        đời sống thường ngày đang dần trở nên phổ biến.</td>
+                </tr>
+                <tr>
+                    <td>식당에서는 대면을 하지 않아도 키오스크로 음식을 주문할 수 있게 되었고 관공서나 금융 기관을 직접 방문하지 않아도 컴퓨터나 스마트폰으로 서비스를 이용할 수 있게 되었다.
+                    </td>
+                    <td>Ở nhà hàng, dù không giáp mặt thì ta vẫn có thể gọi món bằng Kiosk, và dù không trực tiếp đến cơ
+                        quan nhà nước hay ngân hàng, ta vẫn có thể sử dụng dịch vụ bằng máy tính hoặc smartphone.</td>
+                </tr>
+                <tr>
+                    <td>또한 병원의 진료 예약이나 공연, 기차표 등의 예매도 인터넷으로 손쉽게 할 수 있다.</td>
+                    <td>Hơn nữa, việc đặt lịch khám bệnh, vé biểu diễn hay vé tàu cũng có thể thực hiện dễ dàng qua
+                        Internet.</td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="t54-body" class="tab-content t54-content">
+            <div class="guide-box">
+                <b>Trọng tâm: 디지털 사회에서 소외되는 사람들은 누구이며, 어떤 문제를 겪을 수 있는가? (Ai bị 소외 và gặp vấn đề gì?)</b><br>
+                - Dùng liên từ chuyển ý (그러나). Phân loại 3 nhóm người bị 소외 (bị ra rìa):<br>
+                1. Người cao tuổi: Không quen công nghệ -> Khó xài y tế, ngân hàng.<br>
+                2. Người thu nhập thấp: Mua máy móc là gánh nặng.<br>
+                3. Người ở nông thôn: Thiếu cơ sở hạ tầng mạng.
+            </div>
+            <table class="bilingual-table">
+                <tr>
+                    <td>그러나 이러한 편의를 모든 사람들이 동일하게 누리는 것은 아니다.</td>
+                    <td>Tuy nhiên, không phải tất cả mọi người đều được tận hưởng sự tiện lợi này một cách đồng đều.
+                    </td>
+                </tr>
+                <tr>
+                    <td>고령층의 경우 디지털 기기가 익숙하지 않아서 금융·의료 서비스를 이용하는 데에 어려움이 따른다.</td>
+                    <td>Trong trường hợp người cao tuổi, vì không quen với thiết bị kỹ thuật số nên kéo theo sự khó khăn
+                        trong việc sử dụng dịch vụ tài chính - y tế.</td>
+                </tr>
+                <tr>
+                    <td>그리고 경제적인 여건이 되지 않아 디지털 기기를 구입하거나 사용하는 것이 부담이 되는 사람들도 있을 것이다.</td>
+                    <td>Và cũng sẽ có những người mà việc mua sắm hoặc sử dụng thiết bị kỹ thuật số trở thành gánh nặng
+                        do điều kiện kinh tế không cho phép.</td>
+                </tr>
+                <tr>
+                    <td>또한 디지털 인프라가 부족한 지역에서 거주하는 사람들은 온라인으로 제공 받을 수 있는 서비스가 제한적이다.</td>
+                    <td>Thêm vào đó, những người sống ở khu vực thiếu thốn cơ sở hạ tầng kỹ thuật số sẽ bị hạn chế các
+                        dịch vụ có thể nhận được qua mạng trực tuyến.</td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="t54-conclusion" class="tab-content t54-content">
+            <div class="guide-box">
+                <b>Trọng tâm: 디지털 소외 문제를 해결하기 위해 개인과 사회는 어떻게 해야 하는가? (Giải pháp cho cá nhân & Xã hội)</b><br>
+                - Cá nhân: Dù ban đầu không quen cũng phải cố học cách dùng để không tụt hậu.<br>
+                - Chính phủ: Có chính sách hỗ trợ tầng lớp bị 소외, mở rộng cơ sở hạ tầng để mọi người hưởng lợi đồng đều.
+            </div>
+            <table class="bilingual-table">
+                <tr>
+                    <td>이러한 문제를 해결하기 위해서는 개인과 사회 모두가 노력해야 한다.</td>
+                    <td>Để giải quyết vấn đề này, cả cá nhân và xã hội đều phải nỗ lực.</td>
+                </tr>
+                <tr>
+                    <td>개인의 경우 처음에는 익숙하지 않더라도 변화하는 시대에 뒤처지지 않게 디지털 기기의 사용법을 익히도록 해야 한다.</td>
+                    <td>Đối với cá nhân, dù lúc đầu không quen thì cũng phải cố gắng học cách sử dụng thiết bị kỹ thuật
+                        số để không bị tụt hậu so với thời đại đang thay đổi.</td>
+                </tr>
+                <tr>
+                    <td>이를 위해서 정부에서는 디지털 소외 계층을 위한 지원 정책을 마련해서 모든 국민들이 일상에서 디지털 기술을 활용할 수 있게 하여 소외되는 사람들이 없도록 해야 한다.
+                    </td>
+                    <td>Về phía chính phủ, cần chuẩn bị các chính sách hỗ trợ tầng lớp bị 소외 kỹ thuật số, giúp mọi công
+                        dân có thể tận dụng kỹ thuật số trong đời sống, để không còn ai bị bỏ lại phía sau.</td>
+                </tr>
+                <tr>
+                    <td>그리고 디지털 인프라를 확충하여 지역과 계층에 무관하게 많은 사람들이 디지털 기술 발달의 혜택을 고르게 누릴 수 있도록 해야 한다.</td>
+                    <td>Và phải mở rộng cơ sở hạ tầng kỹ thuật số để nhiều người, không phân biệt khu vực hay tầng lớp,
+                        đều có thể thụ hưởng đồng đều lợi ích của sự phát triển kỹ thuật số.</td>
+                </tr>
+            </table>
+        </div>
+
+        <div id="t54-grammar" class="tab-content t54-content">
+            <details>
+                <summary>1. ~면서 과거와는 달리 ~의 활용이 일반화되고 있다.</summary>
+                <div class="details-content">Trong khi... thì khác với quá khứ, việc tận dụng... đang trở nên phổ biến.
+                </div>
+            </details>
+            <details>
+                <summary>2. ~지 않아도 ~로 ~ㄹ 수 있게 되었다.</summary>
+                <div class="details-content">Dù không... thì vẫn có thể thực hiện bằng...</div>
+            </details>
+            <details>
+                <summary>3. 그러나 이러한 편의를 모든 사람들이 동일하게 누리는 것은 아니다.</summary>
+                <div class="details-content">Tuy nhiên, không phải tất cả mọi người đều được tận hưởng sự tiện lợi này
+                    một cách đồng đều. <i>(Câu chuyển ý cực hay)</i></div>
+            </details>
+            <details>
+                <summary>4. ~의 경우 ~지 않아서 ~는 데에 어려움이 따른다.</summary>
+                <div class="details-content">Trong trường hợp của... vì không... nên kéo theo sự khó khăn trong việc...
+                </div>
+            </details>
+            <details>
+                <summary>5. ~여건이 되지 않아 ~하는 것이 부담이 되는 사람들도 있을 것이다.</summary>
+                <div class="details-content">Cũng sẽ có những người mà việc... trở thành gánh nặng do điều kiện... không
+                    cho phép.</div>
+            </details>
+            <details>
+                <summary>6. ~문제를 해결하기 위해서는 개인과 사회 모두가 노력해야 한다.</summary>
+                <div class="details-content">Để giải quyết vấn đề này, cả cá nhân và xã hội đều phải nỗ lực.</div>
+            </details>
+            <details>
+                <summary>7. ~않더라도 변화하는 시대에 뒤처지지 않게 ~도록 해야 한다.</summary>
+                <div class="details-content">Dù không... thì cũng phải cố gắng... để không bị tụt hậu so với thời đại
+                    đang thay đổi.</div>
+            </details>
+            <details>
+                <summary>8. ~에 무관하게 ~혜택을 고르게 누릴 수 있도록 해야 한다.</summary>
+                <div class="details-content">Phải làm sao để có thể thụ hưởng đồng đều lợi ích của... mà không phân biệt
+                    (vô quan với)...</div>
+            </details>
+        </div>
+    </div>
+
+    <script src="exam-logic.js"></script>
+
+    <script>
+        // CÂU 51
+        function grade51A() {
+            let val = document.getElementById('ans-51-a').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['정리하', '치우', '빼'];
+            let validEndings = ['야 합', '야겠', '면 좋겠'];
+
+            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if (checkKeywords(val, validRoots)) {
+                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý nghĩa 'dọn dẹp' và ngữ pháp 'phải' đều chuẩn."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng sai/thiếu ngữ pháp -(아/어)야 합니다."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý 'dọn dẹp/chuyển đồ đi'."); }
+
+            document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        }
+
+        function grade51B() {
+            let val = document.getElementById('ans-51-b').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['시작되', '오', '방학하'];
+            let validEndings = ['기 전'];
+
+            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if (checkKeywords(val, validRoots)) {
+                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Điều kiện thời gian chính xác."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp -기 전에 (Trước khi)."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
+
+            document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        }
+
+        // CÂU 52
+        function grade52A() {
+            let val = document.getElementById('ans-52-a').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['받'];
+            let validNegatives = ['지 않', '안'];
+            let validReasons = ['아/어', '기 때문'];
+
+            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if (checkKeywords(val, validRoots) && checkKeywords(val, validNegatives)) {
+                score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định việc chịu ảnh hưởng thời tiết rất tốt.");
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ 'Không chịu (ảnh hưởng)'."); }
+
+            document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        }
+
+        function grade52B() {
+            let val = document.getElementById('ans-52-b').value.trim();
+            let score = 0; let feedback = [];
+            let validRoots = ['비행', '날', '운행'];
+            let validEndings = ['기 위해', '려면'];
+
+            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+            else if (checkKeywords(val, validRoots)) {
+                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Cấu trúc mục đích hoàn hảo."); }
+                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu cấu trúc mục đích -기 위해서는 (Để...)."); }
+            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
+
+            document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        }
+
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 102 ---
+        const bookData_102 = [
+            { vi: "Theo dữ liệu điều tra của Tổng cục Du lịch Hàn Quốc về sự thay đổi dân số đi cắm trại ở Hàn Quốc, dân số cắm trại từ 3.4 triệu người năm 2019 đã tăng khoảng gấp 2 lần lên 6.5 triệu người vào năm 2024.", ko: "한국관광공사에서 한국 캠핑 인구의 변화에 대해 조사한 자료에 따르면 캠핑 인구는 2019년에 340만 명이었던 것이 2024년에 650만 명으로 약 2배나 증가하였다." },
+            { vi: "Nếu nhìn vào sự thay đổi thứ hạng theo độ tuổi, năm 2019 độ tuổi 20~30 chiếm vị trí số 1 và vị trí số 2 là độ tuổi 40~50.", ko: "이를 연령별 순위 변화로 보면 2019년에는 20대~30대가 1위를 차지하였고 2위는 40대~50대로 나타났다." },
+            { vi: "Trái lại, năm 2024 độ tuổi 40~50 lại đông nhất với vị trí số 1 và vị trí số 2 là độ tuổi 20~30.", ko: "이와 달리 2024년에는 40대~50대가 1위로 가장 많았고 2위는 20대~30대로 나타났다." },
+            { vi: "Sự thay đổi như vậy được cho là do sự cao cấp hóa trang thiết bị và gia tăng phí thuê bãi đòi hỏi phải có năng lực kinh tế, và vì sự gia tăng cắm trại theo gia đình để hoạt động 여가 với con cái.", ko: "이렇게 변화한 것은 캠핑 장비의 고급화와 캠핑장 대여료 증가로 인해 경제력이 요구되었고 자녀와의 여가 활동을 위한 가족 단위 캠핑이 증가하였기 때문으로 나타났다." }
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initBook(bookData_102);
+        });
+    </script>
+    <script src="../../assets/js/study-timer.js"></script>
+</body>
+
+</html>

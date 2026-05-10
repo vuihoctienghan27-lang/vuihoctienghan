@@ -1,0 +1,117 @@
+/* ==========================================================================
+   EXAM-LAYOUT.CSS — Layout đề thi: Header, Question Block, Options, Explanation
+   ========================================================================== */
+
+/* Ẩn nội dung thi trước khi chọn chế độ thi (Fix lỗi FOUC) */
+body:not(.app-started) .container {
+    display: none !important;
+}
+
+/* ========== HEADER ========== */
+.header-wrapper { text-align: center; padding: 30px 20px 24px; border-bottom: 2px solid var(--border-color); margin-bottom: 24px; }
+.header { font-size: 2em; font-weight: 900; color: var(--primary-text); letter-spacing: -0.5px; line-height: 1.2; display: inline-block; }
+body.dark-mode .header { color: var(--primary-text); }
+
+/* ========== INSTRUCTION ========== */
+.instruction {
+    font-size: 1.35em !important;
+    font-weight: 800 !important;
+    color: var(--primary-text) !important;
+    padding: 15px 0 12px !important;
+    margin-bottom: 20px !important;
+    border-bottom: 2px solid var(--border-color) !important;
+    line-height: 1.5 !important;
+}
+
+/* ========== QUESTION BLOCK ========== */
+.question-block { padding: 22px 0; border-bottom: 2px dashed var(--border-color); margin-bottom: 8px; }
+.question-block:last-child { border-bottom: none; }
+
+.question-text {
+    font-size: 1.25em !important;
+    font-weight: 400 !important;
+    color: var(--text-main) !important;
+    line-height: 1.6 !important;
+    margin-bottom: 20px !important;
+    text-align: left !important;
+}
+
+.q-number {
+    font-weight: 800; color: #2563eb; flex-shrink: 0;
+    font-size: 1.15em !important;
+    font-weight: 900 !important;
+    color: #2563eb !important;
+}
+body.dark-mode .q-number { color: #60a5fa !important; }
+
+.shared-text {
+    padding: 16px 18px; border-radius: 8px; border: 1px solid var(--border-color);
+    margin-bottom: 16px; background: var(--btn-hover);
+    font-size: 1.18em !important;
+    font-weight: 400 !important;
+    line-height: 1.7 !important;
+    padding: 20px !important;
+}
+
+/* ========== OPTIONS ========== */
+.options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.options-grid { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .options-grid { grid-template-columns: 1fr 1fr; } }
+
+.option {
+    position: relative; display: block;
+    padding: 14px 18px 14px 45px !important;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--bg-card);    /* Dùng CSS var, không hardcode #fff */
+    color: var(--primary-text);
+    cursor: pointer; transition: all 0.2s; line-height: 1.7;
+    font-size: 1.05em !important;
+    text-align: left !important;
+}
+.option:not(.correct):not(.wrong):hover { background-color: var(--btn-hover); border-color: #a0aec0; }
+.option .num { position: absolute; left: 12px; top: 12px; display: inline-block; width: 24px; height: 24px; line-height: 22px; text-align: center; border: 1px solid #a0aec0; color: #4a5568; font-weight: bold; border-radius: 50%; font-size: 0.85em; }
+/* Dark mode: num border cũng cần sáng hơn */
+body.dark-mode .option .num { border-color: #64748b; color: #94a3b8; }
+body.dark-mode .option:not(.correct):not(.wrong):hover { background-color: #1e293b; }
+.option.selected { background-color: var(--selected-bg); border-color: var(--selected-border); color: var(--selected-text); }
+.option.selected .num { background-color: #3182ce; border-color: #3182ce; color: white; }
+.option.correct { background-color: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); cursor: default; }
+.option.correct .num { background-color: #38a169; border-color: #38a169; color: white; }
+.option.wrong { background-color: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); opacity: 0.8; cursor: default; }
+.option.wrong .num { background-color: #e53e3e; border-color: #e53e3e; color: white; }
+
+/* ========== ACTION AREA & EXPLANATION ========== */
+.action-area { display: none; margin-top: 15px; }
+.btn-explain { background-color: var(--btn-hover); color: #2b6cb0; border: 1px solid var(--border-color); padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 1em; font-weight: bold; width: 100%; text-align: left; transition: all 0.2s; box-shadow: none; }
+body.dark-mode .btn-explain { color: #60a5fa; }
+.btn-explain:hover { background-color: var(--border-color); border-color: var(--border-color); }
+.explanation-content { display: none; margin-top: 10px; padding: 20px; border-radius: 8px; border: 1px solid var(--border-color); border-left: 4px solid #3182ce; background-color: var(--bg-card); }
+body.dark-mode .explanation-content { border-left-color: #3b82f6; }
+
+.trans-box { margin-bottom: 20px; color: var(--primary-text); }
+.trans-title { font-weight: bold; color: #2b6cb0; margin-bottom: 5px; display: block; }
+body.dark-mode .trans-title { color: #60a5fa; }
+.trans-content { font-style: italic; color: var(--text-sub); padding-bottom: 10px; }
+.opt-trans { display: block; font-size: 0.95em; margin-top: 10px; margin-bottom: 15px; background: var(--btn-hover); border-color: var(--border-color); color: var(--text-sub); padding: 12px; border-radius: 6px; border-left: 3px solid var(--border-color); }
+.opt-trans ul { margin: 0; padding-left: 20px; }
+.explain-box h4 { margin-top: 15px; color: var(--wrong-text); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
+.wrong-reason { color: var(--wrong-text); font-size: 0.95em; display: block; margin-top: 5px; padding-left: 15px; border-left: 2px solid var(--wrong-border); margin-bottom: 10px; }
+
+/* ========== NÚT ÔN TẬP TỪ VỰNG ========== */
+.review-link {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 25px;
+    background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    color: #ffffff !important; font-weight: bold; font-size: 1.05em;
+    text-decoration: none; border: none; padding: 14px 20px;
+    border-radius: 10px; width: 100%; box-sizing: border-box;
+    cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(109, 40, 217, 0.25);
+}
+.review-link:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(109, 40, 217, 0.4); background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%); }
+.review-link:active { transform: translateY(0); }
+.review-link::before { content: '📇'; font-size: 1.2em; }
+
+/* ========== POST EXPLAIN ACTIONS ========== */
+.post-explain-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 20px; }

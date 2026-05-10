@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 읽기 - 제36회 - Vui Học Tiếng Hàn</title>
+    
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+<style>
+    /* ===== HEADER BADGE ===== */
+    .header-badge-container {
+        text-align: center;
+        margin: 40px auto 50px auto;
+        width: 100%;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 12px 50px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* ===== HỆ THỐNG BULLETPROOF GRID CÂU 53 (CHỐNG RỚT TUYỆT ĐỐI) ===== */
+    .t36-bulletproof-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* Ép cứng 2 cột bằng nhau */
+        gap: 30px;
+        align-items: start; /* Bám sát mép trên */
+        width: 100%;
+    }
+
+    /* Biểu đồ Cột trái (Hiện trạng) */
+    .t36-status-box {
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        padding: 25px 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+        position: relative;
+    }
+    .t36-data-card {
+        background: #ffffff;
+        border: 2px solid #3b82f6;
+        border-radius: 12px;
+        width: 80%;
+        text-align: center;
+        padding: 15px;
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.1);
+        position: relative;
+        z-index: 2;
+    }
+    .t36-data-year { font-weight: 800; color: #1e3a8a; font-size: 1.1rem; margin-bottom: 5px; }
+    .t36-data-val { font-weight: 900; color: #2563eb; font-size: 1.5rem; }
+    .t36-arrow-down {
+        width: 4px;
+        height: 40px;
+        background: #93c5fd;
+        position: relative;
+        margin: -5px 0;
+        z-index: 1;
+    }
+    .t36-arrow-down::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 10px 8px 0;
+        border-style: solid;
+        border-color: #93c5fd transparent transparent transparent;
+    }
+    .t36-increase-badge {
+        position: absolute;
+        top: 50%;
+        right: 5%;
+        transform: translateY(-50%);
+        background: #ef4444;
+        color: white;
+        font-weight: 800;
+        padding: 8px 15px;
+        border-radius: 99px;
+        box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+    }
+
+    /* Biểu đồ Cột phải (Nguyên nhân) */
+    .t36-cause-list { display: flex; flex-direction: column; gap: 15px; }
+    .t36-cause-item {
+        display: flex; align-items: center; gap: 15px; background: #ffffff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+    .t36-cause-num {
+        background: #475569; color: white; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 900; font-size: 1.1rem; flex-shrink: 0; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2);
+    }
+    .t36-cause-text { font-weight: 700; color: #1e293b; font-size: 0.95rem; line-height: 1.5; }
+
+    /* FIX LỖI MOBILE */
+    @media (max-width: 768px) {
+        .t36-bulletproof-grid { grid-template-columns: 1fr; } /* Ép xếp dọc trên mobile */
+        .t36-increase-badge { position: relative; top: auto; right: auto; transform: none; margin: 10px 0; display: inline-block; }
+        .header-badge-container { margin: 20px auto 30px auto; }
+        .topik-header-badge { font-size: 1.5rem; padding: 10px 30px; border-width: 1.5px; }
+    }
+</style>
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제36회</div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        <div style="margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display: flex; justify-content: space-between;">
+            <b style="font-size: 1.05rem; color: #0f172a;">받는 사람: 김영미 교수님께</b>
+            <span style="color:#64748b; font-size:0.9rem;">보낸 사람: 제니</span>
+        </div>
+        <div>
+            김영미 교수님께,<br>
+            안녕하세요? 한국어과 3학년 제니입니다.<br>
+            이번 주 금요일에 뵙기로 한 것 때문에 연락 드렸습니다.<br>
+            그런데 <b>( ㉠ )</b>.<br>
+            정말 죄송합니다.<br>
+            혹시 <b>( ㉡ )</b>?<br>
+            답장 주시면 감사하겠습니다.<br><br>
+            <span style="color:#64748b; font-size:0.95rem; font-weight: 700;">제니 올림</span>
+        </div>
+
+        <details style="margin-top: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+            <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+            <div class="details-content" style="font-size: 0.95rem; color: #111; line-height: 1.6;">
+                Kính gửi Giáo sư Kim Young-mi,<br>
+                Em chào cô ạ. Em là Jenny, sinh viên năm 3 khoa tiếng Hàn.<br>
+                Em liên lạc với cô vì lịch hẹn gặp vào thứ Sáu tuần này ạ.<br>
+                Nhưng mà <b>(có lẽ thứ Sáu em khó có thể đến gặp cô được / thứ Sáu em có việc bận mất rồi)</b>.<br>
+                Em thực sự xin lỗi cô ạ.<br>
+                Không biết <b>(khi nào thì cô có thời gian rảnh ạ / tuần sau em đến gặp cô được không ạ)</b>?<br>
+                Nếu cô hồi âm lại thì em sẽ rất biết ơn ạ.<br>
+                Kính thư, Jenny.
+            </div>
+        </details>
+    </div>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-51-a" style="display:none;" onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-a" class="explanation-box">
+                <div id="score-51-a" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Jenny nhắc đến cuộc hẹn vào thứ Sáu, theo sau đó là từ "그런데" (Nhưng mà) và câu xin lỗi "정말 죄송합니다". Điều này cho thấy Jenny không thể giữ lời hứa đến gặp giáo sư vào thứ Sáu do có việc đột xuất.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>금요일에</code> + <code>뵙기 어렵다 / 사정이 생기다 / 못 가다</code> + Ngữ pháp suy đoán/thông báo <code>-(으)ㄹ 것 같습니다 / -게 되었습니다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 금요일에 뵙기 어려울 거 같습니다 / 금요일에 다른 일이 생겼습니다 / 금요일에 사정이 생겨서 찾아뵙기가 어려울 거 같습니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 금요일에 못 갈 것 같습니다 / 금요일 약속을 취소해야 할 것 같습니다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-51-b" style="display:none;" onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-b" class="explanation-box">
+                <div id="score-51-b" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Sau khi xin lỗi vì hủy lịch, Jenny cần hỏi xin lại một lịch hẹn khác với giáo sư. Câu hỏi bắt đầu bằng "혹시" (Không biết...) kết hợp với dấu `?` yêu cầu một câu hỏi lịch sự về thời gian rảnh của giáo sư.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>언제 / 다음 주</code> + <code>시간이 괜찮다 / 뵈러 가다</code> + Kính ngữ <code>-(으)십니까? / -아/어 주시겠습니까?</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 언제 시간이 괜찮으십니까? / 언제 시간이 되십니까? / 혹시 다음 주 금요일에 뵈러 가도 되겠습니까?<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 언제가 좋으십니까? / 편하신 시간을 알려 주시겠습니까?
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        기회는 어떤 사람에게 명예와 부를 안겨 준다. 기회를 통해서 평범한 사람이 유명해지기도 하고 <b>( ㉠ )</b>. 이런 변화를 보고 사람들은 자신에게도 그런 기회가 찾아오기를 기다린다. 그러나 실제로 <b>( ㉡ )</b>. 이렇게 기회를 잘 이용하지 못하는 것은 기회를 잡으려는 준비를 하지 않았기 때문이다.
+    </div>
+
+    <details style="margin-bottom: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+        <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+        <div class="details-content" style="font-size: 0.95rem; color: #111;">
+            Cơ hội mang đến danh dự và sự giàu có cho một số người. Thông qua cơ hội, một người bình thường cũng có khi trở nên nổi tiếng và <b>(cũng có khi người nghèo trở nên giàu có)</b>. Nhìn thấy sự thay đổi này, mọi người cũng chờ đợi một cơ hội như vậy tìm đến với bản thân mình. Tuy nhiên, trên thực tế <b>(có rất nhiều người không nắm bắt được cơ hội khi nó đến)</b>. Việc không thể tận dụng tốt cơ hội như vậy là bởi vì họ đã không chuẩn bị sẵn sàng để nắm bắt cơ hội.
+        </div>
+    </details>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án의 của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-52-a" style="display:none;" onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-a" class="explanation-box">
+                <div id="score-52-a" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Câu mở đầu nêu 2 lợi ích của cơ hội: `명예` (Danh dự - Sự nổi tiếng) và `부` (Sự giàu có). Ở vế trước đã dùng cấu trúc liệt kê `유명해지기도 하고` (Cũng có khi trở nên nổi tiếng). Vậy vế sau phải tương ứng với chữ `부`: "Trở nên giàu có".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>부자(가) 되다 / 돈을 많이 벌다</code> + Ngữ pháp liệt kê <code>-기도 한다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 가난한 사람이 부자가 되기도 한다 / 부자가 되기도 한다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 큰돈을 벌기도 한다 / 부유해지기도 한다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-52-b" style="display:none;" onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-b" class="explanation-box">
+                <div id="score-52-b" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Phía trước nói mọi người ngóng chờ cơ hội. Nhưng bắt đầu bằng `그러나 실제로` (Tuy nhiên trên thực tế...). Phía sau lại có câu giải thích `기회를 잘 이용하지 못하는 것은...` (Việc không thể tận dụng tốt cơ hội là vì...). Do đó chỗ trống phải điền một sự thật phũ phàng: "Cơ hội đến nhưng không tận dụng được / Bỏ lỡ cơ hội".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>기회(가) 오다/찾아오다</code> + <code>놓치다 / 이용하지 못하다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 기회가 와도 그 기회를 잘 이용하지 못한다 / 찾아온 기회를 놓치는 사람들이 많다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 기회를 잡지 못하는 경우가 많다 / 기회를 놓쳐 버린다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [53] 최근 한국 사회에서는 1인 가구가 계속 증가하고 있습니다. 다음 자료를 참고하여 1인 가구 증가의 원인과 현황을 설명하는 글을 200~300자로 쓰시오. (30점)
+    </div>
+
+    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        
+        <div class="t36-bulletproof-grid">
+            
+            <div>
+                <div style="font-weight: 800; font-size: 1.1rem; color: #1e40af; text-align: center; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">1인 가구의 현황</div>
+                
+                <div class="t36-status-box">
+                    <div class="t36-increase-badge">10% 증가 ↑</div>
+                    
+                    <div class="t36-data-card">
+                        <div class="t36-data-year">2000년</div>
+                        <div style="font-weight: 600; color: #475569; font-size: 0.9rem;">전체 가구 수의</div>
+                        <div class="t36-data-val">16%</div>
+                    </div>
+                    
+                    <div class="t36-arrow-down"></div>
+                    
+                    <div class="t36-data-card" style="border-color: #ef4444; box-shadow: 0 4px 6px rgba(239, 68, 68, 0.1);">
+                        <div class="t36-data-year" style="color: #b91c1c;">2012년</div>
+                        <div style="font-weight: 600; color: #475569; font-size: 0.9rem;">전체 가구 수의</div>
+                        <div class="t36-data-val" style="color: #ef4444;">26%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div style="font-weight: 800; font-size: 1.1rem; color: #0f172a; margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">1인 가구 증가의 원인</div>
+                
+                <div class="t36-cause-list">
+                    <div class="t36-cause-item">
+                        <div class="t36-cause-num">1</div>
+                        <div class="t36-cause-text">결혼관의 변화와<br>독신의 증가</div>
+                    </div>
+                    <div class="t36-cause-item">
+                        <div class="t36-cause-num">2</div>
+                        <div class="t36-cause-text">노인 인구 증가</div>
+                    </div>
+                    <div class="t36-cause-item">
+                        <div class="t36-cause-num">3</div>
+                        <div class="t36-cause-text">여성의 사회 진출 증가</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+        <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+        <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+        <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+    </div>
+
+    <div id="t53-guide" class="tab-content t53-content active">
+        <div class="guide-box">
+            <b>Dàn ý phân tích biểu đồ (Hiện trạng và Liệt kê nguyên nhân):</b><br><br>
+            1. <b>Mở bài (Mô tả biểu đồ hiện trạng):</b> Nêu xu hướng chung (최근 한국 사회에서는 1인 가구가 계속 증가하고 있다). Trình bày số liệu: Năm 2000 chỉ 16%, nhưng đã tăng đều đặn và đạt 26% vào năm 2012. Tức là tăng 10% trong vòng 12 năm.<br>
+            2. <b>Thân bài (Liệt kê 3 Nguyên nhân):</b> Dùng cấu trúc liệt kê (첫째, 둘째, 셋째).<br>
+            - Thứ nhất: Tăng người độc thân do thay đổi quan niệm kết hôn.<br>
+            - Thứ hai: Tăng dân số người già.<br>
+            - Thứ ba: Sự tiến vào xã hội của phụ nữ (여성의 사회 진출도... 영향을 주었다).<br>
+            3. <b>Kết luận (Dự báo):</b> Đưa ra dự báo tương lai (앞으로도 지속적으로 증가할 전망이다).
+        </div>
+    </div>
+
+    <div id="t53-grammar" class="tab-content t53-content">
+        <details><summary>1. ~년 전체 ~의 N%에 불과했던 ~은/는 꾸준히 증가하여 ~년에는 N%에 도달했다.</summary><div class="details-content">[Chủ đề] từng chỉ chiếm vỏn vẹn N% vào năm... đã gia tăng đều đặn và đạt tới N% vào năm... <i>(Mẫu câu nhấn mạnh sự tăng trưởng)</i></div></details>
+        <details><summary>2. N년 사이에 N%가 증가한 것이다.</summary><div class="details-content">Tức là đã tăng N% trong khoảng thời gian N năm.</div></details>
+        <details><summary>3. 이러한 증가의 원인은 다음과 같다. 첫째, ~고 둘째, ~기 때문이다.</summary><div class="details-content">Nguyên nhân của sự gia tăng này như sau. Thứ nhất là do... và thứ hai là do...</div></details>
+        <details><summary>4. ~로 인한 명사(의) 증가</summary><div class="details-content">Sự gia tăng của [Danh từ] do [Lý do] gây ra. <i>(Ví dụ: 결혼관의 변화로 인한 독신자의 증가 = Sự gia tăng của người độc thân do sự thay đổi quan niệm hôn nhân)</i></div></details>
+        <details><summary>5. ~은/는 ~에 영향을 주었다.</summary><div class="details-content">[A] đã gây ảnh hưởng đến [B].</div></details>
+        <details><summary>6. 이러한 원인으로 ~은/는 앞으로도 지속적으로 증가할 전망이다.</summary><div class="details-content">Với những nguyên nhân này, được dự báo là [Chủ đề] sẽ tiếp tục gia tăng một cách liên tục trong tương lai.</div></details>
+    </div>
+
+    <div id="t53-answer" class="tab-content t53-content">
+        <table class="bilingual-table">
+            <tr><td>최근 한국 사회에서는 1인 가구가 계속 증가하고 있다.</td><td>Gần đây, tại xã hội Hàn Quốc, hộ gia đình một người đang liên tục gia tăng.</td></tr>
+            <tr><td>2000년 전체 가구 수의 16%에 불과했던 1인 가구는 꾸준히 증가하여 2012년에는 26%에 도달했다. 12년 사이에 10%가 증가한 것이다.</td><td>Hộ gia đình một người từng chỉ chiếm vỏn vẹn 16% trên tổng số hộ gia đình vào năm 2000, đã gia tăng đều đặn và đạt mức 26% vào năm 2012. Tức là đã tăng 10% trong vòng 12 năm.</td></tr>
+            <tr><td>이러한 증가의 원인은 다음과 같다. 첫째, 결혼관의 변화로 인한 독신자 수의 증가이다. 둘째, 노인 인구가 증가하면서 1인 가구도 증가하게 되었다. 셋째, 여성의 사회 진출도 1인 가구가 증가하는 데 영향을 주었다.</td><td>Nguyên nhân của sự gia tăng này như sau. Thứ nhất, là sự gia tăng số lượng người độc thân do sự thay đổi về quan niệm hôn nhân. Thứ hai, dân số người già tăng lên cũng làm cho hộ gia đình một người tăng theo. Thứ ba, sự tham gia vào xã hội của phụ nữ cũng đã gây ảnh hưởng đến sự gia tăng của hộ gia đình một người.</td></tr>
+            <tr><td>이러한 원인으로 1인 가구 수는 앞으로도 지속적으로 증가할 전망이다.</td><td>Với những nguyên nhân này, số lượng hộ gia đình một người được dự báo sẽ tiếp tục gia tăng liên tục trong tương lai.</td></tr>
+        </table>
+    </div>
+
+    <div id="t53-practice" class="tab-content t53-content">
+        <div class="book-container">
+            <div class="book-page page-left">
+                <div class="book-title">Tiếng Việt</div>
+                <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+            </div>
+            <div class="book-page page-right">
+                <div class="book-title">Tiếng Hàn</div>
+                <div id="book-ko-text" style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                <div id="book-ko-input-area" style="display: none;">
+                    <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                    <div id="diff-result-box" style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;"></div>
+                    <div id="diff-correct-ans" style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="book-nav-wrapper">
+            <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+            <span id="book-page-indicator" class="page-indicator">1 / 4</span>
+            <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+            <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper" style="margin-bottom:0;">
+    <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [54] 다음을 주제로 하여 자신의 생각을 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+    </div>
+    
+    <div class="writing-box">
+        우리가 공부나 일을 할 때 동기가 분명히 있어야 더 잘 실행할 수 있습니다. 이러한 동기에는 흥미, 만족감, 자부심과 같은 내적 동기도 있고 칭찬이나 보상과 같은 외적 동기도 있습니다. <b>'동기가 일에 미치는 영향'</b>에 대해 아래의 내용을 중심으로 자신의 생각을 쓰십시오.
+        <ul style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+            <li>동기는 일의 시작 단계에서 어떠한 역할을 합니까?</li>
+            <li>동기가 일의 결과에 미치는 영향은 무엇입니까?</li>
+        </ul>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+        <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+        <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+        <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+    </div>
+
+    <div id="t54-intro" class="tab-content t54-content active">
+        <div class="guide-box">
+            <b>Trọng tâm: Khái niệm về Động cơ (Động cơ nội tại vs Động cơ ngoại tại)</b><br>
+            - Động cơ đóng vai trò quan trọng khi tiến hành một công việc. Nó là sức mạnh vô hình thúc đẩy con người làm việc.<br>
+            - Có 2 loại: Động cơ nội tại (hứng thú, thỏa mãn từ bên trong) và Động cơ ngoại tại (lời khen, phần thưởng từ bên ngoài).<br>
+            - Hai động cơ này ảnh hưởng xuyên suốt từ lúc bắt đầu đến khi kết thúc.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>우리가 어떤 일을 진행하는 데에는 동기가 중요한 역할을 한다.</td><td>Khi chúng ta tiến hành một công việc nào đó, động cơ đóng một vai trò quan trọng.</td></tr>
+            <tr><td>동기란 어떤 일을 하게 하는 보이지 않는 힘인데 동기에는 내적 동기와 외적 동기가 있다.</td><td>Động cơ có nghĩa là một sức mạnh vô hình khiến ta làm một việc gì đó, và ở động cơ có động cơ nội tại và động cơ ngoại tại.</td></tr>
+            <tr><td>내적 동기란 흥미, 만족감, 자부심과 같이 우리 마음속에서 저절로 일어나는 것이고, 외적 동기란 칭찬이나 보상과 같이 우리의 외부에서 오는 것이다.</td><td>Động cơ nội tại là những thứ nảy sinh một cách tự nhiên từ trong tâm trí chúng ta như sự hứng thú, cảm giác thỏa mãn, lòng tự hào, còn động cơ ngoại tại là thứ đến từ bên ngoài chúng ta như lời khen ngợi hay phần thưởng.</td></tr>
+            <tr><td>이 두 동기는 우리가 일을 시작할 때부터 마칠 때까지 많은 영향을 미친다.</td><td>Hai động cơ này gây ra nhiều ảnh hưởng từ lúc chúng ta bắt đầu công việc cho đến khi kết thúc.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-body" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 동기는 일의 시작 단계에서 어떠한 역할을 합니까? (Vai trò của động cơ ở giai đoạn bắt đầu?)</b><br>
+            - Không có động cơ = Không thể bắt đầu công việc.<br>
+            - Lấy ví dụ Động cơ ngoại tại: Đối với người muốn được công nhận, lời khen là động cơ xuất sắc. Việc tăng lương, thăng chức cũng thúc đẩy người ta bắt tay vào việc.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>만약 우리에게 동기가 없다면 일을 시작할 수 없을 것이다. 어떤 일을 시작하려면 반드시 동기가 있어야 한다는 말이다.</td><td>Giả sử chúng ta không có động cơ thì chúng ta sẽ không thể bắt đầu công việc. Điều này có nghĩa là nếu muốn bắt đầu một công việc nào đó thì nhất định phải có động cơ.</td></tr>
+            <tr><td>예를 들어, 자신의 능력을 인정받고 싶어하는 사람이라면 주변 사람들의 칭찬만큼 효과적인 동기도 없다.</td><td>Lấy ví dụ, nếu là một người muốn được công nhận năng lực của bản thân, thì không có động cơ nào hiệu quả bằng lời khen ngợi của những người xung quanh.</td></tr>
+            <tr><td>또 승진이나 월급 인상과 같은 보상도 우리가 일을 시작하도록 하는 동기가 된다.</td><td>Hơn nữa, những phần thưởng như thăng chức hay tăng lương cũng trở thành động cơ khiến chúng ta bắt đầu công việc.</td></tr>
+            <tr><td>이처럼 내적 동기와 외적 동기는 일을 시작하는 단계에서부터 중요한 역할을 한다.</td><td>Như vậy, động cơ nội tại và động cơ ngoại tại đóng vai trò quan trọng ngay từ giai đoạn bắt đầu công việc.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-conclusion" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 동기가 일의 결과에 미치는 영향은 무엇입니까? (Ảnh hưởng của động cơ lên kết quả công việc?)</b><br>
+            - Động cơ nội tại thường mạnh hơn động cơ ngoại tại.<br>
+            - Nếu làm việc vì hứng thú bản thân (nội tại), dù gặp khó khăn vẫn dễ dàng vượt qua và hoàn thành mục tiêu.<br>
+            - Kết luận: Loại động cơ bạn mang theo sẽ quyết định sự khởi đầu và kết quả công việc.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>동기는 일의 결과에도 영향을 주는데 일반적으로 내적 동기는 외적 동기보다 더 강하다.</td><td>Động cơ cũng gây ảnh hưởng đến kết quả công việc, và thông thường động cơ nội tại mạnh mẽ hơn so với động cơ ngoại tại.</td></tr>
+            <tr><td>그래서 자신이 흥미가 있고 만족감을 느낄 수 있는 일을 하면 일의 진행 과정에서 어려움에 부딪힌다고 해도 더 쉽게 극복해 낼 수 있다.</td><td>Vì thế, nếu ta làm một công việc mà bản thân cảm thấy có hứng thú và sự thỏa mãn, thì dù có va vấp phải khó khăn trong quá trình tiến hành công việc, ta vẫn có thể vượt qua nó một cách dễ dàng hơn.</td></tr>
+            <tr><td>그 결과 우리가 일을 완수해 내는 데에 도움을 준다. 그뿐만 아니라 스트레스를 받더라도 이겨낼 수 있는 힘을 준다.</td><td>Kết quả là, nó giúp đỡ chúng ta trong việc hoàn thành trọn vẹn công việc. Không chỉ vậy, nó còn tiếp thêm sức mạnh để ta có thể vượt qua ngay cả khi phải chịu đựng áp lực.</td></tr>
+            <tr><td>따라서 일을 시작할 때 분명한 동기를 가지고 있어야만 원하는 결과를 얻을 수 있다. 이처럼 어떤 동기를 갖느냐가 일의 시작과 결과에 중요한 영향을 미친다.</td><td>Do đó, chỉ khi có một động cơ rõ ràng khi bắt đầu công việc thì ta mới có thể đạt được kết quả mong muốn. Như vậy, việc bạn mang theo loại động cơ nào sẽ gây ảnh hưởng quan trọng đến sự khởi đầu và kết quả của công việc.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-grammar" class="tab-content t54-content">
+        <details><summary>1. ~는 데에는 ~이/가 중요한 역할을 한다.</summary><div class="details-content">Trong việc làm [Mục đích], thì [Chủ đề] đóng một vai trò quan trọng.</div></details>
+        <details><summary>2. 명사 + (이)란 ~을/를 하게 하는 ~인데 ~가 있다.</summary><div class="details-content">[Danh từ] có nghĩa là thứ khiến cho... và bao gồm có... <i>(Câu định nghĩa rất chuyên nghiệp)</i></div></details>
+        <details><summary>3. 만약 ~이/가 없다면 ~(으)ㄹ 수 없을 것이다.</summary><div class="details-content">Giả sử không có [Chủ đề] thì sẽ không thể...</div></details>
+        <details><summary>4. ~으려면 반드시 ~아/어야 한다는 말이다.</summary><div class="details-content">Điều này có nghĩa là nếu muốn... thì nhất định phải...</div></details>
+        <details><summary>5. ~고 싶어하는 사람이라면 ~만큼 ~한 ~도 없다.</summary><div class="details-content">Nếu là người muốn... thì không có cái gì... bằng cái này. <i>(Cấu trúc so sánh nhất)</i></div></details>
+        <details><summary>6. 이처럼 ~은/는 ~단계에서부터 중요한 역할을 한다.</summary><div class="details-content">Như vậy, ... đóng vai trò quan trọng ngay từ giai đoạn...</div></details>
+        <details><summary>7. ~는 ~에도 영향을 주는데 일반적으로 ~은/는 ~보다 더 강하다.</summary><div class="details-content">...cũng gây ảnh hưởng đến... và thông thường [A] mạnh mẽ hơn so với [B].</div></details>
+        <details><summary>8. ~에 부딪힌다고 해도 더 쉽게 극복해 낼 수 있다.</summary><div class="details-content">Dù có va vấp phải... thì vẫn có thể vượt qua một cách dễ dàng hơn.</div></details>
+        <details><summary>9. 그 결과 ~하는 데에 도움을 준다. 그뿐만 아니라 ~더라도 이겨낼 수 있는 힘을 준다.</summary><div class="details-content">Kết quả là nó giúp đỡ trong việc... Không chỉ vậy, nó còn cho ta sức mạnh để có thể vượt qua ngay cả khi...</div></details>
+        <details><summary>10. 따라서 ~할 때 ~을/를 가지고 있어야만 원하는 결과를 얻을 수 있다.</summary><div class="details-content">Do đó, chỉ khi có... khi làm việc thì mới có thể nhận được kết quả mong muốn.</div></details>
+        <details><summary>11. 이처럼 어떤 ~을/를 갖느냐가 ~에 중요한 영향을 미친다.</summary><div class="details-content">Như vậy, việc bạn mang theo [Danh từ] như thế nào sẽ gây ảnh hưởng quan trọng đến...</div></details>
+        <details><summary>12. 동사 + 도록 하다</summary><div class="details-content">Khiến cho / Làm cho ai đó thực hiện hành động. <i>(Ví dụ: 일을 시작하도록 하는 동기 = Động cơ khiến ta bắt đầu công việc)</i></div></details>
+    </div>
+</div>
+
+<script src="exam-logic.js"></script>
+
+<script>
+    // CÂU 51A
+    function grade51A() {
+        let val = document.getElementById('ans-51-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['어렵', '못 가', '일이 생겼', '사정이 생겼'];
+        let validEndings = ['것 같', '거 같', '습니다'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng việc không thể đến hẹn / có việc đột xuất."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu đuôi câu lịch sự suy đoán -(으)ㄹ 것 같습니다."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ mang nghĩa 'khó có thể đến gặp / có việc bận'."); }
+
+        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+    }
+
+    // CÂU 51B
+    function grade51B() {
+        let val = document.getElementById('ans-51-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['시간', '언제'];
+        let validEndings = ['괜찮으십니까', '되십니까', '좋으십니까', '말씀해 주시겠습니까'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(val.includes('시간') || val.includes('언제')) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Câu hỏi lịch sự xin lịch hẹn chuẩn xác."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng ý nhưng thiếu đuôi câu hỏi kính ngữ (-으십니까)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'khi nào / lúc nào rảnh'."); }
+
+        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+    }
+
+    // CÂU 52A
+    function grade52A() {
+        let val = document.getElementById('ans-52-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['부자', '부유', '돈'];
+        let validEndings = ['되기도 한', '벌기도 한'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc liệt kê sự giàu có."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu liệt kê -기도 한다."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có chữ 'trở nên giàu có' (부자가 되다) để tương ứng với '유명해지기도 하고'."); }
+
+        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+    }
+
+    // CÂU 52B
+    function grade52B() {
+        let val = document.getElementById('ans-52-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['기회'];
+        let validTargets = ['이용하지 못', '놓치', '잡지 못', '활용하지 못'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) {
+            score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng ý bỏ lỡ cơ hội trên thực tế.");
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Cơ hội' (기회) và 'Không tận dụng được/Bỏ lỡ' (놓치다, 이용하지 못하다)."); }
+
+        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+    }
+
+    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 36 ---
+    const bookData_36 = [
+        { vi: "Gần đây, tại xã hội Hàn Quốc, hộ gia đình một người đang liên tục gia tăng.", ko: "최근 한국 사회에서는 1인 가구가 계속 증가하고 있다." },
+        { vi: "Hộ gia đình một người từng chỉ chiếm vỏn vẹn 16% trên tổng số hộ gia đình vào năm 2000, đã gia tăng đều đặn và đạt mức 26% vào năm 2012. Tức là đã tăng 10% trong vòng 12 năm.", ko: "2000년 전체 가구 수의 16%에 불과했던 1인 가구가 꾸준히 증가하여 2012년에는 26%에 도달했다. 12년 사이에 10%가 증가한 것이다." },
+        { vi: "Nguyên nhân của sự gia tăng này như sau. Thứ nhất, là sự gia tăng số lượng người độc thân do sự thay đổi về quan niệm hôn nhân. Thứ hai, dân số người già tăng lên cũng làm cho hộ gia đình một người tăng theo. Thứ ba, sự tham gia vào xã hội của phụ nữ cũng đã gây ảnh hưởng đến sự gia tăng của hộ gia đình một người.", ko: "이러한 증가의 원인은 다음과 같다. 첫째, 결혼관의 변화로 인한 독신자 수의 증가이다. 둘째, 노인 인구가 증가하면서 1인 가구도 증가하게 되었다. 셋째, 여성의 사회 진출도 1인 가구가 증가하는 데 영향을 주었다." },
+        { vi: "Với những nguyên nhân này, số lượng hộ gia đình một người được dự báo sẽ tiếp tục gia tăng liên tục trong tương lai.", ko: "이러한 원인으로 1인 가구 수는 앞으로도 지속적으로 증가할 전망이다." }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initBook(bookData_36);
+    });
+</script>

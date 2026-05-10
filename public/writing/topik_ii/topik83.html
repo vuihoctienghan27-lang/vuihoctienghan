@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 쓰기 - 제83회 - Vui Học Tiếng Hàn</title>
+
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+
+    <style>
+    /* ===== HEADER BADGE ===== */
+    .header-badge-container {
+        text-align: center;
+        margin: 40px auto 50px auto;
+        width: 100%;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 12px 50px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* ===== CSS TÙY CHỈNH INFOGRAPHIC ĐỀ 83 & FIX MOBILE ===== */
+    .info-card { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); height: 100%; display: flex; flex-direction: column; justify-content: space-between; }
+    .info-title { font-size: 1.05rem; font-weight: 800; color: #0f172a; text-align: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #f1f5f9; }
+    
+    .q53-info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Máy tính 2 cột */
+        gap: 20px;
+    }
+
+    /* Biểu đồ 1: Đường */
+    .line-chart-box { position: relative; height: 140px; border-left: 2px solid #cbd5e1; border-bottom: 2px solid #cbd5e1; margin: 10px 15px 25px 15px; }
+    .data-point { position: absolute; background: #2563eb; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.85rem; font-weight: 700; transform: translate(-50%, -50%); box-shadow: 0 2px 5px rgba(37,99,235,0.3); z-index: 2; }
+    .data-point.p1 { bottom: 10%; left: 15%; }
+    .data-point.p2 { top: 15%; left: 85%; }
+    .line-connect { position: absolute; top: 50%; left: 50%; width: 75%; height: 2px; background: #2563eb; transform: translate(-50%, -50%) rotate(-25deg); transform-origin: center; z-index: 1; }
+    .growth-badge { position: absolute; top: 25%; left: 45%; font-weight: 800; color: #ef4444; background: white; padding: 4px 12px; border-radius: 12px; border: 2px solid #ef4444; z-index: 3; box-shadow: 0 2px 5px rgba(239, 68, 68, 0.2); }
+    .year-label { display: flex; justify-content: space-between; margin-top: 10px; font-weight: 700; color: #64748b; font-size: 0.95rem; padding: 0 10px; }
+    
+    /* Biểu đồ 2: So sánh tỷ lệ (%) */
+    .ratio-chart-box { display: flex; flex-direction: column; gap: 15px; margin-top: 10px; }
+    .ratio-row { display: grid; grid-template-columns: 80px 1fr; align-items: center; gap: 15px; }
+    .ratio-label { font-size: 0.85rem; font-weight: 700; color: #475569; text-align: right; }
+    .ratio-bars { position: relative; height: 35px; background: #f1f5f9; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column; }
+    .bar-line { height: 50%; display: flex; align-items: center; font-size: 0.75rem; font-weight: 700; color: white; padding-left: 8px; transition: 0.3s; }
+    .bar-2001 { background: #94a3b8; }
+    .bar-2021 { background: #2563eb; }
+    .ratio-legend { display: flex; justify-content: center; gap: 15px; margin-top: 15px; font-size: 0.8rem; font-weight: 700; color: #64748b; }
+    
+    /* Box Nguyên nhân & Triển vọng */
+    .cause-box { border: 1px solid #cbd5e1; padding: 20px; border-radius: 12px; background: #f8fafc; margin-top: 20px; }
+    .cause-title-badge { display: inline-block; color: white; padding: 4px 12px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; margin-bottom: 15px; }
+    .bg-gray { background: #64748b; }
+    .bg-blue { background: #0ea5e9; }
+    .cause-list { margin: 0; padding-left: 20px; line-height: 1.8; font-weight: 600; font-size: 0.95rem; color: #1e293b; }
+    
+    /* FIX LỖI MOBILE */
+    @media (max-width: 768px) {
+        .header-badge-container { margin: 20px auto 30px auto; }
+        .topik-header-badge { font-size: 1.5rem; padding: 10px 30px; border-width: 1.5px; }
+        .q53-info-grid { grid-template-columns: 1fr; gap: 15px; } /* Điện thoại 1 cột xếp dọc */
+        .line-connect { transform: translate(-50%, -50%) rotate(-20deg); }
+    }
+</style>
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제83회</div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        <div style="margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <span style="background:#f1f5f9; padding: 4px 10px; border-radius: 6px; font-size: 0.85rem; color:#475569; font-weight: 700; margin-right: 10px;">자유게시판</span>
+            <b>축제 관련 문의</b>
+        </div>
+        <div>
+            지난 주말 '인주시 별빛 축제'에 갔던 외국인입니다.<br>
+            지금까지 살면서 이렇게 많은 별을 <b>( ㉠ )</b> 한 번도 없었습니다.<br>
+            이번 축제에서 별도 보고 공연도 볼 수 있어서 정말 좋았습니다.<br>
+            혹시 축제가 언제 또 있습니까?<br>
+            있다면 이런 멋진 경험을 다시 <b>( ㉡ )</b>.<br><br>
+            <span style="color:#64748b;">인주시청</span>
+        </div>
+        
+        <details style="margin-top: 15px; background: rgba(255,255,255,0.8); border:none; box-shadow:none;">
+            <summary style="padding: 10px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+            <div class="details-content" style="font-size: 0.95rem; color: #111;">
+                <b>Bảng tin tự do | Tiêu đề: Hỏi đáp liên quan đến lễ hội</b><br>
+                Tôi là người nước ngoài đã đến 'Lễ hội ánh sao thành phố Inju' vào cuối tuần trước.<br>
+                Từ lúc sinh ra đến giờ tôi chưa từng <b>(nhìn thấy)</b> nhiều sao đến thế này bao giờ.<br>
+                Tại lễ hội lần này vừa có thể ngắm sao vừa có thể xem biểu diễn nên thực sự rất tuyệt.<br>
+                Không biết bao giờ thì lại có lễ hội nữa nhỉ?<br>
+                Nếu có, tôi <b>(muốn trải nghiệm)</b> lại trải nghiệm tuyệt vời như thế này.
+            </div>
+        </details>
+    </div>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-51-a" style="display:none;" onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-a" class="explanation-box">
+                <div id="score-51-a" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Phía trước có từ `별을` (Ngôi sao). Phía sau lại có cụm `한 번도 없었습니다` (Chưa từng có một lần nào). Do đó, cần một động từ chỉ việc nhìn ngắm, kết hợp với ngữ pháp chỉ kinh nghiệm trong quá khứ.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>보다 / 경험하다</code> + Ngữ pháp kinh nghiệm <code>-(으)ㄴ 적이</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 본 적이.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 구경한 적이 / 경험한 적이 / 본 기억이.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-51-b" style="display:none;" onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-b" class="explanation-box">
+                <div id="score-51-b" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Người viết hỏi khi nào lại có lễ hội, và nếu có thì mong muốn được tham gia/trải nghiệm lại. Thể hiện một hy vọng, ước muốn của bản thân.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>하다 / 경험하다</code> + Ngữ pháp ước muốn <code>-고 싶습니다 / -기 바랍니다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 하고 싶습니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 해 보고 싶습니다 / 겪어 보고 싶습니다 / 경험하고 싶습니다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        식물은 다양한 방법으로 자신을 보호한다. 덩굴성 야자나무는 빈 줄기를 개미에게 집으로 제공한다. 이 나무에 다른 동물이 다가오면 줄기 속에 있던 개미들은 밖으로 나온다. 이때 개미들의 움직임으로 소리가 생긴다. 이 소리는 동물을 깜짝 <b>( ㉠ )</b>. 결국 놀란 동물은 나뭇잎을 먹지 못하고 달아나 버린다. 식물학자들은 이것이 바로 이 나무가 자신을 보호하는 <b>( ㉡ )</b>.
+        
+        <details style="margin-top: 15px; background: rgba(255,255,255,0.8); border:none; box-shadow:none;">
+            <summary style="padding: 10px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+            <div class="details-content" style="font-size: 0.95rem; color: #111;">
+                Thực vật bảo vệ bản thân bằng nhiều cách đa dạng. Cây cọ dây leo cung cấp thân cây rỗng làm nhà cho loài kiến. Nếu có động vật khác tiến lại gần cây này thì những con kiến đang ở trong thân cây sẽ chui ra ngoài. Lúc này tiếng động được tạo ra từ sự chuyển động của bầy kiến. Âm thanh này <b>(làm cho)</b> động vật <b>(bị giật mình)</b>. Rốt cuộc con vật bị kinh động sẽ không thể ăn lá cây mà bỏ chạy mất. Các nhà thực vật học cho rằng đây chính là <b>(phương pháp)</b> mà loài cây này bảo vệ bản thân.
+            </div>
+        </details>
+    </div>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-52-a" style="display:none;" onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-a" class="explanation-box">
+                <div id="score-52-a" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Phía trước có từ `깜짝` (Giật mình). Phía sau có từ `놀란 동물` (Động vật bị kinh động/sợ hãi). Do đó, âm thanh này đã gây ra hành động làm cho động vật sợ hãi, giật mình.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Động từ <code>놀라다</code> + Ngữ pháp sai khiến (làm cho) <code>-게 하다 / -게 만든다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 놀라게 한다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 놀라게 만든다 / 도망가게 한다 / 도망치게 만든다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-52-b" style="display:none;" onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-b" class="explanation-box">
+                <div id="score-52-b" class="score-display"></div>
+                <b>[Phân tích ngữ cảnh]</b><br>
+                Câu mở đầu bài viết đã đề cập: "Thực vật bảo vệ bản thân bằng nhiều phương pháp đa dạng". Ở cuối bài, chủ ngữ là "식물학자들은" (Các nhà thực vật học...). Vậy đuôi câu phải là trích dẫn gián tiếp để lặp lại từ khóa ở câu đầu.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> Danh từ <code>방법 / 방식 / 수단</code> + Ngữ pháp trích dẫn gián tiếp <code>(이)라고 한다 / (이)라고 말한다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 방법이라고 한다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 방식이라고 말한다 / 수단이라고 한다 / 방법 중 하나라고 한다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [53] 다음은 '인주시의 가구 수 변화'에 대한 자료이다. 이 내용을 200~300자의 글로 쓰시오. 단, 글의 제목은 쓰지 마시오. (30점)
+    </div>
+
+    <div style="background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);">
+        <div style="font-weight: 700; color: #475569; margin-bottom: 20px; font-size: 0.95rem;">■ 조사 기관: 인주시 사회연구소</div>
+        
+        <div class="q53-info-grid">
+            <div class="info-card">
+                <div class="info-title">인주시의 가구 수<br><span style="font-size: 0.8rem; color: #64748b; font-weight:500;">(단위: 가구)</span></div>
+                <div class="line-chart-box">
+                    <div class="data-point p1">15만</div>
+                    <div class="growth-badge">1.4배 ↗</div>
+                    <div class="line-connect"></div>
+                    <div class="data-point p2">21만</div>
+                </div>
+                <div class="year-label"><span>2001년</span><span>2021년</span></div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-title">인원수별 가구의 비율 <span style="font-size: 0.8rem; color: #64748b; font-weight:500;">(%)</span></div>
+                <div class="ratio-chart-box">
+                    <div class="ratio-row">
+                        <div class="ratio-label">1인 가구</div>
+                        <div class="ratio-bars">
+                            <div class="bar-line bar-2001" style="width: 15%;">15%</div>
+                            <div class="bar-line bar-2021" style="width: 30%;">30%</div>
+                        </div>
+                    </div>
+                    <div class="ratio-row">
+                        <div class="ratio-label">2~3인 가구</div>
+                        <div class="ratio-bars">
+                            <div class="bar-line bar-2001" style="width: 45%;">45%</div>
+                            <div class="bar-line bar-2021" style="width: 50%;">50%</div>
+                        </div>
+                    </div>
+                    <div class="ratio-row">
+                        <div class="ratio-label">4인 이상 가구</div>
+                        <div class="ratio-bars">
+                            <div class="bar-line bar-2001" style="width: 40%;">40%</div>
+                            <div class="bar-line bar-2021" style="width: 20%;">20%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="ratio-legend">
+                    <div style="display:flex; align-items:center; gap:5px;"><div style="width:12px; height:12px; background:#94a3b8; border-radius:3px;"></div>2001년</div>
+                    <div style="display:flex; align-items:center; gap:5px;"><div style="width:12px; height:12px; background:#2563eb; border-radius:3px;"></div>2021년</div>
+                </div>
+            </div>
+        </div>
+
+<div class="cause-box" style="margin-top: 20px;">
+            
+            <div>
+                <div class="cause-title-badge bg-gray">원인</div>
+                <ul class="cause-list">
+                    <li>독립한 20대 증가</li>
+                    <li>노인 가구 증가</li>
+                </ul>
+            </div>
+
+            <div style="border-top: 1px dashed #cbd5e1; margin: 20px 0;"></div>
+
+            <div>
+                <div class="cause-title-badge bg-blue">전망</div>
+                <ul class="cause-list" style="margin-bottom: 0;">
+                    <li>2040년 1인 가구가 전체의 43% 이상이 될 전망</li>
+                </ul>
+            </div>
+            </div>
+           </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+        <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+        <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+        <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+    </div>
+
+    <div id="t53-guide" class="tab-content t53-content active">
+        <div class="guide-box">
+            <b>Dàn ý phân tích biểu đồ (Biểu đồ kép & Triển vọng):</b><br><br>
+            1. <b>Mở bài (Biểu đồ đường):</b> Nêu cơ quan khảo sát (인주시 사회연구소에서는...). Số lượng hộ gia đình tăng gấp 1.4 lần từ 15 vạn (2001) lên 21 vạn (2021).<br>
+            2. <b>Thân bài (Biểu đồ tỷ lệ):</b> Dùng cấu trúc giải thích lý do (이는 ... 기 때문이다). Phân tích 3 mốc: Hộ 1 người tăng mạnh, hộ 2-3 người cũng tăng. Trái lại (반면), hộ 4 người trở lên giảm mạnh (큰 폭으로 감소).<br>
+            3. <b>Nguyên nhân:</b> Nêu sự thay đổi này là hệ quả của việc giới trẻ tuổi 20 ra ở riêng và sự gia tăng của hộ gia đình người cao tuổi (독립한 20대와 노인 가구 증가의 결과로 보인다).<br>
+            4. <b>Kết luận (Triển vọng):</b> Tóm tắt mục 전망. Đến năm 2040 dự báo hộ 1 người sẽ đạt trên 43% (43% 이상이 될 전망이다).
+        </div>
+    </div>
+
+    <div id="t53-grammar" class="tab-content t53-content">
+        <details><summary>1. ~에서는 ~에 대한 변화를 조사하였다.</summary><div class="details-content">Tại [Cơ quan] đã tiến hành khảo sát sự thay đổi về [Chủ đề].</div></details>
+        <details><summary>2. 조사 결과 ~은/는 ~년에 N에서 ~년에는 N으로 N배 증가하였다.</summary><div class="details-content">Kết quả điều tra cho thấy [Chủ đề] đã tăng gấp N lần, từ [Số A] năm... lên [Số B] năm...</div></details>
+        <details><summary>3. 이는 ~이/가 ~로 크게 증가하였고 ~로 증가한 반면, ~은/는 ~로 큰 폭으로 감소하였기 때문이다.</summary><div class="details-content">Điều này là bởi vì trong khi A tăng mạnh lên mức... và B tăng lên mức... thì C lại giảm mạnh xuống mức... <i>(Cấu trúc vàng nối 3 số liệu)</i></div></details>
+        <details><summary>4. 이러한 변화는 ~와/과 ~ 증가의 결과로 보인다.</summary><div class="details-content">Sự thay đổi này được xem là kết quả của sự gia tăng [A] và [B].</div></details>
+        <details><summary>5. ~년에는 ~이/가 N% 이상이 될 전망이다.</summary><div class="details-content">Vào năm... được dự báo [Chủ đề] sẽ đạt mức trên N%.</div></details>
+    </div>
+
+    <div id="t53-answer" class="tab-content t53-content">
+        <table class="bilingual-table">
+            <tr><td>인주시 사회연구소에서는 인주시의 가구 수 변화를 조사하였다.</td><td>Tại Viện Nghiên cứu Xã hội Inju đã tiến hành khảo sát sự thay đổi số lượng hộ gia đình của thành phố Inju.</td></tr>
+            <tr><td>조사 결과 인주시의 가구 수는 2001년에 15만 가구에서 2021년에는 21만 가구로 1.4배 증가하였다.</td><td>Kết quả điều tra cho thấy, số hộ gia đình ở Inju đã tăng gấp 1.4 lần, từ 150.000 hộ năm 2001 lên 210.000 hộ năm 2021.</td></tr>
+            <tr><td>이는 인원수별 가구의 비율이 1인 가구는 2001년에 15%에서 2021년에는 30%로 크게 증가하였고 2~3인 가구는 45%에서 50%로 증가한 반면, 4인 이상 가구는 40%에서 20%로 큰 폭으로 감소하였기 때문이다.</td><td>Điều này là bởi vì tỷ lệ hộ gia đình theo số người ở hộ 1 người đã tăng mạnh từ 15% năm 2001 lên 30% năm 2021 và hộ 2-3 người tăng từ 45% lên 50%; nhưng trái lại, hộ từ 4 người trở lên lại giảm mạnh từ 40% xuống còn 20%.</td></tr>
+            <tr><td>이러한 변화는 독립한 20대와 노인 가구 증가의 결과로 보인다.</td><td>Sự thay đổi này được xem là kết quả của sự gia tăng những người ở độ tuổi 20 ra ở riêng và hộ gia đình người cao tuổi.</td></tr>
+            <tr><td>2040년에는 1인 가구가 43% 이상이 될 전망이다.</td><td>Được dự báo rằng đến năm 2040, hộ 1 người sẽ chiếm tỷ lệ trên 43%.</td></tr>
+        </table>
+    </div>
+
+    <div id="t53-practice" class="tab-content t53-content">
+        <div class="book-container">
+            <div class="book-page page-left">
+                <div class="book-title">Tiếng Việt</div>
+                <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+            </div>
+            <div class="book-page page-right">
+                <div class="book-title">Tiếng Hàn</div>
+                <div id="book-ko-text" style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                <div id="book-ko-input-area" style="display: none;">
+                    <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                    <div id="diff-result-box" style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;"></div>
+                    <div id="diff-correct-ans" style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="book-nav-wrapper">
+            <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+            <span id="book-page-indicator" class="page-indicator">1 / 5</span>
+            <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+            <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper" style="margin-bottom:0;">
+    <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [54] 다음을 참고하여 600~700자로 글을 쓰시오. 단, 문제를 그대로 옮겨 쓰지 마시오. (50점)
+    </div>
+    
+    <div class="writing-box">
+        창의력은 새로운 것을 생각해 내는 능력이다. 현대 사회는 개인에게 창의력을 더 많이 요구하고 있다. 아래의 내용을 중심으로 <b>'창의력의 필요성과 이를 기르기 위한 노력'</b>에 대한 자신의 생각을 쓰라.
+        <ul style="color: var(--primary); font-weight: 600; margin-bottom: 0; margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+            <li>창의력이 필요한 이유는 무엇인가?</li>
+            <li>창의력을 발휘했을 때 얻을 수 있는 성과는 무엇인가?</li>
+            <li>창의력을 기르기 위해서 어떠한 노력을 할 수 있는가?</li>
+        </ul>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+        <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+        <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+        <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+    </div>
+
+    <div id="t54-intro" class="tab-content t54-content active">
+        <div class="guide-box">
+            <b>Trọng tâm: 창의력이 필요한 이유는 무엇인가? (Lý do cần đến sức sáng tạo?)</b><br>
+            - Bối cảnh: Xã hội hiện đại thay đổi không ngừng, đầy rẫy thông tin.<br>
+            - Lý do 1: Sáng tạo mang lại góc nhìn mới, giúp ta phân loại và tổng hợp thông tin khác biệt.<br>
+            - Lý do 2: Giúp phá vỡ lối tư duy cũ kỹ, giải quyết được những bài toán hóc búa của thời đại.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>변화와 발전을 끊임없이 요구하는 현대 사회에서 창의력은 꼭 필요하다.</td><td>Trong xã hội hiện đại không ngừng đòi hỏi sự thay đổi và phát triển, sức sáng tạo là điều vô cùng cần thiết.</td></tr>
+            <tr><td>먼저 창의력은 새로운 관점을 가져온다. 정보가 넘쳐나는 오늘날 새로운 관점이 있으면 차별화된 시각으로 정보를 통합하고 활용할 수 있다.</td><td>Trước tiên, sự sáng tạo mang lại một góc nhìn mới mẻ. Ngày nay khi thông tin tràn ngập, nếu có một góc nhìn mới ta có thể tích hợp và tận dụng thông tin bằng một nhãn quan khác biệt.</td></tr>
+            <tr><td>또한 우리 사회는 새로운 시도 없이는 발전하기 어려운데 창의력은 기존 사고에 머무르지 않고 변화를 시도할 수 있게 돕는다.</td><td>Ngoài ra, xã hội của chúng ta khó có thể phát triển nếu không có những thử nghiệm mới, và sức sáng tạo giúp ta không giậm chân tại chỗ trong tư duy cũ kỹ mà có thể thử nghiệm sự thay đổi.</td></tr>
+            <tr><td>나아가 창의력은 기존의 사고만으로는 해결하기 어려운 문제를 해결하는 데에 중요한 역할을 한다.</td><td>Tiến xa hơn, sức sáng tạo đóng vai trò quan trọng trong việc giải quyết những bài toán khó mà nếu chỉ bằng tư duy có sẵn thì không thể giải quyết được.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-body" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 창의력을 발휘했을 때 얻을 수 있는 성과는 무엇인가? (Thành quả đạt được khi phát huy tính sáng tạo?)</b><br>
+            - Đối với công việc: Nâng cao hiệu suất, tạo ra thành tựu xuất sắc.<br>
+            - Đối với nghệ thuật/văn hóa: Sản xuất nội dung mới mẻ, mang lại sự cảm động cho con người.<br>
+            - Đối với xã hội: Phát minh công nghệ/sản phẩm mới giúp nâng cao chất lượng cuộc sống chung.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>이와 같이 창의력은 새로운 사고를 할 수 있게 하므로 창의력을 발휘했을 때 우리는 다양한 성과를 얻을 수 있다.</td><td>Như vậy, sức sáng tạo cho phép ta tư duy mới mẻ nên khi phát huy nó, chúng ta có thể đạt được nhiều thành quả đa dạng.</td></tr>
+            <tr><td>창의력을 발휘하면 자신의 업무 분야에서 뛰어난 업무 성과를 보일 수 있다.</td><td>Nếu phát huy sức sáng tạo, ta có thể thể hiện được thành tựu công việc xuất sắc trong lĩnh vực nghiệp vụ của bản thân.</td></tr>
+            <tr><td>또한 예술과 문화의 영역에서 음악이나 영화 등 새로운 콘텐츠를 만들어 냄으로써 사람들에게 신선한 감동을 줄 수도 있다.</td><td>Hơn nữa, trong lĩnh vực văn hóa nghệ thuật, thông qua việc sáng tạo ra những nội dung mới như âm nhạc hay phim ảnh, ta có thể mang lại sự cảm động mới mẻ cho mọi người.</td></tr>
+            <tr><td>뿐만 아니라 획기적인 사고를 바탕으로 삶의 질을 높여주는 새로운 상품이나 기술을 발명하여 사회에 기여할 수 있다.</td><td>Không những thế, trên nền tảng của một tư duy mang tính bước ngoặt, ta có thể cống hiến cho xã hội bằng cách phát minh ra các sản phẩm hoặc kỹ thuật mới giúp nâng cao chất lượng cuộc sống.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-conclusion" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 창의력을 기르기 위해서 어떠한 노력을 할 수 있는가? (Cần nỗ lực gì để nuôi dưỡng sáng tạo?)</b><br>
+            - Đọc sách và trải nghiệm thực tế để mở rộng tư duy.<br>
+            - Không nhìn nhận bề nổi, phải đi sâu tìm hiểu nguyên nhân ẩn giấu.<br>
+            - Tập thói quen tư duy phản biện, không chấp nhận những đáp án rập khuôn.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>창의력을 기르기 위해서는 먼저 독서 및 다양한 경험을 통해 사고의 폭을 넓혀야 한다.</td><td>Để nuôi dưỡng sức sáng tạo, trước tiên ta phải mở rộng biên độ của tư duy thông qua việc đọc sách và trải nghiệm đa dạng.</td></tr>
+            <tr><td>또한 눈에 보이는 현상에만 집중하는 것이 아니라 현상 뒤에 숨겨진 원인을 탐색하고 새로운 관점으로 문제에 접근하는 태도를 가져야 한다.</td><td>Đồng thời, không được chỉ tập trung vào các hiện tượng nhìn thấy trước mắt, mà phải có thái độ tìm tòi nguyên nhân ẩn giấu phía sau và tiếp cận vấn đề bằng một góc nhìn mới.</td></tr>
+            <tr><td>마지막으로 기존의 정답에만 머무는 것이 아니라 비판적 사고를 바탕으로 새로운 해결 방안이 없는지를 모색하는 노력을 기울여야 한다.</td><td>Cuối cùng, không nên chỉ dậm chân ở những đáp án có sẵn, mà phải dồn nỗ lực vào việc tìm kiếm xem liệu có phương án giải quyết mới nào không trên nền tảng của tư duy phản biện.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-grammar" class="tab-content t54-content">
+        <details><summary>1. 변화와 발전을 끊임없이 요구하는 현대 사회에서 ~은/는 꼭 필요하다.</summary><div class="details-content">Trong xã hội hiện đại không ngừng đòi hỏi sự thay đổi và phát triển, [Chủ đề] là vô cùng cần thiết. <i>(Mở bài ăn điểm cao)</i></div></details>
+        <details><summary>2. 정보가 넘쳐나는 오늘날 ~이/가 있으면 ~을/를 통합하고 활용할 수 있다.</summary><div class="details-content">Ngày nay khi thông tin tràn ngập, nếu có... ta có thể tích hợp và tận dụng...</div></details>
+        <details><summary>3. ~은/는 기존 사고에 머무르지 않고 변화를 시도할 수 있게 돕는다.</summary><div class="details-content">Giúp ta không dậm chân tại chỗ trong tư duy cũ kỹ mà có thể thử nghiệm sự thay đổi.</div></details>
+        <details><summary>4. 나아가 ~은/는 ~를 해결하는 데에 중요한 역할을 한다.</summary><div class="details-content">Tiến xa hơn, [Chủ đề] đóng vai trò quan trọng trong việc giải quyết...</div></details>
+        <details><summary>5. 이와 같이 ~은/는 ~게 하므로 ~(으)ㄹ 때 우리는 ~을/를 얻을 수 있다.</summary><div class="details-content">Như vậy, [A] làm cho ta có thể [B], nên khi thực hiện [A] chúng ta có thể đạt được [Thành quả]. <i>(Câu chuyển đoạn cực bén)</i></div></details>
+        <details><summary>6. ~함으로써 사람들에게 신선한 감동을 줄 수도 있다.</summary><div class="details-content">Thông qua việc... ta có thể mang lại sự cảm động mới mẻ cho mọi người.</div></details>
+        <details><summary>7. 뿐만 아니라 ~을 바탕으로 ~하여 사회에 기여할 수 있다.</summary><div class="details-content">Không những thế, trên nền tảng của... ta có thể... và cống hiến cho xã hội.</div></details>
+        <details><summary>8. ~기 위해서는 먼저 ~을/를 통해 사고의 폭을 넓혀야 한다.</summary><div class="details-content">Để... trước tiên ta phải mở rộng biên độ của tư duy thông qua...</div></details>
+        <details><summary>9. ~에만 집중하는 것이 아니라 ~원인을 탐색하고 ~관점으로 문제에 접근하는 태도를 가져야 한다.</summary><div class="details-content">Không chỉ tập trung vào... mà phải có thái độ tìm tòi nguyên nhân và tiếp cận vấn đề bằng góc nhìn...</div></details>
+        <details><summary>10. 기존의 정답에만 머무는 것이 아니라 비판적 사고를 바탕으로 ~방안이 없는지를 모색하는 노력을 기울여야 한다.</summary><div class="details-content">Không chỉ dậm chân ở đáp án có sẵn, mà phải dồn nỗ lực tìm kiếm phương án... dựa trên tư duy phản biện.</div></details>
+    </div>
+</div>
+
+<script src="exam-logic.js"></script>
+
+<script>
+    // CÂU 51A
+    function grade51A() {
+        let val = document.getElementById('ans-51-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['보', '경험하', '구경하'];
+        let validEndings = ['ㄴ 적이', '은 적이', '던 기억이'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc kinh nghiệm."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu ngữ pháp kinh nghiệm (-(으)ㄴ 적이 없다)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'nhìn thấy/trải qua'."); }
+
+        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+    }
+
+    // CÂU 51B
+    function grade51B() {
+        let val = document.getElementById('ans-51-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['하', '경험하', '겪'];
+        let validEndings = ['고 싶', '기 바랍'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng nguyện vọng."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp mong muốn -고 싶다."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'làm / trải nghiệm' lại."); }
+
+        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+    }
+
+    // CÂU 52A
+    function grade52A() {
+        let val = document.getElementById('ans-52-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['놀라', '도망가', '도망치'];
+        let validEndings = ['게 한', '게 만든', '게 합'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đúng cấu trúc sai khiến."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp sai khiến (làm cho) -게 하다."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ 'giật mình / chạy trốn'."); }
+
+        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+    }
+
+    // CÂU 52B
+    function grade52B() {
+        let val = document.getElementById('ans-52-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['방법', '방식', '수단'];
+        let validEndings = ['이라고 한', '라고 한', '이라고 말한'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Trích dẫn đúng."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu cấu trúc trích dẫn gián tiếp -(이)라고 한다."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần danh từ mang nghĩa 'phương pháp'."); }
+
+        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+    }
+
+    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 83 ---
+    const bookData_83 = [
+        { vi: "Tại Viện Nghiên cứu Xã hội Inju đã tiến hành khảo sát sự thay đổi số lượng hộ gia đình của thành phố Inju.", ko: "인주시 사회연구소에서는 인주시의 가구 수 변화를 조사하였다." },
+        { vi: "Kết quả điều tra cho thấy, số hộ gia đình ở Inju đã tăng gấp 1.4 lần, từ 150.000 hộ năm 2001 lên 210.000 hộ năm 2021.", ko: "조사 결과 인주시의 가구 수는 2001년에 15만 가구에서 2021년에는 21만 가구로 1.4배 증가하였다." },
+        { vi: "Điều này là bởi vì tỷ lệ hộ gia đình theo số người ở hộ 1 người đã tăng mạnh từ 15% năm 2001 lên 30% năm 2021 và hộ 2-3 người tăng từ 45% lên 50%; nhưng trái lại, hộ từ 4 người trở lên lại giảm mạnh từ 40% xuống còn 20%.", ko: "이는 인원수별 가구의 비율이 1인 가구는 2001년에 15%에서 2021년에는 30%로 크게 증가하였고 2~3인 가구는 45%에서 50%로 증가한 반면, 4인 이상 가구는 40%에서 20%로 큰 폭으로 감소하였기 때문이다." },
+        { vi: "Sự thay đổi này được xem là kết quả của sự gia tăng những người ở độ tuổi 20 ra ở riêng và hộ gia đình người cao tuổi.", ko: "이러한 변화는 독립한 20대와 노인 가구 증가의 결과로 보인다." },
+        { vi: "Được dự báo rằng đến năm 2040, hộ 1 người sẽ chiếm tỷ lệ trên 43%.", ko: "2040년에는 1인 가구가 43% 이상이 될 전망이다." }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initBook(bookData_83);
+    });
+</script>

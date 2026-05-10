@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Thi Phần Nghe | TOPIK - Vui Học Tiếng Hàn</title>
+    <meta name="description" content="Luyện thi kỹ năng Nghe TOPIK I và TOPIK II theo bộ đề và theo dạng câu.">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-card: rgba(255,255,255,0.95);
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --border: #e5e7eb;
+            --primary: #2563eb;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0; padding: 0 0 40px 0;
+        }
+        * { box-sizing: border-box; }
+        button, input, select { font-family: 'Pretendard', 'Inter', sans-serif !important; }
+
+        @media (max-width: 768px) {
+            .global-nav, .wrapper { margin-left: 15px !important; margin-right: 15px !important; width: auto !important; }
+            .nav-desktop-links { display: none !important; }
+        }
+
+        .wrapper {
+            max-width: 900px; margin: 0 auto;
+            background: rgba(255,255,255,0.35);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 24px; padding: 30px 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05); width: 100%;
+        }
+
+        /* ===== HERO ===== */
+        .hero-section {
+            background: var(--random-bg-gradient, linear-gradient(135deg, #1e40af 0%, #3b82f6 100%));
+            border-radius: 16px; padding: 32px 36px; color: white;
+            margin-bottom: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex; flex-direction: column; align-items: flex-start;
+        }
+        .hero-title { font-size: 2.2em; font-weight: 800; margin: 0; line-height: 1.2; letter-spacing: -0.5px; }
+        .hero-tag {
+            display: inline-block; background: rgba(255,255,255,0.18); color: #dbeafe;
+            font-size: 0.9em; font-weight: 700; padding: 5px 14px; border-radius: 99px;
+            margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+        }
+
+        /* HERO TABS */
+        .hero-tabs {
+            display: flex; background: rgba(255,255,255,0.15);
+            border-radius: 12px; padding: 6px; width: fit-content;
+            margin-top: 20px; gap: 5px;
+        }
+        .hero-tab {
+            padding: 10px 30px; border-radius: 8px; color: rgba(255,255,255,0.8);
+            font-weight: 700; font-size: 1.05em; cursor: pointer; transition: all 0.3s ease;
+            border: none; background: transparent;
+        }
+        .hero-tab.active { background: #fff; color: #1e40af; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .hero-tab:not(.active):hover { background: rgba(255,255,255,0.25); color: #fff; }
+
+        /* SECTION HEADER + TOGGLE */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px;
+            border-bottom: 2px solid rgba(255,255,255,0.3); padding-bottom: 10px;
+        }
+        .section-title { font-size: 1.1em; font-weight: 800; margin: 0; color: var(--text-main); }
+
+        .switch { position: relative; display: inline-block; width: 44px; height: 24px; margin-top: 2px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.15); transition: .4s; border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute; content: ""; height: 18px; width: 18px;
+            left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        /* EXAM GRID */
+        .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+        .exam-card {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 20px;
+            background: rgba(255,255,255,0.75);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 16px; text-decoration: none; color: var(--text-main);
+            transition: all 0.3s ease; gap: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); min-height: 85px;
+        }
+        .exam-card:hover {
+            background: rgba(255,255,255,0.95); border-color: rgba(255,255,255,1);
+            transform: translateY(-3px); box-shadow: 0 10px 25px rgba(37,99,235,0.12);
+        }
+        .exam-card.coming-soon { opacity: 0.6; cursor: not-allowed; }
+        .exam-card.coming-soon:hover { transform: none; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+
+        .exam-card-left { display: flex; flex-direction: column; gap: 6px; }
+        .exam-number { font-size: 1.15em; font-weight: 800; letter-spacing: -0.3px; }
+        .exam-badge {
+            display: inline-block; font-size: 0.7em; font-weight: 700;
+            padding: 3px 9px; border-radius: 99px; width: fit-content;
+        }
+        .badge-done { background: #f0fdf4; color: #16a34a; }
+        .badge-soon { background: #f1f5f9; color: #94a3b8; }
+
+        .exam-arrow { color: #94a3b8; transition: 0.2s; flex-shrink: 0; }
+        .exam-card:hover:not(.coming-soon) .exam-arrow { color: var(--primary); transform: translateX(3px); }
+
+        /* FOOTER */
+        .global-footer {
+            max-width: 900px; margin: 10px auto 30px auto;
+            background: rgba(255,255,255,0.35);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.5); border-radius: 20px;
+            padding: 16px 20px; display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .footer-link {
+            display: flex; align-items: center; gap: 10px; text-decoration: none;
+            color: var(--text-main); font-weight: 700; font-size: 1.05em; transition: 0.2s;
+        }
+        .footer-link:hover { transform: translateY(-2px); color: #1877f2; }
+        .footer-fb-icon { width: 22px; height: 22px; fill: currentColor; }
+
+        @media (max-width: 600px) {
+            .wrapper { margin: 0 15px 20px 15px; padding: 20px 16px; border-radius: 16px; }
+            .global-footer { margin: 10px 15px 25px 15px; border-radius: 16px; }
+            .hero-section { padding: 24px 20px; }
+            .hero-title { font-size: 1.8em; }
+            .hero-tabs { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+            .hero-tab { padding: 10px 0; font-size: 1em; }
+            .exam-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .exam-card { padding: 12px 10px; gap: 5px; min-height: 75px; }
+            .exam-number { font-size: 1.05em; }
+        }
+    </style>
+
+    <script src="../assets/js/block.js"></script>
+    <script src="../assets/js/theme-picker.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+</head>
+
+<body>
+    <div class="wrapper">
+        <div class="hero-section">
+            <div class="hero-tag">🎧 Kỹ năng Nghe</div>
+            <h1 class="hero-title" id="heroTitle">Luyện thi theo bộ đề</h1>
+            <div class="hero-tabs">
+                <button class="hero-tab" id="tabTopik1" onclick="switchTopikLevel(1)">TOPIK I</button>
+                <button class="hero-tab active" id="tabTopik2" onclick="switchTopikLevel(2)">TOPIK II</button>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h3 class="section-title" id="modeTitle">📚 Chọn bộ đề</h3>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span id="modeLabel" style="font-weight:700; font-size:0.9em; color:var(--text-sub);">Dạng câu</span>
+                <label class="switch">
+                    <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="exam-grid" id="cardGrid">
+            <!-- Render bằng JS -->
+        </div>
+    </div>
+
+    <footer class="global-footer">
+        <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer" class="footer-link">
+            <span>📚 Vui Học Tiếng Hàn</span>
+            <svg class="footer-fb-icon" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+        </a>
+    </footer>
+
+    <script>
+        // ===== DỮ LIỆU =====
+        const EXAM_DATA_T2 = [35, 36, 91, 102]; // Đã có file
+        const EXAM_DATA_T1 = []; // Sắp bổ sung
+
+        const TYPE_DATA_T2 = [
+            { range: '1_3',   label: 'Câu 1 - 3',   desc: 'Chọn hình ảnh đúng' },
+            { range: '4_8',   label: 'Câu 4 - 8',   desc: 'Chủ đề & Điều tiếp theo' },
+            { range: '9_12',  label: 'Câu 9 - 12',  desc: 'Hội thoại điền từ' },
+            { range: '13_16', label: 'Câu 13 - 16', desc: 'Điền câu tiếp theo' },
+            { range: '17_20', label: 'Câu 17 - 20', desc: 'Chủ đề bản tin' },
+            { range: '21_22', label: 'Câu 21 - 22', desc: 'Ý kiến người nói' },
+            { range: '23_24', label: 'Câu 23 - 24', desc: 'Đoán ngữ cảnh' },
+            { range: '25_26', label: 'Câu 25 - 26', desc: 'Chủ đề phỏng vấn' },
+            { range: '27_28', label: 'Câu 27 - 28', desc: 'Mục đích & Nội dung đúng' },
+            { range: '29_30', label: 'Câu 29 - 30', desc: 'Cơ sở & Hành động' },
+            { range: '31_32', label: 'Câu 31 - 32', desc: 'Thái độ & Tư duy' },
+            { range: '33_34', label: 'Câu 33 - 34', desc: 'Điền từ & Nội dung đúng' },
+            { range: '35_36', label: 'Câu 35 - 36', desc: 'Điền từ & Nội dung đúng' },
+            { range: '37_38', label: 'Câu 37 - 38', desc: 'Điền từ & Nội dung đúng' },
+            { range: '39_40', label: 'Câu 39 - 40', desc: 'Thái độ & Nội dung đúng' },
+            { range: '41_42', label: 'Câu 41 - 42', desc: 'Thái độ & Nội dung đúng' },
+            { range: '43_44', label: 'Câu 43 - 44', desc: 'Chủ đề & Nội dung đúng' },
+            { range: '45_46', label: 'Câu 45 - 46', desc: 'Thái độ & Nội dung đúng' },
+            { range: '47_48', label: 'Câu 47 - 48', desc: 'Mục đích & Nội dung đúng' },
+            { range: '49_50', label: 'Câu 49 - 50', desc: 'Chủ đề & Nội dung đúng' },
+        ];
+
+        const TYPE_DATA_T1 = [
+            { range: '1_4',   label: 'Câu 1 - 4',   desc: 'Chọn hình ảnh đúng' },
+            { range: '5_6',   label: 'Câu 5 - 6',   desc: 'Điều tiếp theo' },
+            { range: '7_10',  label: 'Câu 7 - 10',  desc: 'Điền câu tiếp theo' },
+            { range: '11_14', label: 'Câu 11 - 14', desc: 'Nội dung đúng' },
+            { range: '15_16', label: 'Câu 15 - 16', desc: 'Chủ đề trung tâm' },
+            { range: '17_21', label: 'Câu 17 - 21', desc: 'Điền câu tiếp theo' },
+            { range: '22_24', label: 'Câu 22 - 24', desc: 'Nội dung đúng' },
+            { range: '25_26', label: 'Câu 25 - 26', desc: 'Chủ đề bản tin' },
+            { range: '27_28', label: 'Câu 27 - 28', desc: 'Chủ đề & Nội dung đúng' },
+            { range: '29_30', label: 'Câu 29 - 30', desc: 'Nội dung đúng' },
+        ];
+
+        let state = { level: 2, mode: 'exam' };
+
+        function switchTopikLevel(lvl) {
+            state.level = lvl;
+            sessionStorage.setItem('listenLevel', lvl);
+            document.getElementById('tabTopik1').classList.toggle('active', lvl === 1);
+            document.getElementById('tabTopik2').classList.toggle('active', lvl === 2);
+            renderGrid();
+        }
+
+        function toggleMode() {
+            const isType = document.getElementById('modeToggle').checked;
+            state.mode = isType ? 'type' : 'exam';
+            sessionStorage.setItem('listenMode', state.mode);
+            document.getElementById('heroTitle').textContent = isType ? 'Luyện theo dạng câu' : 'Luyện thi theo bộ đề';
+            document.getElementById('modeTitle').textContent = isType ? '📚 Chọn dạng câu' : '📚 Chọn bộ đề';
+            renderGrid();
+        }
+
+        const arrowSVG = `<svg class="exam-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20" style="flex-shrink:0;"><path d="M9 18l6-6-6-6"/></svg>`;
+
+        function renderGrid() {
+            const grid = document.getElementById('cardGrid');
+            const isTopik1 = state.level === 1;
+            const folder = isTopik1 ? 'topik_i' : 'topik_ii';
+
+            if (state.mode === 'exam') {
+                const data = isTopik1 ? EXAM_DATA_T1 : EXAM_DATA_T2;
+                if (data.length === 0) {
+                    grid.innerHTML = `
+                        <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub);">
+                            <div style="font-size:2.5rem; margin-bottom:10px;">🚧</div>
+                            <div style="font-weight:700; font-size:1.1rem;">Sắp ra mắt!</div>
+                            <div style="font-size:0.9rem; margin-top:5px;">Các đề TOPIK I đang được chuẩn bị...</div>
+                        </div>`;
+                    return;
+                }
+                grid.innerHTML = data.map(num => `
+                    <a href="${folder}/topik${num}.html" class="exam-card">
+                        <div class="exam-card-left">
+                            <span class="exam-number">Đề nghe ${num}</span>
+                            <span class="exam-badge badge-done">Hoàn thiện</span>
+                        </div>
+                        ${arrowSVG}
+                    </a>
+                `).join('');
+            } else {
+                const data = isTopik1 ? TYPE_DATA_T1 : TYPE_DATA_T2;
+                grid.innerHTML = data.map(t => `
+                    <a href="${folder}/type_${t.range}.html" class="exam-card${isTopik1 ? ' coming-soon' : ''}">
+                        <div class="exam-card-left">
+                            <span class="exam-number">${t.label}</span>
+                            <span style="font-size:0.75em; color:var(--text-sub);">${t.desc}</span>
+                            ${isTopik1 ? '<span class="exam-badge badge-soon">Sắp ra mắt</span>' : ''}
+                        </div>
+                        ${isTopik1 ? '' : arrowSVG}
+                    </a>
+                `).join('');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Khôi phục trạng thái đã lưu
+            const savedLevel = parseInt(sessionStorage.getItem('listenLevel')) || 2;
+            const savedMode  = sessionStorage.getItem('listenMode') || 'exam';
+            state.level = savedLevel;
+            state.mode  = savedMode;
+
+            document.getElementById('tabTopik1').classList.toggle('active', savedLevel === 1);
+            document.getElementById('tabTopik2').classList.toggle('active', savedLevel === 2);
+            if (savedMode === 'type') {
+                document.getElementById('modeToggle').checked = true;
+                document.getElementById('heroTitle').textContent = 'Luyện theo dạng câu';
+                document.getElementById('modeTitle').textContent = '📚 Chọn dạng câu';
+            }
+            renderGrid();
+        });
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+</body>
+
+</html>

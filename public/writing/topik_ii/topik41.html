@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK II 읽기 - 제41회 - Vui Học Tiếng Hàn</title>
+    
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/writing.js"></script>
+
+<style>
+    /* ===== HEADER BADGE ===== */
+    .header-badge-container {
+        text-align: center;
+        margin: 40px auto 50px auto;
+        width: 100%;
+    }
+    .topik-header-badge {
+        display: inline-block;
+        background-color: #dce3dd;
+        border: 2px solid #1a1a1a;
+        border-radius: 999px;
+        padding: 12px 50px;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #1a1a1a;
+        letter-spacing: -0.5px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    /* ===== HỆ THỐNG STACKED BAR CHART CÂU 53 (CHỐNG VỠ GIAO DIỆN) ===== */
+    .t41-chart-box {
+        background: #ffffff; border: 1px solid var(--border); border-radius: 12px; padding: 30px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    }
+    .t41-chart-title {
+        background: #334155; color: white; display: inline-block; padding: 8px 25px; border-radius: 8px; font-weight: 800; font-size: 1.05rem; margin-bottom: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); left: 50%; position: relative; transform: translateX(-50%);
+    }
+    .t41-row {
+        display: flex; align-items: center; margin-bottom: 20px; gap: 15px;
+    }
+    .t41-y-label {
+        background: #475569; color: white; padding: 10px 15px; border-radius: 8px; font-weight: 800; text-align: center; width: 100px; font-size: 0.9rem; line-height: 1.4; flex-shrink: 0; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .t41-bar-track {
+        flex: 1; display: flex; height: 35px; border-radius: 4px; overflow: hidden; border: 1px solid #cbd5e1;
+    }
+    .t41-segment {
+        display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 0.95rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: 0.3s;
+    }
+    
+    /* Màu sắc các phân đoạn */
+    .bg-read { background: #475569; }
+    .bg-copy { background: #94a3b8; }
+    .bg-prac { background: #e2e8f0; background-image: repeating-linear-gradient(45deg, rgba(0,0,0,0.05) 0, rgba(0,0,0,0.05) 2px, transparent 2px, transparent 6px); color: #334155; text-shadow: none; border-left: 1px solid white;}
+
+    .t41-legend-container {
+        display: flex; justify-content: center; gap: 25px; margin-top: 30px; border-top: 2px solid #f1f5f9; padding-top: 20px; flex-wrap: wrap;
+    }
+    .t41-legend-item {
+        display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.9rem; color: #1e293b;
+    }
+    .t41-color-box {
+        width: 20px; height: 14px; border-radius: 3px; border: 1px solid #cbd5e1;
+    }
+
+    /* FIX LỖI MOBILE */
+    @media (max-width: 768px) {
+        .header-badge-container { margin: 20px auto 30px auto; }
+        .topik-header-badge { font-size: 1.5rem; padding: 10px 30px; border-width: 1.5px; }
+        .t41-row { flex-direction: column; align-items: stretch; gap: 10px; }
+        .t41-y-label { width: 100%; text-align: left; padding: 6px 15px; }
+        .t41-segment { font-size: 0.8rem; }
+    }
+</style>
+
+<div class="header-badge-container">
+    <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제41회</div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 51 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [51] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        <div style="margin-bottom:15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+            <div style="font-weight: 700; color: #475569; font-size: 0.95rem; margin-bottom: 5px;">받는 사람: 이재정 (korteach@hk.edu)</div>
+            <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a;">제목: 선생님, 샤오밍입니다.</div>
+        </div>
+        <div>
+            이재정 선생님께<br>
+            안녕하세요? 샤오밍입니다.<br>
+            지난주에 댁으로 초대해 주셔서 감사합니다.<br>
+            선생님 덕분에 재미있는 시간을 보냈습니다.<br>
+            이번에는 <b>( ㉠ )</b>.<br>
+            다음 주 월요일과 수요일 중에 언제가 좋으십니까?<br>
+            저는 <b>( ㉡ )</b>.<br>
+            편하신 오후 시간을 말씀해 주시면 감사하겠습니다.<br><br>
+            <span style="color:#64748b; font-size:0.95rem; font-weight: 700;">샤오밍 올림</span>
+        </div>
+
+        <details style="margin-top: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+            <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+            <div class="details-content" style="font-size: 0.95rem; color: #111; line-height: 1.6;">
+                Gửi thầy/cô Lee Jae-jeong,<br>
+                Em chào thầy/cô ạ. Em là Xiaoming đây ạ.<br>
+                Cảm ơn thầy/cô vì tuần trước đã mời em đến nhà.<br>
+                Nhờ có thầy/cô mà em đã có một khoảng thời gian rất vui vẻ.<br>
+                Lần này <b>(em muốn mời thầy/cô đến nhà em)</b>.<br>
+                Thứ Hai và thứ Tư tuần sau, thầy/cô thấy khi nào thì tiện ạ?<br>
+                Về phần em thì <b>(cả hai ngày / buổi chiều nào cũng được)</b>.<br>
+                Nếu thầy/cô cho em biết khoảng thời gian rảnh vào buổi chiều thì em sẽ rất biết ơn ạ.<br>
+                Kính thư, Xiaoming.
+            </div>
+        </details>
+    </div>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-51-a" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-51-a" style="display:none;" onclick="document.getElementById('exp-51-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-a" class="explanation-box">
+                <div id="score-51-a" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Đoạn trước nhắc đến "Tuần trước thầy đã mời em đến nhà". Phía sau lại hỏi "Thứ Hai và Thứ Tư ngày nào tiện cho thầy?". Kết hợp với từ `이번에는` (Lần này thì...), ta suy ra tác giả muốn "Mời thầy lại vào lần này".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>선생님을 (집으로) 초대하다 / 대접하다</code> + Ngữ pháp thể hiện ý định <code>-고 싶습니다 / -려고 합니다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 제가 선생님을 집으로 초대하고 싶습니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 제가 선생님을 초대하려고 합니다 / 제가 식사를 대접하고 싶습니다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-51-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade51B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-51-b" style="display:none;" onclick="document.getElementById('exp-51-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-51-b" class="explanation-box">
+                <div id="score-51-b" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Phía trước hỏi: "Thứ Hai hay Thứ Tư ngày nào tốt?". Phía sau chốt lại: "Hãy cho em biết THỜI GIAN BUỔI CHIỀU tiện nhất". Vậy vị trí trống tác giả muốn khẳng định "Bản thân mình thì lúc nào/ngày nào/chiều nào cũng rảnh cả".<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>다 / 모두 / 언제든지 / 오후에는</code> + Tính từ thể hiện sự thuận tiện <code>괜찮습니다 / 좋습니다 / 가능합니다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 오후에는 다 괜찮습니다 / 언제든지 다 좋습니다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 두 날 모두 괜찮습니다 / 다 가능합니다 / 오후에는 다 좋습니다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 52 <span class="badge">10 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [52] 다음 글의 ㉠과 ㉡에 알맞은 말을 각각 쓰시오. (10점)
+    </div>
+    
+    <div class="writing-box">
+        머리는 언제 감는 것이 좋을까? 사람들은 보통 아침에 머리를 감는다. 그러나 더러워진 머리는 감고 자야 머릿결에 좋기 때문에 <b>( ㉠ )</b>. 그런데 젖은 머리로 자면 머릿결이 상하기 쉽다. 따라서 <b>( ㉡ )</b>. 만약 머리를 말리기 어려우면 아침에 감는 것이 더 낫다.
+    </div>
+
+    <details style="margin-bottom: 25px; background: rgba(255,255,255,0.8); border:1px solid var(--border); border-radius: 12px;">
+        <summary style="padding: 10px 15px; font-size: 0.95rem; color: #4b5563;">🌐 Xem bản dịch tiếng Việt</summary>
+        <div class="details-content" style="font-size: 0.95rem; color: #111;">
+            Gội đầu khi nào thì tốt? Mọi người thường gội đầu vào buổi sáng. Tuy nhiên, vì những mái tóc bị bẩn phải gội rồi mới ngủ thì mới tốt cho chất tóc, nên <b>(gội đầu vào buổi tối thì tốt hơn)</b>. Thế nhưng nếu để nguyên mái tóc ướt mà đi ngủ thì chất tóc rất dễ bị hỏng. Do đó <b>(phải sấy khô tóc rồi mới ngủ)</b>. Giả sử việc sấy khô tóc khó khăn quá thì gội vào buổi sáng sẽ tốt hơn.
+        </div>
+    </details>
+
+    <div class="answer-area">
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉠</div>
+            <textarea id="ans-52-a" class="writing-input" rows="2" placeholder="Nhập đáp án의 của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52A()">Chấm điểm ㉠</button>
+                <button class="btn-outline" id="btn-exp-52-a" style="display:none;" onclick="document.getElementById('exp-52-a').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-a" class="explanation-box">
+                <div id="score-52-a" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Đoạn trước có câu hỏi "Khi nào thì tốt?", sau đó nêu "Thường gội vào buổi sáng. NHƯNG vì gội tóc bẩn đi ngủ thì mới tốt...". Sự tương phản với "buổi sáng" + "trước khi đi ngủ" bắt buộc phải là "buổi tối/đêm". Vị trí trống dùng để trả lời cho câu hỏi mở bài.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>저녁에 / 밤에 / 자기 전에</code> + <code>머리를 감다</code> + Ngữ pháp khuyên bảo <code>-는 것이 좋다 / -아/어야 한다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 머리는 저녁에 감는 것이 좋다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 저녁에 감는 게 더 좋다 / 밤에 감아야 한다.
+            </div>
+        </div>
+
+        <div class="ans-block">
+            <div class="ans-block-title">👉 Đáp án ㉡</div>
+            <textarea id="ans-52-b" class="writing-input" rows="2" placeholder="Nhập đáp án của bạn..."></textarea>
+            <div style="margin-top: 15px; display: flex; gap: 12px;">
+                <button class="btn-action" onclick="grade52B()">Chấm điểm ㉡</button>
+                <button class="btn-outline" id="btn-exp-52-b" style="display:none;" onclick="document.getElementById('exp-52-b').style.display='block'">Xem phân tích</button>
+            </div>
+            <div id="exp-52-b" class="explanation-box">
+                <div id="score-52-b" class="score-display"></div>
+                <b>[Phân tích bối cảnh]</b><br>
+                Đoạn trước vừa cảnh báo: "Ngủ với tóc ướt thì tóc dễ hỏng". Vậy `따라서` (Do đó) sẽ là lời khuyên mang tính hệ quả: "Phải làm KHÔ TÓC rồi mới ngủ". Phía sau cũng có thêm từ khóa `머리를 말리기` (Làm khô tóc) để xác nhận.<br><br>
+                <b>[Từ khóa & Ngữ pháp]</b> <code>머리를 (다) 말리다</code> + Trình tự hành động <code>-고 자다</code> + Đuôi câu bắt buộc <code>-아/어야 한다</code>.<br><br>
+                <b>[Các đáp án được chấp nhận]</b><br>
+                <span style="color:#059669; font-weight:700;">✅ Đáp án chuẩn NIIED:</span> 자기 전에 머리를 말리고 자야 한다 / 머리를 다 말려야 한다.<br>
+                <span style="color:#d97706; font-weight:700;">🔸 Đáp án mở rộng:</span> 머리를 완전히 말리고 자야 한다 / 말린 후에 자는 것이 좋다.
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper">
+    <h2 class="section-title">Câu 53 <span class="badge">30 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [53] 다음은 '글쓰기 능력을 향상시키는 방법'에 대해 교사와 학생을 대상으로 실시한 설문 조사입니다. 그래프를 보고, 조사 결과를 비교하여 200~300자로 쓰십시오. (30점)
+    </div>
+
+    <div class="t41-chart-box">
+        <div class="t41-chart-title">글쓰기 능력을 향상시키는 방법</div>
+        
+        <div class="t41-row">
+            <div class="t41-y-label">교사<br><span style="font-size: 0.8rem; font-weight: 500;">(300명)</span></div>
+            <div class="t41-bar-track">
+                <div class="t41-segment bg-read" style="width: 45%;">45%</div>
+                <div class="t41-segment bg-copy" style="width: 30%;">30%</div>
+                <div class="t41-segment bg-prac" style="width: 25%;">25%</div>
+            </div>
+        </div>
+
+        <div class="t41-row">
+            <div class="t41-y-label">학생<br><span style="font-size: 0.8rem; font-weight: 500;">(300명)</span></div>
+            <div class="t41-bar-track">
+                <div class="t41-segment bg-read" style="width: 25%;">25%</div>
+                <div class="t41-segment bg-copy" style="width: 10%;">10%</div>
+                <div class="t41-segment bg-prac" style="width: 65%;">65%</div>
+            </div>
+        </div>
+
+        <div class="t41-legend-container">
+            <div class="t41-legend-item">
+                <div class="t41-color-box bg-read"></div> 책 많이 읽기
+            </div>
+            <div class="t41-legend-item">
+                <div class="t41-color-box bg-copy"></div> 좋은 글 따라 쓰기
+            </div>
+            <div class="t41-legend-item">
+                <div class="t41-color-box bg-prac"></div> 다양한 주제로 연습하기
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
+        <button class="tab-btn" onclick="openTab('t53-grammar', this, '.t53-content')">Ngữ pháp</button>
+        <button class="tab-btn" onclick="openTab('t53-answer', this, '.t53-content')">Đáp án</button>
+        <button class="tab-btn" onclick="openTab('t53-practice', this, '.t53-content')">Luyện tập</button>
+    </div>
+
+    <div id="t53-guide" class="tab-content t53-content active">
+        <div class="guide-box">
+            <b>Dàn ý phân tích biểu đồ (So sánh đối chiếu thứ tự xếp hạng):</b><br><br>
+            1. <b>Mở bài:</b> Nêu đối tượng và chủ đề khảo sát (교사와 학생 300명을 대상으로... 실시하였다). Kết luận chung là có sự khác biệt (생각이 다르다는 것을 알 수 있었다).<br>
+            2. <b>Thân bài 1 (Vị trí cao nhất của 2 nhóm):</b> So sánh chéo Vị trí số 1. Giáo viên chọn 'Đọc sách nhiều' cao nhất (45%), trong khi học sinh chọn 'Luyện nhiều chủ đề' cao nhất (65%). Dùng từ nối đối chiếu (가장 높게 나타났지만... 학생의 경우에는).<br>
+            3. <b>Thân bài 2 (Các vị trí tiếp theo):</b> Liệt kê số liệu còn lại. Giáo viên: Viết theo bài mẫu 30%, luyện nhiều chủ đề 25%. Trái lại (반면에), Học sinh: Đọc sách 25%, và viết theo bài mẫu chỉ dừng ở mức 10%.
+        </div>
+    </div>
+
+    <div id="t53-grammar" class="tab-content t53-content">
+        <details><summary>1. ~을/를 대상으로 ~에 대해 설문 조사를 실시하였다.</summary><div class="details-content">Đã tiến hành khảo sát đối với [Đối tượng] về [Chủ đề].</div></details>
+        <details><summary>2. 그 결과 ~와/과 ~의 생각이 다르다는 것을 알 수 있었다.</summary><div class="details-content">Kết quả là có thể thấy suy nghĩ của [A] và [B] khác nhau. <i>(Mẫu câu nhận xét cực hay)</i></div></details>
+        <details><summary>3. ~의 경우 ~이/가 N%로 가장 높게 나타났지만, ~의 경우에는 ~이/가 N%로 가장 높았다.</summary><div class="details-content">Trong trường hợp của [A], [Hạng 1 của A] xuất hiện cao nhất với N%, nhưng trong trường hợp của [B] thì [Hạng 1 của B] cao nhất với N%.</div></details>
+        <details><summary>4. 다음으로 ~은/는 ~이/가 N%, ~이/가 N%를 차지했다.</summary><div class="details-content">Tiếp theo, [A] cho thấy [Hạng 2] chiếm N%, [Hạng 3] chiếm N%.</div></details>
+        <details><summary>5. 반면에 ~은/는 ~이/가 N%로 나타났고, ~은/는 N%에 그쳤다.</summary><div class="details-content">Trái lại, [B] cho thấy [Hạng 2] ở mức N%, và [Hạng 3] chỉ dừng lại ở mức N%. <i>(~에 그치다: Dừng lại ở mức độ thấp)</i></div></details>
+    </div>
+
+    <div id="t53-answer" class="tab-content t53-content">
+        <table class="bilingual-table">
+            <tr><td>교사와 학생 300명을 대상으로 글쓰기 능력을 향상시키는 방법에 대해 설문 조사를 실시하였다.</td><td>Người ta đã tiến hành một cuộc khảo sát đối với 300 giáo viên và học sinh về phương pháp nâng cao năng lực viết.</td></tr>
+            <tr><td>그 결과 교사와 학생의 생각이 다르다는 것을 알 수 있었다.</td><td>Kết quả là có thể thấy suy nghĩ của giáo viên và học sinh là khác nhau.</td></tr>
+            <tr><td>교사의 경우 글을 잘 쓰려면 책을 많이 읽어야 한다가 45%로 가장 높게 나타났지만 학생의 경우에는 다양한 주제로 연습하기가 65%로 가장 높았다.</td><td>Trong trường hợp của giáo viên, việc phải đọc sách nhiều để viết tốt xuất hiện tỷ lệ cao nhất với 45%, nhưng trong trường hợp của học sinh thì việc luyện tập bằng các chủ đề đa dạng lại cao nhất với 65%.</td></tr>
+            <tr><td>다음으로 교사는 좋은 글을 따라 써야 한다가 30%, 다양한 주제로 연습해야 한다가 25%를 차지했다.</td><td>Tiếp theo, phía giáo viên cho thấy việc phải viết theo những bài viết tốt chiếm 30%, và phải luyện tập nhiều chủ đề đa dạng chiếm 25%.</td></tr>
+            <tr><td>반면에 학생들은 책을 많이 읽어야 한다가 25%로 나타났고, 좋은 글을 따라 써야 한다는 10%에 그쳤다.</td><td>Trái lại, phía học sinh cho thấy việc phải đọc sách nhiều chiếm 25%, và việc phải viết theo bài viết tốt chỉ dừng lại ở mức 10%.</td></tr>
+        </table>
+    </div>
+
+    <div id="t53-practice" class="tab-content t53-content">
+        <div class="book-container">
+            <div class="book-page page-left">
+                <div class="book-title">Tiếng Việt</div>
+                <div id="book-vi" style="font-size: 1.05rem; color: #111; line-height: 1.7;"></div>
+            </div>
+            <div class="book-page page-right">
+                <div class="book-title">Tiếng Hàn</div>
+                <div id="book-ko-text" style="font-size: 1.05rem; color: var(--primary); font-weight: 600; line-height: 1.7;"></div>
+                <div id="book-ko-input-area" style="display: none;">
+                    <textarea id="book-input" class="writing-input" rows="4"></textarea>
+                    <div id="diff-result-box" style="margin-top: 15px; font-size: 1rem; display: none; background: #f8f9fa; padding: 12px; border-radius: 8px;"></div>
+                    <div id="diff-correct-ans" style="margin-top: 12px; font-size: 0.9rem; color: #059669; font-weight: 700; padding-top: 12px; border-top: 1px dashed var(--border); display: none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="book-nav-wrapper">
+            <button class="btn-outline btn-prev" onclick="changePage(-1)">← Câu trước</button>
+            <span id="book-page-indicator" class="page-indicator">1 / 5</span>
+            <button class="btn-outline btn-next" onclick="changePage(1)">Câu tiếp →</button>
+            <button id="bookToggleBtn" class="btn-action action-btn" onclick="handleBookAction()">Luyện tập</button>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper" style="margin-bottom:0;">
+    <h2 class="section-title">Câu 54 <span class="badge">50 Điểm</span></h2>
+    
+    <div class="exam-instruction">
+        ※ [54] 다음을 주제로 하여 600~700자로 글을 쓰십시오. (50점)
+    </div>
+    
+    <div class="writing-box">
+        세계 어느 나라에서나 역사를 가르칩니다. 이는 지나간 일을 기록한 역사가 오늘날의 우리에게 주는 가치가 분명히 있기 때문일 것입니다. 여러분은 <b>우리가 왜 역사를 알아야 하고, 그 역사를 통해서 무엇을 배울 수 있다고 생각하십니까?</b> 이에 대해 쓰십시오.
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="openTab('t54-intro', this, '.t54-content')">Mở bài</button>
+        <button class="tab-btn" onclick="openTab('t54-body', this, '.t54-content')">Thân bài</button>
+        <button class="tab-btn" onclick="openTab('t54-conclusion', this, '.t54-content')">Kết bài</button>
+        <button class="tab-btn" onclick="openTab('t54-grammar', this, '.t54-content')">Ngữ pháp</button>
+    </div>
+
+    <div id="t54-intro" class="tab-content t54-content active">
+        <div class="guide-box">
+            <b>Trọng tâm: 역사의 정의 및 목적 (Định nghĩa và mục đích của Lịch sử)</b><br>
+            - Sự hối hận về quá khứ hoặc mong muốn lưu truyền công trạng đã sinh ra việc ghi chép, đó chính là Lịch sử.<br>
+            - Lý do ghi chép: Mục đích cuối cùng là truyền đạt sự thật cho thế hệ mai sau.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>지난날에 대한 반성 또는 위대한 업적 등이 후대에게 전해지기를 바라는 마음이 기록으로 이어지고 그것이 바로 우리가 지금 '역사'라고 부르는 것이다.</td><td>Tâm nguyện mong muốn những công trạng vĩ đại hay những sự tự kiểm điểm về ngày tháng đã qua được lưu truyền cho hậu thế đã nối tiếp thành những ghi chép, và đó chính là thứ mà bây giờ chúng ta gọi là 'Lịch sử'.</td></tr>
+            <tr><td>우리가 역사를 기록하는 이유는 지금 일어나는 사실을 다음 세대에게 전달하는 데 그 목적이 있다.</td><td>Lý do chúng ta ghi chép lịch sử có mục đích nằm ở việc truyền đạt những sự thật đang xảy ra hiện tại cho thế hệ mai sau.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-body" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 역사를 통해 배울 수 있는 것 (Chúng ta học được gì qua Lịch sử?)</b><br>
+            - Thấu hiểu: Giúp hiểu được 'cái tôi' ở hiện tại vì hiện tại bắt nguồn từ quá khứ.<br>
+            - Bài học: Rút ra giáo huấn để những sự kiện đau lòng không lặp lại.<br>
+            - Dự báo: Lấy ví dụ về việc nghiên cứu tài liệu cổ để đoán trước hạn hán ngày nay và đưa ra cảnh báo.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>이러한 역사는 우리에게 지금의 '나'를 이해할 수 있는 기회를 제공해 준다.</td><td>Lịch sử này cung cấp cho chúng ta cơ hội để có thể thấu hiểu được 'cái tôi' của hiện tại.</td></tr>
+            <tr><td>현재는 과거에서 비롯된 것이므로 과거를 살펴봄으로써 현재 일어나고 있는 일에 대해 이해하도록 돕는다.</td><td>Bởi vì hiện tại được bắt nguồn từ quá khứ, nên thông qua việc xem xét quá khứ, nó giúp ta hiểu được những việc đang xảy ra ở hiện tại.</td></tr>
+            <tr><td>그리고 역사는 과거에 있었던 가슴 아픈 사건이 다시 반복되지 않도록 우리에게 교훈을 주기도 한다.</td><td>Đồng thời, lịch sử cũng mang đến cho chúng ta những bài học giáo huấn để những sự kiện đau lòng từng có trong quá khứ không bị lặp lại thêm lần nữa.</td></tr>
+            <tr><td>더불어 역사의 기록을 통해 우리는 앞으로 일어날 일을 예측하고 이를 준비할 수도 있다.</td><td>Hơn thế nữa, thông qua các ghi chép của lịch sử, chúng ta có thể dự đoán được những việc sẽ xảy ra trong tương lai và chuẩn bị cho nó.</td></tr>
+            <tr><td>얼마 전 신문 기사에 따르면 한 연구자가 옛 문서에 기록된 역사적인 사실을 분석하여 오늘날의 우리가 겪고 있는 심한 가뭄을 미리 알리면서 대비를 경고한 바 있다.</td><td>Theo một bài báo cách đây không lâu, một nhà nghiên cứu đã phân tích sự thật lịch sử được ghi chép trong tài liệu cổ để cho biết trước về nạn hạn hán nghiêm trọng mà chúng ta đang phải gánh chịu ngày nay, và đưa ra cảnh báo để chuẩn bị đối phó.</td></tr>
+            <tr><td>이는 역사의 가치를 보여주는 한 예라 할 수 있을 것이다.</td><td>Đây có thể được coi là một ví dụ cho thấy giá trị của lịch sử.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-conclusion" class="tab-content t54-content">
+        <div class="guide-box">
+            <b>Trọng tâm: 역사의 중요성 결론 (Kết luận về tính liên tục của Lịch sử)</b><br>
+            - Điểm quan trọng: Xuất phát từ quá khứ -> Hiểu hiện tại -> Chỉ phương hướng cho tương lai tốt đẹp hơn.<br>
+            - Chốt luận: Quá khứ là hiện tại, hiện tại nối tiếp thành tương lai trong một mối quan hệ liên tục.
+        </div>
+        <table class="bilingual-table">
+            <tr><td>이렇듯 역사는 과거의 사실을 아는 데에서 출발하여 현재의 '나'를 이해하고 더 나은 미래를 향한 방향을 제시해 줄 수 있다는 점에서 중요하다.</td><td>Như vậy, lịch sử quan trọng ở khía cạnh nó xuất phát từ việc biết về sự thật quá khứ, từ đó thấu hiểu 'cái tôi' của hiện tại và có thể đưa ra phương hướng hướng tới một tương lai tốt đẹp hơn.</td></tr>
+            <tr><td>결국 과거의 역사는 현재로, 현재는 다시 미래의 역사로 이어지는 연속적인 관계 속에 존재하기 때문이다.</td><td>Đó là bởi rốt cuộc, lịch sử của quá khứ sẽ trở thành hiện tại, và hiện tại sẽ lại tồn tại trong một mối quan hệ mang tính liên tục nối tiếp trở thành lịch sử của tương lai.</td></tr>
+        </table>
+    </div>
+
+    <div id="t54-grammar" class="tab-content t54-content">
+        <details><summary>1. ~이/가 후대에게 전해지기를 바라는 마음이 기록으로 이어지고 그것이 바로 우리가 지금 '~'(이)라고 부르는 것이다.</summary><div class="details-content">Tâm nguyện mong muốn... được lưu truyền cho hậu thế đã nối tiếp thành những ghi chép, và đó chính là thứ mà bây giờ chúng ta gọi là... <i>(Câu định nghĩa lịch sử tuyệt mỹ)</i></div></details>
+        <details><summary>2. ~하는 이유는 ~에게 ~을/를 전달하는 데 그 목적이 있다.</summary><div class="details-content">Lý do làm việc... có mục đích nằm ở việc truyền đạt... cho...</div></details>
+        <details><summary>3. ~은/는 우리에게 ~을/를 이해할 수 있는 기회를 제공해 준다.</summary><div class="details-content">... cung cấp cho chúng ta cơ hội để thấu hiểu được...</div></details>
+        <details><summary>4. 현재는 과거에서 비롯된 것이므로 과거를 살펴봄으로써 ~에 대해 이해하도록 돕는다.</summary><div class="details-content">Bởi hiện tại bắt nguồn từ quá khứ nên thông qua việc xem xét quá khứ, nó giúp ta hiểu về...</div></details>
+        <details><summary>5. ~사건이 다시 반복되지 않도록 우리에게 교훈을 주기도 한다.</summary><div class="details-content">Cũng mang đến cho ta bài học giáo huấn để những sự kiện... không bị lặp lại thêm lần nữa.</div></details>
+        <details><summary>6. 더불어 ~의 기록을 통해 우리는 앞으로 일어날 일을 예측하고 이를 준비할 수도 있다.</summary><div class="details-content">Hơn thế nữa, thông qua ghi chép của... ta có thể dự đoán việc sẽ xảy ra và chuẩn bị cho nó.</div></details>
+        <details><summary>7. 얼마 전 기사에 따르면 ~이/가 ~을/를 분석하여 ~을/를 미리 알리면서 대비를 경고한 바 있다.</summary><div class="details-content">Theo bài báo, [A] đã phân tích... để báo trước... và từng đưa ra cảnh báo chuẩn bị đối phó. <i>(Cấu trúc trích dẫn dẫn chứng thực tế)</i></div></details>
+        <details><summary>8. 이는 ~의 가치를 보여주는 한 예라 할 수 있을 것이다.</summary><div class="details-content">Đây có thể coi là một ví dụ cho thấy giá trị của...</div></details>
+        <details><summary>9. 이렇듯 ~은/는 ~아는 데에서 출발하여 ~이해하고 ~방향을 제시해 줄 수 있다는 점에서 중요하다.</summary><div class="details-content">Như vậy, [Chủ đề] quan trọng ở khía cạnh xuất phát từ việc biết... để thấu hiểu... và có thể chỉ ra phương hướng...</div></details>
+        <details><summary>10. 결국 과거의 역사는 현재로, 현재는 다시 미래의 역사로 이어지는 연속적인 관계 속에 존재하기 때문이다.</summary><div class="details-content">Bởi rốt cuộc, lịch sử quá khứ sẽ trở thành hiện tại, và hiện tại tồn tại trong một mối quan hệ liên tục nối tiếp thành lịch sử của tương lai.</div></details>
+        <details><summary>11. 명사 + 에서 비롯되다</summary><div class="details-content">Bắt nguồn từ / Bắt đầu từ [Danh từ].</div></details>
+        <details><summary>12. 동사 + (으)ㄴ 바 있다</summary><div class="details-content">Từng có việc/kinh nghiệm làm hành động gì đó. <i>(Dạng văn viết cực kỳ trang trọng của -(으)ㄴ 적이 있다)</i></div></details>
+    </div>
+</div>
+
+<script src="exam-logic.js"></script>
+
+<script>
+    // CÂU 51A
+    function grade51A() {
+        let val = document.getElementById('ans-51-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['초대하', '대접하'];
+        let validEndings = ['고 싶습니다', '려고 합니다', '고 싶어요'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý nguyện mời thầy cô đến nhà."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu đuôi câu thể hiện ý định/mong muốn (-고 싶다)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'mời / tiếp đãi' (초대하다, 대접하다)."); }
+
+        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+    }
+
+    // CÂU 51B
+    function grade51B() {
+        let val = document.getElementById('ans-51-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['다', '모두', '언제', '오후'];
+        let validEndings = ['괜찮습니다', '좋습니다', '가능합니다', '됩니다'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện sự đồng tình linh hoạt về thời gian."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Có đề cập đến thời gian nhưng thiếu tính từ thể hiện sự đồng ý (괜찮다, 좋다)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần diễn đạt ý 'chiều nào cũng được / lúc nào cũng tốt'."); }
+
+        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+    }
+
+    // CÂU 52A
+    function grade52A() {
+        let val = document.getElementById('ans-52-a').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['저녁', '밤', '자기 전'];
+        let validEndings = ['감는 것이 좋', '감아야 한', '감는 게 더 낫'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đối chiếu chính xác thời gian và đưa ra lời khuyên."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Có nói đến buổi tối nhưng thiếu động từ '감다' hoặc đuôi lời khuyên."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ 'buổi tối / ban đêm' (저녁, 밤)."); }
+
+        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+    }
+
+    // CÂU 52B
+    function grade52B() {
+        let val = document.getElementById('ans-52-b').value.trim();
+        let score = 0; let feedback = [];
+        let validRoots = ['말리'];
+        let validEndings = ['고 자야 한', '는 것이 좋', '말려야 한'];
+
+        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
+        else if(checkKeywords(val, validRoots)) {
+            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đưa ra trình tự hành động bắt buộc sấy tóc."); }
+            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu bắt buộc/lời khuyên (-아/어야 한다 / -는 것이 좋다)."); }
+        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'làm khô / sấy' (말리다)."); }
+
+        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+    }
+
+    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 41 ---
+    const bookData_41 = [
+        { vi: "Người ta đã tiến hành một cuộc khảo sát đối với 300 giáo viên và học sinh về phương pháp nâng cao năng lực viết.", ko: "교사와 학생 300명을 대상으로 글쓰기 능력을 향상시키는 방법에 대해 설문 조사를 실시하였다." },
+        { vi: "Kết quả là có thể thấy suy nghĩ của giáo viên và học sinh là khác nhau.", ko: "그 결과 교사와 학생의 생각이 다르다는 것을 알 수 있었다." },
+        { vi: "Trong trường hợp của giáo viên, việc phải đọc sách nhiều để viết tốt xuất hiện tỷ lệ cao nhất với 45%, nhưng trong trường hợp của học sinh thì việc luyện tập bằng các chủ đề đa dạng lại cao nhất với 65%.", ko: "교사의 경우 글을 잘 쓰려면 책을 많이 읽어야 한다가 45%로 가장 높게 나타났지만 학생의 경우에는 다양한 주제로 연습하기가 65%로 가장 높았다." },
+        { vi: "Tiếp theo, phía giáo viên cho thấy việc phải viết theo những bài viết tốt chiếm 30%, và phải luyện tập nhiều chủ đề đa dạng chiếm 25%.", ko: "다음으로 교사는 좋은 글을 따라 써야 한다가 30%, 다양한 주제로 연습해야 한다가 25%를 차지했다." },
+        { vi: "Trái lại, phía học sinh cho thấy việc phải đọc sách nhiều chiếm 25%, và việc phải viết theo bài viết tốt chỉ dừng lại ở mức 10%.", ko: "반면에 학생들은 책을 많이 읽어야 한다가 25%로 나타났고, 좋은 글을 따라 써야 한다는 10%에 그쳤다." }
+    ];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        initBook(bookData_41);
+    });
+</script>
