@@ -515,7 +515,7 @@
     function grade51A() {
         let val = document.getElementById('ans-51-a').value.trim();
         let score = 0; let feedback = [];
-        let validRoots = ['모집하', '뽑', '구하'];
+        let validRoots = ['모집하', '모집합', '뽑', '구하'];
         let validEndings = ['려고 합', '고 있습', '기로 했습', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
@@ -532,8 +532,8 @@
     function grade51B() {
         let val = document.getElementById('ans-51-b').value.trim();
         let score = 0; let feedback = [];
-        let validRoots = ['처음', '모르', '못하', '배워 본 적'];
-        let validEndings = ['십니까', '신가요', '세요', '겠습니까'];
+        let validRoots = ['처음', '모르', '못하', '안 해', '배워 본 적', '보셨'];
+        let validEndings = ['십니까', '신가요', '세요', '겠습니까', '습니까'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Câu hỏi lịch sự đoán đúng tâm lý người mới."); }
@@ -569,7 +569,7 @@
         let val = document.getElementById('ans-52-b').value.trim();
         let score = 0; let feedback = [];
         let validRoots = ['부정적', '포기하'];
-        let validTargets = ['낮', '어렵', '없', '나쁘'];
+        let validTargets = ['낮', '어렵', '없', '나쁘', '나쁜'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng hệ quả xấu khi suy nghĩ tiêu cực."); }

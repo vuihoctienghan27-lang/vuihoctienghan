@@ -441,8 +441,8 @@
     function grade51B() {
         let val = document.getElementById('ans-51-b').value.trim();
         let score = 0; let feedback = [];
-        let validRoots = ['돌려주', '돌려드리', '반납하', '갖다주', '갖다드리'];
-        let validEndings = ['면 됩니까', '면 되겠습니까', '야 합니까', '야 됩니까', '면 되'];
+        let validRoots = ['돌려주', '돌려드리', '돌려 드리', '돌려 드려', '반납하', '갖다주', '갖다드리'];
+        let validEndings = ['면 됩니까', '면 되겠습니까', '야 합니까', '야 됩니까', '면 되', '면 될'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hỏi ý kiến về thời gian trả sách chuẩn xác."); }

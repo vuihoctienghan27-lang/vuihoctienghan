@@ -470,7 +470,7 @@
     function grade51A() {
         let val = document.getElementById('ans-51-a').value.trim();
         let score = 0; let feedback = [];
-        let validRoots = ['어렵', '못 가', '일이 생겼', '사정이 생겼'];
+        let validRoots = ['어렵', '어려우', '어려울', '못 가', '못 갈', '일이 생겼', '생겨서', '사정이 생겼', '취소해야'];
         let validEndings = ['것 같', '거 같', '습니다', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
@@ -487,7 +487,7 @@
     function grade51B() {
         let val = document.getElementById('ans-51-b').value.trim();
         let score = 0; let feedback = [];
-        let hasRoots = val.includes('시간') || val.includes('언제');
+        let hasRoots = val.includes('시간') || val.includes('언제') || val.includes('뵈러');
         let validEndings = ['괜찮으십니까', '되십니까', '좋으십니까', '말씀해 주시겠습니까', '겠습니까'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }

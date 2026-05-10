@@ -446,8 +446,8 @@
     function grade51A() {
         let val = document.getElementById('ans-51-a').value.trim();
         let score = 0; let feedback = [];
-        let validRoots = ['보', '경험하', '경험한', '구경하', '구경한'];
-        let validEndings = ['ㄴ 적이', '은 적이', '던 기억이'];
+        let validRoots = ['보', '본', '경험하', '경험한', '구경하', '구경한'];
+        let validEndings = ['ㄴ 적이', '은 적이', '던 기억이', 'ㄴ ', '은 '];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc kinh nghiệm."); }
