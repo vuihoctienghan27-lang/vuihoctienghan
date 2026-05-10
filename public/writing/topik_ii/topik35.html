@@ -357,10 +357,10 @@
             
             let validRoots = ['정리하', '처분하'];
             let giveRoots = ['주', '드리', '나누'];
-            let validEndings = ['려고 하', '고 있', '까 하', '기로 했', '게 되었', '려고 합'];
+            let validEndings = ['려고 하', '고 있', '까 하', '기로 했', '게 되었', '려고 합', '겠습', '을 거', 'ㄹ 거'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots) || (checkKeywords(val, giveRoots) && val.includes('물건'))) {
+            else if(checkKeywords(val, validRoots) || (checkKeywords(val, giveRoots) && (val.includes('물건') || val.includes('짐') || val.includes('것')))) {
                 if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý nghĩa và ngữ pháp đều chuẩn."); }
                 else { score = 3; feedback.push("Đạt 3/5 Điểm: Hiểu đúng nghĩa nhưng sai/thiếu đuôi câu mục đích."); }
             } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý 'dọn dẹp' hoặc 'tặng đồ'."); }
@@ -373,7 +373,7 @@
             let val = document.getElementById('ans-51-b').value.trim();
             let score = 0; let feedback = [];
             let validRoots = ['연락', '전화'];
-            let validEndings = ['바랍', '십시', '주세', '좋겠'];
+            let validEndings = ['바랍', '십시', '주세', '좋겠', '겠습', '부탁'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
             else if(checkKeywords(val, validRoots) && val.includes('금요일')) {
@@ -407,7 +407,7 @@
             let val = document.getElementById('ans-52-b').value.trim();
             let score = 0; let feedback = [];
             let validRoots = ['사회', '세상'];
-            let validEndings = ['돌아가', '유지되', '완성되', '기 때문', '수 있'];
+            let validEndings = ['돌아가', '유지되', '완성되', '기 때문', '수 있', '겠습'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
             else if(checkKeywords(val, validRoots)) {

@@ -439,7 +439,7 @@
             let score = 0; let feedback = [];
             
             let validRoots = ['하'];
-            let validEndings = ['려고 합', '고 싶', '기로 했', '계획', '예정'];
+            let validEndings = ['려고 합', '고 싶', '기로 했', '계획', '예정', '겠습'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
             else if(checkKeywords(val, validRoots)) {
@@ -479,6 +479,8 @@
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
             else if(checkKeywords(val, validRoots) && checkKeywords(val, validNegatives)) {
                 score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định lại việc 'chỉ ngủ vào mùa đông' rất tốt.");
+            } else if(checkKeywords(val, validRoots)) {
+                score = 3; feedback.push("Đạt 3/5 Điểm: Có từ 'ngủ' nhưng thiếu ý phủ định.");
             } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'Ngủ' và ý phủ định một phần."); }
 
             document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
@@ -490,7 +492,7 @@
             let val = document.getElementById('ans-52-b').value.trim();
             let score = 0; let feedback = [];
             let validRoots = ['못하', '안 되', '할 수 없'];
-            let validEndings = ['기 때문'];
+            let validEndings = ['기 때문', '습니다'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
             else if(checkKeywords(val, validRoots)) {

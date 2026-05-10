@@ -471,7 +471,7 @@
         let val = document.getElementById('ans-51-a').value.trim();
         let score = 0; let feedback = [];
         let validRoots = ['어렵', '못 가', '일이 생겼', '사정이 생겼'];
-        let validEndings = ['것 같', '거 같', '습니다'];
+        let validEndings = ['것 같', '거 같', '습니다', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots)) {
@@ -488,7 +488,7 @@
         let val = document.getElementById('ans-51-b').value.trim();
         let score = 0; let feedback = [];
         let validRoots = ['시간', '언제'];
-        let validEndings = ['괜찮으십니까', '되십니까', '좋으십니까', '말씀해 주시겠습니까'];
+        let validEndings = ['괜찮으십니까', '되십니까', '좋으십니까', '말씀해 주시겠습니까', '겠습니까'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(val.includes('시간') || val.includes('언제')) {
@@ -527,6 +527,8 @@
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) {
             score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng ý bỏ lỡ cơ hội trên thực tế.");
+        } else if(checkKeywords(val, validRoots)) {
+            score = 3; feedback.push("Đạt 3/5 Điểm: Có 'cơ hội' nhưng thiếu cụm từ chỉ việc không tận dụng được.");
         } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Cơ hội' (기회) và 'Không tận dụng được/Bỏ lỡ' (놓치다, 이용하지 못하다)."); }
 
         document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;

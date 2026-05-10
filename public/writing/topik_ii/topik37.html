@@ -516,7 +516,7 @@
         let val = document.getElementById('ans-51-a').value.trim();
         let score = 0; let feedback = [];
         let validRoots = ['모집하', '뽑', '구하'];
-        let validEndings = ['려고 합', '고 있습', '기로 했습'];
+        let validEndings = ['려고 합', '고 있습', '기로 했습', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots)) {
@@ -533,7 +533,7 @@
         let val = document.getElementById('ans-51-b').value.trim();
         let score = 0; let feedback = [];
         let validRoots = ['처음', '모르', '못하', '배워 본 적'];
-        let validEndings = ['십니까', '신가요', '세요'];
+        let validEndings = ['십니까', '신가요', '세요', '겠습니까'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots)) {
@@ -573,6 +573,8 @@
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
         else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) {
             score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng hệ quả xấu khi suy nghĩ tiêu cực.");
+        } else if(checkKeywords(val, validRoots)) {
+            score = 3; feedback.push("Đạt 3/5 Điểm: Có 'suy nghĩ tiêu cực' nhưng thiếu hệ quả.");
         } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Suy nghĩ tiêu cực' và 'Khó đạt kết quả tốt / Tỷ lệ thấp'."); }
 
         document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
