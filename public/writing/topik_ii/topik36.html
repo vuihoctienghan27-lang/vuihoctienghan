@@ -474,10 +474,10 @@
         let validEndings = ['것 같', '거 같', '습니다', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng việc không thể đến hẹn / có việc đột xuất."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu đuôi câu lịch sự suy đoán -(으)ㄹ 것 같습니다."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ mang nghĩa 'khó có thể đến gặp / có việc bận'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng việc không thể đến hẹn / có việc đột xuất."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp suy đoán."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu lịch sự suy đoán."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ mang nghĩa 'khó có thể đến gặp / có việc bận'."); }
 
         document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-a').style.display = 'inline-block';
@@ -487,14 +487,14 @@
     function grade51B() {
         let val = document.getElementById('ans-51-b').value.trim();
         let score = 0; let feedback = [];
-        let validRoots = ['시간', '언제'];
+        let hasRoots = val.includes('시간') || val.includes('언제');
         let validEndings = ['괜찮으십니까', '되십니까', '좋으십니까', '말씀해 주시겠습니까', '겠습니까'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(val.includes('시간') || val.includes('언제')) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Câu hỏi lịch sự xin lịch hẹn chuẩn xác."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng ý nhưng thiếu đuôi câu hỏi kính ngữ (-으십니까)."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'khi nào / lúc nào rảnh'."); }
+        else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Câu hỏi lịch sự xin lịch hẹn chuẩn xác."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp hỏi lịch sự."); }
+        else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu hỏi kính ngữ."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'khi nào / lúc nào rảnh'."); }
 
         document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-b').style.display = 'inline-block';
@@ -508,16 +508,16 @@
         let validEndings = ['되기도 한', '벌기도 한'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc liệt kê sự giàu có."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu liệt kê -기도 한다."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có chữ 'trở nên giàu có' (부자가 되다) để tương ứng với '유명해지기도 하고'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc liệt kê sự giàu có."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp liệt kê."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu liệt kê -기도 한다."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có chữ 'trở nên giàu có' (부자가 되다) để tương ứng với '유명해지기도 하고'."); }
 
         document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-a').style.display = 'inline-block';
     }
 
-    // CÂU 52B
+    // CÂU 52B — Pattern C: roots=validRoots, grammar=validTargets
     function grade52B() {
         let val = document.getElementById('ans-52-b').value.trim();
         let score = 0; let feedback = [];
@@ -525,11 +525,10 @@
         let validTargets = ['이용하지 못', '놓치', '잡지 못', '활용하지 못'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) {
-            score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng ý bỏ lỡ cơ hội trên thực tế.");
-        } else if(checkKeywords(val, validRoots)) {
-            score = 3; feedback.push("Đạt 3/5 Điểm: Có 'cơ hội' nhưng thiếu cụm từ chỉ việc không tận dụng được.");
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Cơ hội' (기회) và 'Không tận dụng được/Bỏ lỡ' (놓치다, 이용하지 못하다)."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng ý bỏ lỡ cơ hội trên thực tế."); }
+        else if(checkKeywords(val, validTargets)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp chỉ việc không tận dụng."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cụm từ chỉ việc không tận dụng được."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Cơ hội' (기회) và 'Không tận dụng được/Bỏ lỡ' (놓치다, 이용하지 못하다)."); }
 
         document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-b').style.display = 'inline-block';

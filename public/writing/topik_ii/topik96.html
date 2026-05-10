@@ -442,10 +442,10 @@
             let validEndings = ['려고 합', '고 싶', '기로 했', '계획', '예정', '겠습'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots)) {
-                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý định chuyển nhà chia rất chuẩn."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng sai đuôi câu ý định."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có động từ '하다' để nối với chữ '이사를' ở trước."); }
+            else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý định chuyển nhà chia rất chuẩn."); }
+            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ý định."); }
+            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng sai đuôi câu ý định."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có động từ '하다' để nối với chữ '이사를' ở trước."); }
 
             document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-51-a').style.display = 'inline-block';
@@ -460,10 +460,10 @@
             let validEndings = ['좋은지', '좋을지', '갈지', '가야 할지'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots)) {
-                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng sự phân vân chưa biết nơi nào."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp thắc mắc/nghi vấn -(으)ㄴ/는지."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần từ chỉ địa điểm/khu phố."); }
+            else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng sự phân vân chưa biết nơi nào."); }
+            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp nghi vấn."); }
+            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp thắc mắc."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần từ chỉ địa điểm/khu phố."); }
 
             document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-51-b').style.display = 'inline-block';
@@ -477,11 +477,10 @@
             let validNegatives = ['않', '아니', '못하'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots) && checkKeywords(val, validNegatives)) {
-                score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định lại việc 'chỉ ngủ vào mùa đông' rất tốt.");
-            } else if(checkKeywords(val, validRoots)) {
-                score = 3; feedback.push("Đạt 3/5 Điểm: Có từ 'ngủ' nhưng thiếu ý phủ định.");
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'Ngủ' và ý phủ định một phần."); }
+            else if(checkKeywords(val, validRoots) && checkKeywords(val, validNegatives)) { score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định lại việc 'chỉ ngủ vào mùa đông' rất tốt."); }
+            else if(checkKeywords(val, validNegatives)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp phủ định."); }
+            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Có từ 'ngủ' nhưng thiếu ý phủ định."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'Ngủ' và ý phủ định một phần."); }
 
             document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-52-a').style.display = 'inline-block';
@@ -495,10 +494,10 @@
             let validEndings = ['기 때문', '습니다'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots)) {
-                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu lý do chính xác."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu cấu trúc giải thích lý do -기 때문이다."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ mang nghĩa 'Không thể' làm được việc đó."); }
+            else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu lý do chính xác."); }
+            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp giải thích."); }
+            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc giải thích."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ mang nghĩa 'Không thể' làm được việc đó."); }
 
             document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-52-b').style.display = 'inline-block';

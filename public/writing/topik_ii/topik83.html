@@ -450,10 +450,10 @@
         let validEndings = ['ㄴ 적이', '은 적이', '던 기억이'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc kinh nghiệm."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu ngữ pháp kinh nghiệm (-(으)ㄴ 적이 없다)."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'nhìn thấy/trải qua'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc kinh nghiệm."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp kinh nghiệm."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp kinh nghiệm."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'nhìn thấy/trải qua'."); }
 
         document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-a').style.display = 'inline-block';
@@ -467,10 +467,10 @@
         let validEndings = ['고 싶', '기 바랍', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng nguyện vọng."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp mong muốn -고 싶다."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'làm / trải nghiệm' lại."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng nguyện vọng."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp mong muốn."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp mong muốn."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'làm / trải nghiệm' lại."); }
 
         document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-b').style.display = 'inline-block';
@@ -484,10 +484,10 @@
         let validEndings = ['게 한', '게 만든', '게 합'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đúng cấu trúc sai khiến."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp sai khiến (làm cho) -게 하다."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ 'giật mình / chạy trốn'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đúng cấu trúc sai khiến."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp sai khiến."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp sai khiến."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ 'giật mình / chạy trốn'."); }
 
         document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-a').style.display = 'inline-block';
@@ -501,10 +501,10 @@
         let validEndings = ['이라고 한', '라고 한', '이라고 말한'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Trích dẫn đúng."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu cấu trúc trích dẫn gián tiếp -(이)라고 한다."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần danh từ mang nghĩa 'phương pháp'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Trích dẫn đúng."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp trích dẫn."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc trích dẫn."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần danh từ mang nghĩa 'phương pháp'."); }
 
         document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-b').style.display = 'inline-block';

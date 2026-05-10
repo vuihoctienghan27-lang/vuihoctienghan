@@ -413,10 +413,10 @@
         let validEndings = ['고 싶습니다', '려고 합니다', '고 싶어요', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý nguyện mời thầy cô đến nhà."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu đuôi câu thể hiện ý định/mong muốn (-고 싶다)."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'mời / tiếp đãi' (초대하다, 대접하다)."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý nguyện mời thầy cô đến nhà."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ý định/mong muốn."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu thể hiện ý định."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'mời / tiếp đãi' (초대하다, 대접하다)."); }
 
         document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-a').style.display = 'inline-block';
@@ -430,10 +430,10 @@
         let validEndings = ['괜찮습니다', '좋습니다', '가능합니다', '됩니다', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện sự đồng tình linh hoạt về thời gian."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Có đề cập đến thời gian nhưng thiếu tính từ thể hiện sự đồng ý (괜찮다, 좋다)."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần diễn đạt ý 'chiều nào cũng được / lúc nào cũng tốt'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện sự đồng tình linh hoạt về thời gian."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp đồng ý."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu tính từ thể hiện sự đồng ý."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần diễn đạt ý 'chiều nào cũng được / lúc nào cũng tốt'."); }
 
         document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-b').style.display = 'inline-block';
@@ -447,10 +447,10 @@
         let validEndings = ['감는 것이 좋', '감아야 한', '감는 게 더 낫', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đối chiếu chính xác thời gian và đưa ra lời khuyên."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Có nói đến buổi tối nhưng thiếu động từ '감다' hoặc đuôi lời khuyên."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ 'buổi tối / ban đêm' (저녁, 밤)."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đối chiếu chính xác thời gian và đưa ra lời khuyên."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp lời khuyên."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu động từ '감다' hoặc đuôi lời khuyên."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ 'buổi tối / ban đêm' (저녁, 밤)."); }
 
         document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-a').style.display = 'inline-block';
@@ -464,10 +464,10 @@
         let validEndings = ['고 자야 한', '는 것이 좋', '말려야 한', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đưa ra trình tự hành động bắt buộc sấy tóc."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu bắt buộc/lời khuyên (-아/어야 한다 / -는 것이 좋다)."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'làm khô / sấy' (말리다)."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đưa ra trình tự hành động bắt buộc sấy tóc."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp bắt buộc/lời khuyên."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu bắt buộc/lời khuyên."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'làm khô / sấy' (말리다)."); }
 
         document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-b').style.display = 'inline-block';

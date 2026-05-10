@@ -721,10 +721,10 @@
             let validEndings = ['고 싶', '려고 합', '아/어 주시기 바랍', '면 좋겠', '겠습'];
 
             if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots)) {
-                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý định thay đổi lịch khám chia rất chuẩn."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng sai đuôi câu ý muốn/yêu cầu."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'thay đổi / dời lịch'."); }
+            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý định thay đổi lịch khám chia rất chuẩn."); }
+            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ý muốn."); }
+            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng sai đuôi câu ý muốn."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'thay đổi / dời lịch'."); }
 
             document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-51-a').style.display = 'inline-block';
@@ -738,10 +738,10 @@
             let validEndings = ['면', '다면'];
 
             if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots)) {
-                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc giả định."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp giả định -(으)면."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần tính từ mang nghĩa 'không được / bất khả thi'."); }
+            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc giả định."); }
+            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp giả định."); }
+            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp giả định."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần tính từ mang nghĩa 'không được / bất khả thi'."); }
 
             document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-51-b').style.display = 'inline-block';
@@ -755,10 +755,10 @@
             let validEndings = ['ㄴ다고 한', '는다고 한', 'ㄹ 수 있다고 한', '기 쉽다고 한'];
 
             if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots)) {
-                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý nghiện và trích dẫn gián tiếp."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Có từ 'nghiện' nhưng thiếu đuôi trích dẫn gián tiếp -ㄴ/는다고 한다 của 'chuyên gia nói'."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'bị nghiện'."); }
+            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý nghiện và trích dẫn gián tiếp."); }
+            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp trích dẫn."); }
+            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi trích dẫn gián tiếp."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'bị nghiện'."); }
 
             document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-52-a').style.display = 'inline-block';
@@ -772,10 +772,10 @@
             let validEndings = ['지 않도록', '지 않게', '지 않아야'];
 
             if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots)) {
-                if (checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu chính xác ý ngăn cấm hành động."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Có động từ 'ăn' nhưng thiếu cấu trúc phủ định mục đích -지 않도록."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý khuyên 'không ăn/tiêu thụ'."); }
+            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu chính xác ý ngăn cấm hành động."); }
+            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ngăn cấm."); }
+            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc phủ định."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý khuyên 'không ăn/tiêu thụ'."); }
 
             document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-52-b').style.display = 'inline-block';

@@ -358,12 +358,13 @@
             let validRoots = ['정리하', '처분하'];
             let giveRoots = ['주', '드리', '나누'];
             let validEndings = ['려고 하', '고 있', '까 하', '기로 했', '게 되었', '려고 합', '겠습', '을 거', 'ㄹ 거'];
+            let hasRoots = checkKeywords(val, validRoots) || (checkKeywords(val, giveRoots) && (val.includes('물건') || val.includes('짐') || val.includes('것')));
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots) || (checkKeywords(val, giveRoots) && (val.includes('물건') || val.includes('짐') || val.includes('것')))) {
-                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý nghĩa và ngữ pháp đều chuẩn."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Hiểu đúng nghĩa nhưng sai/thiếu đuôi câu mục đích."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý 'dọn dẹp' hoặc 'tặng đồ'."); }
+            else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý nghĩa và ngữ pháp đều chuẩn."); }
+            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp mục đích."); }
+            else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng sai/thiếu đuôi câu mục đích."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý 'dọn dẹp' hoặc 'tặng đồ'."); }
 
             document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-51-a').style.display = 'inline-block';
@@ -374,13 +375,14 @@
             let score = 0; let feedback = [];
             let validRoots = ['연락', '전화'];
             let validEndings = ['바랍', '십시', '주세', '좋겠', '겠습', '부탁'];
+            let hasRoots = checkKeywords(val, validRoots) && val.includes('금요일');
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots) && val.includes('금요일')) {
-                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đầy đủ ý và yêu cầu lịch sự."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu yêu cầu lịch sự."); }
-            } else if (checkKeywords(val, validRoots)) {
-                score = 2; feedback.push("Đạt 2/5 Điểm: Có nhắc 'liên lạc' nhưng quên mốc '금요일'.");
+            else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đầy đủ ý và yêu cầu lịch sự."); }
+            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp yêu cầu."); }
+            else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ và nội dung, nhưng thiếu đuôi câu yêu cầu lịch sự."); }
+            else if (checkKeywords(val, validRoots)) {
+                score = 0; feedback.push("Đạt 0/5 Điểm: Có nhắc 'liên lạc' nhưng thiếu mốc thời gian '금요일'.");
             } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
 
             document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
@@ -394,10 +396,10 @@
             let validNegatives = ['않으', '없으', '못하', '않는'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots)) {
-                if(checkKeywords(val, validNegatives)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hiểu đúng câu điều kiện giả định."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Có Vị trí/Mảnh ghép, nhưng thiếu Phủ định."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
+            else if(checkKeywords(val, validRoots) && checkKeywords(val, validNegatives)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hiểu đúng câu điều kiện giả định."); }
+            else if(checkKeywords(val, validNegatives)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp phủ định."); }
+            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp phủ định."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
 
             document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-52-a').style.display = 'inline-block';
@@ -410,10 +412,10 @@
             let validEndings = ['돌아가', '유지되', '완성되', '기 때문', '수 있', '겠습'];
 
             if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots)) {
-                if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Chốt bài xuất sắc."); }
-                else { score = 3; feedback.push("Đạt 3/5 Điểm: Có Xã hội nhưng thiếu động từ."); }
-            } else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
+            else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Chốt bài xuất sắc."); }
+            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp."); }
+            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng sai/thiếu ngữ pháp."); }
+            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
 
             document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
             document.getElementById('btn-exp-52-b').style.display = 'inline-block';

@@ -519,10 +519,10 @@
         let validEndings = ['려고 합', '고 있습', '기로 했습', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý định chiêu mộ thành viên mới."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu đuôi câu thể hiện ý định/hiện tại tiếp diễn (-려고 하다)."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'chiêu mộ / tuyển / tìm kiếm' (모집하다, 뽑다)."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý định chiêu mộ thành viên mới."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ý định."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu thể hiện ý định."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'chiêu mộ / tuyển / tìm kiếm' (모집하다, 뽑다)."); }
 
         document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-a').style.display = 'inline-block';
@@ -536,34 +536,35 @@
         let validEndings = ['십니까', '신가요', '세요', '겠습니까'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Câu hỏi lịch sự đoán đúng tâm lý người mới."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng ý nhưng thiếu đuôi câu hỏi kính ngữ (-십니까)."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'mới học lần đầu / chưa biết gì'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Câu hỏi lịch sự đoán đúng tâm lý người mới."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp hỏi lịch sự."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu hỏi kính ngữ."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'mới học lần đầu / chưa biết gì'."); }
 
         document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-b').style.display = 'inline-block';
     }
 
-    // CÂU 52A
+    // CÂU 52A — Pattern B: roots=validRoots+validTargets, endings=validEndings
     function grade52A() {
         let val = document.getElementById('ans-52-a').value.trim();
         let score = 0; let feedback = [];
         let validRoots = ['하나는'];
         let validTargets = ['포기하지 않', '긍정적', '기대하', '극복하'];
         let validEndings = ['는 것'];
+        let hasRoots = checkKeywords(val, validRoots) && checkKeywords(val, validTargets);
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Liệt kê thái độ số 1 rất chuẩn xác và đối lập với sự từ bỏ."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu định nghĩa/liệt kê '-는 것이다'."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có chữ '하나는' (Một là...) và hành động 'Không từ bỏ/Suy nghĩ tích cực'."); }
+        else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Liệt kê thái độ số 1 rất chuẩn xác và đối lập với sự từ bỏ."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp định nghĩa/liệt kê."); }
+        else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu định nghĩa/liệt kê."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có chữ '하나는' (Một là...) và hành động 'Không từ bỏ/Suy nghĩ tích cực'."); }
 
         document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-a').style.display = 'inline-block';
     }
 
-    // CÂU 52B
+    // CÂU 52B — Pattern C: roots=validRoots, grammar=validTargets
     function grade52B() {
         let val = document.getElementById('ans-52-b').value.trim();
         let score = 0; let feedback = [];
@@ -571,11 +572,10 @@
         let validTargets = ['낮', '어렵', '없', '나쁘'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) {
-            score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng hệ quả xấu khi suy nghĩ tiêu cực.");
-        } else if(checkKeywords(val, validRoots)) {
-            score = 3; feedback.push("Đạt 3/5 Điểm: Có 'suy nghĩ tiêu cực' nhưng thiếu hệ quả.");
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Suy nghĩ tiêu cực' và 'Khó đạt kết quả tốt / Tỷ lệ thấp'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng hệ quả xấu khi suy nghĩ tiêu cực."); }
+        else if(checkKeywords(val, validTargets)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp hệ quả."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu hệ quả."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Suy nghĩ tiêu cực' và 'Khó đạt kết quả tốt / Tỷ lệ thấp'."); }
 
         document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-b').style.display = 'inline-block';

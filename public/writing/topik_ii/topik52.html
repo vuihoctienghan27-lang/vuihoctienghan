@@ -428,10 +428,10 @@
         let validEndings = ['줘서', '주셔서', '주신 덕분', '주신 것', '겠습'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý cảm ơn vì đã cho mượn."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Đúng từ khóa nhưng thiếu ngữ pháp chỉ lý do (-아/어서)."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'cho mượn' (빌려주다)."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý cảm ơn vì đã cho mượn."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp chỉ lý do."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp chỉ lý do."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'cho mượn' (빌려주다)."); }
 
         document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-a').style.display = 'inline-block';
@@ -445,16 +445,16 @@
         let validEndings = ['면 됩니까', '면 되겠습니까', '야 합니까', '야 됩니까', '면 되'];
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hỏi ý kiến về thời gian trả sách chuẩn xác."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu ngữ pháp điều kiện/hỏi ý kiến -(으)면 됩니까."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'trả lại / đưa lại'."); }
+        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hỏi ý kiến về thời gian trả sách chuẩn xác."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp hỏi ý kiến."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp hỏi ý kiến."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'trả lại / đưa lại'."); }
 
         document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-51-b').style.display = 'inline-block';
     }
 
-    // CÂU 52A
+    // CÂU 52A — Pattern B: roots=roots+targets+effects, endings=endings
     function grade52A() {
         let val = document.getElementById('ans-52-a').value.trim();
         let score = 0; let feedback = [];
@@ -462,12 +462,13 @@
         let validTargets = ['표정', '얼굴'];
         let validEffects = ['영향을 주', '나타나', '드러나'];
         let validEndings = ['기 때문'];
+        let hasRoots = checkKeywords(val, validRoots) && checkKeywords(val, validTargets) && checkKeywords(val, validEffects);
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets) && checkKeywords(val, validEffects)) {
-            if(checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng lý do cảm xúc ảnh hưởng biểu cảm."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu đuôi câu chỉ nguyên nhân -기 때문이다."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có đủ cụm 'Cảm xúc' ảnh hưởng/hiện ra 'Biểu cảm'."); }
+        else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng lý do cảm xúc ảnh hưởng biểu cảm."); }
+        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp chỉ nguyên nhân."); }
+        else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu chỉ nguyên nhân."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có đủ cụm 'Cảm xúc' ảnh hưởng/hiện ra 'Biểu cảm'."); }
 
         document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-a').style.display = 'inline-block';
@@ -479,12 +480,13 @@
         let score = 0; let feedback = [];
         let validRoots = ['밝은 표정', '표정을 밝게', '웃는 표정', '웃'];
         let validEndings = ['짓는', '하는', '겠습'];
+        let hasEndings = checkKeywords(val, validEndings) || val.includes('웃는');
 
         if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots)) {
-            if(checkKeywords(val, validEndings) || val.includes('웃는')) { score = 5; feedback.push("Đạt 5/5 Điểm: Lời khuyên nở nụ cười/biểu cảm sáng sủa rất chính xác."); }
-            else { score = 3; feedback.push("Đạt 3/5 Điểm: Thiếu dạng định ngữ -는 để nối với chữ '것이 좋다'."); }
-        } else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ mang nghĩa 'tươi cười / làm khuôn mặt sáng sủa'."); }
+        else if(checkKeywords(val, validRoots) && hasEndings) { score = 5; feedback.push("Đạt 5/5 Điểm: Lời khuyên nở nụ cười/biểu cảm sáng sủa rất chính xác."); }
+        else if(hasEndings) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp định ngữ."); }
+        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu dạng định ngữ."); }
+        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ mang nghĩa 'tươi cười / làm khuôn mặt sáng sủa'."); }
 
         document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
         document.getElementById('btn-exp-52-b').style.display = 'inline-block';
