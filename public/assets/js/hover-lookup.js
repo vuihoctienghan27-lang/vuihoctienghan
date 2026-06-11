@@ -574,6 +574,7 @@
 
         async function doSave(listName){
             Swal.close();
+            await new Promise(function(r){setTimeout(r,400);});
             panel.classList.remove('hv-shrink');
             btn.textContent='⏳';btn.disabled=true;
             var doc={word:word,meaning:meaning,listName:listName,status:0,savedAt:firebase.firestore.FieldValue.serverTimestamp()};
@@ -582,9 +583,7 @@
             await db.collection('users').doc(cu.uid).collection('vocabulary').doc(saveKey).set(doc);
             if(window.savedVocabSet)window.savedVocabSet.add(saveKey);
             updateStars(word);
-            // Brief delay to prevent post-Swal click from hiding panel
-            panel._ignoreClick=true;setTimeout(function(){panel._ignoreClick=false;},200);
-            Swal.fire({icon:'success',title:'Đã lưu!',text:'"'+word+'" → '+listName,timer:1500,showConfirmButton:false});
+            panel._ignoreClick=true;setTimeout(function(){panel._ignoreClick=false;},300);
         }
 
         function bindFolderEvents(){
@@ -609,10 +608,10 @@
         }
 
         function bindLessonEvents(folder){
-            document.querySelectorAll('.swal-lesson-btn').forEach(function(lb){
+            document.querySelectorAll('.swal-l-btn').forEach(function(lb){
                 lb.addEventListener('click',function(){doSave(lb.dataset.l);});
             });
-            var nl=document.querySelector('.swal-new-lesson-btn');
+            var nl=document.querySelector('.swal-new-l');
             if(nl)nl.addEventListener('click',async function(){
                 var r=await Swal.fire({title:'Tạo bài học trong "'+folder+'"',input:'text',inputPlaceholder:'Nhập tên bài học...',showCancelButton:true,confirmButtonText:'Tạo',cancelButtonText:'Hủy'});
                 if(!r.value) return;
@@ -623,7 +622,7 @@
                 window.userVocabLists=allLists;
                 doSave(fullPath);
             });
-            var back=document.querySelector('.swal-back-btn');
+            var back=document.querySelector('.swal-back');
             if(back)back.addEventListener('click',function(){
                 Swal.getHtmlContainer().innerHTML=showFolderPicker();
                 bindFolderEvents();
