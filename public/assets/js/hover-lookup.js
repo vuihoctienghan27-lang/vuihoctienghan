@@ -37,7 +37,7 @@
 
     // ── Mobile CSS ──
     var mobileCSS = document.createElement('style');
-    mobileCSS.textContent = '@media(max-width:768px){#hover-vocab-panel{left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;max-width:100%!important;min-width:unset!important;height:66vh!important;max-height:66vh!important;border-radius:20px 20px 0 0!important;resize:none!important;box-shadow:0 -4px 24px rgba(0,0,0,0.12)!important;transition:height 0.35s cubic-bezier(0.4,0,0.2,1),max-height 0.35s cubic-bezier(0.4,0,0.2,1)!important;will-change:height}#hover-vocab-panel.hv-exp{height:80vh!important;max-height:80vh!important}#hover-vocab-panel #hv-hdr{border-radius:20px 20px 0 0!important;cursor:default!important}#hover-vocab-panel #hv-expand{display:inline-block!important}}';
+    mobileCSS.textContent = '@media(max-width:768px){#hover-vocab-panel{left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;max-width:100%!important;min-width:unset!important;height:66vh!important;max-height:66vh!important;border-radius:20px 20px 0 0!important;resize:none!important;box-shadow:0 -4px 24px rgba(0,0,0,0.12)!important;transition:height 0.35s cubic-bezier(0.4,0,0.2,1),max-height 0.35s cubic-bezier(0.4,0,0.2,1)!important;will-change:height}#hover-vocab-panel.hv-exp{height:80vh!important;max-height:80vh!important}#hover-vocab-panel.hv-shrink{height:15vh!important;max-height:15vh!important}#hover-vocab-panel #hv-hdr{border-radius:20px 20px 0 0!important;cursor:default!important}#hover-vocab-panel #hv-expand{display:inline-block!important}}';
     document.head.appendChild(mobileCSS);
 
     // ── Button handlers ──
@@ -114,7 +114,7 @@
     }
 
     // ── Dict ──
-    var fullMap=null,fullLoaded=false,fullLoading=false,loadQueue=[];
+    var fullMap=null,fullLoaded=false,fullLoading=false,loadQueue=[],fullFailed=false;
     function buildMap(){
         if(fullMap||!window.AutoVocabDictFull||!Array.isArray(window.AutoVocabDictFull)) return;
         fullMap=new Map();
@@ -125,13 +125,13 @@
     if(window.AutoVocabDictFull) buildMap();
     function loadDict(){
         return new Promise(function(resolve){
-            if(fullLoaded){resolve();return;}
+            if(fullLoaded||fullFailed){resolve();return;}
             if(fullLoading){loadQueue.push(resolve);return;}
             fullLoading=true;loadQueue.push(resolve);
             var s=document.createElement('script');
             s.src=rootPath+'assets/js/vocab-dictionary-full.js';
             s.onload=function(){buildMap();fullLoading=false;var q=loadQueue;loadQueue=[];q.forEach(function(cb){cb();});};
-            s.onerror=function(){fullLoading=false;var q=loadQueue;loadQueue=[];q.forEach(function(cb){cb();});};
+            s.onerror=function(){fullFailed=true;fullLoading=false;var q=loadQueue;loadQueue=[];q.forEach(function(cb){cb();});};
             document.head.appendChild(s);
         });
     }
@@ -215,7 +215,7 @@
             '으려고','려고','으러','러','도록','게끔','게',
             '으되','되','거든','거늘','으련만','련만',
             // Conditional
-            '으면','면','어야','아야','여야','어야만','아야만',
+            '으면','면','어야','아야','여야','어야만','아야만','여야만',
             '었으면','았으면','였으면','더면','더라면',
             '은들','ㄴ들','을망정','ㄹ망정','을지언정','ㄹ지언정',
             // Sentence endings
@@ -232,28 +232,64 @@
             '다','아','어','여','고','면','며','니','나',
             '는','은','ㄴ','을','ㄹ','던','음','ㅁ','기','게',
             '았','었','였',
-            // More combined
-            '다고','라고','냐고','자고','는다고','ㄴ다고',
+            // Plain declarative (ㄴ다/는다/다)
+            '는다','ㄴ다','는단다','ㄴ단다','는담','ㄴ담',
+            '는군','ㄴ군','는구나','ㄴ구나','는구만','ㄴ구만',
+            '는구려','ㄴ구려',
+            // More combined quotative
+            '다고','라고','냐고','자고','는다고','ㄴ다고','는다는','ㄴ다는',
             '다는','냐는','라는','자는','잔','단','냔','잔',
-            '대','냬','재','래',
+            '대','냬','재','래','는대','ㄴ대','는댔','ㄴ댔',
+            // Passive/Causative common patterns
+            '되다','된다','됩니다','돼요','됐다','됐어요','됐습니다',
+            '되','돼','됐','될','되는',
+            '게되다','게된다','게됩니다','게돼요','게됐다',
+            '게하다','게한다','게합니다','게해요','게했다',
+            '시키다','시킨다','시킵니다','시켜요','시켰다',
+            '시켜','시킬','시키는',
+            // 기 nominalizer combos
+            '기로','기로는','기로써','기로도','기로만',
+            '기에','기에는','기에는','기도',
+            '기를','기는','기가','기의',
+            '기때문에','기때문','기위해서','기위해','기위한',
+            '기까지','기부터','기보다',
+            '기로하다','기로했다','기로합니다',
+            '기시작했다','기시작한다',
+            '기쉽다','기어렵다','기좋다','기싫다',
+            '기마련이다','기나름이다',
             // Progressive
-            '고있다','고있는','고있어','고있어요','고있었','고있을',
-            '는중이다','는중이야','는중이에요',
+            '고있다','고있는','고있어','고있어요','고있었','고있을','고있습니다',
+            '는중이다','는중이야','는중이에요','는중입니다',
+            '고계시다','고계신다','고계세요','고계십니다',
             // Negative patterns
-            '지않다','지않아','지않아요','지않습니다','지않았',
-            '지못하다','지못해','지못했','지못할',
-            '지말다','지마','지마세요','지말자',
-            '을수없다','ㄹ수없다','을수없어','ㄹ수없어',
-            '을수있다','ㄹ수있다','을수있어','ㄹ수있어',
-            // Causative/passive
+            '지않다','지않아','지않아요','지않습니다','지않았','지않는다',
+            '지못하다','지못해','지못했','지못할','지못한다',
+            '지말다','지마','지마세요','지말자','지마라',
+            '을수없다','ㄹ수없다','을수없어','ㄹ수없어','을수없는','ㄹ수없는',
+            '을수있다','ㄹ수있다','을수있어','ㄹ수있어','을수있는','ㄹ수있는',
+            // Causative/passive suffixes
             '이','히','리','기','우','구','추',
-            '게하다','게했다','게하는','게할',
-            '시키다','시켰다','시키는','시킬',
-            // Noun modifiers
+            '게하다','게했다','게하는','게할','게한다',
+            '시키다','시켰다','시키는','시킬','시킨다',
+            // Noun modifiers (관형사형) combos
+            '는것','은것','ㄴ것','을것','ㄹ것','던것',
+            '는법','은법','ㄴ법','을법','ㄹ법',
+            '는줄','은줄','ㄴ줄','을줄','ㄹ줄',
+            '는모양','은모양','ㄴ모양',
+            '는편','은편','ㄴ편',
+            // More noun-modifier + particle
+            '는데','은데','ㄴ데','는데도','은데도',
+            '는바','은바','ㄴ바',
+            // Plural suffixes
             '적','적이다','적인','적으로','적이',
             // Plural + particle combos
             '들이','들도','들만','들의','들에','들은','들을','들과','들로','들보다','들께',
             '들에서','들까지','들처럼','들부터','들조차','들마저',
+            // Adverbial endings
+            '게','도록','게끔','게도','도록도',
+            // More kính ngữ thân mật
+            '실게요','실래요','실까요','시지요','시죠','시네요','시군요','시잖아요',
+            '으실게요','으실래요','으실까요','으시지요','으시죠','으시네요','으시군요','으시잖아요',
         ];
         for(var i=0;i<V.length;i++){var v=V[i];if(word.endsWith(v)&&word.length>v.length){var stem=word.slice(0,-v.length);set.push(stem+'다');set.push(stem);}}
         
@@ -354,15 +390,23 @@
             '지어':'짓',
             '퍼':'푸','펐':'푸',
             '달라':'다르','달랐':'다르',
+            // Verb stems ending in vowel + 았/었 contraction
+            '랐':'라','봤':'보','됐':'되','켰':'키',
+            '샜':'새','댔':'대','맸':'매','뺐':'빼',
+            '놨':'놓','꼈':'끼','꿨':'꾸','껐':'께',
+            // More complex contractions
+            '놀랐':'놀라','날랐':'날라','말랐':'마르',
+            '건넜':'건너','일어났':'일어나','들어났':'들어나',
+            // 준비했다 etc: strip past from 하다 verbs
+            '했다':'하다','했다':'하다',
         };
         var arr=set.slice();
-        for(var i=0;i<arr.length;i++){var c=arr[i];for(var k in I){if(c.indexOf(k)===0){set.push(I[k]+'다');set.push(I[k]);}}}
+        for(var i=0;i<arr.length;i++){var c=arr[i];for(var k in I){var idx=c.indexOf(k);if(idx!==-1){var prefix=c.substring(0,idx);set.push(prefix+I[k]+'다');set.push(prefix+I[k]);}}}
         
         // Recursive stripping: try stripping particles/endings from already-stripped results
         var arr2=set.slice();
         for(var i=0;i<arr2.length;i++){
             var w=arr2[i];
-            // Try stripping single particles from candidate words
             var P2='은,는,이,가,을,를,에,의,도,만,로,과,와,들,께,야,나,랑,요'.split(',');
             for(var j=0;j<P2.length;j++){var p=P2[j];if(w.endsWith(p)&&w.length>p.length)set.push(w.slice(0,-p.length));}
         }
@@ -459,6 +503,8 @@
             updateStars(word);
             return;
         }
+        // On mobile, shrink panel so save dialog is visible
+        if(window.innerWidth<=768) panel.classList.add('hv-shrink');
         // Collect examples
         await new Promise(function(r){setTimeout(r,800);});
         var senseDef='',senseExamples=[];
@@ -511,23 +557,19 @@
 
         function showLessonPicker(folder){
             var lessons=allLists.filter(function(l){return l.indexOf(folder+'/')===0;});
-            var h='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">';
-            h+='<button class="swal-back-btn" style="background:none;border:none;cursor:pointer;font-size:1.2em;padding:2px 6px;color:#64748b;">← Trở về</button>';
-            h+='<span style="font-weight:700;color:#1e293b;">📁 '+folder+'</span></div>';
+            var h='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><span style="font-weight:700;color:#1e293b;">📁 '+folder+'</span><span style="font-size:.75em;color:#94a3b8;">('+lessons.length+' bài)</span></div>';
             h+='<div style="max-height:200px;overflow-y:auto;">';
-            // "Lưu vào thư mục" option
-            h+='<button class="swal-lesson-btn" data-l="'+folder+'" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#eff6ff;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#2563eb;">📂 Lưu vào thư mục này</button>';
-            lessons.forEach(function(l){
-                var lessonName=l.substring(folder.length+1);
-                h+='<button class="swal-lesson-btn" data-l="'+l+'" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#f8fafc;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#1e293b;">📖 '+lessonName+'</button>';
-            });
+            h+='<button class="swal-l-btn" data-l="'+folder+'" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#eff6ff;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#2563eb;">📂 Lưu vào thư mục này</button>';
+            lessons.forEach(function(l){var ln=l.substring(folder.length+1);h+='<button class="swal-l-btn" data-l="'+l+'" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#f8fafc;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#1e293b;">📖 '+ln+'</button>';});
             h+='</div>';
-            h+='<button class="swal-new-lesson-btn" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#fef3c7;border-radius:6px;margin-top:5px;cursor:pointer;font-weight:600;color:#d97706;">＋ Tạo bài học</button>';
+            h+='<button class="swal-new-l" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#fef3c7;border-radius:6px;margin-top:5px;cursor:pointer;font-weight:600;color:#d97706;">＋ Tạo bài học</button>';
+            h+='<button class="swal-back" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#f1f5f9;border-radius:6px;margin-top:5px;cursor:pointer;font-weight:600;color:#64748b;">← Trở về</button>';
             return h;
         }
 
         async function doSave(listName){
             Swal.close();
+            panel.classList.remove('hv-shrink');
             btn.textContent='⏳';btn.disabled=true;
             var doc={word:word,meaning:meaning,listName:listName,status:0,savedAt:firebase.firestore.FieldValue.serverTimestamp()};
             if(senseDef)doc.definition=senseDef;
@@ -535,6 +577,8 @@
             await db.collection('users').doc(cu.uid).collection('vocabulary').doc(saveKey).set(doc);
             if(window.savedVocabSet)window.savedVocabSet.add(saveKey);
             updateStars(word);
+            // Brief delay to prevent post-Swal click from hiding panel
+            panel._ignoreClick=true;setTimeout(function(){panel._ignoreClick=false;},200);
             Swal.fire({icon:'success',title:'Đã lưu!',text:'"'+word+'" → '+listName,timer:1500,showConfirmButton:false});
         }
 
@@ -581,7 +625,10 @@
             });
         }
         if(typeof Swal==='undefined'){alert('Cần SweetAlert2');return;}
-        Swal.fire({title:'📁 Lưu từ vựng',html:showFolderPicker(),showCloseButton:true,showConfirmButton:false,didOpen:function(){bindFolderEvents();}});
+        Swal.fire({title:'📁 Lưu từ vựng',html:showFolderPicker(),showCloseButton:true,showConfirmButton:false,
+            didOpen:function(){bindFolderEvents();},
+            didClose:function(){panel.classList.remove('hv-shrink');}
+        });
     }
     function updateStars(word){
         panel.querySelectorAll('.hv-sv[data-word="'+word.replace(/"/g,'&quot;')+'"]').forEach(function(b){
@@ -596,13 +643,16 @@
     // ── Click handler ──
     document.addEventListener('click',async function(e){
         if(e.target.closest('#hover-vocab-panel')||e.target.closest('.swal2-container')) return;
+        if(panel._ignoreClick) return;
         _lastClickY=e.clientY;
         var word=getWord(e);
         if(!word){panel.style.display='none';return;}
         var result=lookup(word);
         if(result){showPanel(result);return;}
-        if(!fullLoaded){await loadDict();result=lookup(word);if(result)showPanel(result);else panel.style.display='none';}
-        else{panel.style.display='none';}
+        if(!fullLoaded){await loadDict();result=lookup(word);if(result){showPanel(result);return;}}
+        // API fallback
+        if(typeof VocabExternal!=='undefined'){try{var res=await VocabExternal.fetchExamples(word,word);if(res&&res.length>0){showPanel({w:word,m:res[0].viMeaning||res[0].meaning||'',t:res[0].pos||'',x:(res[0].examples||res).slice(0,3).map(function(r){return r.ko||'';}),k:'',src:'📚 KRDict'});return;}}catch(_){}}
+        panel.style.display='none';
     });
 
     console.log('[HoverLookup] v6 ready — full UI');

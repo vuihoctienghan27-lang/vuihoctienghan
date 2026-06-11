@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .nav-logo img{height:38px;width:auto;display:block;flex-shrink:0}
         .nav-logo-text .vh{color:#142657}
         .nav-logo-text .th{color:#f95052}
-        .nav-logo-text{font-size:1.15em;font-weight:800;display:flex;align-items:center;gap:2px}
+        .nav-logo-text{font-size:1.15em;font-weight:900;display:flex;align-items:center;gap:2px}
         body.dark-mode .nav-logo-text .vh{color:#60a5fa}
         body.dark-mode .nav-logo-text .th{color:#fca5a5}
 
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .drawer-logo img{height:30px;width:auto;display:block;flex-shrink:0}
         .drawer-logo-text .vh{color:#142657}
         .drawer-logo-text .th{color:#f95052}
-        .drawer-logo-text{font-size:1em;font-weight:800;display:flex;align-items:center;gap:2px}
+        .drawer-logo-text{font-size:1em;font-weight:900;display:flex;align-items:center;gap:2px}
         body.dark-mode .drawer-logo-text .vh{color:#60a5fa}
         body.dark-mode .drawer-logo-text .th{color:#fca5a5}
         body.dark-mode .drawer-logo{color:#f1f5f9}
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .nav-logo-wrapper{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;z-index:1;}
             .nav-desktop-links{display:none}
             .nav-logo img{height:32px}
-            .nav-logo-text{font-size:1em}
+            .nav-logo-text{font-size:1em;font-weight:900}
             .nav-right .nav-icon-btn{padding:5px;border-radius:8px}
             .nav-right .nav-icon-btn svg{width:17px!important;height:17px!important}
         }
