@@ -42,7 +42,7 @@
 
     // ── Mobile CSS ──
     var mobileCSS = document.createElement('style');
-    mobileCSS.textContent = '@media(max-width:768px){#hover-vocab-panel{left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;max-width:100%!important;min-width:unset!important;height:66vh!important;max-height:66vh!important;border-radius:20px 20px 0 0!important;resize:none!important;box-shadow:0 -4px 24px rgba(0,0,0,0.12)!important;transition:height 0.35s cubic-bezier(0.4,0,0.2,1),max-height 0.35s cubic-bezier(0.4,0,0.2,1)!important;will-change:height}#hover-vocab-panel.hv-exp{height:80vh!important;max-height:80vh!important}#hover-vocab-panel.hv-shrink{height:15vh!important;max-height:15vh!important}#hover-vocab-panel #hv-hdr{border-radius:20px 20px 0 0!important;cursor:default!important}#hover-vocab-panel #hv-expand{display:inline-block!important}}';
+    mobileCSS.textContent = '@media(max-width:768px){#hover-vocab-panel{left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;max-width:100%!important;min-width:unset!important;height:40vh!important;max-height:40vh!important;border-radius:20px 20px 0 0!important;resize:none!important;box-shadow:0 -4px 24px rgba(0,0,0,0.12)!important;transition:height 0.35s cubic-bezier(0.4,0,0.2,1),max-height 0.35s cubic-bezier(0.4,0,0.2,1)!important;will-change:height}#hover-vocab-panel.hv-exp{height:65vh!important;max-height:65vh!important}#hover-vocab-panel.hv-shrink{height:15vh!important;max-height:15vh!important}#hover-vocab-panel #hv-hdr{border-radius:20px 20px 0 0!important;cursor:default!important}#hover-vocab-panel #hv-expand{display:inline-block!important}}';
     document.head.appendChild(mobileCSS);
 
     // ── Button handlers ──
