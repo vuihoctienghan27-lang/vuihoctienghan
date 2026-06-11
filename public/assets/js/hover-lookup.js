@@ -10,6 +10,11 @@
             var sub = p.substring(idx + 8);
             var depth = sub.split('/').length - 1;
             rootPath = depth > 0 ? '../'.repeat(depth) : '';
+        } else {
+            var parts = p.split('/');
+            var depth = parts.filter(function(x){return x!=='';}).length - 1;
+            if (depth < 0) depth = 0;
+            rootPath = depth > 0 ? '../'.repeat(depth) : '';
         }
     })();
 
