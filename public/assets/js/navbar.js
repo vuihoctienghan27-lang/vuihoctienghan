@@ -28,13 +28,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // === CSS ===
     const style = document.createElement('style');
     style.innerHTML = `
-        .vocab-toggle-container,.icon-home,.post-explain-actions,.review-link{display:none!important}
-        .switch{position:relative;display:inline-block;width:40px;height:22px}
-        .switch input{opacity:0;width:0;height:0}
-        .slider{position:absolute;cursor:pointer;inset:0;background:#cbd5e1;transition:.4s;border-radius:22px}
-        .slider:before{position:absolute;content:"";height:16px;width:16px;left:3px;bottom:3px;background:#fff;transition:.4s;border-radius:50%;box-shadow:0 2px 4px rgba(0,0,0,.2)}
-        input:checked+.slider{background:#10b981}
-        input:checked+.slider:before{transform:translateX(18px)}
+        .icon-home,.post-explain-actions,.review-link{display:none!important}
+
+        /* Vocab icon states */
+        #globalVocabBtn{color:#6b7280;transition:color .3s}
+        body:not(.vocab-disabled):not(.vocab-level-1):not(.vocab-level-2) #globalVocabBtn{color:#2563eb}
+        #globalVocabBtn:disabled{color:#9ca3af!important;opacity:.45!important}
+
+        .nav-right{display:flex;align-items:center;gap:6px}
 
         /* TOP MASK */
         .top-gradient-mask{
@@ -62,8 +63,13 @@ document.addEventListener('DOMContentLoaded', () => {
         /* NAVBAR LAYOUT — 4-item flex layout */
         .nav-top-row{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:55px;position:relative}
         .nav-left{display:flex;align-items:center;gap:12px;position:relative;z-index:2}
-        .nav-logo{font-size:1.3em;font-weight:800;color:#1f2937;text-decoration:none;display:flex;align-items:center;gap:6px;white-space:nowrap;margin:0;}
-        body.dark-mode .nav-logo{color:#f1f5f9}
+        .nav-logo{text-decoration:none;display:flex;align-items:center;gap:8px;white-space:nowrap;margin:0;font-family:'Pretendard','Inter',-apple-system,sans-serif}
+        .nav-logo img{height:38px;width:auto;display:block;flex-shrink:0}
+        .nav-logo-text .vh{color:#142657}
+        .nav-logo-text .th{color:#f95052}
+        .nav-logo-text{font-size:1.15em;font-weight:800;display:flex;align-items:center;gap:2px}
+        body.dark-mode .nav-logo-text .vh{color:#60a5fa}
+        body.dark-mode .nav-logo-text .th{color:#fca5a5}
 
         /* ICON BUTTON — Apple flat */
         .nav-icon-btn{
@@ -93,12 +99,27 @@ document.addEventListener('DOMContentLoaded', () => {
             background:none;
         }
         .nav-link.active, .nav-link:hover{
-            color:#2563eb;
             font-weight:800;
             background:none;
         }
+        .nav-link[data-skill="read"]{color:#142657}
+        .nav-link[data-skill="listen"]{color:#142657}
+        .nav-link[data-skill="write"]{color:#f95052}
+        .nav-link[data-skill="grammar"]{color:#f95052}
+        .nav-link[data-skill="read"]:hover{color:#f95052!important}
+        .nav-link[data-skill="listen"]:hover{color:#f95052!important}
+        .nav-link[data-skill="write"]:hover{color:#142657!important}
+        .nav-link[data-skill="grammar"]:hover{color:#142657!important}
+        @keyframes blink-read{0%,100%{color:#142657}50%{color:#f95052}}
+        @keyframes blink-listen{0%,100%{color:#142657}50%{color:#f95052}}
+        @keyframes blink-write{0%,100%{color:#f95052}50%{color:#142657}}
+        @keyframes blink-grammar{0%,100%{color:#f95052}50%{color:#142657}}
+        .nav-link[data-skill="read"].active{animation:blink-read 1.2s infinite}
+        .nav-link[data-skill="listen"].active{animation:blink-listen 1.2s infinite}
+        .nav-link[data-skill="write"].active{animation:blink-write 1.2s infinite}
+        .nav-link[data-skill="grammar"].active{animation:blink-grammar 1.2s infinite}
         body.dark-mode .nav-link{color:#9ca3af}
-        body.dark-mode .nav-link.active, body.dark-mode .nav-link:hover{color:#60a5fa;background:none;font-weight:800;}
+        body.dark-mode .nav-link.active, body.dark-mode .nav-link:hover{background:none;font-weight:800;}
 
         /* SIDE DRAWER — Glassmorphism */
         .side-drawer{
@@ -119,7 +140,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         .drawer-header{display:flex;align-items:center;justify-content:space-between;padding:20px 18px 14px;border-bottom:1px solid rgba(0,0,0,.06)}
         body.dark-mode .drawer-header{border-bottom-color:rgba(255,255,255,.08)}
-        .drawer-logo{font-size:1.1em;font-weight:800;color:#1f2937;text-decoration:none;display:flex;align-items:center;gap:8px}
+        .drawer-logo{text-decoration:none;display:flex;align-items:center;gap:8px}
+        .drawer-logo img{height:30px;width:auto;display:block;flex-shrink:0}
+        .drawer-logo-text .vh{color:#142657}
+        .drawer-logo-text .th{color:#f95052}
+        .drawer-logo-text{font-size:1em;font-weight:800;display:flex;align-items:center;gap:2px}
+        body.dark-mode .drawer-logo-text .vh{color:#60a5fa}
+        body.dark-mode .drawer-logo-text .th{color:#fca5a5}
         body.dark-mode .drawer-logo{color:#f1f5f9}
 
         .drawer-close-btn{width:30px;height:30px;background:rgba(0,0,0,.06);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#64748b;transition:all .2s}
@@ -156,22 +183,32 @@ document.addEventListener('DOMContentLoaded', () => {
         .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:1000;display:none;opacity:0;transition:opacity .3s}
         .drawer-overlay.show{display:block;opacity:1}
 
-        /* RESPONSIVE */
+        /* RESPONSIVE — Navbar + Wrapper/Container width sync */
+        @media(min-width:769px){
+            .container,.wrapper{max-width:900px!important;margin-left:auto!important;margin-right:auto!important;width:auto!important}
+        }
         @media(max-width:768px){
-            .global-nav{margin-left:15px!important;margin-right:15px!important;width:auto!important;border-radius:16px;}
-            .container,.wrapper{margin-left:10px!important;margin-right:10px!important;width:auto!important}
+            .global-nav{margin-left:4px!important;margin-right:4px!important;width:auto!important;border-radius:16px;}
+            .container,.wrapper{margin-left:4px!important;margin-right:4px!important;width:auto!important;padding-left:12px!important;padding-right:12px!important;}
             .top-gradient-mask{height:28px}
             .nav-top-row{height:50px;padding:0 15px}
             .nav-logo-wrapper{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);white-space:nowrap;z-index:1;}
             .nav-desktop-links{display:none}
-            .nav-logo{font-size:1.15em;margin:0;}
+            .nav-logo img{height:32px}
+            .nav-logo-text{font-size:1em}
+            .nav-right .nav-icon-btn{padding:5px;border-radius:8px}
+            .nav-right .nav-icon-btn svg{width:17px!important;height:17px!important}
         }
         @media(max-width:600px){
-            .global-nav{margin:15px 15px 20px 15px!important;border-radius:14px;top:15px;}
-            .top-gradient-mask{height:22px}
+            .global-nav{margin:10px 2px 15px 2px!important;border-radius:12px;top:10px;}
+            .container,.wrapper{margin-left:2px!important;margin-right:2px!important;width:auto!important;padding-left:8px!important;padding-right:8px!important;}
+            .top-gradient-mask{height:18px}
         }
     `;
     document.head.appendChild(style);
+
+    // Disable vocab auto-wrap globally
+    document.body.classList.add('vocab-disabled');
 
     // Inject menu.js (chỉ toggleDrawer)
     if (!document.querySelector('script[src*="menu.js"]')) {
@@ -196,14 +233,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             
             <div class="nav-logo-wrapper">
-                <a href="${rootPath}index.html" class="nav-logo">📚 Vui Học Tiếng Hàn</a>
+                <a href="${rootPath}index.html" class="nav-logo"><img src="${rootPath}assets/img/logo-navbar.png" alt=""><span class="nav-logo-text"><span class="vh">Vui Học</span><span class="th">Tiếng Hàn</span></span></a>
             </div>
 
             <div class="nav-desktop-links">
-                <a href="${rootPath}reading/home.html" class="nav-link ${isReading?'active':''}">Đọc</a>
-                <a href="${rootPath}listening/home.html" class="nav-link ${isListening?'active':''}">Nghe</a>
-                <a href="${rootPath}writing/home.html" class="nav-link ${isWriting?'active':''}">Viết</a>
-                <a href="${rootPath}grammar/home.html" class="nav-link ${isGrammar?'active':''}">Ngữ pháp</a>
+                <a href="${rootPath}reading/home.html" class="nav-link ${isReading?'active':''}" data-skill="read">Đọc</a>
+                <a href="${rootPath}listening/home.html" class="nav-link ${isListening?'active':''}" data-skill="listen">Nghe</a>
+                <a href="${rootPath}writing/home.html" class="nav-link ${isWriting?'active':''}" data-skill="write">Viết</a>
+                <a href="${rootPath}grammar/home.html" class="nav-link ${isGrammar?'active':''}" data-skill="grammar">Ngữ pháp</a>
             </div>
 
             <div class="nav-right">
@@ -224,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
     <div class="side-drawer" id="sideDrawer">
         <div class="drawer-header">
-            <a href="${rootPath}index.html" class="drawer-logo" onclick="toggleDrawer(false)">📚 Vui Học Tiếng Hàn</a>
+            <a href="${rootPath}index.html" class="drawer-logo" onclick="toggleDrawer(false)"><img src="${rootPath}assets/img/logo-navbar.png" alt=""><span class="drawer-logo-text"><span class="vh">Vui Học</span><span class="th">Tiếng Hàn</span></span></a>
             <button class="drawer-close-btn" onclick="toggleDrawer(false)" aria-label="Đóng">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2.5" stroke-linecap="round">
                     <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
@@ -258,15 +295,27 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
             <span>Hỏi Đáp</span>
         </a>
+        <a href="${rootPath}vocab.html" class="nav-link-side" onclick="toggleDrawer(false)">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
+            <span>Sổ Từ Vựng</span>
+        </a>
+        <a href="${rootPath}dailynews.html" class="nav-link-side" onclick="toggleDrawer(false)">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg></span>
+            <span>Đọc Báo</span>
+        </a>
         <div class="drawer-divider"></div>
         <div class="drawer-section">Cài đặt</div>
         <button class="nav-link-side" onclick="window.THEME && window.THEME.openPopup()">
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
             <span>Đổi Giao Diện</span>
         </button>
-        <a href="${rootPath}vocab.html" class="nav-link-side" onclick="toggleDrawer(false)">
-            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
-            <span>Sổ Từ Vựng</span>
+        <a href="${rootPath}feedback.html" class="nav-link-side" onclick="toggleDrawer(false)">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg></span>
+            <span>Góp ý</span>
+        </a>
+        <a href="${rootPath}data.html" class="nav-link-side" id="drawerDashboardLink" onclick="toggleDrawer(false)" style="display:none;">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+            <span>Dashboard</span>
         </a>
     </div>`;
 
@@ -296,11 +345,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof firebase !== 'undefined' && firebase.auth) {
             firebase.auth().onAuthStateChanged(user => {
                 const btn = document.getElementById('navAvatarBtn');
-                if (!btn) return;
                 if (user) {
-                    btn.style.cssText += 'color:#2563eb;background:rgba(37,99,235,.1);border-color:rgba(37,99,235,.2)';
-                    btn.title = user.displayName || user.email;
-                    btn.onclick = () => { window.location.href = `${rootPath}mypage.html`; };
+                    if (btn) {
+                        btn.style.cssText += 'color:#2563eb;background:rgba(37,99,235,.1);border-color:rgba(37,99,235,.2)';
+                        btn.title = user.displayName || user.email;
+                        btn.onclick = () => { 
+                            if (window.location.pathname.includes('forum.html')) {
+                                if (typeof window.handleAvatarClick === 'function') window.handleAvatarClick();
+                            } else {
+                                window.location.href = `${rootPath}mypage.html`; 
+                            }
+                        };
+                    }
+                    const ADMIN_EMAILS = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+                    const dashLink = document.getElementById('drawerDashboardLink');
+                    if (dashLink && ADMIN_EMAILS.includes(user.email)) {
+                        dashLink.style.display = '';
+                    }
                 }
             });
         }
@@ -311,8 +372,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const player = document.getElementById('sticky-audio-player');
     if (nav && player) { nav.appendChild(player); player.classList.add('integrated-player'); }
 
-    // Vocab scripts
-    ['vocab-external.js','vocab-dictionary.js','vocab-autowrap.js'].forEach(f => {
+    // Global logic & Vocab scripts
+    ['user-profile-popup.js', 'vocab-external.js','vocab-dictionary.js','hover-lookup.js'].forEach(f => {
         if (!document.querySelector(`script[src*="${f}"]`)) {
             const s = document.createElement('script');
             s.src = `${rootPath}assets/js/${f}`; s.async = false;

@@ -1,0 +1,410 @@
+/* forum.css */
+
+/* --- Tái sử dụng Variables --- */
+:root {
+    --f-primary: #2563eb;
+    --f-primary-hover: #1d4ed8;
+    --f-border: #e5e7eb;
+    --f-bg-light: #f9fafb;
+    --f-text-main: #1f2937;
+    --f-text-sub: #6b7280;
+    --f-red: #ef4444;
+}
+
+/* --- Common Buttons & Elements --- */
+.btn-primary {
+    background: var(--f-primary);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-primary:hover {
+    background: var(--f-primary-hover);
+}
+
+.btn-outline {
+    background: white;
+    color: var(--f-text-main);
+    border: 1px solid var(--f-border);
+    padding: 8px 15px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-outline:hover {
+    background: var(--f-bg-light);
+    border-color: #d1d5db;
+}
+
+.btn-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1em;
+    padding: 5px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.btn-icon:hover {
+    opacity: 1;
+}
+
+.badge {
+    background: var(--f-red);
+    color: white;
+    font-size: 0.75em;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 5px;
+    font-weight: bold;
+}
+
+/* --- TAB: Chat Công Khai --- */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 500px;
+    border: 1px solid var(--f-border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--f-bg-light);
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+}
+.chat-msg.mine {
+    align-self: flex-end;
+}
+.chat-msg.others {
+    align-self: flex-start;
+}
+
+.msg-info {
+    font-size: 0.75em;
+    color: var(--f-text-sub);
+    margin-bottom: 3px;
+    display: flex;
+    gap: 5px;
+}
+.chat-msg.mine .msg-info {
+    justify-content: flex-end;
+}
+
+.msg-bubble {
+    padding: 10px 15px;
+    border-radius: 15px;
+    font-size: 0.95em;
+    line-height: 1.4;
+    word-break: break-word;
+}
+.chat-msg.mine .msg-bubble {
+    background: var(--f-primary);
+    color: white;
+    border-bottom-right-radius: 3px;
+}
+.chat-msg.others .msg-bubble {
+    background: white;
+    color: var(--f-text-main);
+    border: 1px solid var(--f-border);
+    border-bottom-left-radius: 3px;
+}
+
+.chat-input-area {
+    display: flex;
+    padding: 15px;
+    background: white;
+    border-top: 1px solid var(--f-border);
+    gap: 10px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    padding: 12px 15px;
+    border: 1px solid var(--f-border);
+    border-radius: 20px;
+    outline: none;
+    font-size: 0.95em;
+}
+.chat-input-area input:focus {
+    border-color: var(--f-primary);
+}
+
+.chat-input-area button {
+    background: var(--f-primary);
+    color: white;
+    border: none;
+    padding: 0 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.chat-input-area button:hover {
+    background: var(--f-primary-hover);
+}
+
+/* --- TAB: Hỏi Đáp --- */
+.qa-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.qa-search {
+    flex: 1;
+    min-width: 200px;
+}
+.qa-search input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid var(--f-border);
+    border-radius: 8px;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.qa-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.qa-post-card {
+    border: 1px solid var(--f-border);
+    border-radius: 10px;
+    padding: 15px;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+    background: white;
+}
+.qa-post-card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    transform: translateY(-2px);
+    border-color: #d1d5db;
+}
+
+.qa-post-title {
+    font-size: 1.1em;
+    font-weight: 700;
+    margin: 0 0 8px 0;
+    color: var(--f-text-main);
+}
+
+.qa-post-preview {
+    color: var(--f-text-sub);
+    font-size: 0.95em;
+    margin: 0 0 10px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.qa-post-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: #9ca3af;
+}
+.qa-post-meta .author {
+    font-weight: 600;
+    color: var(--f-text-main);
+}
+
+/* Post Detail View (Rendered via SweetAlert or dynamically inside the tab) */
+.post-detail-container {
+    text-align: left;
+}
+.post-detail-title {
+    font-size: 1.5em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+.post-detail-meta {
+    font-size: 0.85em;
+    color: var(--f-text-sub);
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--f-border);
+}
+.post-detail-content {
+    font-size: 1em;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    white-space: pre-wrap;
+}
+.replies-section {
+    margin-top: 20px;
+    border-top: 2px dashed var(--f-border);
+    padding-top: 20px;
+}
+.reply-item {
+    background: var(--f-bg-light);
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+.reply-meta {
+    font-size: 0.8em;
+    color: var(--f-text-sub);
+    margin-bottom: 5px;
+}
+.reply-meta strong {
+    color: var(--f-text-main);
+}
+.reply-text {
+    font-size: 0.95em;
+}
+
+
+/* --- TAB: Bạn Bè & Nhắn Tin --- */
+.friends-layout {
+    display: flex;
+    gap: 20px;
+    height: 600px;
+}
+
+.friends-sidebar {
+    width: 280px;
+    border: 1px solid var(--f-border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
+
+.friends-actions {
+    padding: 15px;
+    border-bottom: 1px solid var(--f-border);
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.friends-actions button {
+    flex: 1;
+    font-size: 0.85em;
+}
+
+.sidebar-title {
+    font-size: 0.9em;
+    font-weight: 700;
+    color: var(--f-text-sub);
+    text-transform: uppercase;
+    margin: 15px 15px 10px 15px;
+}
+
+.friends-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0 10px 10px 10px;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-bottom: 5px;
+}
+.friend-item:hover, .friend-item.active {
+    background: var(--f-bg-light);
+}
+.friend-avatar {
+    width: 40px;
+    height: 40px;
+    background: #e0e7ff;
+    color: var(--f-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.2em;
+    margin-right: 12px;
+}
+.friend-info {
+    flex: 1;
+    overflow: hidden;
+}
+.friend-name {
+    font-weight: 600;
+    font-size: 0.95em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.friend-status {
+    font-size: 0.75em;
+    color: #10b981; /* Default online color or just text */
+}
+
+.friends-main {
+    flex: 1;
+    border: 1px solid var(--f-border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
+.friends-main.placeholder-view {
+    justify-content: center;
+    align-items: center;
+    background: var(--f-bg-light);
+}
+
+.dm-header {
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--f-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dm-header h3 {
+    margin: 0;
+    font-size: 1.1em;
+}
+
+.dm-messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--f-bg-light);
+}
+
+@media (max-width: 768px) {
+    .friends-layout {
+        flex-direction: column;
+        height: 700px;
+    }
+    .friends-sidebar {
+        width: 100%;
+        height: 300px;
+    }
+    .friends-main {
+        height: 400px;
+    }
+}

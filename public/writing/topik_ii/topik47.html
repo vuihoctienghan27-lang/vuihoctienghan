@@ -20,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 <style>
     /* ===== HEADER BADGE ===== */
@@ -413,76 +414,92 @@
 <script src="exam-logic.js"></script>
 
 <script>
-    // CÂU 51A
-    function grade51A() {
-        let val = document.getElementById('ans-51-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['주문하', '주문했', '주문해', '구입하', '구입했', '사', '샀'];
-        let hasRoots = checkKeywords(val, validRoots);
-        let hasEndings = val.includes('습니다') || val.includes('어요');
+        // CÂU 51A — Đặt mua/mua hàng trong quá khứ
+        function grade51A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '인터넷으로 주문했습니다.',
+                        '온라인으로 구입했습니다.'
+                    ],
+                    stems: ['주문하', '구입하', '사', '샀'],
+                    grammar: [
+                        { pattern: /습[가-힣]*/, label: 'lịch sự' },
+                        { pattern: /어[가-힣]*/, label: 'thân mật' }
+                    ]
+                },
+                "Cần từ vựng mang nghĩa 'đặt hàng / mua'."
+            );
+            document.getElementById('score-51-a').innerHTML = result.display;
+            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(hasRoots && (val.includes('습니다') || val.includes('어요'))) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng việc đặt mua/mua hàng trong quá khứ."); }
-        else if(val.includes('습니다') || val.includes('어요')) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp thì quá khứ."); }
-        else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng sai/thiếu thì quá khứ."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'đặt hàng / mua' (주문하다, 구입하다)."); }
+        // CÂU 51B — Nhờ nhận hàng hộ
+        function grade51B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '받아 주실 수 있으십니까?',
+                        '받아 주시겠습니까?'
+                    ],
+                    stems: ['받'],
+                    grammar: [
+                        { pattern: /주실\s*수\s*있[가-힣]*/, label: 'nhờ vả' },
+                        { pattern: /주시겠[가-힣]*/, label: 'nhờ lịch sự' },
+                        { pattern: /주시기\s*바랍[가-힣]*/, label: 'mong' }
+                    ]
+                },
+                "Cần từ vựng mang nghĩa 'nhận' (받다)."
+            );
+            document.getElementById('score-51-b').innerHTML = result.display;
+            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        }
 
-        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
-    }
+        // CÂU 52A — Rửa tay bằng xà phòng
+        function grade52A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '손을 깨끗이 씻어야 한다.',
+                        '손을 씻는 것이 좋다.'
+                    ],
+                    stems: ['손', '씻'],
+                    grammar: [
+                        { pattern: /어야\s*한[가-힣]*/, label: 'phải' },
+                        { pattern: /는\s*것[가-힣]*/, label: 'nên' }
+                    ]
+                },
+                "Cần cụm từ 'rửa tay' (손을 씻다)."
+            );
+            document.getElementById('score-52-a').innerHTML = result.display;
+            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        }
 
-    // CÂU 51B
-    function grade51B() {
-        let val = document.getElementById('ans-51-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['받'];
-        let validEndings = ['아 주실 수 있', '아 주시겠', '아 주시면 안 되', '아 주실래요', '주시기 바랍', '부탁'];
+        // CÂU 52B — Trích dẫn gián tiếp: dùng xà phòng
+        function grade52B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '비누로 깨끗이 씻으라고 했다.',
+                        '비누를 사용하라고 조언했다.'
+                    ],
+                    stems: ['비누'],
+                    grammar: [
+                        { pattern: /라고\s*한[가-힣]*/, label: 'trích dẫn' },
+                        { pattern: /라고\s*조언[가-힣]*/, label: 'trích dẫn khuyên' }
+                    ]
+                },
+                "Cần từ 'xà phòng' (비누) và cấu trúc trích dẫn gián tiếp."
+            );
+            document.getElementById('score-52-b').innerHTML = result.display;
+            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc nhờ vả nhận hàng hộ."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp nhờ vả."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu nhờ vả lịch sự."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'nhận' (받다)."); }
-
-        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
-    }
-
-    // CÂU 52A
-    function grade52A() {
-        let val = document.getElementById('ans-52-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['손', '씻'];
-        let validEndings = ['어야 한', '는 것이 좋', '어야만 한', '겠습'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng giải pháp rửa tay và cấu trúc khuyên bảo bắt buộc."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp khuyên bảo."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu khuyên bảo/bắt buộc."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ 'rửa tay' (손을 씻다)."); }
-
-        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
-    }
-
-    // CÂU 52B — Pattern B: inline roots check
-    function grade52B() {
-        let val = document.getElementById('ans-52-b').value.trim();
-        let score = 0; let feedback = [];
-        let validEndings = ['라고 한', '라고 조언한', '라고 말한'];
-        let hasRoots = val.includes('비누') && (val.includes('사용') || val.includes('씻') || val.includes('이용') || val.includes('쓰'));
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Cấu trúc trích dẫn gián tiếp mệnh lệnh chuẩn xác."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp trích dẫn."); }
-        else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc trích dẫn gián tiếp."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ 'xà phòng' (비누) và động từ 'sử dụng / rửa bằng'."); }
-
-        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
-    }
-
-    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 47 ---
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 47 ---
     const bookData_47 = [
         { vi: "Gần đây, số lượng du học sinh nước ngoài du học tại Hàn Quốc đã tăng đột biến.", ko: "최근 국내에서 유학하는 외국인 유학생이 급증했다." },
         { vi: "Số lượng du học sinh từng ở mức 4.000 người vào năm 2000 đã cho thấy xu hướng tăng dốc, sau đó chững lại một chút rồi lại tiếp tục tăng, đạt mức 100.000 người vào năm 2016.", ko: "2000년에 4천 명이던 유학생이 가파른 상승세를 보이다 잠시 주춤하더니 다시 증가세를 보이며 2016년에 이르러 10만 명이 되었다." },

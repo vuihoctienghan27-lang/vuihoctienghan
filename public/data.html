@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/navbar.js"></script>
+    <style>
+        :root { --bg-card: rgba(255, 255, 255, 0.95); --text-main: #1f2937; --text-sub: #6b7280; --border: #e5e7eb; --primary: #2563eb; --danger: #ef4444; --success: #10b981; --warning: #f59e0b; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Pretendard', 'Inter', sans-serif; background: var(--random-bg-gradient, linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%)); background-attachment: fixed; color: var(--text-main); margin: 0; padding: 0 0 40px 0; min-height: 100vh; }
+        body.dark-mode { color: #f1f5f9; }
+        .wrapper { max-width: 1000px; margin: 0 auto; background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 15px 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box; }
+        body.dark-mode .wrapper { background: rgba(15, 23, 42, 0.5); border-color: rgba(255, 255, 255, 0.1); }
+        .access-denied { text-align: center; padding: 80px 20px; }
+        .access-denied h2 { font-size: 2.5em; margin-bottom: 15px; }
+        .access-denied p { color: var(--text-sub); font-size: 1.1em; }
+        .hidden { display: none !important; }
+
+        .admin-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 4px; }
+        .admin-header h1 { font-size: 2em; font-weight: 800; margin: 0; display: flex; align-items: center; gap: 12px; color: #142657; }
+        body.dark-mode .admin-header h1 { color: #f1f5f9; }
+        .admin-email { color: var(--text-sub); font-weight: 600; font-size: 0.9em; }
+        .admin-subtitle { color: var(--text-sub); font-weight: 500; margin-bottom: 24px; }
+
+        .tabs-row { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: rgba(255,255,255,0.5); border: 2px solid rgba(255,255,255,0.7); color: var(--text-sub); padding: 12px 20px; border-radius: 12px; font-size: 1em; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: inherit; flex: 1; text-align: center; min-width: 120px; }
+        body.dark-mode .tab-btn { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: #94a3b8; }
+        .tab-btn:hover { border-color: #94a3b8; }
+        .tab-btn.active { background: #eff6ff; border-color: #3b82f6; color: #1d4ed8; }
+        body.dark-mode .tab-btn.active { background: rgba(59,130,246,0.15); border-color: #3b82f6; color: #60a5fa; }
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 0; }
+        .stat-card { background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 20px; text-align: center; backdrop-filter: blur(8px); transition: 0.2s; }
+        body.dark-mode .stat-card { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.08); }
+        .stat-card:hover { transform: translateY(-2px); background: rgba(255,255,255,0.65); }
+        body.dark-mode .stat-card:hover { background: rgba(255,255,255,0.1); }
+        .stat-icon { font-size: 1.8em; margin-bottom: 6px; }
+        .stat-card .stat-number { font-size: 2.2em; font-weight: 900; line-height: 1.2; color: #1e293b; }
+        body.dark-mode .stat-card .stat-number { color: #f1f5f9; }
+        .stat-label { color: var(--text-sub); font-weight: 600; margin-top: 2px; font-size: 0.8em; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .section-card { background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 20px; margin-top: 20px; }
+        body.dark-mode .section-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+        .section-title { font-size: 1.1em; font-weight: 800; margin: 0 0 14px 0; display: flex; align-items: center; gap: 8px; color: #1e293b; }
+        body.dark-mode .section-title { color: #e2e8f0; }
+        .section-title .badge-count { background: rgba(59,130,246,0.15); color: #2563eb; padding: 2px 12px; border-radius: 20px; font-size: 0.7em; margin-left: 6px; font-weight: 700; }
+
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 768px) { .chart-grid { grid-template-columns: 1fr; } }
+        .chart-card { background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; padding: 16px; }
+        body.dark-mode .chart-card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+        .chart-card h3 { font-size: 0.85em; font-weight: 700; color: var(--text-sub); margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .chart-wrap { position: relative; width: 100%; height: 220px; }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.88em; table-layout: fixed; }
+        thead th { text-align: left; padding: 10px 12px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; font-size: 0.78em; letter-spacing: 0.5px; border-bottom: 2px solid rgba(0,0,0,0.06); }
+        body.dark-mode thead th { border-bottom-color: rgba(255,255,255,0.08); }
+        tbody td { padding: 10px 12px; border-bottom: 1px solid rgba(0,0,0,0.04); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        body.dark-mode tbody td { border-bottom-color: rgba(255,255,255,0.04); }
+        tbody tr:hover { background: rgba(255,255,255,0.3); }
+        body.dark-mode tbody tr:hover { background: rgba(255,255,255,0.06); }
+        .table-scroll { overflow-x: auto; }
+        th.col-rank, td.col-rank { width: 3%; }
+        th.col-email, td.col-email { width: 22%; }
+        th.col-name, td.col-name { width: 14%; }
+        th.col-streak, td.col-streak { width: 7%; }
+        th.col-today, td.col-today { width: 7%; }
+        th.col-total, td.col-total { width: 9%; }
+        th.col-exp, td.col-exp { width: 9%; }
+        th.col-login, td.col-login { width: 13%; }
+        th.col-join, td.col-join { width: 13%; }
+
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 0.78em; font-weight: 700; }
+        .badge-green { background: rgba(52,211,153,0.15); color: #059669; }
+        .badge-yellow { background: rgba(251,191,36,0.15); color: #d97706; }
+        body.dark-mode .badge-green { color: #34d399; }
+        body.dark-mode .badge-yellow { color: #fbbf24; }
+
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+        .filter-bar input, .filter-bar select { background: rgba(255,255,255,0.5); border: 2px solid var(--border); border-radius: 10px; padding: 9px 14px; color: var(--text-main); font-family: inherit; font-size: 0.9em; outline: none; }
+        body.dark-mode .filter-bar input, body.dark-mode .filter-bar select { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: #e2e8f0; }
+        .filter-bar input:focus, .filter-bar select:focus { border-color: #3b82f6; }
+        .filter-bar input::placeholder { color: var(--text-sub); }
+        .filter-bar select option { background: #fff; color: #1e293b; }
+        body.dark-mode .filter-bar select option { background: #0f172a; color: #e2e8f0; }
+        .btn-refresh { background: rgba(37,99,235,0.1); border: none; color: #2563eb; padding: 9px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.2s; font-family: inherit; }
+        .btn-refresh:hover { background: rgba(37,99,235,0.2); }
+        body.dark-mode .btn-refresh { color: #60a5fa; background: rgba(96,165,250,0.1); }
+        body.dark-mode .btn-refresh:hover { background: rgba(96,165,250,0.2); }
+
+        .feedback-item { background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.6); border-radius: 12px; padding: 16px; margin-bottom: 10px; }
+        body.dark-mode .feedback-item { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); }
+
+        .fb-date-group { font-size: 0.85em; font-weight: 800; color: var(--text-sub); padding: 16px 0 8px 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .fb-date-group:first-child { padding-top: 0; }
+        .fb-status-dot { width: 18px; height: 18px; min-width: 18px; border-radius: 50%; cursor: pointer; transition: 0.2s; border: 2px solid rgba(255,255,255,0.5); flex-shrink: 0; }
+        .fb-status-dot.new { background: #ef4444; border-color: #fca5a5; animation: pulse-dot 1.5s infinite; }
+        .fb-status-dot.read { background: #f59e0b; border-color: #fcd34d; }
+        .fb-status-dot.done { background: #10b981; border-color: #6ee7b7; }
+        @keyframes pulse-dot { 0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.6); } 50% { box-shadow: 0 0 0 8px rgba(239,68,68,0); } }
+        .fb-status-dot:hover { transform: scale(1.2); }
+        .fb-status-label { font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .login-time { font-size: 0.82em; color: var(--text-sub); }
+        .user-email { color: #2563eb; font-weight: 600; }
+        body.dark-mode .user-email { color: #60a5fa; }
+
+        .loading-msg { text-align: center; padding: 40px; color: var(--text-sub); font-weight: 700; }
+
+        .date-filter { display: flex; gap: 8px; margin-bottom: 12px; }
+        .date-filter button { background: rgba(255,255,255,0.5); border: 2px solid var(--border); padding: 8px 16px; border-radius: 10px; font-weight: 700; color: var(--text-sub); cursor: pointer; transition: 0.2s; font-family: inherit; font-size: 0.85em; }
+        body.dark-mode .date-filter button { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.1); color: #94a3b8; }
+        .date-filter button.active { background: #1f2937; color: #fff; border-color: #1f2937; }
+        body.dark-mode .date-filter button.active { background: #60a5fa; border-color: #60a5fa; color: #fff; }
+
+        .chart-card.clickable { cursor: pointer; transition: 0.2s; }
+        .chart-card.clickable:hover { background: rgba(255,255,255,0.6); }
+        body.dark-mode .chart-card.clickable:hover { background: rgba(255,255,255,0.08); }
+
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); z-index: 99999; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); width: 95%; max-width: 700px; border-radius: 20px; padding: 24px; position: relative; max-height: 85vh; overflow-y: auto; }
+        body.dark-mode .modal-box { background: rgba(15,23,42,0.9); border: 1px solid rgba(255,255,255,0.1); }
+        .modal-close { position: absolute; top: 12px; right: 16px; font-size: 1.8em; cursor: pointer; color: var(--text-sub); background: none; border: none; line-height: 1; }
+        .modal-close:hover { color: var(--text-main); }
+
+        @media (max-width: 600px) {
+            .wrapper { padding: 10px 8px; border-radius: 16px; }
+            .admin-header h1 { font-size: 1.5em; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .stat-card { padding: 14px; }
+            .stat-card .stat-number { font-size: 1.6em; }
+            .tab-btn { padding: 10px 8px; font-size: 0.9em; min-width: 0; flex: 1; }
+            .section-card { padding: 14px; }
+            .chart-wrap { height: 180px; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="accessDenied" class="access-denied">
+    <h2>🔒 Truy cập bị từ chối</h2>
+    <p>Bạn không có quyền truy cập trang này. Chỉ Admin mới được phép vào.</p>
+    <p style="margin-top: 20px;"><a href="index.html" style="color: var(--primary); font-weight: 700;">← Về trang chủ</a></p>
+</div>
+
+<div id="adminContent" class="wrapper" style="margin-top: 24px; display: none;">
+    <div class="admin-header">
+        <h1>📊 Admin Dashboard</h1>
+        <span class="admin-email" id="adminEmail"></span>
+    </div>
+    <p class="admin-subtitle">Tổng quan dữ liệu người dùng Vui Học Tiếng Hàn</p>
+
+    <div class="tabs-row">
+        <button class="tab-btn active" data-tab="tab-overview">📊 Tổng quan</button>
+        <button class="tab-btn" data-tab="tab-users">👥 Học viên</button>
+        <button class="tab-btn" data-tab="tab-charts">📈 Biểu đồ</button>
+        <button class="tab-btn" data-tab="tab-activity">📉 Truy cập</button>
+        <button class="tab-btn" data-tab="tab-feedback">💬 Góp ý</button>
+    </div>
+
+    <div id="tab-overview" class="tab-content active">
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-number" id="totalUsers">...</div><div class="stat-label">Tổng học viên</div></div>
+            <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-number" id="activeToday">...</div><div class="stat-label">Hoạt động hôm nay</div></div>
+            <div class="stat-card"><div class="stat-icon">🔥</div><div class="stat-number" id="streakUsers">...</div><div class="stat-label">Có streak hôm nay</div></div>
+        </div>
+        <div class="stats-grid" style="margin-top: 12px;">
+            <div class="stat-card"><div class="stat-icon">⏱️</div><div class="stat-number" id="totalMinutes">...</div><div class="stat-label">Tổng phút học</div></div>
+            <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-number" id="totalExp">...</div><div class="stat-label">Tổng EXP</div></div>
+            <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-number" id="totalDays">...</div><div class="stat-label">Số ngày hoạt động</div></div>
+        </div>
+
+        <div class="chart-grid" style="margin-top: 20px;">
+            <div class="chart-card clickable" onclick="openChartModal('study')">
+                <h3>📈 Lượng học 7 ngày qua</h3>
+                <div class="chart-wrap"><canvas id="studyChart"></canvas></div>
+                <div style="text-align:right;font-size:0.75em;color:var(--text-sub);margin-top:4px;">Nhấp để phóng to →</div>
+            </div>
+            <div class="chart-card clickable" onclick="openChartModal('exp')">
+                <h3>🏆 Top 10 EXP</h3>
+                <div class="chart-wrap"><canvas id="expChart"></canvas></div>
+                <div style="text-align:right;font-size:0.75em;color:var(--text-sub);margin-top:4px;">Nhấp để phóng to →</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-users" class="tab-content">
+        <div class="section-card">
+            <div class="section-title">📋 Danh sách học viên <span class="badge-count" id="userCount">0</span></div>
+            <div class="filter-bar">
+                <input type="text" id="searchInput" placeholder="Tìm email hoặc tên..." oninput="filterTable()">
+                <select id="sortSelect" onchange="renderTable()">
+                    <option value="login_desc" selected>Đăng nhập gần nhất</option>
+                    <option value="name">Tên A-Z</option>
+                    <option value="name_desc">Tên Z-A</option>
+                    <option value="exp_desc">EXP cao nhất</option>
+                    <option value="exp_asc">EXP thấp nhất</option>
+                    <option value="streak_desc">Streak cao nhất</option>
+                    <option value="study_desc">Học nhiều nhất</option>
+                </select>
+                <button class="btn-refresh" onclick="loadData()">⟳ Làm mới</button>
+            </div>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th class="col-rank">#</th>
+                            <th class="col-email">Email</th>
+                            <th class="col-name">Tên</th>
+                            <th class="col-streak">Streak</th>
+                            <th class="col-today">Hôm nay</th>
+                            <th class="col-total">Tổng phút</th>
+                            <th class="col-exp">EXP</th>
+                            <th class="col-login">Đăng nhập</th>
+                            <th class="col-join">Tham gia</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="tab-charts" class="tab-content">
+        <div class="chart-card" style="margin-bottom: 16px;">
+            <h3>📈 Lượng học theo ngày</h3>
+            <div class="date-filter">
+                <button class="active" data-days="7" onclick="switchActivityDays(7,this)">7 Ngày</button>
+                <button data-days="14" onclick="switchActivityDays(14,this)">14 Ngày</button>
+                <button data-days="30" onclick="switchActivityDays(30,this)">30 Ngày</button>
+            </div>
+            <div class="chart-wrap" style="height: 260px;"><canvas id="activityChart"></canvas></div>
+        </div>
+        <div class="chart-card">
+            <h3>🏆 Top 10 EXP</h3>
+            <div class="chart-wrap" style="height: 300px;"><canvas id="expLargeChart"></canvas></div>
+        </div>
+    </div>
+
+    <div id="tab-activity" class="tab-content">
+        <div class="chart-card">
+            <h3>📉 Số người học & phút học theo ngày</h3>
+            <div class="date-filter">
+                <button class="active" data-days="7" onclick="switchActivityDays(7,this)">7 Ngày</button>
+                <button data-days="14" onclick="switchActivityDays(14,this)">14 Ngày</button>
+                <button data-days="30" onclick="switchActivityDays(30,this)">30 Ngày</button>
+            </div>
+            <div class="chart-wrap" style="height: 280px;"><canvas id="activityLargeChart"></canvas></div>
+        </div>
+    </div>
+
+    <div id="tab-feedback" class="tab-content">
+        <div class="section-card">
+            <div class="section-title">💬 Góp ý từ người dùng <span class="badge-count" id="feedbackCount">0</span></div>
+            <div class="filter-bar">
+                <input type="text" id="feedbackSearch" placeholder="Tìm theo tên, email hoặc nội dung..." oninput="filterFeedback()">
+                <button class="btn-refresh" onclick="loadFeedback()">⟳ Làm mới</button>
+            </div>
+            <div id="feedbackList" class="loading-msg">Chọn tab để tải dữ liệu...</div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="chartModal">
+    <div class="modal-box">
+        <button class="modal-close" onclick="closeChartModal()">&times;</button>
+        <h3 id="modalChartTitle" style="font-size:1.2em;font-weight:800;margin:0 0 12px 0;">Biểu đồ</h3>
+        <div class="chart-wrap" id="modalChartWrap" style="height: 350px;"><canvas id="modalChart"></canvas></div>
+    </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script src="assets/js/menu.js"></script>
+
+<script>
+    const ADMIN_EMAILS = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+    let allUsers = [];
+    let charts = {};
+
+    function getDateStr(offset) {
+        const d = new Date(); if (offset) d.setDate(d.getDate() + offset);
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function calcExp(d) {
+        return Math.max(0, Math.floor((d.totalStudyMinutes||0)/10)*5 + (d.bonusEXP||0));
+    }
+
+    function fmtDate(s) {
+        if (!s) return '—';
+        if (s.includes('T')) {
+            const d = new Date(s);
+            return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }
+        const p = s.split('-');
+        return p.length === 3 ? `${p[2]}/${p[1]}/${p[0]}` : s;
+    }
+
+    function fmtMins(m) {
+        if (!m) return '0p';
+        return m < 60 ? m + 'p' : Math.floor(m/60) + 'h' + (m%60 > 0 ? m%60 + 'p' : '');
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            btn.classList.add('active');
+            const el = document.getElementById(btn.dataset.tab);
+            if (el) {
+                el.classList.add('active');
+                if (btn.dataset.tab === 'tab-charts') { renderExpLargeChart(); renderActivityChart(); }
+                if (btn.dataset.tab === 'tab-activity') renderActivityChart();
+                if (btn.dataset.tab === 'tab-feedback') loadFeedback();
+            }
+        });
+    });
+
+    async function loadData() {
+        document.getElementById('userTableBody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-sub);">Đang tải dữ liệu...</td></tr>';
+        try {
+            const db = firebase.firestore();
+            const snap = await db.collection('users').get();
+            allUsers = [];
+            snap.docs.forEach(doc => {
+                const d = doc.data(); d._uid = doc.id; d._exp = calcExp(d); allUsers.push(d);
+            });
+            renderStats();
+            renderTable();
+            renderStudyChart();
+            renderExpChart();
+        } catch (e) {
+            document.getElementById('userTableBody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:#ef4444;">⚠️ ${e.message}</td></tr>`;
+        }
+    }
+
+    function renderStats() {
+        const today = getDateStr();
+        let active = 0, streak = 0, mins = 0, exp = 0;
+        const dates = new Set();
+        allUsers.forEach(u => {
+            mins += u.totalStudyMinutes || 0;
+            exp += u._exp;
+            const todayMins = (u.dailyStudyData && u.dailyStudyData[today]) || 0;
+            if (u.lastLoginDate === today || todayMins > 0) active++;
+            const ld = u.lastLoginDate || '';
+            if ([today, getDateStr(-1), getDateStr(-2)].includes(ld) && (u.streakDays||0) > 0) streak++;
+            if (u.dailyStudyData) Object.keys(u.dailyStudyData).forEach(k => dates.add(k));
+        });
+        document.getElementById('totalUsers').textContent = allUsers.length;
+        document.getElementById('activeToday').textContent = active;
+        document.getElementById('streakUsers').textContent = streak;
+        document.getElementById('totalMinutes').textContent = fmtMins(mins);
+        document.getElementById('totalExp').textContent = exp.toLocaleString();
+        document.getElementById('totalDays').textContent = dates.size;
+        document.getElementById('userCount').textContent = allUsers.length;
+    }
+
+    function filterTable() { renderTable(); }
+
+    function renderTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase().trim();
+        const sort = document.getElementById('sortSelect').value;
+        const tbody = document.getElementById('userTableBody');
+        let list = allUsers.filter(u => {
+            if (!q) return true;
+            return (u.email||'').toLowerCase().includes(q) || (u.fullName||'').toLowerCase().includes(q);
+        });
+        list.sort((a, b) => {
+            switch(sort) {
+                case 'name': return (a.fullName||'zzz').localeCompare(b.fullName||'zzz');
+                case 'name_desc': return (b.fullName||'').localeCompare(a.fullName||'');
+                case 'exp_desc': return (b._exp||0)-(a._exp||0);
+                case 'exp_asc': return (a._exp||0)-(b._exp||0);
+                case 'streak_desc': return (b.streakDays||0)-(a.streakDays||0);
+                case 'study_desc': return (b.totalStudyMinutes||0)-(a.totalStudyMinutes||0);
+                default: return (b.lastLoginAt||'').localeCompare(a.lastLoginAt||'');
+            }
+        });
+        const today = getDateStr();
+        tbody.innerHTML = list.map((u, i) => {
+            const tm = (u.dailyStudyData&&u.dailyStudyData[today])||0;
+            const email = u.email || '';
+            const name = u.fullName || '';
+            return `<tr>
+                <td class="col-rank" style="color:var(--text-sub);font-weight:700;">${i+1}</td>
+                <td class="col-email user-email" title="${email}">${email || '—'}</td>
+                <td class="col-name" style="font-weight:600;" title="${name}">${name || '—'}</td>
+                <td class="col-streak"><span class="badge ${(u.streakDays||0)>=7?'badge-green':'badge-yellow'}">${u.streakDays||0}🔥</span></td>
+                <td class="col-today">${tm}p</td>
+                <td class="col-total">${fmtMins(u.totalStudyMinutes)}</td>
+                <td class="col-exp" style="font-weight:800;color:#7c3aed;">${(u._exp||0).toLocaleString()}</td>
+                <td class="col-login login-time">${fmtDate(u.lastLoginAt)}</td>
+                <td class="col-join login-time">${fmtDate(u.joinDate)}</td>
+            </tr>`;
+        }).join('');
+    }
+
+    function buildStudyData() {
+        const labels = [], data = [];
+        for (let i = 6; i >= 0; i--) {
+            const key = getDateStr(-i);
+            const d = new Date(); d.setDate(d.getDate() - i);
+            labels.push(`${d.getDate()}/${d.getMonth()+1}`);
+            let total = 0;
+            allUsers.forEach(u => { if (u.dailyStudyData && u.dailyStudyData[key]) total += u.dailyStudyData[key]; });
+            data.push(total);
+        }
+        return { labels, data };
+    }
+
+    function renderChartOnCanvas(canvasId, labels, data, opts) {
+        const ctx = document.getElementById(canvasId);
+        if (!ctx) return null;
+        const c = new Chart(ctx, {
+            type: opts?.type || 'bar',
+            data: { labels, datasets: [{ data, backgroundColor: opts?.bg || 'rgba(59,130,246,0.5)', borderColor: opts?.border || 'rgba(59,130,246,1)', borderWidth: 1, borderRadius: 4 }] },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                    y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280' }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true }
+                }
+            }
+        });
+        return c;
+    }
+
+    function renderStudyChart() {
+        if (charts.study) { charts.study.destroy(); charts.study = null; }
+        const { labels, data } = buildStudyData();
+        charts.study = renderChartOnCanvas('studyChart', labels, data);
+    }
+
+    function renderExpChart() {
+        if (charts.exp) { charts.exp.destroy(); charts.exp = null; }
+        const top = [...allUsers].sort((a,b) => (b._exp||0)-(a._exp||0)).slice(0, 10);
+        const labels = top.map(u => {
+            const n = u.fullName || (u.email||'').split('@')[0] || 'Ẩn danh';
+            return n.length > 12 ? n.slice(0,11)+'…' : n;
+        });
+        const data = top.map(u => u._exp||0);
+        const ctx = document.getElementById('expChart');
+        if (!ctx) return;
+        const colors = ['#a78bfa','#60a5fa','#34d399','#fbbf24','#f472b6','#fb923c','#2dd4bf','#94a3b8','#6366f1','#ec4899'];
+        charts.exp = new Chart(ctx, {
+            type: 'bar',
+            data: { labels, datasets: [{ data, backgroundColor: colors.map(c => c+'80'), borderColor: colors, borderWidth: 1, borderRadius: 4 }] },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280' }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true },
+                    y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280', font: { size: 10 } }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    let activityDays = 7;
+    function switchActivityDays(days, btn) {
+        activityDays = days;
+        document.querySelectorAll('.date-filter button').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        const tabCharts = document.getElementById('tab-charts');
+        const tabActivity = document.getElementById('tab-activity');
+        if (tabCharts.classList.contains('active')) { renderActivityChart(); }
+        if (tabActivity.classList.contains('active')) { renderActivityChart(); }
+    }
+
+    function getActivityData(days) {
+        const labels = [], active = [], mins = [];
+        for (let i = days - 1; i >= 0; i--) {
+            const key = getDateStr(-i);
+            const d = new Date(); d.setDate(d.getDate() - i);
+            labels.push(`${d.getDate()}/${d.getMonth()+1}`);
+            let c = 0, m = 0;
+            allUsers.forEach(u => {
+                if (u.dailyStudyData && u.dailyStudyData[key]) { c++; m += u.dailyStudyData[key]; }
+            });
+            active.push(c); mins.push(m);
+        }
+        return { labels, active, mins };
+    }
+
+    function renderActivityChart() {
+        if (charts.activity) { charts.activity.destroy(); charts.activity = null; }
+        if (charts.activityLarge) { charts.activityLarge.destroy(); charts.activityLarge = null; }
+        const { labels, active, mins } = getActivityData(activityDays);
+
+        const makeConfig = (canvasId, large) => {
+            const ctx = document.getElementById(canvasId);
+            if (!ctx) return;
+            return new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Người học', data: active, borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)', fill: true, tension: 0.3, pointRadius: large ? 4 : 3, yAxisID: 'y' },
+                        { label: 'Phút học', data: mins, borderColor: '#34d399', backgroundColor: 'rgba(52,211,153,0.1)', fill: true, tension: 0.3, pointRadius: large ? 4 : 3, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280', font: { size: 11 } } } },
+                    scales: {
+                        x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280' }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true, position: 'left' },
+                        y1: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280' }, grid: { display: false }, beginAtZero: true, position: 'right' }
+                    }
+                }
+            });
+        };
+        charts.activity = makeConfig('activityChart', false);
+        charts.activityLarge = makeConfig('activityLargeChart', true);
+    }
+
+    function renderExpLargeChart() {
+        if (charts.expLarge) { charts.expLarge.destroy(); charts.expLarge = null; }
+        const top = [...allUsers].sort((a,b) => (b._exp||0)-(a._exp||0)).slice(0, 10);
+        const labels = top.map(u => u.fullName || (u.email||'').split('@')[0] || 'Ẩn danh');
+        const data = top.map(u => u._exp||0);
+        const colors = ['#a78bfa','#60a5fa','#34d399','#fbbf24','#f472b6','#fb923c','#2dd4bf','#94a3b8','#6366f1','#ec4899'];
+        const ctx = document.getElementById('expLargeChart');
+        if (!ctx) return;
+        charts.expLarge = new Chart(ctx, {
+            type: 'bar',
+            data: { labels, datasets: [{ data, backgroundColor: colors.map(c => c+'80'), borderColor: colors, borderWidth: 1, borderRadius: 4 }] },
+            options: {
+                indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.raw.toLocaleString() + ' ⭐' } } },
+                scales: {
+                    x: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280' }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true },
+                    y: { ticks: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-sub').trim() || '#6b7280', font: { size: 11 } }, grid: { display: false } }
+                }
+            }
+        });
+    }
+
+    function openChartModal(type) {
+        const modal = document.getElementById('chartModal');
+        const title = document.getElementById('modalChartTitle');
+        if (charts.modal) { charts.modal.destroy(); charts.modal = null; }
+
+        if (type === 'study') {
+            title.textContent = '📈 Lượng học 7 ngày qua';
+            const { labels, data } = buildStudyData();
+            charts.modal = renderChartOnCanvas('modalChart', labels, data, { bg: 'rgba(59,130,246,0.6)', border: '#3b82f6' });
+        } else {
+            title.textContent = '🏆 Top 10 EXP';
+            const top = [...allUsers].sort((a,b) => (b._exp||0)-(a._exp||0)).slice(0, 10);
+            const labels = top.map(u => u.fullName || (u.email||'').split('@')[0] || 'Ẩn danh');
+            const data = top.map(u => u._exp||0);
+            const colors = ['#a78bfa','#60a5fa','#34d399','#fbbf24','#f472b6','#fb923c','#2dd4bf','#94a3b8','#6366f1','#ec4899'];
+            const ctx = document.getElementById('modalChart');
+            if (ctx) {
+                charts.modal = new Chart(ctx, {
+                    type: 'bar',
+                    data: { labels, datasets: [{ data, backgroundColor: colors.map(c => c+'80'), borderColor: colors, borderWidth: 1, borderRadius: 4 }] },
+                    options: {
+                        indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            x: { ticks: { color: '#6b7280' }, grid: { color: 'rgba(0,0,0,0.05)' }, beginAtZero: true },
+                            y: { ticks: { color: '#6b7280', font: { size: 11 } }, grid: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+        modal.classList.add('open');
+    }
+
+    function closeChartModal() {
+        document.getElementById('chartModal').classList.remove('open');
+    }
+
+    let allFeedback = [];
+
+    async function loadFeedback() {
+        const el = document.getElementById('feedbackList');
+        el.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-sub);">Đang tải...</div>';
+        try {
+            const db = firebase.firestore();
+            const snap = await db.collection('feedback').orderBy('createdAt', 'desc').get();
+            allFeedback = [];
+            snap.docs.forEach(doc => {
+                const d = doc.data();
+                d._id = doc.id;
+                allFeedback.push(d);
+            });
+            document.getElementById('feedbackCount').textContent = allFeedback.length;
+            document.getElementById('feedbackSearch').value = '';
+            renderFeedbackList(allFeedback);
+        } catch (e) {
+            el.innerHTML = `<div style="text-align:center;padding:30px;color:#ef4444;">⚠️ ${e.message}</div>`;
+        }
+    }
+
+    function filterFeedback() {
+        const q = document.getElementById('feedbackSearch').value.toLowerCase().trim();
+        if (!q) { renderFeedbackList(allFeedback); return; }
+        const filtered = allFeedback.filter(fb =>
+            (fb.name||'').toLowerCase().includes(q) ||
+            (fb.email||'').toLowerCase().includes(q) ||
+            (fb.message||'').toLowerCase().includes(q)
+        );
+        renderFeedbackList(filtered);
+    }
+
+    function renderFeedbackList(items) {
+        const el = document.getElementById('feedbackList');
+        if (items.length === 0) {
+            el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--text-sub);">Không có góp ý nào phù hợp.</div>';
+            return;
+        }
+        let html = '';
+        let lastDate = '';
+        items.forEach(fb => {
+            const date = fb.createdAt && fb.createdAt.toDate ? fb.createdAt.toDate() : null;
+            const dateLabel = date ? `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}` : '—';
+            const timeLabel = date ? `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}` : '—';
+            const status = fb.status || 'new';
+            if (dateLabel !== lastDate) {
+                lastDate = dateLabel;
+                html += `<div class="fb-date-group">📅 ${dateLabel}</div>`;
+            }
+            html += `<div class="feedback-item" style="border-left: 3px solid ${status==='new'?'#ef4444':status==='read'?'#f59e0b':'#10b981'};">
+                <div style="display:flex;align-items:flex-start;gap:12px;">
+                    <div class="fb-status-dot ${status}" onclick="toggleFeedbackStatus('${fb._id}','${status}')" title="${status==='new'?'Chưa đọc - Nhấp để đánh dấu đã đọc':status==='read'?'Đã đọc - Nhấp để đánh dấu đã xử lý':'Đã xử lý'}"></div>
+                    <div style="flex:1;min-width:0;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
+                            <span style="font-weight:700;font-size:0.95em;">${fb.name || 'Ẩn danh'}</span>
+                            <span style="font-size:0.8em;color:var(--text-sub);">${timeLabel}</span>
+                        </div>
+                        <div style="font-size:0.78em;color:#2563eb;margin-bottom:4px;">${fb.email || ''}</div>
+                        <div style="line-height:1.6;white-space:pre-wrap;font-size:0.9em;">${fb.message || ''}</div>
+                        <div style="margin-top:6px;">
+                            <span class="fb-status-label" style="color:${status==='new'?'#ef4444':status==='read'?'#f59e0b':'#10b981'};">${status==='new'?'● Chưa đọc':status==='read'?'◉ Đã đọc':'✓ Đã xử lý'}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+        });
+        el.innerHTML = html;
+    }
+
+    async function toggleFeedbackStatus(id, currentStatus) {
+        const nextStatus = currentStatus === 'new' ? 'read' : currentStatus === 'read' ? 'done' : 'new';
+        try {
+            await firebase.firestore().collection('feedback').doc(id).set({ status: nextStatus }, { merge: true });
+            const idx = allFeedback.findIndex(f => f._id === id);
+            if (idx >= 0) allFeedback[idx].status = nextStatus;
+            filterFeedback();
+        } catch (e) {
+            console.error('Status update error:', e);
+        }
+    }
+
+    function checkAdmin() {
+        firebase.auth().onAuthStateChanged(user => {
+            const denied = document.getElementById('accessDenied');
+            const content = document.getElementById('adminContent');
+            if (user && ADMIN_EMAILS.includes(user.email)) {
+                denied.style.display = 'none';
+                content.style.display = '';
+                document.getElementById('adminEmail').textContent = '👤 ' + user.email;
+                loadData();
+            } else {
+                content.style.display = 'none';
+                denied.style.display = '';
+            }
+        });
+    }
+
+    const firebaseConfig = { apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU", authDomain: "vuihoctienghan2027.firebaseapp.com", projectId: "vuihoctienghan2027", storageBucket: "vuihoctienghan2027.firebasestorage.app", messagingSenderId: "346757373399", appId: "1:346757373399:web:526625b339fc9a1a523f92", measurementId: "G-JHCHNDDY1S" };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+    checkAdmin();
+</script>
+</body>
+</html>

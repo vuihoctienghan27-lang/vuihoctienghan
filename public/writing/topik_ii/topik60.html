@@ -20,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 
 <style>
@@ -445,71 +446,89 @@
 <script src="exam-logic.js"></script>
 
 <script>
-    // CÂU 51A
+    // CÂU 51A — Cấu trúc trích dẫn gián tiếp
     function grade51A() {
-        let val = document.getElementById('ans-51-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['필요하', '있어야 하', '있어'];
-        let validEndings = ['다고 합니까', '다고 합', '다고 들었', '다고 됩니까', '다면서요'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc gián tiếp nghe từ người khác."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp trích dẫn gián tiếp."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu trích dẫn gián tiếp."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'cần / phải có'."); }
-
-        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        var result = gradeByConfig(
+            document.getElementById('ans-51-a').value.trim(),
+            {
+                exactAnswers: [
+                    '그 서류가 필요하다고 들었습니다.',
+                    '서류가 있어야 한다고 합니다.'
+                ],
+                stems: ['필요하', '있어야 하', '있어'],
+                grammar: [
+                    { pattern: /다고\s*합[가-힣]*/, label: 'trích dẫn' },
+                    { pattern: /다고\s*들었[가-힣]*/, label: 'nghe nói' }
+                ]
+            },
+            "Cần từ vựng mang nghĩa 'cần / phải có' + trích dẫn gián tiếp."
+        );
+        document.getElementById('score-51-a').innerHTML = result.display;
         document.getElementById('btn-exp-51-a').style.display = 'inline-block';
     }
 
-    // CÂU 51B
+    // CÂU 51B — Hỏi cách thức
     function grade51B() {
-        let val = document.getElementById('ans-51-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['어떻게 하', '어떻게 해', '해야', '무엇을 하', '무엇을 준비해야', '어디로 가', '어떻게 신청'];
-        let validEndings = ['야 합', '야 됩', '야 하', '면 됩'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hỏi cách thức rất chuẩn xác."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp bắt buộc."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp bắt buộc."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ để hỏi 'như thế nào / làm gì / đi đâu'."); }
-
-        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        var result = gradeByConfig(
+            document.getElementById('ans-51-b').value.trim(),
+            {
+                exactAnswers: [
+                    '어떻게 해야 합니까?',
+                    '무엇을 준비해야 됩니까?'
+                ],
+                stems: ['어떻게 하', '어떻게 해', '해야', '무엇을 하', '무엇을 준비해야'],
+                grammar: [
+                    { pattern: /야\s*합[가-힣]*/, label: 'bắt buộc' },
+                    { pattern: /야\s*됩[가-힣]*/, label: 'phải' },
+                    { pattern: /면\s*됩[가-힣]*/, label: 'điều kiện' }
+                ]
+            },
+            "Cần từ để hỏi 'như thế nào / làm gì / đi đâu'."
+        );
+        document.getElementById('score-51-b').innerHTML = result.display;
         document.getElementById('btn-exp-51-b').style.display = 'inline-block';
     }
 
-    // CÂU 52A
+    // CÂU 52A — Phủ định một phần: không chỉ mở nhạc
     function grade52A() {
-        let val = document.getElementById('ans-52-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['들려주', '사용하', '틀어주'];
-        let validEndings = ['는 것은 아니', '지는 않', '지 않습'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định một phần rất chính xác."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp phủ định."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc phủ định một phần."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'mở cho nghe/sử dụng' và cấu trúc phủ định một phần."); }
-
-        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        var result = gradeByConfig(
+            document.getElementById('ans-52-a').value.trim(),
+            {
+                exactAnswers: [
+                    '음악을 들려주는 것은 아니다.',
+                    '음악만 사용하는 것은 아니다.'
+                ],
+                stems: ['들려주', '사용하', '틀어주'],
+                grammar: [
+                    { pattern: /는\s*것[가-힣]*\s*아니[가-힣]*/, label: 'không phải là' },
+                    { pattern: /지\s*않[가-힣]*/, label: 'phủ định' }
+                ]
+            },
+            "Cần động từ 'mở cho nghe/sử dụng' và cấu trúc phủ định một phần."
+        );
+        document.getElementById('score-52-a').innerHTML = result.display;
         document.getElementById('btn-exp-52-a').style.display = 'inline-block';
     }
 
-    // CÂU 52B
+    // CÂU 52B — Cấu trúc sai khiến
     function grade52B() {
-        let val = document.getElementById('ans-52-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['느끼', '경험하', '가지'];
-        let validEndings = ['게 한', '도록 한', '게 만듭'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Cấu trúc sai khiến hoàn hảo."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp sai khiến."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc sai khiến."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'cảm nhận/trải nghiệm'."); }
-
-        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        var result = gradeByConfig(
+            document.getElementById('ans-52-b').value.trim(),
+            {
+                exactAnswers: [
+                    '새로운 경험을 하게 한다.',
+                    '다양한 감정을 느끼게 만든다.'
+                ],
+                stems: ['느끼', '경험하', '가지'],
+                grammar: [
+                    { pattern: /게\s*한[가-힣]*/, label: 'sai khiến' },
+                    { pattern: /도록\s*한[가-힣]*/, label: 'để' },
+                    { pattern: /게\s*만듭[가-힣]*/, label: 'làm cho' }
+                ]
+            },
+            "Cần động từ 'cảm nhận/trải nghiệm' + sai khiến."
+        );
+        document.getElementById('score-52-b').innerHTML = result.display;
         document.getElementById('btn-exp-52-b').style.display = 'inline-block';
     }
 

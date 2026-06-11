@@ -20,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 
 <style>
@@ -425,76 +426,93 @@
 
 <script src="exam-logic.js"></script>
 
-<script>
-    // CÂU 51A
-    function grade51A() {
-        let val = document.getElementById('ans-51-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['하', '가', '시작하'];
-        let validEndings = ['러 갑니다', '러 갈 예정입니다', '러 가기로 했습니다', '게 되었습니다', '겠습'];
+    <script>
+        // CÂU 51A — Cấu trúc mục đích di chuyển
+        function grade51A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '일하러 갑니다.',
+                        '아르바이트하러 가기로 했습니다.'
+                    ],
+                    stems: ['하', '가', '시작하'],
+                    grammar: [
+                        { pattern: /러\s*갑[가-힣]*/, label: 'đi để' },
+                        { pattern: /러\s*갈\s*예정[가-힣]*/, label: 'dự định đi' },
+                        { pattern: /기로\s*했[가-힣]*/, label: 'quyết định' }
+                    ]
+                },
+                "Cần động từ 'đi làm / bắt đầu làm' + mục đích."
+            );
+            document.getElementById('score-51-a').innerHTML = result.display;
+            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc mục đích di chuyển/tương lai."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp mục đích."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu mục đích."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'đi làm / bắt đầu làm'."); }
+        // CÂU 51B — Nguyện vọng tặng quà vừa lòng
+        function grade51B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '마음에 들면 좋겠습니다.',
+                        '마음에 들었으면 좋겠습니다.'
+                    ],
+                    stems: ['들', '맞'],
+                    grammar: [
+                        { pattern: /면\s*좋겠[가-힣]*/, label: 'mong' },
+                        { pattern: /기를\s*바랍[가-힣]*/, label: 'hy vọng' }
+                    ]
+                },
+                "Cần động từ mang nghĩa 'vừa lòng / ưng ý'."
+            );
+            document.getElementById('score-51-b').innerHTML = result.display;
+            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        }
 
-        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
-    }
+        // CÂU 52A — Cấu trúc tương phản (모습)
+        function grade52A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '겉으로 보는 모습과 다를 수 있다.',
+                        '겉모습만 보고 판단하는 것이다.'
+                    ],
+                    stems: ['모습', '상태'],
+                    grammar: [
+                        { pattern: /보[가-힣]*\s*것[가-힣]*/, label: 'việc nhìn' }
+                    ]
+                },
+                "Cần danh từ '모습' và động từ '보다'."
+            );
+            document.getElementById('score-52-a').innerHTML = result.display;
+            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        }
 
-    // CÂU 51B
-    function grade51B() {
-        let val = document.getElementById('ans-51-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['들', '맞'];
-        let validEndings = ['면 좋겠', '었으면 좋겠', '기를 바랍', '겠습'];
+        // CÂU 52B — Điều kiện thời gian
+        function grade52B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '시간이 지나야 알 수 있다.',
+                        '세월이 흘러야 깨닫게 된다.'
+                    ],
+                    stems: ['지나야', '지난 후', '흘러야'],
+                    grammar: [
+                        { pattern: /알\s*수\s*있[가-힣]*/, label: 'có thể biết' },
+                        { pattern: /깨닫[가-힣]*/, label: 'nhận ra' },
+                        { pattern: /게\s*되[가-힣]*/, label: 'trở nên' }
+                    ]
+                },
+                "Cần cụm từ chỉ sự 'trôi qua' của thời gian."
+            );
+            document.getElementById('score-52-b').innerHTML = result.display;
+            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng nguyện vọng tặng quà."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp mong muốn."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp mong muốn."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'vừa lòng / ưng ý' (들다)."); }
-
-        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
-    }
-
-    // CÂU 52A
-    function grade52A() {
-        let val = document.getElementById('ans-52-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['모습', '상태'];
-        let validEndings = ['보는 것', '보는 셈'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Áp dụng đúng cấu trúc tương phản."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp tương phản."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc tương phản."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần danh từ '모습' và động từ '보다'."); }
-
-        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
-    }
-
-    // CÂU 52B
-    function grade52B() {
-        let val = document.getElementById('ans-52-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['지나야', '지난 후', '흘러야'];
-        let validEndings = ['알 수 있', '깨닫게 되', '게 되', '겠습'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Cấu trúc điều kiện thời gian hoàn hảo."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp điều kiện."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu kết quả."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ chỉ sự 'trôi qua' của thời gian."); }
-
-        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
-    }
-
-    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 64 ---
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 64 ---
     const bookData_64 = [
         { vi: "Kết quả khảo sát về sự thay đổi của thị trường mua sắm trực tuyến cho thấy, doanh thu mua sắm trực tuyến đạt 46 nghìn tỷ won vào năm 2014 và 92 nghìn tỷ won vào năm 2018, tăng mạnh chỉ sau 4 năm.", ko: "온라인 쇼핑 시장의 변화에 대해 조사한 결과, 온라인 쇼핑 매출액은 2014년에 46조 원, 2018년에 92조 원으로 4년 만에 크게 증가한 것으로 나타났다." },
         { vi: "Doanh thu theo thiết bị sử dụng, trong trường hợp của máy tính tăng nhẹ từ 32 nghìn tỷ won năm 2014 lên 39 nghìn tỷ won năm 2018, trong khi đó smartphone ghi nhận mức tăng doanh thu mạnh mẽ từ 14 nghìn tỷ won năm 2014 lên 53 nghìn tỷ won năm 2018.", ko: "사용 기기에 따른 매출액은 컴퓨터의 경우 2014년에 32조 원, 2018년에 39조 원으로 소폭 증가한 반면 스마트폰은 2014년에 14조 원, 2018년에 53조 원으로 매출액이 큰 폭으로 증가하였다." },

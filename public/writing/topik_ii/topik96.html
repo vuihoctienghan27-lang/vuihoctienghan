@@ -21,6 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 <div class="header-badge-container">
     <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제96회</div>
@@ -433,73 +434,90 @@
     <script src="exam-logic.js"></script>
 
     <script>
-        // CÂU 51A
+        // CÂU 51A — Ý định chuyển nhà
         function grade51A() {
-            let val = document.getElementById('ans-51-a').value.trim();
-            let score = 0; let feedback = [];
-            
-            let validRoots = ['하', '할'];
-            let validEndings = ['려고 합', '고 싶', '기로 했', '계획', '예정', '겠습'];
-
-            if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý định chuyển nhà chia rất chuẩn."); }
-            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ý định."); }
-            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng sai đuôi câu ý định."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có động từ '하다' để nối với chữ '이사를' ở trước."); }
-
-            document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-51-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '이사를 하려고 합니다.',
+                        '이사할 계획입니다.'
+                    ],
+                    stems: ['하', '할'],
+                    grammar: [
+                        { pattern: /려고\s*하[가-힣]*/, label: 'ý định' },
+                        { pattern: /고\s*싶[가-힣]*/, label: 'mong muốn' },
+                        { pattern: /계획[가-힣]*/, label: 'kế hoạch' },
+                        { pattern: /예정[가-힣]*/, label: 'dự định' }
+                    ]
+                },
+                "Phải có động từ '하다' để nối với chữ '이사를'."
+            );
+            document.getElementById('score-51-a').innerHTML = result.display;
             document.getElementById('btn-exp-51-a').style.display = 'inline-block';
         }
 
-        // CÂU 51B
+        // CÂU 51B — Phân vân chưa biết nơi nào
         function grade51B() {
-            let val = document.getElementById('ans-51-b').value.trim();
-            let score = 0; let feedback = [];
-            
-            let validRoots = ['동네', '곳', '데'];
-            let validEndings = ['좋은지', '좋을지', '갈지', '가야 할지'];
-
-            if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng sự phân vân chưa biết nơi nào."); }
-            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp nghi vấn."); }
-            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp thắc mắc."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần từ chỉ địa điểm/khu phố."); }
-
-            document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-51-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '어느 동네가 좋은지 아직 모르겠습니다.',
+                        '어디로 가야 할지 고민입니다.'
+                    ],
+                    stems: ['동네', '곳', '데'],
+                    grammar: [
+                        { pattern: /좋은지[가-힣]*/, label: 'tốt không' },
+                        { pattern: /갈지[가-힣]*/, label: 'đi đâu' },
+                        { pattern: /할지[가-힣]*/, label: 'làm gì' }
+                    ]
+                },
+                "Cần từ chỉ địa điểm/khu phố + phân vân."
+            );
+            document.getElementById('score-51-b').innerHTML = result.display;
             document.getElementById('btn-exp-51-b').style.display = 'inline-block';
         }
 
-        // CÂU 52A
+        // CÂU 52A — Phủ định việc chỉ ngủ vào mùa đông
         function grade52A() {
-            let val = document.getElementById('ans-52-a').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['자'];
-            let validNegatives = ['않', '아니', '못하'];
-
-            if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots) && checkKeywords(val, validNegatives)) { score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định lại việc 'chỉ ngủ vào mùa đông' rất tốt."); }
-            else if(checkKeywords(val, validNegatives)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp phủ định."); }
-            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Có từ 'ngủ' nhưng thiếu ý phủ định."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'Ngủ' và ý phủ định một phần."); }
-
-            document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-52-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '겨울에만 자는 것은 아니다.',
+                        '겨울잠만 자는 게 아니다.'
+                    ],
+                    stems: ['자'],
+                    grammar: [
+                        { pattern: /지\s*않[가-힣]*/, label: 'phủ định' },
+                        { pattern: /아니[가-힣]*/, label: 'không phải' },
+                        { pattern: /못하[가-힣]*/, label: 'không thể' }
+                    ]
+                },
+                "Cần động từ 'Ngủ' và ý phủ định một phần."
+            );
+            document.getElementById('score-52-a').innerHTML = result.display;
             document.getElementById('btn-exp-52-a').style.display = 'inline-block';
         }
 
-        // CÂU 52B
+        // CÂU 52B — Lý do không thể
         function grade52B() {
-            let val = document.getElementById('ans-52-b').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['못하', '안 되', '할 수 없'];
-            let validEndings = ['기 때문', '습니다'];
-
-            if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu lý do chính xác."); }
-            else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp giải thích."); }
-            else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc giải thích."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ mang nghĩa 'Không thể' làm được việc đó."); }
-
-            document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-52-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '겨울에 먹이를 구하지 못하기 때문이다.',
+                        '겨울에는 활동할 수 없기 때문이다.'
+                    ],
+                    stems: ['못하', '안 되', '할 수 없'],
+                    grammar: [
+                        { pattern: /기\s*때문[가-힣]*/, label: 'lý do' }
+                    ]
+                },
+                "Cần từ mang nghĩa 'Không thể làm được' + lý do."
+            );
+            document.getElementById('score-52-b').innerHTML = result.display;
             document.getElementById('btn-exp-52-b').style.display = 'inline-block';
         }
 

@@ -20,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 <style>
     /* ===== HEADER BADGE ===== */
@@ -405,75 +406,101 @@
 <script src="exam-logic.js"></script>
 
 <script>
-    // CÂU 51A
-    function grade51A() {
-        let val = document.getElementById('ans-51-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['초대하', '대접하'];
-        let validEndings = ['고 싶습니다', '려고 합니다', '고 싶어요', '겠습'];
+        // CÂU 51A — Mời thầy cô đến nhà
+        function grade51A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '제가 선생님을 집으로 초대하고 싶습니다.',
+                        '제가 선생님을 초대하려고 합니다.',
+                        '제가 식사를 대접하고 싶습니다.'
+                    ],
+                    stems: ['초대하', '대접하'],
+                    grammar: [
+                        { pattern: /고\s*싶[가-힣]*/, label: 'mong muốn' },
+                        { pattern: /려고\s*하[가-힣]*/, label: 'ý định' }
+                    ]
+                },
+                "Cần từ vựng mang nghĩa 'mời / tiếp đãi'."
+            );
+            document.getElementById('score-51-a').innerHTML = result.display;
+            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý nguyện mời thầy cô đến nhà."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ý định/mong muốn."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu thể hiện ý định."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'mời / tiếp đãi' (초대하다, 대접하다)."); }
+        // CÂU 51B — Thể hiện sự đồng tình linh hoạt về thời gian
+        function grade51B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '오후에는 다 괜찮습니다.',
+                        '언제든지 다 좋습니다.',
+                        '두 날 모두 괜찮습니다.',
+                        '다 가능합니다.',
+                        '오후에는 다 좋습니다.'
+                    ],
+                    stems: ['다', '모두', '언제', '오후'],
+                    grammar: [
+                        { pattern: /괜찮[가-힣]*/, label: 'ổn' },
+                        { pattern: /좋[가-힣]*/, label: 'tốt' },
+                        { pattern: /가능[가-힣]*/, label: 'có thể' }
+                    ]
+                },
+                "Cần diễn đạt ý 'chiều nào cũng được / lúc nào cũng tốt'."
+            );
+            document.getElementById('score-51-b').innerHTML = result.display;
+            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        }
 
-        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
-    }
+        // CÂU 52A — Gội đầu buổi tối thì tốt hơn
+        function grade52A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '머리는 저녁에 감는 것이 좋다.',
+                        '저녁에 감는 게 더 좋다.',
+                        '밤에 감아야 한다.'
+                    ],
+                    stems: ['저녁', '밤', '자기 전'],
+                    grammar: [
+                        { pattern: /감[가-힣]*/, label: 'gội' },
+                        { pattern: /는\s*것[가-힣]*/, label: 'việc' },
+                        { pattern: /좋[가-힣]*/, label: 'tốt' }
+                    ]
+                },
+                "Cần cụm từ 'buổi tối / ban đêm'."
+            );
+            document.getElementById('score-52-a').innerHTML = result.display;
+            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        }
 
-    // CÂU 51B
-    function grade51B() {
-        let val = document.getElementById('ans-51-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['다', '모두', '언제', '오후'];
-        let validEndings = ['괜찮습니다', '좋습니다', '가능합니다', '됩니다', '겠습'];
+        // CÂU 52B — Sấy khô tóc rồi mới ngủ
+        function grade52B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '자기 전에 머리를 말리고 자야 한다.',
+                        '머리를 다 말려야 한다.',
+                        '머리를 완전히 말리고 자야 한다.',
+                        '말린 후에 자는 것이 좋다.'
+                    ],
+                    stems: ['말리', '말려', '말린'],
+                    grammar: [
+                        { pattern: /고\s*자[가-힣]*/, label: 'rồi ngủ' },
+                        { pattern: /야\s*한[가-힣]*/, label: 'phải' },
+                        { pattern: /는\s*것[가-힣]*/, label: 'việc' }
+                    ]
+                },
+                "Cần động từ 'làm khô / sấy' (말리다)."
+            );
+            document.getElementById('score-52-b').innerHTML = result.display;
+            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện sự đồng tình linh hoạt về thời gian."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp đồng ý."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu tính từ thể hiện sự đồng ý."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần diễn đạt ý 'chiều nào cũng được / lúc nào cũng tốt'."); }
-
-        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
-    }
-
-    // CÂU 52A
-    function grade52A() {
-        let val = document.getElementById('ans-52-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['저녁', '밤', '자기 전'];
-        let validEndings = ['감는 것이 좋', '감아야 한', '감는 게 더 낫', '겠습'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đối chiếu chính xác thời gian và đưa ra lời khuyên."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp lời khuyên."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu động từ '감다' hoặc đuôi lời khuyên."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ 'buổi tối / ban đêm' (저녁, 밤)."); }
-
-        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
-    }
-
-    // CÂU 52B
-    function grade52B() {
-        let val = document.getElementById('ans-52-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['말리', '말려', '말린'];
-        let validEndings = ['고 자야 한', '는 것이 좋', '말려야 한', '겠습'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Đưa ra trình tự hành động bắt buộc sấy tóc."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp bắt buộc/lời khuyên."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu bắt buộc/lời khuyên."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ 'làm khô / sấy' (말리다)."); }
-
-        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
-    }
-
-    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 41 ---
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 41 ---
     const bookData_41 = [
         { vi: "Người ta đã tiến hành một cuộc khảo sát đối với 300 giáo viên và học sinh về phương pháp nâng cao năng lực viết.", ko: "교사와 학생 300명을 대상으로 글쓰기 능력을 향상시키는 방법에 대해 설문 조사를 실시하였다." },
         { vi: "Kết quả là có thể thấy suy nghĩ của giáo viên và học sinh là khác nhau.", ko: "그 결과 교사와 학생의 생각이 다르다는 것을 알 수 있었다." },

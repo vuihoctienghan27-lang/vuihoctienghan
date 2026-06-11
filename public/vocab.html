@@ -1,10 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sổ Từ Vựng - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -44,19 +47,12 @@
         }
 
         /* Mobile responsive */
-        @media (max-width: 768px) {
-            .global-nav, .wrapper {
-                margin-left: 15px !important;
-                margin-right: 15px !important;
-                width: auto !important;
-            }
-        }
         @media (max-width: 600px) {
-            .wrapper { margin-left: 15px; margin-right: 15px; border-radius: 16px; padding: 20px 16px; width: auto; }
+            .wrapper { border-radius: 16px; padding: 10px 8px;  width: 100%; box-sizing: border-box;}
         }
 
         /* WRAPPER KÍNH MỜ */
-        .wrapper { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 30px 40px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box; }
+        .wrapper { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 15px 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box; }
 
         .blue-banner {
             background: linear-gradient(135deg, rgba(30, 64, 175, 0.85) 0%, rgba(59, 130, 246, 0.85) 100%);
@@ -275,9 +271,10 @@
 
         .current-list-title {
             margin: 0;
-            font-size: 1.4em;
-            color: var(--primary);
-            font-weight: 900;
+            font-size: 1.15em;
+            color: var(--text-main);
+            font-weight: 600;
+            text-align: center;
         }
 
         .btn-edit {
@@ -326,8 +323,8 @@
             background: #fff;
             border: 1px solid var(--border);
             border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
             min-width: 150px;
             overflow: hidden;
         }
@@ -449,11 +446,10 @@
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(4px);
             border: 2px solid rgba(255, 255, 255, 0.9);
-            padding: 15px 15px 15px 45px;
+            padding: 15px;
             border-radius: 12px;
             transition: 0.2s;
             display: flex;
-            justify-content: space-between;
             align-items: center;
         }
 
@@ -469,18 +465,15 @@
 
         /* Grab handle */
         .drag-handle {
-            position: absolute;
-            left: 8px;
-            top: 50%;
-            transform: translateY(-50%);
             color: #cbd5e1;
             cursor: grab;
-            padding: 10px;
+            padding: 8px 6px;
             font-size: 1.2em;
             transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
 
         .drag-handle:active {
@@ -493,15 +486,11 @@
         }
 
         .v-status-dot {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            left: 35px;
-            width: 12px;
-            height: 12px;
+            width: 12px; height: 12px;
             border-radius: 50%;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             border: 2px solid #fff;
+            align-self: center;
         }
 
         .v-word {
@@ -630,7 +619,7 @@
 
         
         @media (min-width: 1024px) {
-            body.nav-open .wrapper { transform: translateX(-130px); transition: transform 0.3s ease; }
+            body.nav-open .wrapper { transform: translateX(-130px); transition: transform 0.3s ease;  width: 100%; box-sizing: border-box;}
             body.nav-open .global-nav { transform: translateX(-130px); transition: transform 0.3s ease; }
         }
 
@@ -752,7 +741,7 @@
         .modal-box {
             background: #fff;
             width: 95%;
-            max-width: 500px;
+            max-width: 620px;
             border-radius: 20px;
             padding: 30px;
             position: relative;
@@ -812,7 +801,7 @@
 
         .fc-card {
             width: 100%;
-            height: 210px;
+            height: 320px;
             position: relative;
             transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             transform-style: preserve-3d;
@@ -826,9 +815,9 @@
 
         .fc-card.flipped {
             transform: rotateY(180deg);
-            background: #fff;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
             color: #1e293b;
-            border: 3px solid #bfdbfe;
+            border: 3px solid rgba(37,99,235,0.3);
         }
 
         .fc-text {
@@ -845,7 +834,7 @@
 
         .fc-card.flipped .fc-text {
             transform: rotateY(180deg);
-            font-size: 1.8em;
+            font-size: 1.4em;
             color: #3b82f6;
         }
 
@@ -931,9 +920,9 @@
             }
 
             .wrapper {
-                padding: 20px 15px;
+                padding: 10px 8px;
                 border-radius: 16px;
-            }
+             width: 100%; box-sizing: border-box;}
 
             .tabs-2x2 {
                 gap: 10px;
@@ -953,9 +942,60 @@
             }
 
             .modal-box {
-                padding: 20px 15px;
-                width: 95%;
+                padding: 12px 8px;
+                width: 98%;
                 max-width: 100%;
+                border-radius: 16px;
+            }
+
+            #studyModal .modal-box {
+                padding: 10px 6px;
+                width: 100%;
+                max-height: 85vh;
+                overflow-y: auto;
+            }
+
+            #studyModal .modal-header {
+                margin-bottom: 10px;
+                padding-bottom: 10px;
+            }
+
+            .fc-container {
+                margin-bottom: 15px;
+            }
+
+            .fc-card {
+                height: 280px;
+                margin: 0 5px;
+                border-radius: 16px;
+            }
+
+            .fc-text {
+                font-size: 1.8em;
+            }
+
+            .fc-card.flipped .fc-text {
+                font-size: 1em;
+                padding: 10px 8px !important;
+            }
+
+            .fc-card.flipped .fc-text > div:first-child {
+                font-size: 1.3em !important;
+                margin-bottom: 4px !important;
+            }
+
+            .fc-nav-btn {
+                font-size: 1.8em;
+                padding: 5px;
+            }
+
+            .assess-grid {
+                gap: 6px;
+            }
+
+            .btn-pastel {
+                padding: 10px 6px;
+                font-size: 0.85em;
             }
 
             .fab-container {
@@ -980,18 +1020,6 @@
                 right: -5px;
             }
 
-            .fc-card {
-                height: 200px;
-            }
-
-            .fc-text {
-                font-size: 2em;
-            }
-
-            .fc-nav-btn {
-                font-size: 2em;
-                padding: 5px;
-            }
         }
 
         @keyframes fadeIn {
@@ -1074,16 +1102,17 @@
         </div>
 
         <div class="tabs-2x2">
-            <button class="tab-btn-flat active" id="tabAllBtn" onclick="switchVocabTab('all')">📚 Từ vựng</button>
+            <button class="tab-btn-flat active" id="tabAllBtn" onclick="switchVocabTab('all')">📖 Bài học</button>
             <button class="tab-btn-flat" id="tabFoldersBtn" onclick="switchVocabTab('folders')">📁 Thư mục</button>
         </div>
 
-        <!-- TAB CONTENT: TỪ VỰNG -->
+        <!-- TAB CONTENT: BÀI HỌC -->
         <div id="viewAllVocab" style="display: block; animation: fadeIn 0.3s ease;">
             <div
                 style="display:flex; justify-content:space-between; align-items:center; border-bottom: 2px solid rgba(255,255,255,0.6); padding-bottom: 10px; margin-bottom: 20px;">
-                <h3 style="font-size: 1.25em; margin:0;" id="allVocabTitle">Tất cả từ vựng (<span
+                <h3 style="font-size: 1.25em; margin:0;" id="allVocabTitle">Tất cả Bài học (<span
                         id="totalVocabCountGlobal">0</span>)</h3>
+                <button class="btn-create-list" onclick="createLesson()">+ Tạo Bài học</button>
             </div>
             <div id="vocabSkeleton" style="text-align: center; padding: 40px 20px; font-weight: bold; font-size: 1.2em; color: #3b82f6;">
                 <div style="display: inline-block; animation: pulse 1.5s infinite;">⏳ Đang tải dữ liệu...</div>
@@ -1096,18 +1125,20 @@
             <div id="vocabSetsView">
                 <div
                     style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.6); padding-bottom: 10px;">
-                    <h3 style="margin:0; font-size: 1.3em;">Các Bộ Thẻ Của Bạn</h3>
-                    <button class="btn-create-list" onclick="createNewList()">+ Tạo Thư Mục</button>
+                    <h3 style="margin:0; font-size: 1.3em;">Thư mục của bạn</h3>
+                    <button class="btn-create-list" onclick="createFolderDialog()">+ Tạo Thư mục</button>
                 </div>
                 <div class="list-grid" id="listsGrid"></div>
             </div>
 
             <!-- DETAIL VIEW -->
             <div id="vocabDetailView" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                    <button class="btn-edit" onclick="backToSets()"
-                        style="padding: 10px 15px; width: auto; flex: none;">← Quay Lại</button>
-                    <h3 id="currentListName" class="current-list-title">Tên Danh Sách</h3>
+                <div id="vocabDetailHeader" style="margin-bottom: 20px;">
+                    <h3 id="currentListName" class="current-list-title" style="text-align:center;font-weight:600;font-size:1.15em;margin:0 0 10px 0;">Tên Danh Sách</h3>
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <button class="btn-edit" onclick="backToSets()" style="padding:6px 14px;font-size:0.82em;flex:0 0 auto;">← Quay Lại</button>
+                        <span id="headerActionBtnSlot"></span>
+                    </div>
                 </div>
 
                 <div class="add-word-row" id="addWordSection">
@@ -1183,6 +1214,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="assets/js/vocab-daily.js"></script>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU", authDomain: "vuihoctienghan2027.firebaseapp.com", projectId: "vuihoctienghan2027", storageBucket: "vuihoctienghan2027.firebasestorage.app", messagingSenderId: "346757373399", appId: "1:346757373399:web:526625b339fc9a1a523f92", measurementId: "G-JHCHNDDY1S" };
@@ -1192,9 +1224,22 @@
 
         window.currentUserUid = null;
 
-        auth.onAuthStateChanged(user => {
+        let vocabListsSynced = false;
+        auth.onAuthStateChanged(async (user) => {
             if (!user) { window.location.href = 'index.html'; return; }
             window.currentUserUid = user.uid;
+
+            if (!vocabListsSynced) {
+                vocabListsSynced = true;
+                if (typeof migrateOldData === 'function') migrateOldData();
+                setTimeout(() => {
+                    if (window.getDailyVocab) {
+                        syncDailyVocab();
+                    } else {
+                        setTimeout(() => syncDailyVocab(), 500);
+                    }
+                }, 300);
+            }
 
             db.collection("users").doc(user.uid).onSnapshot(doc => {
                 if (doc.exists) {
@@ -1232,6 +1277,59 @@
                 setTimeout(() => { t.style.opacity = '0'; t.style.transition = '0.5s'; }, 10000);
             }
         }, 1000);
+
+        async function syncDailyVocab() {
+            const uid = window.currentUserUid;
+            if (!uid || typeof firebase === 'undefined' || !window.getDailyVocab) return;
+            const db = firebase.firestore();
+            const userRef = db.collection("users").doc(uid);
+            const vocabRef = userRef.collection("vocabulary");
+
+            const fmtDateDM = (offset) => {
+                const d = new Date(); d.setDate(d.getDate() + offset);
+                return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+            };
+            const dailyListName = (offset) => 'Daily Vocab/Ngày ' + fmtDateDM(offset);
+
+            // 1. Delete ALL existing Daily Vocab docs
+            try {
+                const snap = await vocabRef.where('listName', '>=', 'Daily Vocab/').where('listName', '<=', 'Daily Vocab/\uf8ff').get();
+                if (snap.size > 0) {
+                    const delBatch = db.batch();
+                    snap.forEach(doc => delBatch.delete(doc.ref));
+                    await delBatch.commit();
+                }
+            } catch(e) { console.log('DV cleanup err:', e); }
+
+            // 2. Ensure "Daily Vocab" in vocabLists
+            try {
+                const userDoc = await userRef.get();
+                const lists = (userDoc.exists && userDoc.data().vocabLists) || [];
+                if (!lists.includes('Daily Vocab')) {
+                    await userRef.set({ vocabLists: firebase.firestore.FieldValue.arrayUnion('Daily Vocab') }, { merge: true });
+                }
+            } catch(e) {}
+
+            // 3. Write fresh words for last 10 days
+            const allBatches = [];
+            for (let offset = 0; offset < 10; offset++) {
+                const listName = dailyListName(-offset);
+                const words = window.getDailyVocab(-offset);
+                if (!words || words.length === 0) continue;
+                const batch = db.batch();
+                words.forEach((w, i) => {
+                    const safeId = listName.replace(/[/\s]/g, '_') + '_' + w.word;
+                    batch.set(vocabRef.doc(safeId), {
+                        word: w.word, meaning: w.meaning, listName: listName,
+                        status: 0, order: i, savedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                });
+                allBatches.push(batch.commit());
+            }
+            await Promise.all(allBatches).catch(()=>{});
+            console.log('Daily Vocab synced:', 10, 'days');
+        }
+        window.syncDailyVocab = syncDailyVocab;
     </script>
     <script src="assets/js/mypage-vocab.js"></script>
     <script src="assets/js/game-dictation.js"></script>

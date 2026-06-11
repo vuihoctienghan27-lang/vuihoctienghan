@@ -20,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 <style>
     /* ===== HEADER BADGE ===== */
@@ -511,77 +512,92 @@
 <script src="exam-logic.js"></script>
 
 <script>
-    // CÂU 51A
-    function grade51A() {
-        let val = document.getElementById('ans-51-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['모집하', '모집합', '뽑', '구하'];
-        let validEndings = ['려고 합', '고 있습', '기로 했습', '겠습'];
+        // CÂU 51A — Chiêu mộ thành viên mới
+        function grade51A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '새로운 회원을 모집하고 있습니다.',
+                        '회원을 모집하려고 합니다.'
+                    ],
+                    stems: ['모집하', '뽑', '구하'],
+                    grammar: [
+                        { pattern: /려고\s*하[가-힣]*/, label: 'ý định' },
+                        { pattern: /고\s*있[가-힣]*/, label: 'đang tiến hành' },
+                        { pattern: /기로\s*했[가-힣]*/, label: 'quyết định' }
+                    ]
+                },
+                "Cần từ vựng mang nghĩa 'chiêu mộ / tuyển / tìm kiếm'."
+            );
+            document.getElementById('score-51-a').innerHTML = result.display;
+            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý định chiêu mộ thành viên mới."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ý định."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu thể hiện ý định."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'chiêu mộ / tuyển / tìm kiếm' (모집하다, 뽑다)."); }
+        // CÂU 51B — Hỏi lịch sự về người mới
+        function grade51B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '처음 해 보시는 거라면 어렵다고 느끼실 수도 있습니다.',
+                        '처음 배우시는 거라면 모르는 게 많으실 거예요.'
+                    ],
+                    stems: ['처음', '모르', '못하', '안 해'],
+                    grammar: [
+                        { pattern: /십[가-힣]*/, label: 'kính ngữ' },
+                        { pattern: /세[가-힣]*/, label: 'kính ngữ' }
+                    ]
+                },
+                "Cần từ vựng mang nghĩa 'mới học lần đầu / chưa biết gì'."
+            );
+            document.getElementById('score-51-b').innerHTML = result.display;
+            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        }
 
-        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
-    }
+        // CÂU 52A — Liệt kê thái độ số 1: không từ bỏ
+        function grade52A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '하나는 어려운 일이 있어도 포기하지 않고 긍정적으로 생각하는 것이다.',
+                        '하나는 어떠한 상황에서도 포기하지 않는 것이다.'
+                    ],
+                    stems: ['하나는', '포기하지 않', '긍정적', '극복하'],
+                    grammar: [
+                        { pattern: /는\s*것[가-힣]*/, label: 'định nghĩa' }
+                    ]
+                },
+                "Phải có chữ '하나는' và hành động 'Không từ bỏ/Suy nghĩ tích cực'."
+            );
+            document.getElementById('score-52-a').innerHTML = result.display;
+            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        }
 
-    // CÂU 51B
-    function grade51B() {
-        let val = document.getElementById('ans-51-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['처음', '모르', '못하', '안 해', '배워 본 적', '보셨'];
-        let validEndings = ['십니까', '신가요', '세요', '겠습니까', '습니까'];
+        // CÂU 52B — Hệ quả của suy nghĩ tiêu cực
+        function grade52B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '부정적인 생각을 하면 성공할 가능성이 낮아진다.',
+                        '포기하는 마음이 들면 좋은 결과를 얻기 어렵다.'
+                    ],
+                    stems: ['부정적', '포기하'],
+                    grammar: [
+                        { pattern: /낮[가-힣]*/, label: 'thấp' },
+                        { pattern: /어렵[가-힣]*/, label: 'khó' },
+                        { pattern: /없[가-힣]*/, label: 'không có' }
+                    ]
+                },
+                "Cần sự kết hợp giữa 'Suy nghĩ tiêu cực' và 'Khó đạt kết quả tốt / Tỷ lệ thấp'."
+            );
+            document.getElementById('score-52-b').innerHTML = result.display;
+            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Câu hỏi lịch sự đoán đúng tâm lý người mới."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp hỏi lịch sự."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu hỏi kính ngữ."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'mới học lần đầu / chưa biết gì'."); }
-
-        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
-    }
-
-    // CÂU 52A — Pattern B: roots=validRoots+validTargets, endings=validEndings
-    function grade52A() {
-        let val = document.getElementById('ans-52-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['하나는'];
-        let validTargets = ['포기하지 않', '긍정적', '기대하', '극복하'];
-        let validEndings = ['는 것'];
-        let hasRoots = checkKeywords(val, validRoots) && checkKeywords(val, validTargets);
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Liệt kê thái độ số 1 rất chuẩn xác và đối lập với sự từ bỏ."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp định nghĩa/liệt kê."); }
-        else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu định nghĩa/liệt kê."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có chữ '하나는' (Một là...) và hành động 'Không từ bỏ/Suy nghĩ tích cực'."); }
-
-        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
-    }
-
-    // CÂU 52B — Pattern C: roots=validRoots, grammar=validTargets
-    function grade52B() {
-        let val = document.getElementById('ans-52-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['부정적', '포기하'];
-        let validTargets = ['낮', '어렵', '없', '나쁘', '나쁜'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng hệ quả xấu khi suy nghĩ tiêu cực."); }
-        else if(checkKeywords(val, validTargets)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp hệ quả."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu hệ quả."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Suy nghĩ tiêu cực' và 'Khó đạt kết quả tốt / Tỷ lệ thấp'."); }
-
-        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
-    }
-
-    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 37 ---
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 37 ---
     const bookData_37 = [
         { vi: "Phương tiện truyền thông đại chúng là phương tiện truyền đạt thông tin và suy nghĩ với số lượng lớn cho nhiều người.", ko: "대중매체란 많은 사람에게 대량으로 정보와 생각을 전달하는 수단을 말한다." },
         { vi: "Ở phương tiện đại chúng này có đa dạng các hình thức, nếu chia dựa trên tiêu chuẩn là hình thức biểu hiện thì chủ yếu là phương tiện in ấn, phương tiện phát sóng và phương tiện truyền thông.", ko: "이러한 대중매체에는 다양한 양식이 있는데, 표현 양식을 기준으로 나누면 크게 인쇄매체, 전파매체, 통신매체이다." },

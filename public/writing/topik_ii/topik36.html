@@ -20,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 <style>
     /* ===== HEADER BADGE ===== */
@@ -465,76 +466,104 @@
 
 <script src="exam-logic.js"></script>
 
-<script>
-    // CÂU 51A
-    function grade51A() {
-        let val = document.getElementById('ans-51-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['어렵', '어려우', '어려울', '못 가', '못 갈', '일이 생겼', '생겨서', '사정이 생겼', '취소해야'];
-        let validEndings = ['것 같', '거 같', '습니다', '겠습'];
+    <script>
+        // CÂU 51A — Không thể đến hẹn / có việc đột xuất
+        function grade51A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '금요일에 뵙기 어려울 거 같습니다.',
+                        '금요일에 다른 일이 생겼습니다.',
+                        '금요일에 사정이 생겨서 찾아뵙기가 어려울 거 같습니다.',
+                        '금요일에 못 갈 것 같습니다.',
+                        '금요일 약속을 취소해야 할 것 같습니다.'
+                    ],
+                    stems: ['어렵', '어려우', '못 가', '생겼', '생겨서', '취소'],
+                    grammar: [
+                        { pattern: /것\s*같[가-힣]*/, label: 'suy đoán' },
+                        { pattern: /겠습[가-힣]*/, label: 'tương lai lịch sự' }
+                    ]
+                },
+                "Cần cụm từ mang nghĩa 'khó có thể đến gặp / có việc bận'."
+            );
+            document.getElementById('score-51-a').innerHTML = result.display;
+            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng việc không thể đến hẹn / có việc đột xuất."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp suy đoán."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu lịch sự suy đoán."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ mang nghĩa 'khó có thể đến gặp / có việc bận'."); }
+        // CÂU 51B — Hỏi lịch sự xin lịch hẹn khác
+        function grade51B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-51-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '언제 시간이 괜찮으십니까?',
+                        '언제 시간이 되십니까?',
+                        '혹시 다음 주 금요일에 뵈러 가도 되겠습니까?',
+                        '언제가 좋으십니까?',
+                        '편하신 시간을 알려 주시겠습니까?'
+                    ],
+                    stems: ['시간', '언제', '뵈러'],
+                    grammar: [
+                        { pattern: /괜찮으십[가-힣]*/, label: 'hỏi lịch sự' },
+                        { pattern: /되십[가-힣]*/, label: 'hỏi thời gian' },
+                        { pattern: /주시겠습[가-힣]*/, label: 'kính ngữ' }
+                    ]
+                },
+                "Cần từ vựng mang nghĩa 'khi nào / lúc nào rảnh'."
+            );
+            document.getElementById('score-51-b').innerHTML = result.display;
+            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        }
 
-        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
-    }
+        // CÂU 52A — Cấu trúc liệt kê sự giàu có (-기도 한다)
+        function grade52A() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '가난한 사람이 부자가 되기도 한다.',
+                        '부자가 되기도 한다.',
+                        '큰돈을 벌기도 한다.',
+                        '부유해지기도 한다.'
+                    ],
+                    stems: ['부자', '부유', '돈'],
+                    grammar: [
+                        { pattern: /되기도\s*한[가-힣]*/, label: 'liệt kê' },
+                        { pattern: /벌기도\s*한[가-힣]*/, label: 'liệt kê' }
+                    ]
+                },
+                "Phải có chữ 'trở nên giàu có' để tương ứng với '유명해지기도 하고'."
+            );
+            document.getElementById('score-52-a').innerHTML = result.display;
+            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        }
 
-    // CÂU 51B
-    function grade51B() {
-        let val = document.getElementById('ans-51-b').value.trim();
-        let score = 0; let feedback = [];
-        let hasRoots = val.includes('시간') || val.includes('언제') || val.includes('뵈러');
-        let validEndings = ['괜찮으십니까', '되십니까', '좋으십니까', '말씀해 주시겠습니까', '겠습니까'];
+        // CÂU 52B — Bỏ lỡ cơ hội / không tận dụng được
+        function grade52B() {
+            var result = gradeByConfig(
+                document.getElementById('ans-52-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '기회가 와도 그 기회를 잘 이용하지 못한다.',
+                        '찾아온 기회를 놓치는 사람들이 많다.',
+                        '기회를 잡지 못하는 경우가 많다.',
+                        '기회를 놓쳐 버린다.'
+                    ],
+                    stems: ['기회'],
+                    grammar: [
+                        { pattern: /이용하지\s*못[가-힣]*/, label: 'không tận dụng' },
+                        { pattern: /놓치[가-힣]*/, label: 'bỏ lỡ' },
+                        { pattern: /잡지\s*못[가-힣]*/, label: 'không nắm bắt' }
+                    ]
+                },
+                "Cần sự kết hợp giữa 'Cơ hội' và 'Không tận dụng được/Bỏ lỡ'."
+            );
+            document.getElementById('score-52-b').innerHTML = result.display;
+            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        }
 
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Câu hỏi lịch sự xin lịch hẹn chuẩn xác."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp hỏi lịch sự."); }
-        else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu hỏi kính ngữ."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'khi nào / lúc nào rảnh'."); }
-
-        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
-    }
-
-    // CÂU 52A
-    function grade52A() {
-        let val = document.getElementById('ans-52-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['부자', '부유', '돈'];
-        let validEndings = ['되기도 한', '벌기도 한'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc liệt kê sự giàu có."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp liệt kê."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu liệt kê -기도 한다."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có chữ 'trở nên giàu có' (부자가 되다) để tương ứng với '유명해지기도 하고'."); }
-
-        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
-    }
-
-    // CÂU 52B — Pattern C: roots=validRoots, grammar=validTargets
-    function grade52B() {
-        let val = document.getElementById('ans-52-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['기회'];
-        let validTargets = ['이용하지 못', '놓치', '잡지 못', '활용하지 못'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validTargets)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng ý bỏ lỡ cơ hội trên thực tế."); }
-        else if(checkKeywords(val, validTargets)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp chỉ việc không tận dụng."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cụm từ chỉ việc không tận dụng được."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần sự kết hợp giữa 'Cơ hội' (기회) và 'Không tận dụng được/Bỏ lỡ' (놓치다, 이용하지 못하다)."); }
-
-        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
-        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
-    }
-
-    // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 36 ---
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 36 ---
     const bookData_36 = [
         { vi: "Gần đây, tại xã hội Hàn Quốc, hộ gia đình một người đang liên tục gia tăng.", ko: "최근 한국 사회에서는 1인 가구가 계속 증가하고 있다." },
         { vi: "Hộ gia đình một người từng chỉ chiếm vỏn vẹn 16% trên tổng số hộ gia đình vào năm 2000, đã gia tăng đều đặn và đạt mức 26% vào năm 2012. Tức là đã tăng 10% trong vòng 12 năm.", ko: "2000년 전체 가구 수의 16%에 불과했던 1인 가구가 꾸준히 증가하여 2012년에는 26%에 도달했다. 12년 사이에 10%가 증가한 것이다." },

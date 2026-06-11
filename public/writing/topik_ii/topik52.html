@@ -20,6 +20,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 <style>
     /* ===== HEADER BADGE ===== */
@@ -420,75 +421,89 @@
 <script src="exam-logic.js"></script>
 
 <script>
-    // CÂU 51A
+    // CÂU 51A — Cảm ơn vì đã cho mượn
     function grade51A() {
-        let val = document.getElementById('ans-51-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['빌려'];
-        let validEndings = ['줘서', '주셔서', '주신 덕분', '주신 것', '겠습'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý cảm ơn vì đã cho mượn."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp chỉ lý do."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp chỉ lý do."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'cho mượn' (빌려주다)."); }
-
-        document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        var result = gradeByConfig(
+            document.getElementById('ans-51-a').value.trim(),
+            {
+                exactAnswers: [
+                    '책을 빌려 주셔서 감사합니다.',
+                    '빌려 주셔서 정말 감사합니다.'
+                ],
+                stems: ['빌려'],
+                grammar: [
+                    { pattern: /줘서[가-힣]*/, label: 'lý do' },
+                    { pattern: /주셔서[가-힣]*/, label: 'lý do kính ngữ' },
+                    { pattern: /주신\s*덕분[가-힣]*/, label: 'nhờ' }
+                ]
+            },
+            "Cần từ vựng mang nghĩa 'cho mượn' (빌려주다)."
+        );
+        document.getElementById('score-51-a').innerHTML = result.display;
         document.getElementById('btn-exp-51-a').style.display = 'inline-block';
     }
 
-    // CÂU 51B
+    // CÂU 51B — Hỏi ý kiến về thời gian trả sách
     function grade51B() {
-        let val = document.getElementById('ans-51-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['돌려주', '돌려드리', '돌려 드리', '돌려 드려', '반납하', '갖다주', '갖다드리'];
-        let validEndings = ['면 됩니까', '면 되겠습니까', '야 합니까', '야 됩니까', '면 되', '면 될'];
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Hỏi ý kiến về thời gian trả sách chuẩn xác."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp hỏi ý kiến."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp hỏi ý kiến."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'trả lại / đưa lại'."); }
-
-        document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        var result = gradeByConfig(
+            document.getElementById('ans-51-b').value.trim(),
+            {
+                exactAnswers: [
+                    '언제 돌려드리면 됩니까?',
+                    '언제까지 돌려드려야 합니까?'
+                ],
+                stems: ['돌려주', '돌려드리', '반납하', '갖다주'],
+                grammar: [
+                    { pattern: /면\s*됩[가-힣]*/, label: 'hỏi ý kiến' },
+                    { pattern: /야\s*합[가-힣]*/, label: 'bắt buộc' }
+                ]
+            },
+            "Cần từ vựng mang nghĩa 'trả lại / đưa lại'."
+        );
+        document.getElementById('score-51-b').innerHTML = result.display;
         document.getElementById('btn-exp-51-b').style.display = 'inline-block';
     }
 
-    // CÂU 52A — Pattern B: roots=roots+targets+effects, endings=endings
+    // CÂU 52A — Cảm xúc ảnh hưởng biểu cảm
     function grade52A() {
-        let val = document.getElementById('ans-52-a').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['감정', '기분'];
-        let validTargets = ['표정', '얼굴'];
-        let validEffects = ['영향을 주', '나타나', '드러나'];
-        let validEndings = ['기 때문'];
-        let hasRoots = checkKeywords(val, validRoots) && checkKeywords(val, validTargets) && checkKeywords(val, validEffects);
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(hasRoots && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu đúng lý do cảm xúc ảnh hưởng biểu cảm."); }
-        else if(checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp chỉ nguyên nhân."); }
-        else if(hasRoots) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi câu chỉ nguyên nhân."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Phải có đủ cụm 'Cảm xúc' ảnh hưởng/hiện ra 'Biểu cảm'."); }
-
-        document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        var result = gradeByConfig(
+            document.getElementById('ans-52-a').value.trim(),
+            {
+                exactAnswers: [
+                    '감정이 표정에 영향을 주기 때문이다.',
+                    '기분이 얼굴 표정에 나타나기 때문이다.'
+                ],
+                stems: ['감정', '기분'],
+                grammar: [
+                    { pattern: /영향[가-힣]*/, label: 'ảnh hưởng' },
+                    { pattern: /나타나[가-힣]*/, label: 'xuất hiện' },
+                    { pattern: /기\s*때문[가-힣]*/, label: 'lý do' }
+                ]
+            },
+            "Phải có cụm 'Cảm xúc' ảnh hưởng/hiện ra 'Biểu cảm'."
+        );
+        document.getElementById('score-52-a').innerHTML = result.display;
         document.getElementById('btn-exp-52-a').style.display = 'inline-block';
     }
 
-    // CÂU 52B
+    // CÂU 52B — Lời khuyên nở nụ cười
     function grade52B() {
-        let val = document.getElementById('ans-52-b').value.trim();
-        let score = 0; let feedback = [];
-        let validRoots = ['밝은 표정', '표정을 밝게', '웃는 표정', '웃'];
-        let validEndings = ['짓는', '하는', '겠습'];
-        let hasEndings = checkKeywords(val, validEndings) || val.includes('웃는');
-
-        if(val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-        else if(checkKeywords(val, validRoots) && hasEndings) { score = 5; feedback.push("Đạt 5/5 Điểm: Lời khuyên nở nụ cười/biểu cảm sáng sủa rất chính xác."); }
-        else if(hasEndings) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp định ngữ."); }
-        else if(checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu dạng định ngữ."); }
-        else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ mang nghĩa 'tươi cười / làm khuôn mặt sáng sủa'."); }
-
-        document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+        var result = gradeByConfig(
+            document.getElementById('ans-52-b').value.trim(),
+            {
+                exactAnswers: [
+                    '밝은 표정을 지어야 한다.',
+                    '표정을 밝게 하는 것이 좋다.'
+                ],
+                stems: ['밝은 표정', '표정을 밝게', '웃는 표정', '웃'],
+                grammar: [
+                    { pattern: /짓[가-힣]*/, label: 'tạo' },
+                    { pattern: /하[가-힣]*/, label: 'làm' }
+                ]
+            },
+            "Cần cụm từ mang nghĩa 'tươi cười / làm khuôn mặt sáng sủa'."
+        );
+        document.getElementById('score-52-b').innerHTML = result.display;
         document.getElementById('btn-exp-52-b').style.display = 'inline-block';
     }
 

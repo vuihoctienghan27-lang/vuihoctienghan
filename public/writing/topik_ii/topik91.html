@@ -21,6 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 
     <style>
@@ -713,73 +714,94 @@
     <script src="exam-logic.js"></script>
 
     <script>
-        // CÂU 51A
+        // CÂU 51A — Ý định thay đổi/dời lịch
         function grade51A() {
-            let val = document.getElementById('ans-51-a').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['변경하', '바꾸', '바꿔', '미루', '늦추'];
-            let validEndings = ['고 싶', '려고 합', '아/어 주시기 바랍', '면 좋겠', '겠습'];
-
-            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý định thay đổi lịch khám chia rất chuẩn."); }
-            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ý muốn."); }
-            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng sai đuôi câu ý muốn."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần từ vựng mang nghĩa 'thay đổi / dời lịch'."); }
-
-            document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-51-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '예약 날짜를 변경하고 싶습니다.',
+                        '진료 일정을 바꾸려고 합니다.'
+                    ],
+                    stems: ['변경하', '바꾸', '바꿔', '미루', '늦추'],
+                    grammar: [
+                        { pattern: /고\s*싶[가-힣]*/, label: 'mong muốn' },
+                        { pattern: /려고\s*하[가-힣]*/, label: 'ý định' },
+                        { pattern: /주시기\s*바랍[가-힣]*/, label: 'xin' }
+                    ]
+                },
+                "Cần từ vựng mang nghĩa 'thay đổi / dời lịch'."
+            );
+            document.getElementById('score-51-a').innerHTML = result.display;
             document.getElementById('btn-exp-51-a').style.display = 'inline-block';
         }
 
-        // CÂU 51B
+        // CÂU 51B — Cấu trúc giả định
         function grade51B() {
-            let val = document.getElementById('ans-51-b').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['안 되', '어려우', '불가능하', '힘들', '힘드'];
-            let validEndings = ['면', '다면'];
-
-            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng cấu trúc giả định."); }
-            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp giả định."); }
-            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp giả định."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần tính từ mang nghĩa 'không được / bất khả thi'."); }
-
-            document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-51-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '안 되면 다른 날로 하겠습니다.',
+                        '어려우면 다음 주로 미루겠습니다.'
+                    ],
+                    stems: ['안 되', '어려우', '불가능하', '힘들', '힘드'],
+                    grammar: [
+                        { pattern: /면[가-힣]*/, label: 'nếu' },
+                        { pattern: /다면[가-힣]*/, label: 'nếu như' }
+                    ]
+                },
+                "Cần tính từ mang nghĩa 'không được / bất khả thi' + giả định."
+            );
+            document.getElementById('score-51-b').innerHTML = result.display;
             document.getElementById('btn-exp-51-b').style.display = 'inline-block';
         }
 
-        // CÂU 52A
+        // CÂU 52A — Trích dẫn gián tiếp: nghiện
         function grade52A() {
-            let val = document.getElementById('ans-52-a').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['중독되', '중독될', '빠지'];
-            let validEndings = ['ㄴ다고 한', '는다고 한', 'ㄹ 수 있다고 한', '기 쉽다고 한'];
-
-            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Thể hiện đúng ý nghiện và trích dẫn gián tiếp."); }
-            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp trích dẫn."); }
-            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu đuôi trích dẫn gián tiếp."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần động từ mang nghĩa 'bị nghiện'."); }
-
-            document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-52-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '게임에 중독되기 쉽다고 한다.',
+                        '스마트폰에 빠질 수 있다고 한다.'
+                    ],
+                    stems: ['중독되', '중독될', '빠지'],
+                    grammar: [
+                        { pattern: /ㄴ다고\s*한[가-힣]*/, label: 'trích dẫn' },
+                        { pattern: /는다고\s*한[가-힣]*/, label: 'trích dẫn' },
+                        { pattern: /기\s*쉽다[가-힣]*/, label: 'dễ' }
+                    ]
+                },
+                "Cần động từ mang nghĩa 'bị nghiện' + trích dẫn."
+            );
+            document.getElementById('score-52-a').innerHTML = result.display;
             document.getElementById('btn-exp-52-a').style.display = 'inline-block';
         }
 
-        // CÂU 52B
+        // CÂU 52B — Khuyên không ăn/tiêu thụ
         function grade52B() {
-            let val = document.getElementById('ans-52-b').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['먹', '섭취하'];
-            let validEndings = ['지 않도록', '지 않게', '지 않아야'];
-
-            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Nêu chính xác ý ngăn cấm hành động."); }
-            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp ngăn cấm."); }
-            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc phủ định."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý khuyên 'không ăn/tiêu thụ'."); }
-
-            document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-52-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '과도하게 먹지 않도록 해야 한다.',
+                        '많이 섭취하지 않게 주의해야 한다.'
+                    ],
+                    stems: ['먹', '섭취하'],
+                    grammar: [
+                        { pattern: /지\s*않도록[가-힣]*/, label: 'để không' },
+                        { pattern: /지\s*않게[가-힣]*/, label: 'không' },
+                        { pattern: /지\s*않아야[가-힣]*/, label: 'không nên' }
+                    ]
+                },
+                "Cần ý khuyên 'không ăn/tiêu thụ'."
+            );
+            document.getElementById('score-52-b').innerHTML = result.display;
             document.getElementById('btn-exp-52-b').style.display = 'inline-block';
         }
+
+        // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 91 ---
 
         // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 91 ---
         const bookData_91 = [

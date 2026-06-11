@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mỗi ngày 5 câu TOPIK - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Luyện tập mỗi ngày 5 câu đọc hiểu TOPIK ngẫu nhiên từ bộ đề thật. Chọn TOPIK I hoặc TOPIK II.">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/vocab-tooltip.css">
+    <link rel="stylesheet" href="assets/css/exam-layout.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg-card: rgba(255,255,255,0.7);
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --correct-bg: #f0fdf4;
+            --wrong-bg: #fef2f2;
+            --border-color: #e5e7eb;
+        }
+        body.dark-mode {
+            --bg-card: rgba(30,41,59,0.7);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --correct-bg: rgba(34,197,94,0.1);
+            --wrong-bg: rgba(239,68,68,0.1);
+            --border-color: #334155;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Pretendard','Inter',sans-serif;
+            background: linear-gradient(135deg,#1e3a8a 0%,#3b82f6 60%,#60a5fa 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 0 0 60px 0;
+            color: var(--text-main);
+        }
+        .wrapper {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px 12px;
+        }
+
+        /* HERO */
+        .daily-hero {
+            background: linear-gradient(135deg,#1e40af,#4f46e5);
+            border-radius: 20px;
+            padding: 28px 28px 24px;
+            color: white;
+            margin-bottom: 20px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .daily-hero-tag {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            font-size: 0.85em;
+            font-weight: 800;
+            padding: 5px 14px;
+            border-radius: 99px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .daily-hero h1 {
+            font-size: 1.9em;
+            font-weight: 900;
+            margin-bottom: 10px;
+            line-height: 1.25;
+        }
+        .daily-hero p {
+            font-size: 0.95em;
+            color: rgba(255,255,255,0.85);
+            font-weight: 500;
+        }
+
+        /* TOPIK TOGGLE */
+        .topik-toggle-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .toggle-btn {
+            padding: 10px 28px;
+            border-radius: 99px;
+            font-size: 1em;
+            font-weight: 800;
+            cursor: pointer;
+            border: 2px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.15);
+            color: white;
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
+        }
+        .toggle-btn.active {
+            background: white;
+            color: #1e40af;
+            border-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toggle-btn:not(.active):hover {
+            background: rgba(255,255,255,0.25);
+        }
+
+        /* QUESTION NAVIGATOR (TOP) */
+        .q-nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 16px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            gap: 12px;
+        }
+        .q-nav-dots {
+            display: flex;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .q-dot {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            border: 2px solid #cbd5e0;
+            background: #f8fafc;
+            color: #4a5568;
+            font-size: 0.85em;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        body.dark-mode .q-dot { background: #1e293b; border-color: #475569; color: #94a3b8; }
+        .q-dot.active { background: #2563eb; border-color: #2563eb; color: white; }
+        .q-dot.answered { background: #22c55e; border-color: #22c55e; color: white; }
+        .q-nav-arrow {
+            background: none;
+            border: none;
+            font-size: 1.3em;
+            cursor: pointer;
+            color: var(--text-sub);
+            padding: 6px 10px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+        .q-nav-arrow:hover { background: rgba(0,0,0,0.05); color: var(--primary); }
+        body.dark-mode .q-nav-arrow:hover { background: rgba(255,255,255,0.05); }
+
+        /* QUESTION CARD */
+        .question-wrapper {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+            margin-bottom: 16px;
+            min-height: 280px;
+            position: relative;
+        }
+        body.dark-mode .question-wrapper { border-color: rgba(255,255,255,0.1); }
+
+        .q-source-tag {
+            display: inline-block;
+            font-size: 0.75em;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 99px;
+            background: #eff6ff;
+            color: #2563eb;
+            margin-bottom: 14px;
+            border: 1px solid #dbeafe;
+        }
+        body.dark-mode .q-source-tag { background: rgba(37,99,235,0.2); border-color: rgba(37,99,235,0.3); color: #93c5fd; }
+
+        .q-progress-label {
+            font-size: 0.8em;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 14px;
+        }
+
+        .q-loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-sub);
+        }
+        .q-loading-spinner {
+            width: 36px; height: 36px;
+            border: 3px solid rgba(37,99,235,0.2);
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .q-text {
+            font-size: 1em;
+            line-height: 1.8;
+            color: var(--text-main);
+            margin-bottom: 16px;
+        }
+        .q-instruction {
+            font-size: 0.85em;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        @media (max-width: 480px) { .options { grid-template-columns: 1fr; } }
+
+        .option {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            background: rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-main);
+        }
+        body.dark-mode .option { background: rgba(30,41,59,0.5); }
+        .option:hover { border-color: #2563eb; background: rgba(37,99,235,0.05); }
+        .option.correct { border-color: #22c55e !important; background: var(--correct-bg) !important; color: #166534 !important; }
+        .option.wrong { border-color: #ef4444 !important; background: var(--wrong-bg) !important; color: #991b1b !important; }
+        body.dark-mode .option.correct { color: #86efac !important; }
+        body.dark-mode .option.wrong { color: #fca5a5 !important; }
+        .option.disabled { pointer-events: none; opacity: 0.7; }
+        .option .opt-num { font-weight: 900; flex-shrink: 0; }
+
+        .q-feedback {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.9em;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .q-feedback.show-correct { display: block; background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .q-feedback.show-wrong { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        body.dark-mode .q-feedback.show-correct { background: rgba(34,197,94,0.15); color: #86efac; border-color: rgba(34,197,94,0.3); }
+        body.dark-mode .q-feedback.show-wrong { background: rgba(239,68,68,0.15); color: #fca5a5; border-color: rgba(239,68,68,0.3); }
+
+        .btn-next {
+            display: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            background: linear-gradient(135deg,#2563eb,#4f46e5);
+            color: white;
+            font-size: 1em;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+        .btn-next:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.4); }
+        .btn-next.show { display: block; }
+
+        /* SCORE PANEL */
+        .score-panel {
+            display: none;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 20px;
+            padding: 28px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.07);
+            margin-bottom: 16px;
+        }
+        .score-panel.show { display: block; }
+        .score-circle-wrap {
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            background: conic-gradient(#22c55e var(--prog,0%),#e5e7eb 0deg);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+        .score-circle-inner {
+            width: 82px; height: 82px;
+            background: white;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column;
+        }
+        body.dark-mode .score-circle-inner { background: #1e293b; }
+        .score-num { font-size: 1.8em; font-weight: 900; color: #22c55e; line-height: 1; }
+        .score-label { font-size: 0.75em; color: var(--text-sub); font-weight: 700; }
+        .score-msg { font-size: 1.15em; font-weight: 800; color: var(--text-main); margin-bottom: 16px; }
+        .btn-retry {
+            padding: 12px 28px;
+            border-radius: 99px;
+            background: linear-gradient(135deg,#2563eb,#4f46e5);
+            color: white;
+            font-size: 0.95em;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-retry:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(37,99,235,0.4); }
+
+        /* FOOTER */
+        .global-footer {
+            max-width: 800px; margin: 20px auto 30px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.3); border-radius: 20px;
+            padding: 16px 20px; display: flex; justify-content: center; align-items: center;
+        }
+        body.dark-mode .global-footer { background: rgba(15,23,42,0.4); border-color: rgba(255,255,255,0.1); }
+        .footer-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: white; font-weight: 700; font-size: 1em; transition: 0.2s; }
+        .footer-link:hover { transform: translateY(-2px); opacity: 0.9; }
+        .footer-fb-icon { width: 22px; height: 22px; fill: currentColor; }
+
+        @media (max-width: 600px) {
+            .wrapper { padding: 16px 8px; }
+            .daily-hero { padding: 22px 18px; }
+            .daily-hero h1 { font-size: 1.5em; }
+            .question-wrapper { padding: 18px; }
+        }
+    </style>
+    <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/navbar.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="daily-hero">
+        <div class="daily-hero-tag">📅 Luyện tập mỗi ngày</div>
+        <h1>Mỗi ngày 5 câu TOPIK</h1>
+        <p>5 câu đọc hiểu ngẫu nhiên từ bộ đề thật. Làm xong câu này mới hiện câu tiếp theo!</p>
+    </div>
+
+    <div class="topik-toggle-row">
+        <button class="toggle-btn" id="btnT1" onclick="setLevel(1)">TOPIK I</button>
+        <button class="toggle-btn active" id="btnT2" onclick="setLevel(2)">TOPIK II</button>
+    </div>
+
+    <!-- Navigator bar (always visible, on top) -->
+    <div class="q-nav-bar">
+        <button class="q-nav-arrow" onclick="navGo(-1)">◀</button>
+        <div class="q-nav-dots" id="qNavDots"></div>
+        <button class="q-nav-arrow" onclick="navGo(1)">▶</button>
+    </div>
+
+    <!-- Question card -->
+    <div class="question-wrapper" id="questionCard">
+        <div class="q-loading" id="qLoading">
+            <div class="q-loading-spinner"></div>
+            <div>Đang tải câu hỏi...</div>
+        </div>
+        <div id="qContent" style="display:none;"></div>
+    </div>
+
+    <!-- Score panel -->
+    <div class="score-panel" id="scorePanel">
+        <div class="score-circle-wrap" id="scoreCircle">
+            <div class="score-circle-inner">
+                <div class="score-num" id="scoreNum">0/5</div>
+                <div class="score-label">Đúng</div>
+            </div>
+        </div>
+        <div class="score-msg" id="scoreMsg"></div>
+        <button class="btn-retry" onclick="loadNewSet()">🔄 Làm lại 5 câu khác</button>
+    </div>
+</div>
+
+<footer class="global-footer">
+    <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer" class="footer-link">
+        <span>📚 Vui Học Tiếng Hàn</span>
+        <svg class="footer-fb-icon" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    </a>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script src="auth.js"></script>
+<script src="assets/js/theme.js"></script>
+<script src="assets/js/menu.js"></script>
+<script src="assets/js/vocab-tooltip.js"></script>
+<script>
+window.toggleExplain = (btn) => {
+    const content = btn.nextElementSibling;
+    if (content) {
+        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    }
+};
+</script>
+
+<script>
+// ===== CONFIG =====
+const TOPIK2_EXAMS = [35,36,37,41,47,52,60,64,83,91,96,102];
+const TOPIK1_EXAMS = [35,36,37,41,47,52]; // use same files but different q range
+// Q ranges: TOPIK II: q1-q8, TOPIK I: q30-q40 (mapped to topik_i folder)
+const TOPIK2_Q_RANGE = [1,2,3,4,5,6,7,8];
+const TOPIK1_Q_RANGE = [30,31,32,33,34,35,36,37,38,39,40];
+
+let currentLevel = 2;
+let questions = []; // [{html, source, answered, correct}]
+let currentQIdx = 0;
+let correctCount = 0;
+
+function setLevel(lvl) {
+    currentLevel = lvl;
+    document.getElementById('btnT1').classList.toggle('active', lvl === 1);
+    document.getElementById('btnT2').classList.toggle('active', lvl === 2);
+    loadNewSet();
+}
+
+function pickRandom(arr, n) {
+    const shuffled = [...arr].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, n);
+}
+
+async function fetchQuestion(examNum, qNum, level) {
+    const folder = level === 2 ? 'reading/topik_ii' : 'reading/topik_i';
+    const filename = level === 2 ? `topik${examNum}.html` : `topik${examNum}.html`;
+    try {
+        const res = await fetch(`${folder}/${filename}`);
+        if (!res.ok) return null;
+        const html = await res.text();
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const qBlock = doc.getElementById(`q${qNum}`);
+        if (!qBlock) return null;
+        return {
+            html: qBlock.outerHTML,
+            source: `Đề ${examNum} - Câu ${qNum}`,
+            answered: false,
+            correct: false
+        };
+    } catch(e) {
+        return null;
+    }
+}
+
+async function loadNewSet() {
+    document.getElementById('scorePanel').classList.remove('show');
+    document.getElementById('questionCard').style.display = 'block';
+    document.getElementById('qLoading').style.display = 'block';
+    document.getElementById('qContent').style.display = 'none';
+
+    questions = [];
+    currentQIdx = 0;
+    correctCount = 0;
+
+    const exams = currentLevel === 2 ? TOPIK2_EXAMS : TOPIK1_EXAMS;
+    const firstQRange = currentLevel === 2 ? TOPIK2_Q_RANGE : TOPIK1_Q_RANGE;
+    
+    const otherQRange = [];
+    if (currentLevel === 2) {
+        for(let i=1; i<=50; i++) otherQRange.push(i);
+    } else {
+        for(let i=41; i<=70; i++) otherQRange.push(i);
+    }
+
+    const fetched = [];
+    
+    // Pick 1st question
+    for(let i=0; i<5; i++) {
+        const exam = exams[Math.floor(Math.random() * exams.length)];
+        const q = firstQRange[Math.floor(Math.random() * firstQRange.length)];
+        const result = await fetchQuestion(exam, q, currentLevel);
+        if (result) {
+            result.key = `${exam}_${q}`;
+            fetched.push(result);
+            break;
+        }
+    }
+
+    // Pick next 4 questions
+    for(let i=0; i<20; i++) {
+        if (fetched.length >= 5) break;
+        const exam = exams[Math.floor(Math.random() * exams.length)];
+        const q = otherQRange[Math.floor(Math.random() * otherQRange.length)];
+        const key = `${exam}_${q}`;
+        if (!fetched.find(f => f.key === key)) {
+            const result = await fetchQuestion(exam, q, currentLevel);
+            if (result) {
+                result.key = key;
+                fetched.push(result);
+            }
+        }
+    }
+
+    questions = fetched.slice(0, 5);
+
+    if (questions.length === 0) {
+        document.getElementById('qLoading').innerHTML = '<div style="padding:30px;text-align:center;color:var(--text-sub);">Không thể tải câu hỏi. Vui lòng thử lại.</div>';
+        return;
+    }
+
+    document.getElementById('qLoading').style.display = 'none';
+    document.getElementById('qContent').style.display = 'block';
+
+    renderNavDots();
+    renderQuestion(0);
+}
+
+function renderNavDots() {
+    const container = document.getElementById('qNavDots');
+    container.innerHTML = questions.map((q,i) => `
+        <div class="q-dot ${i === currentQIdx ? 'active' : ''} ${q.answered ? 'answered' : ''}" 
+             onclick="goToQuestion(${i})" id="qdot${i}">${i+1}</div>
+    `).join('');
+}
+
+function updateNavDot(idx) {
+    document.querySelectorAll('.q-dot').forEach((d,i) => {
+        d.classList.toggle('active', i === idx);
+        d.classList.toggle('answered', questions[i] && questions[i].answered);
+    });
+}
+
+function renderQuestion(idx) {
+    if (idx >= questions.length) {
+        showScore();
+        return;
+    }
+    currentQIdx = idx;
+    const q = questions[idx];
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(q.html, 'text/html');
+
+    // Keep action-area but hide it initially
+    doc.querySelectorAll('.action-area').forEach(el => el.style.display = 'none');
+
+    // Override onclick handlers to our system
+    doc.querySelectorAll('.option').forEach((opt, oi) => {
+        const isCorrect = opt.getAttribute('onclick')?.includes('true');
+        opt.removeAttribute('onclick');
+        opt.setAttribute('data-correct', isCorrect ? '1' : '0');
+        opt.setAttribute('data-oi', oi);
+        opt.setAttribute('onclick', `answerQuestion(this, ${isCorrect})`);
+    });
+
+    const qNum = doc.querySelector('.q-number');
+    if (qNum) qNum.textContent = `Q${idx+1}.`;
+
+    const sourceTagHtml = `<div class="q-source-tag">📄 ${q.source}</div>`;
+    const progressHtml = `<div class="q-progress-label">Câu ${idx+1} / ${questions.length}</div>`;
+    const feedbackHtml = `<div class="q-feedback" id="qFeedback"></div>`;
+    const nextBtnHtml = `<button class="btn-next" id="btnNext" onclick="nextQuestion()">Câu tiếp theo →</button>`;
+
+    // Must wrap doc.body contents in something to keep it intact, doc.body.innerHTML is fine
+    let htmlContent = doc.body.innerHTML;
+    
+    document.getElementById('qContent').innerHTML =
+        sourceTagHtml + progressHtml + htmlContent + feedbackHtml + nextBtnHtml;
+
+    updateNavDot(idx);
+}
+
+function answerQuestion(el, isCorrect) {
+    // Disable all options
+    document.querySelectorAll('.option').forEach(o => {
+        o.classList.add('disabled');
+        if (o.getAttribute('data-correct') === '1') o.classList.add('correct');
+    });
+
+    const feedback = document.getElementById('qFeedback');
+    const btnNext = document.getElementById('btnNext');
+
+    if (isCorrect) {
+        el.classList.add('correct');
+        questions[currentQIdx].answered = true;
+        questions[currentQIdx].correct = true;
+        correctCount++;
+        feedback.textContent = '✅ Chính xác! Bạn làm đúng rồi.';
+        feedback.className = 'q-feedback show-correct';
+    } else {
+        el.classList.add('wrong');
+        questions[currentQIdx].answered = true;
+        questions[currentQIdx].correct = false;
+        feedback.textContent = '❌ Sai rồi! Đáp án đúng đã được tô xanh ở trên.';
+        feedback.className = 'q-feedback show-wrong';
+    }
+
+    // Hiển thị phần giải thích
+    const actArea = el.closest('#qContent').querySelector('.action-area');
+    if (actArea) actArea.style.display = 'block';
+
+    updateNavDot(currentQIdx);
+
+    const isLast = currentQIdx === questions.length - 1;
+    btnNext.textContent = isLast ? '🏆 Xem kết quả' : 'Câu tiếp theo →';
+    btnNext.classList.add('show');
+}
+
+function nextQuestion() {
+    if (currentQIdx + 1 >= questions.length) {
+        showScore();
+    } else {
+        renderQuestion(currentQIdx + 1);
+    }
+}
+
+function goToQuestion(idx) {
+    // Navigate freely to any question
+    renderQuestion(idx);
+}
+
+function navGo(dir) {
+    const newIdx = currentQIdx + dir;
+    if (newIdx >= 0 && newIdx < questions.length) {
+        goToQuestion(newIdx);
+    }
+}
+
+function showScore() {
+    document.getElementById('questionCard').style.display = 'none';
+    const panel = document.getElementById('scorePanel');
+    panel.classList.add('show');
+
+    const pct = Math.round((correctCount / questions.length) * 100);
+    document.getElementById('scoreCircle').style.setProperty('--prog', pct + '%');
+    document.getElementById('scoreNum').textContent = `${correctCount}/${questions.length}`;
+
+    let msg = '';
+    if (pct === 100) msg = '🎉 Xuất sắc! Bạn làm đúng tất cả!';
+    else if (pct >= 80) msg = '👏 Rất tốt! Tiếp tục cố gắng nhé!';
+    else if (pct >= 60) msg = '💪 Ổn! Hãy ôn lại những câu sai nhé.';
+    else msg = '📚 Cần cố gắng thêm! Mỗi ngày luyện tập đều đặn nhé!';
+    document.getElementById('scoreMsg').textContent = msg;
+}
+
+// Init
+window.addEventListener('load', () => loadNewSet());
+</script>
+</body>
+</html>

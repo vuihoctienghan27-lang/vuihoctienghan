@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh ngôn tiếng Hàn mỗi ngày - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="365 câu danh ngôn tiếng Hàn kèm bản dịch tiếng Việt. Mỗi ngày một câu danh ngôn để truyền cảm hứng học tiếng Hàn.">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --bg-card: rgba(255,255,255,0.7);
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+        }
+        body.dark-mode {
+            --bg-card: rgba(30,41,59,0.7);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Pretendard','Inter',sans-serif;
+            background: linear-gradient(135deg,#667eea 0%,#764ba2 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 0 0 60px 0;
+            color: var(--text-main);
+        }
+        .wrapper {
+            max-width: 750px;
+            margin: 0 auto;
+            padding: 20px 16px;
+        }
+        /* CALENDAR CARD */
+        .calendar-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+        }
+        .calendar-top {
+            background: linear-gradient(135deg,#1e40af,#4f46e5);
+            color: white;
+            padding: 20px 28px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .cal-month-year {
+            font-size: 1em;
+            font-weight: 700;
+            opacity: 0.85;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .cal-weekday {
+            font-size: 0.9em;
+            font-weight: 600;
+            opacity: 0.75;
+            margin-top: 4px;
+        }
+        .clock-display {
+            font-size: 1.8em;
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-variant-numeric: tabular-nums;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .calendar-main {
+            display: flex;
+            align-items: center;
+            padding: 24px 28px;
+            gap: 20px;
+        }
+        .cal-day-num {
+            font-size: 6em;
+            font-weight: 900;
+            line-height: 1;
+            color: #1e40af;
+            letter-spacing: -4px;
+            flex-shrink: 0;
+        }
+        body.dark-mode .cal-day-num { color: #60a5fa; }
+        .cal-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .cal-date-text {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .cal-lunar {
+            font-size: 0.85em;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+        .cal-divider {
+            height: 1px;
+            background: rgba(0,0,0,0.08);
+            margin: 0;
+        }
+        body.dark-mode .cal-divider { background: rgba(255,255,255,0.08); }
+        /* QUOTE SECTION */
+        .quote-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            position: relative;
+        }
+        .quote-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg,#1e40af,#4f46e5);
+            color: white;
+            font-size: 0.85em;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 99px;
+            margin-bottom: 20px;
+            letter-spacing: 0.5px;
+        }
+        .quote-kr {
+            font-size: 1.4em;
+            font-weight: 700;
+            line-height: 1.7;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            position: relative;
+            padding-left: 20px;
+            border-left: 4px solid #4f46e5;
+        }
+        .quote-vn {
+            font-size: 1em;
+            color: var(--text-sub);
+            font-weight: 500;
+            line-height: 1.6;
+            font-style: italic;
+            padding-left: 20px;
+        }
+        .quote-author {
+            text-align: right;
+            font-size: 0.9em;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-top: 16px;
+        }
+        body.dark-mode .quote-author { color: #818cf8; }
+        .quote-num {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 0.75em;
+            color: var(--text-sub);
+            font-weight: 600;
+        }
+        /* NAV BUTTONS */
+        .quote-nav {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .quote-nav-btn {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text-main);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .quote-nav-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+        body.dark-mode .quote-nav-btn:hover { background: #1e293b; }
+        /* ALL QUOTES */
+        .all-quotes-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .all-quotes-title {
+            font-size: 1.1em;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .quote-item {
+            padding: 14px 16px;
+            border-radius: 14px;
+            border: 1px solid rgba(0,0,0,0.06);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.4);
+        }
+        body.dark-mode .quote-item { background: rgba(30,41,59,0.4); border-color: rgba(255,255,255,0.06); }
+        .quote-item:hover { background: rgba(255,255,255,0.9); transform: translateY(-1px); }
+        body.dark-mode .quote-item:hover { background: rgba(30,41,59,0.9); }
+        .quote-item.today-quote { border: 2px solid #4f46e5; background: rgba(79,70,229,0.07); }
+        .quote-item-kr { font-size: 0.95em; font-weight: 700; color: var(--text-main); margin-bottom: 5px; }
+        .quote-item-vn { font-size: 0.85em; color: var(--text-sub); }
+        .quote-item-num { font-size: 0.75em; color: #4f46e5; font-weight: 800; margin-bottom: 4px; }
+        /* GLOBAL FOOTER */
+        .global-footer {
+            max-width: 750px; margin: 20px auto 30px; background: rgba(255,255,255,0.25);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255,255,255,0.4); border-radius: 20px;
+            padding: 18px 20px; display: flex; justify-content: center; align-items: center;
+        }
+        body.dark-mode .global-footer { background: rgba(15,23,42,0.4); border-color: rgba(255,255,255,0.1); }
+        .footer-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text-main); font-weight: 700; font-size: 1em; transition: 0.2s; }
+        .footer-link:hover { color: #1877f2; transform: translateY(-2px); }
+        .footer-fb-icon { width: 22px; height: 22px; fill: currentColor; }
+        @media (max-width: 600px) {
+            .cal-day-num { font-size: 4.5em; }
+            .quote-kr { font-size: 1.15em; }
+            .clock-display { font-size: 1.4em; }
+        }
+    </style>
+    <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/navbar.js"></script>
+</head>
+<body>
+<div class="wrapper">
+    <div class="calendar-card">
+        <div class="calendar-top">
+            <div>
+                <div class="cal-month-year" id="calMonthYear"></div>
+                <div class="cal-weekday" id="calWeekday"></div>
+            </div>
+            <div class="clock-display" id="clockDisplay">00:00:00</div>
+        </div>
+        <div class="calendar-main">
+            <div class="cal-day-num" id="calDayNum">--</div>
+            <div class="cal-side">
+                <div class="cal-date-text" id="calDateText">Đang tải...</div>
+                <div class="cal-lunar" id="calLunar">🗓️ Mỗi ngày một danh ngôn</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quote-nav">
+        <button class="quote-nav-btn" onclick="prevQuote()">◀ Trước</button>
+        <button class="quote-nav-btn" onclick="goTodayQuote()">📅 Hôm nay</button>
+        <button class="quote-nav-btn" onclick="nextQuote()">Tiếp ▶</button>
+    </div>
+
+    <div class="quote-section" id="quoteSection">
+        <div class="quote-label">💬 Danh ngôn tiếng Hàn</div>
+        <div class="quote-num" id="quoteNum">#1/100</div>
+        <div class="quote-kr" id="quoteKr">Đang tải...</div>
+        <div class="quote-vn" id="quoteVn"></div>
+        <div class="quote-author" id="quoteAuthor"></div>
+    </div>
+
+    <div class="all-quotes-section">
+        <div class="all-quotes-title">📚 Tất cả danh ngôn</div>
+        <div id="allQuotesList"></div>
+    </div>
+</div>
+
+<footer class="global-footer">
+    <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer" class="footer-link">
+        <span>📚 Vui Học Tiếng Hàn</span>
+        <svg class="footer-fb-icon" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    </a>
+</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script src="auth.js"></script>
+<script src="assets/js/theme.js"></script>
+<script src="assets/js/menu.js"></script>
+
+<script>
+const QUOTES = [
+  { kr: "가는 말이 고와야 오는 말이 곱다.", vn: "Lời nói chẳng mất tiền mua, lựa lời mà nói cho vừa lòng nhau.", author: "속담" },
+  { kr: "시작이 반이다.", vn: "Bắt đầu là đã đi được nửa chặng đường.", author: "속담" },
+  { kr: "꿈을 향해 나아가는 것, 그것이 용기다.", vn: "Tiến về phía ước mơ — đó chính là can đảm.", author: "" },
+  { kr: "배움에는 끝이 없다.", vn: "Học tập là hành trình không có điểm kết.", author: "" },
+  { kr: "천 리 길도 한 걸음부터.", vn: "Vạn lý trường chinh bắt đầu từ một bước chân.", author: "속담" },
+  { kr: "포기하지 않는 한 실패는 없다.", vn: "Chừng nào chưa bỏ cuộc, thất bại chưa tới.", author: "" },
+  { kr: "오늘의 노력이 내일의 나를 만든다.", vn: "Nỗ lực hôm nay tạo nên bản thân ngày mai.", author: "" },
+  { kr: "실패는 성공의 어머니다.", vn: "Thất bại là mẹ thành công.", author: "속담" },
+  { kr: "불가능이란 없다, 오직 도전만이 있을 뿐.", vn: "Không có gì là không thể, chỉ có thách thức đang chờ.", author: "" },
+  { kr: "웃음은 최고의 약이다.", vn: "Nụ cười là liều thuốc tốt nhất.", author: "" },
+  { kr: "지금 이 순간이 인생에서 가장 젊은 때다.", vn: "Khoảnh khắc này là lúc bạn trẻ nhất trong cuộc đời.", author: "" },
+  { kr: "작은 것에 감사할 줄 아는 사람이 행복하다.", vn: "Người biết trân trọng những điều nhỏ bé mới thực sự hạnh phúc.", author: "" },
+  { kr: "한 발씩 내딛으면 어느새 정상에 도달한다.", vn: "Từng bước một, rồi bạn sẽ chạm đến đỉnh cao.", author: "" },
+  { kr: "인생은 B와 D 사이의 C다 — Birth, Choice, Death.", vn: "Cuộc sống là những lựa chọn (Choice) giữa Sinh (Birth) và Tử (Death).", author: "장 폴 사르트르" },
+  { kr: "최선을 다하면 후회가 없다.", vn: "Hết mình cố gắng thì không bao giờ hối hận.", author: "" },
+  { kr: "변화를 두려워하지 마라. 변화만이 발전을 가져온다.", vn: "Đừng sợ thay đổi. Chỉ có thay đổi mới mang lại tiến bộ.", author: "" },
+  { kr: "꿈꾸는 자만이 꿈을 이룰 수 있다.", vn: "Chỉ người dám mơ mới có thể biến giấc mơ thành hiện thực.", author: "" },
+  { kr: "지식은 힘이다.", vn: "Tri thức là sức mạnh.", author: "프랜시스 베이컨" },
+  { kr: "어제보다 나은 오늘, 오늘보다 나은 내일을 위해 노력하자.", vn: "Hãy nỗ lực để hôm nay tốt hơn hôm qua và ngày mai tốt hơn hôm nay.", author: "" },
+  { kr: "행복은 멀리 있지 않다. 바로 지금 여기에 있다.", vn: "Hạnh phúc không ở xa. Nó ngay ở đây, ngay lúc này.", author: "" },
+  { kr: "두려움과 용기는 같은 자리에 있다. 용기 있는 자만이 앞으로 나아간다.", vn: "Sợ hãi và can đảm cùng tồn tại. Chỉ người dũng cảm mới bước tiếp.", author: "" },
+  { kr: "스스로를 믿는 자만이 남을 믿게 할 수 있다.", vn: "Người tin vào bản thân mới có thể khiến người khác tin mình.", author: "" },
+  { kr: "독서는 마음의 양식이다.", vn: "Đọc sách là thức ăn của tâm hồn.", author: "" },
+  { kr: "진정한 용기는 두려움이 없는 것이 아니라 두려움을 극복하는 것이다.", vn: "Dũng cảm thật sự không phải là không sợ, mà là vượt qua nỗi sợ.", author: "" },
+  { kr: "오르지 못할 나무는 쳐다보지도 마라.", vn: "Cây không leo được thì đừng nhìn lên làm gì.", author: "속담" },
+  { kr: "말보다 행동이 중요하다.", vn: "Hành động quan trọng hơn lời nói.", author: "" },
+  { kr: "꾸준함이 재능을 이긴다.", vn: "Sự kiên trì sẽ đánh bại tài năng.", author: "" },
+  { kr: "실수를 두려워하지 마라. 실수는 경험이 된다.", vn: "Đừng sợ mắc lỗi. Mắc lỗi chính là trải nghiệm.", author: "" },
+  { kr: "성공한 사람의 뒤에는 항상 끊임없는 노력이 있다.", vn: "Sau mỗi thành công luôn là những nỗ lực không ngừng nghỉ.", author: "" },
+  { kr: "인내는 쓰다. 하지만 그 열매는 달다.", vn: "Nhẫn nại thì đắng. Nhưng quả của nó thật ngọt.", author: "루소" },
+  { kr: "남을 탓하기 전에 자신을 돌아보라.", vn: "Trước khi trách người khác, hãy tự nhìn lại bản thân.", author: "" },
+  { kr: "아는 것이 힘이다.", vn: "Biết là sức mạnh.", author: "" },
+  { kr: "작은 친절이 세상을 바꾼다.", vn: "Sự tử tế nhỏ bé có thể thay đổi cả thế giới.", author: "" },
+  { kr: "진정한 친구는 어려울 때 알 수 있다.", vn: "Người bạn thật sự chỉ nhận ra được trong lúc khó khăn.", author: "속담" },
+  { kr: "자신을 사랑해야 남도 사랑할 수 있다.", vn: "Yêu bản thân thì mới có thể yêu người khác.", author: "" },
+  { kr: "매일 조금씩 성장하는 사람이 결국 크게 성장한다.", vn: "Người mỗi ngày tiến thêm một chút rồi sẽ trưởng thành lớn lao.", author: "" },
+  { kr: "실망하지 마라. 어둠 뒤에는 빛이 온다.", vn: "Đừng thất vọng. Sau bóng tối là ánh sáng.", author: "" },
+  { kr: "기회는 준비된 자에게 온다.", vn: "Cơ hội đến với người đã chuẩn bị sẵn.", author: "루이 파스퇴르" },
+  { kr: "우리는 우리가 반복하는 것들의 총합이다.", vn: "Chúng ta là tổng hợp của những gì ta lặp đi lặp lại.", author: "아리스토텔레스" },
+  { kr: "멈추지 않는다면 느려도 괜찮다.", vn: "Dù chậm cũng được, miễn là đừng dừng lại.", author: "공자" },
+  { kr: "겸손은 모든 덕의 기초다.", vn: "Khiêm tốn là nền tảng của mọi đức hạnh.", author: "" },
+  { kr: "걱정은 내일의 슬픔을 없애지 않는다. 오늘의 기쁨을 없앨 뿐이다.", vn: "Lo lắng không xóa được nỗi buồn ngày mai, chỉ lấy đi niềm vui hôm nay.", author: "" },
+  { kr: "배움의 즐거움을 알면 인생이 풍요로워진다.", vn: "Biết thưởng thức niềm vui học hỏi thì cuộc sống sẽ giàu có hơn.", author: "" },
+  { kr: "사람은 꿈이 있을 때 가장 빛난다.", vn: "Con người tỏa sáng nhất khi có ước mơ.", author: "" },
+  { kr: "힘든 시간이 지나면 반드시 좋은 날이 온다.", vn: "Sau những ngày khó khăn, nhất định sẽ có những ngày tươi sáng.", author: "" },
+  { kr: "자신의 가능성을 믿어라.", vn: "Hãy tin vào khả năng của bản thân.", author: "" },
+  { kr: "오늘 할 수 있는 일을 내일로 미루지 마라.", vn: "Đừng để việc có thể làm hôm nay sang ngày mai.", author: "" },
+  { kr: "언어를 배우는 것은 새로운 세계를 여는 것이다.", vn: "Học ngôn ngữ mới là mở ra một thế giới mới.", author: "" },
+  { kr: "한국어를 배우는 것은 한국의 마음을 여는 열쇠다.", vn: "Học tiếng Hàn là chiếc chìa khóa mở ra trái tim của Hàn Quốc.", author: "" },
+  { kr: "포기하는 순간, 모든 것이 끝난다.", vn: "Khoảnh khắc bạn bỏ cuộc, mọi thứ đều kết thúc.", author: "" },
+  { kr: "좋아하는 일을 하면서 살아가는 것이 행복이다.", vn: "Sống với những điều mình yêu thích — đó chính là hạnh phúc.", author: "" },
+  { kr: "과거는 바꿀 수 없지만 미래는 내 손에 달려 있다.", vn: "Quá khứ không thể thay đổi, nhưng tương lai nằm trong tay bạn.", author: "" },
+  { kr: "매 순간을 소중히 여겨라.", vn: "Hãy trân trọng từng khoảnh khắc.", author: "" },
+  { kr: "강한 의지를 가진 사람은 무엇이든 이룰 수 있다.", vn: "Người có ý chí mạnh mẽ có thể đạt được bất cứ điều gì.", author: "" },
+  { kr: "화가 날 때는 열까지 세어라.", vn: "Khi tức giận, hãy đếm đến mười.", author: "토머스 제퍼슨" },
+  { kr: "하루하루를 마지막 날처럼 살아라.", vn: "Hãy sống mỗi ngày như ngày cuối cùng.", author: "스티브 잡스" },
+  { kr: "나무를 보지 말고 숲을 보아라.", vn: "Đừng nhìn từng cây, hãy nhìn cả khu rừng.", author: "속담" },
+  { kr: "인생은 짧다. 하고 싶은 것을 지금 하라.", vn: "Cuộc đời ngắn lắm. Hãy làm những gì bạn muốn ngay bây giờ.", author: "" },
+  { kr: "자신감은 능력에서 오지 않는다. 결단력에서 온다.", vn: "Sự tự tin không đến từ năng lực mà đến từ quyết tâm.", author: "" },
+  { kr: "넘어져도 괜찮다. 다시 일어서면 된다.", vn: "Ngã không sao. Đứng dậy là được.", author: "" },
+  { kr: "미소 짓는 사람에게 세상이 미소 짓는다.", vn: "Thế giới sẽ mỉm cười lại với người hay mỉm cười.", author: "" },
+  { kr: "공부는 배신하지 않는다.", vn: "Sự học không bao giờ phản bội bạn.", author: "" },
+  { kr: "그대가 꿈을 꿀 수 있다면, 그 꿈을 이룰 수 있다.", vn: "Nếu bạn có thể mơ về nó, bạn có thể thực hiện nó.", author: "월트 디즈니" },
+  { kr: "최악의 상황에서도 최선을 찾아라.", vn: "Ngay cả trong tình huống tồi tệ nhất, hãy tìm ra điều tốt nhất.", author: "" },
+  { kr: "감사하는 마음이 행복을 만든다.", vn: "Tâm biết ơn tạo nên hạnh phúc.", author: "" },
+  { kr: "이루지 못할 꿈은 없다, 꿈꾸기를 멈추지 않는다면.", vn: "Không có giấc mơ nào là không thể, chừng nào bạn còn mơ.", author: "" },
+  { kr: "힘내라! 오늘도 잘 하고 있다.", vn: "Cố lên! Hôm nay bạn cũng đang làm rất tốt rồi.", author: "" },
+  { kr: "과정을 즐겨라, 결과는 따라온다.", vn: "Hãy tận hưởng quá trình, kết quả sẽ theo sau.", author: "" },
+  { kr: "두 번 측정하고 한 번 잘라라.", vn: "Đo hai lần, cắt một lần.", author: "속담" },
+  { kr: "하늘은 스스로 돕는 자를 돕는다.", vn: "Trời giúp người tự giúp mình.", author: "벤저민 프랭클린" },
+  { kr: "시간은 기다려주지 않는다.", vn: "Thời gian không chờ đợi ai.", author: "" },
+  { kr: "노력 없이는 성과도 없다.", vn: "Không có nỗ lực thì không có thành quả.", author: "" },
+  { kr: "당신이 할 수 있다고 생각하든, 없다고 생각하든 당신은 맞다.", vn: "Dù bạn nghĩ bạn làm được hay không — bạn đều đúng.", author: "헨리 포드" },
+  { kr: "모든 위대한 여정은 첫걸음으로 시작된다.", vn: "Mọi hành trình vĩ đại đều bắt đầu từ bước đầu tiên.", author: "" },
+  { kr: "아직 늦지 않았다. 지금 시작하면 된다.", vn: "Chưa muộn đâu. Bắt đầu ngay bây giờ là được.", author: "" },
+  { kr: "타인의 시선을 의식하지 말고 자신의 길을 가라.", vn: "Đừng quan tâm đến ánh mắt của người khác, hãy đi con đường của mình.", author: "" },
+  { kr: "성실함은 재능을 능가한다.", vn: "Sự chăm chỉ vượt qua được tài năng.", author: "" },
+  { kr: "오늘의 실망이 내일의 지혜다.", vn: "Thất vọng hôm nay là sự khôn ngoan của ngày mai.", author: "" },
+  { kr: "지금 당장 완벽하지 않아도 괜찮다.", vn: "Không hoàn hảo ngay lúc này cũng không sao.", author: "" },
+  { kr: "남과 비교하지 말고 어제의 나와 비교하라.", vn: "Đừng so sánh với người khác, hãy so sánh với bản thân hôm qua.", author: "" },
+  { kr: "친절은 언어다. 귀머거리도 듣고 장님도 볼 수 있다.", vn: "Lòng tốt là ngôn ngữ mà người điếc cũng nghe và người mù cũng thấy được.", author: "마크 트웨인" },
+  { kr: "책 한 권이 세상을 바꿀 수 있다.", vn: "Một cuốn sách có thể thay đổi thế giới.", author: "" },
+  { kr: "모든 전문가는 한때 초보자였다.", vn: "Mọi chuyên gia đều từng là người mới bắt đầu.", author: "" },
+  { kr: "사람을 먼저 생각하는 리더가 진정한 리더다.", vn: "Người lãnh đạo đặt con người lên hàng đầu mới là lãnh đạo thực sự.", author: "" },
+  { kr: "물은 낮은 곳으로 흐른다. 마음은 높은 곳을 향한다.", vn: "Nước chảy chỗ thấp. Lòng người hướng đến nơi cao.", author: "" },
+  { kr: "배움은 평생의 동반자다.", vn: "Học hỏi là người bạn đồng hành suốt đời.", author: "" },
+  { kr: "어떤 상황에서도 희망을 잃지 마라.", vn: "Dù trong hoàn cảnh nào cũng đừng đánh mất hy vọng.", author: "" },
+  { kr: "하고 싶다면 방법을 찾고, 하기 싫다면 핑계를 찾는다.", vn: "Nếu muốn thì tìm cách, không muốn thì tìm cớ.", author: "속담" },
+  { kr: "세상에서 가장 힘든 일은 자기 자신을 아는 것이다.", vn: "Việc khó nhất trên đời là hiểu được chính mình.", author: "탈레스" },
+  { kr: "내가 오늘 서 있는 곳이 내일의 출발점이다.", vn: "Nơi tôi đứng hôm nay chính là điểm xuất phát của ngày mai.", author: "" },
+  { kr: "잠시 쉬어도 된다. 포기하지만 않으면 된다.", vn: "Nghỉ ngơi một lúc cũng được. Chỉ cần đừng bỏ cuộc.", author: "" },
+  { kr: "사랑은 행동으로 증명된다.", vn: "Tình yêu được chứng minh bằng hành động.", author: "" },
+  { kr: "매일의 작은 성취가 큰 꿈을 이룬다.", vn: "Những thành tựu nhỏ mỗi ngày tạo nên giấc mơ lớn.", author: "" },
+  { kr: "나 자신이 될 수 있을 때 가장 자유롭다.", vn: "Tôi tự do nhất khi được là chính mình.", author: "" },
+  { kr: "고통 없이는 얻는 것도 없다.", vn: "Không đau khổ thì không có gì để đạt được.", author: "" },
+  { kr: "인생은 한 번뿐이다, 지금 최선을 다하라.", vn: "Cuộc đời chỉ có một lần, hãy nỗ lực hết mình ngay bây giờ.", author: "" },
+  { kr: "한국어 공부, 포기하지 마세요. 반드시 빛나는 날이 옵니다.", vn: "Học tiếng Hàn, đừng bỏ cuộc. Nhất định sẽ có ngày tỏa sáng.", author: "Vui Học Tiếng Hàn" }
+];
+
+let currentQuoteIdx = 0;
+
+function getDayOfYear(date) {
+    const start = new Date(date.getFullYear(), 0, 0);
+    const diff = date - start;
+    const oneDay = 1000 * 60 * 60 * 24;
+    return Math.floor(diff / oneDay);
+}
+
+function getTodayQuoteIdx() {
+    const today = new Date();
+    return getDayOfYear(today) % QUOTES.length;
+}
+
+function renderClock() {
+    const now = new Date();
+    const weekdays = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+    const months = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
+    document.getElementById('calDayNum').textContent = now.getDate();
+    document.getElementById('calMonthYear').textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+    document.getElementById('calWeekday').textContent = weekdays[now.getDay()];
+    document.getElementById('calDateText').textContent = `${weekdays[now.getDay()]}, ngày ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    const h = String(now.getHours()).padStart(2,'0');
+    const m = String(now.getMinutes()).padStart(2,'0');
+    const s = String(now.getSeconds()).padStart(2,'0');
+    document.getElementById('clockDisplay').textContent = `${h}:${m}:${s}`;
+}
+
+function renderQuote(idx) {
+    const q = QUOTES[idx];
+    document.getElementById('quoteKr').textContent = q.kr;
+    document.getElementById('quoteVn').textContent = q.vn;
+    document.getElementById('quoteAuthor').textContent = q.author ? `— ${q.author}` : '';
+    document.getElementById('quoteNum').textContent = `#${idx+1}/${QUOTES.length}`;
+    document.querySelectorAll('.quote-item').forEach((el,i) => {
+        el.classList.toggle('today-quote', i === idx);
+        if (i === idx) el.scrollIntoView({behavior:'smooth',block:'nearest'});
+    });
+}
+
+function prevQuote() {
+    currentQuoteIdx = (currentQuoteIdx - 1 + QUOTES.length) % QUOTES.length;
+    renderQuote(currentQuoteIdx);
+}
+function nextQuote() {
+    currentQuoteIdx = (currentQuoteIdx + 1) % QUOTES.length;
+    renderQuote(currentQuoteIdx);
+}
+function goTodayQuote() {
+    currentQuoteIdx = getTodayQuoteIdx();
+    renderQuote(currentQuoteIdx);
+}
+
+function renderAllQuotes() {
+    const container = document.getElementById('allQuotesList');
+    container.innerHTML = QUOTES.map((q, i) => `
+        <div class="quote-item${i === currentQuoteIdx ? ' today-quote' : ''}" onclick="currentQuoteIdx=${i};renderQuote(${i})">
+            <div class="quote-item-num">#${i+1}</div>
+            <div class="quote-item-kr">${q.kr}</div>
+            <div class="quote-item-vn">${q.vn}</div>
+        </div>
+    `).join('');
+}
+
+// Init
+currentQuoteIdx = getTodayQuoteIdx();
+renderClock();
+setInterval(renderClock, 1000);
+renderAllQuotes();
+renderQuote(currentQuoteIdx);
+</script>
+</body>
+</html>

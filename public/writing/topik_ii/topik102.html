@@ -21,6 +21,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
     <script src="../../assets/js/writing.js"></script>
+    <script src="../../assets/js/grading-engine.js"></script>
 
 
 <div class="header-badge-container">
@@ -886,70 +887,86 @@
     <script src="exam-logic.js"></script>
 
     <script>
-        // CÂU 51
+        // CÂU 51A — Ý nghĩa 'dọn dẹp/chuyển đồ'
         function grade51A() {
-            let val = document.getElementById('ans-51-a').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['정리하', '정리해야', '치우', '치워', '빼'];
-            let validEndings = ['야 합', '야겠', '면 좋겠', '겠습'];
-
-            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Ý nghĩa 'dọn dẹp' và ngữ pháp 'phải' đều chuẩn."); }
-            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp bắt buộc."); }
-            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng sai/thiếu ngữ pháp."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng. Cần ý 'dọn dẹp/chuyển đồ đi'."); }
-
-            document.getElementById('score-51-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-51-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '집을 정리해야 합니다.',
+                        '짐을 치워야겠습니다.'
+                    ],
+                    stems: ['정리하', '정리해야', '치우', '치워', '빼'],
+                    grammar: [
+                        { pattern: /야\s*하[가-힣]*/, label: 'phải' },
+                        { pattern: /야겠[가-힣]*/, label: 'nên' }
+                    ]
+                },
+                "Cần ý 'dọn dẹp/chuyển đồ đi'."
+            );
+            document.getElementById('score-51-a').innerHTML = result.display;
             document.getElementById('btn-exp-51-a').style.display = 'inline-block';
         }
 
+        // CÂU 51B — Điều kiện thời gian
         function grade51B() {
-            let val = document.getElementById('ans-51-b').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['시작되', '오', '방학하'];
-            let validEndings = ['기 전', '겠습'];
-
-            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Điều kiện thời gian chính xác."); }
-            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp thời gian."); }
-            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu ngữ pháp thời gian."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
-
-            document.getElementById('score-51-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-51-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '방학이 시작되기 전에 정리하려고 합니다.',
+                        '기숙사에서 나오기 전에 처리하겠습니다.'
+                    ],
+                    stems: ['시작되', '오', '방학하'],
+                    grammar: [
+                        { pattern: /기\s*전[가-힣]*/, label: 'trước khi' }
+                    ]
+                },
+                "Cần từ vựng 'bắt đầu/đến' + thời gian."
+            );
+            document.getElementById('score-51-b').innerHTML = result.display;
             document.getElementById('btn-exp-51-b').style.display = 'inline-block';
         }
 
-        // CÂU 52
+        // CÂU 52A — Phủ định việc chịu ảnh hưởng thời tiết
         function grade52A() {
-            let val = document.getElementById('ans-52-a').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['받'];
-            let validNegatives = ['지 않', '안'];
-            let validReasons = ['아/어', '기 때문'];
-
-            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots) && checkKeywords(val, validNegatives)) { score = 5; feedback.push("Đạt 5/5 Điểm: Phủ định việc chịu ảnh hưởng thời tiết rất tốt."); }
-            else if (checkKeywords(val, validNegatives)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp phủ định."); }
-            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Có từ '받다' nhưng thiếu ý phủ định."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Cần cụm từ 'Không chịu (ảnh hưởng)'."); }
-
-            document.getElementById('score-52-a').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-52-a').value.trim(),
+                {
+                    exactAnswers: [
+                        '날씨의 영향을 받지 않는다.',
+                        '기후 변화에 영향을 받지 않는다.'
+                    ],
+                    stems: ['받'],
+                    grammar: [
+                        { pattern: /지\s*않[가-힣]*/, label: 'phủ định' },
+                        { pattern: /안\s*[가-힣]*/, label: 'không' }
+                    ]
+                },
+                "Cần cụm từ 'Không chịu (ảnh hưởng)'."
+            );
+            document.getElementById('score-52-a').innerHTML = result.display;
             document.getElementById('btn-exp-52-a').style.display = 'inline-block';
         }
 
+        // CÂU 52B — Cấu trúc mục đích: bay/vận hành
         function grade52B() {
-            let val = document.getElementById('ans-52-b').value.trim();
-            let score = 0; let feedback = [];
-            let validRoots = ['비행', '날', '운행'];
-            let validEndings = ['기 위해', '려면'];
-
-            if (val === "") { feedback.push("❌ Bạn chưa nhập đáp án."); }
-            else if (checkKeywords(val, validRoots) && checkKeywords(val, validEndings)) { score = 5; feedback.push("Đạt 5/5 Điểm: Cấu trúc mục đích hoàn hảo."); }
-            else if (checkKeywords(val, validEndings)) { score = 3; feedback.push("Đạt 3/5 Điểm: Sai động từ, nhưng đúng ngữ pháp mục đích."); }
-            else if (checkKeywords(val, validRoots)) { score = 2; feedback.push("Đạt 2/5 Điểm: Đúng động từ, nhưng thiếu cấu trúc mục đích."); }
-            else { score = 0; feedback.push("Đạt 0/5 Điểm: Lệch hướng."); }
-
-            document.getElementById('score-52-b').innerHTML = `Điểm: ${score}/5<br><span style="font-size:0.95rem; font-weight:normal;">${feedback.join('<br>')}</span>`;
+            var result = gradeByConfig(
+                document.getElementById('ans-52-b').value.trim(),
+                {
+                    exactAnswers: [
+                        '비행기를 운행하기 위해 필요하다.',
+                        '비행기가 날기 위해 필수적이다.'
+                    ],
+                    stems: ['비행', '날', '운행'],
+                    grammar: [
+                        { pattern: /기\s*위해[가-힣]*/, label: 'để' },
+                        { pattern: /려면[가-힣]*/, label: 'nếu muốn' }
+                    ]
+                },
+                "Cần từ 'bay/vận hành' + mục đích."
+            );
+            document.getElementById('score-52-b').innerHTML = result.display;
             document.getElementById('btn-exp-52-b').style.display = 'inline-block';
         }
 

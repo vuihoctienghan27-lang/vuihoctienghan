@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Học Ngữ Pháp: Số Đếm Từ 수 관형사 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="stylesheet" href="../../assets/css/writing.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/script.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="../../assets/js/vocab-dictionary.js"></script>
+    <script src="../../assets/js/vocab-external.js"></script>
+    <script src="../../assets/js/vocab-tooltip.js"></script>
+    <script src="../../assets/js/vocab-autowrap.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: #111827;
+            margin-top: 0;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.4);
+            padding-bottom: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        ul,
+        ol {
+            padding-left: 1.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .vocab-word {
+            color: #1d4ed8;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .vocab-word:hover {
+            color: #2563eb;
+        }
+
+        .note-box {
+            background: rgba(254, 243, 199, 0.5);
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        /* --- GAME UI STYLES --- */
+        .game-header {
+            text-align: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #1e3a8a;
+        }
+
+        .display-box {
+            min-height: 60px;
+            border: 2px dashed #9ca3af;
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.3);
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .word-bank {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+
+        .chip {
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            user-select: none;
+        }
+
+        .chip:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+        }
+
+        .chip.selected {
+            background: #6b7280;
+            color: white;
+            border-color: #4b5563;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+            transform: translateY(0);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .glass-btn {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            text-align: center;
+        }
+
+        .glass-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: #cbd5e1;
+        }
+
+        .glass-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-check {
+            background: rgba(59, 130, 246, 0.7);
+            color: white;
+            border-color: rgba(59, 130, 246, 0.4);
+            flex: 1.5;
+        }
+
+        .btn-check:hover:not(:disabled) {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .feedback {
+            text-align: center;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 24px;
+            font-size: 1.1rem;
+        }
+
+        .success {
+            color: #16a34a;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .progress {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+        }
+
+        /* Hero Banner */
+        .wrapper-hero {
+            max-width: 900px;
+            margin: 0 auto 25px auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .hero-section {
+            background: var(--random-bg-gradient, linear-gradient(135deg, #1e40af 0%, #3b82f6 100%));
+            border-radius: 24px;
+            padding: 35px 40px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.25);
+            color: #ffffff;
+            font-size: 0.9em;
+            font-weight: 700;
+            padding: 6px 16px;
+            border-radius: 99px;
+            margin-bottom: 15px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: 2.2em;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.3;
+            letter-spacing: -0.5px;
+            color: white !important;
+        }
+
+        /* Footer */
+        .global-footer {
+            max-width: 900px;
+            margin: 30px auto;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 20px;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            flex-direction: column;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-logo {
+            font-size: 1.2em;
+            font-weight: 800;
+            color: #1e293b;
+        }
+
+        .footer-slogan {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.9em;
+        }
+
+        .footer-contact {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .social-icon {
+            color: #1877f2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            text-decoration: none;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px) scale(1.05);
+        }
+
+        /* Book Navigation Wrapper */
+        .book-nav-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            gap: 15px;
+        }
+
+        .book-nav-wrapper .page-indicator {
+            font-weight: 700;
+            color: #64748b;
+            font-size: 1.05rem;
+        }
+
+        .btn-outline {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            color: #475569;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-outline:hover {
+            border-color: #cbd5e1;
+            background: #f8fafc;
+        }
+
+        .btn-action {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-action:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+        }
+
+        /* Mobile optimization */
+        @media (max-width: 768px) {
+            .book-nav-wrapper {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 10px;
+            }
+
+            .book-nav-wrapper .btn-action {
+                width: 100%;
+                order: -1;
+            }
+
+            .book-nav-wrapper .btn-outline {
+                flex: 1;
+                text-align: center;
+            }
+
+            .book-nav-wrapper .page-indicator {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 5px;
+            }
+
+
+            .wrapper-hero {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .hero-section {
+                padding: 25px 20px;
+                border-radius: 16px;
+            }
+
+            .hero-title {
+                font-size: 1.6em;
+            }
+
+            .global-footer {
+                margin: 20px 15px;
+                border-radius: 16px;
+            }
+
+            .game-controls {
+                flex-direction: column;
+            }
+
+            .glass-btn {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+
+            .btn-check {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="margin-top: 20px;">
+
+        <div class="wrapper-hero">
+            <div class="hero-section">
+                <div class="hero-tag">NGỮ PHÁP SƠ CẤP</div>
+                <h1 class="hero-title">SỐ ĐẾM TỪ [<span class="vocab-word" data-base="수 관형사"
+                        data-meaning="Số đếm từ Hán-Hàn">수 관형사</span>]</h1>
+            </div>
+        </div>
+
+        <div class="wrapper">
+            <h2>I. MỤC TIÊU BÀI HỌC</h2>
+            <ul>
+                <li><strong>Kiến thức:</strong> Học sinh hiểu được ý nghĩa và cách dùng của số đếm từ Hán-Hàn (수 관형사)
+                    như <span class="vocab-word" data-base="일" data-meaning="Một">일</span>, <span class="vocab-word"
+                        data-base="이" data-meaning="Hai">이</span>, <span class="vocab-word" data-base="삼"
+                        data-meaning="Ba">삼</span> khi đứng trước danh từ chỉ đơn vị.</li>
+                <li><strong>Kỹ năng:</strong> Học sinh có thể sử dụng số đếm từ Hán-Hàn để đếm số lượng trong giao tiếp
+                    hàng ngày.</li>
+                <li><strong>Thái độ:</strong> Hình thành thói quen sử dụng đúng số đếm Hán-Hàn trong văn nói và văn
+                    viết.</li>
+            </ul>
+        </div>
+
+        <div class="wrapper">
+            <h2>II. NỘI DUNG BÀI HỌC</h2>
+
+            <h3>1. Định nghĩa & Ý nghĩa</h3>
+            <ul>
+                <li><strong>수 관형사</strong> là số đếm từ gốc Hán-Hàn, đứng trước danh từ chỉ đơn vị để bổ sung ý nghĩa số
+                    lượng.</li>
+                <li>Khác với số thuần Hàn (하나, 둘, 셋...), số Hán-Hàn (일, 이, 삼...) được dùng với các danh từ gốc Hán.</li>
+            </ul>
+
+            <h3>2. Ngữ cảnh sử dụng</h3>
+            <p>Số đếm từ Hán-Hàn được dùng phổ biến trong:</p>
+            <ul>
+                <li><strong>Đếm năm tháng:</strong> <span class="vocab-word" data-base="일 년" data-meaning="Một năm">일
+                        년</span>, <span class="vocab-word" data-base="이 개월" data-meaning="Hai tháng">이 개월</span></li>
+                <li><strong>Số tầng:</strong> <span class="vocab-word" data-base="일 층" data-meaning="Tầng 1">일 층</span>,
+                    <span class="vocab-word" data-base="이 층" data-meaning="Tầng 2">이 층</span>
+                </li>
+                <li><strong>Số thứ tự:</strong> <span class="vocab-word" data-base="삼 번" data-meaning="Số ba">삼
+                        번</span>, <span class="vocab-word" data-base="오 분" data-meaning="5 phút">오 분</span></li>
+                <li><strong>Số lượng đồ vật:</strong> <span class="vocab-word" data-base="십 개" data-meaning="10 cái">십
+                        개</span>, <span class="vocab-word" data-base="백 원" data-meaning="100 won">백 원</span></li>
+            </ul>
+
+            <h3>3. Cấu trúc ngữ pháp & Quy tắc viết</h3>
+
+            <div class="note-box">
+                <strong>Số Hán-Hàn + Danh từ chỉ đơn vị</strong><br>
+                <em>Ví dụ: 일(1) + 년(năm) = 일 년 (một năm)</em>
+            </div>
+
+            <p><strong>Các số đếm Hán-Hàn cơ bản:</strong></p>
+            <ul>
+                <li><span class="vocab-word" data-base="일" data-meaning="1">일</span> (1), <span class="vocab-word"
+                        data-base="이" data-meaning="2">이</span> (2), <span class="vocab-word" data-base="삼"
+                        data-meaning="3">삼</span> (3), <span class="vocab-word" data-base="사" data-meaning="4">사</span>
+                    (4), <span class="vocab-word" data-base="오" data-meaning="5">오</span> (5)</li>
+                <li><span class="vocab-word" data-base="육" data-meaning="6">육</span> (6), <span class="vocab-word"
+                        data-base="칠" data-meaning="7">칠</span> (7), <span class="vocab-word" data-base="팔"
+                        data-meaning="8">팔</span> (8), <span class="vocab-word" data-base="구" data-meaning="9">구</span>
+                    (9), <span class="vocab-word" data-base="십" data-meaning="10">십</span> (10)</li>
+            </ul>
+        </div>
+
+        <div class="wrapper">
+            <h2>III. VÍ DỤ MINH HỌA</h2>
+            <p>Dưới đây là 5 ví dụ đa dạng tương ứng với các ngữ cảnh thực tế khác nhau:</p>
+
+            <h4>🔹 Ví dụ 1: Năm tháng</h4>
+            <ul>
+                <li><strong>Câu tiếng Hàn:</strong> <span class="vocab-word" data-base="일 년" data-meaning="Một năm">일
+                        년</span>은 <span class="vocab-word" data-base="12개월" data-meaning="12 tháng">12개월</span>입니다.</li>
+                <li><strong>Cách phát âm:</strong> [il nyo-nưn sip-i-gae-wo-rim-ni-da]</li>
+                <li><strong>Dịch nghĩa:</strong> Một năm là 12 tháng.</li>
+            </ul>
+
+            <h4>🔹 Ví dụ 2: Số tầng</h4>
+            <ul>
+                <li><strong>Câu tiếng Hàn:</strong> <span class="vocab-word" data-base="도서관"
+                        data-meaning="Thư viện">도서관</span>은 <span class="vocab-word" data-base="삼 층"
+                        data-meaning="Tầng 3">삼 층</span>에 있습니다.</li>
+                <li><strong>Cách phát âm:</strong> [do-so-gwa-nưn sam chu-ge it-seum-ni-da]</li>
+                <li><strong>Dịch nghĩa:</strong> Thư viện ở tầng 3.</li>
+            </ul>
+
+            <h4>🔹 Ví dụ 3: Số thứ tự</h4>
+            <ul>
+                <li><strong>Câu tiếng Hàn:</strong> <span class="vocab-word" data-base="삼 번" data-meaning="Số 3">삼
+                        번</span> <span class="vocab-word" data-base="출구" data-meaning="Lối ra">출구</span>로 <span
+                        class="vocab-word" data-base="가다" data-meaning="Đi">가</span>세요.</li>
+                <li><strong>Cách phát âm:</strong> [sam bôn chul-gu-ro ga-se-yo]</li>
+                <li><strong>Dịch nghĩa:</strong> Hãy đi ra lối ra số 3.</li>
+            </ul>
+
+            <h4>🔹 Ví dụ 4: Thời gian</h4>
+            <ul>
+                <li><strong>Câu tiếng Hàn:</strong> <span class="vocab-word" data-base="오 분" data-meaning="5 phút">오
+                        분</span> <span class="vocab-word" data-base="기다리다" data-meaning="Chờ">기다리</span>세요.</li>
+                <li><strong>Cách phát âm:</strong> [o bun gi-da-ri-se-yo]</li>
+                <li><strong>Dịch nghĩa:</strong> Hãy đợi 5 phút.</li>
+            </ul>
+
+            <h4>🔹 Ví dụ 5: Số lượng</h4>
+            <ul>
+                <li><strong>Câu tiếng Hàn:</strong> <span class="vocab-word" data-base="사과" data-meaning="Táo">사과</span>
+                    <span class="vocab-word" data-base="다섯 개" data-meaning="5 quả">다섯 개</span>와 <span class="vocab-word"
+                        data-base="오 개" data-meaning="5 cái">오 개</span>의 <span class="vocab-word" data-base="귤"
+                        data-meaning="Quýt">귤</span>을 샀어요.
+                </li>
+                <li><strong>Cách phát âm:</strong> [sa-gwa da-seot gae-wa o gae-e gyu-reul sa-sseo-yo]</li>
+                <li><strong>Dịch nghĩa:</strong> Tôi đã mua 5 quả táo và 5 quả quýt.</li>
+            </ul>
+        </div>
+
+        <div class="wrapper">
+            <h2>IV. BÀI TẬP VẬN DỤNG</h2>
+            <p><em>Hãy hoàn thành câu bằng cách ghép các thẻ để tạo câu tiếng Hàn hoàn chỉnh có sử dụng số đếm từ
+                    Hán-Hàn. Các câu sẽ được xáo trộn ngẫu nhiên.</em></p>
+
+            <div class="progress" id="progress-text" style="display: none;">Câu 1/10</div>
+
+            <div class="game-header" id="question-text">Đang tải câu hỏi...</div>
+
+            <div class="display-box" id="answer-box"></div>
+
+            <div class="word-bank" id="chip-container"></div>
+
+            <div id="speaking-ui" style="display: none; text-align: center; margin-bottom: 20px;">
+                <div id="speak-target-text"
+                    style="font-size: 1.8em; font-weight: 800; color: var(--accent); margin-bottom: 20px;"></div>
+
+                <div id="speak-controls"
+                    style="display: none; justify-content: center; gap: 20px; margin-bottom: 20px;">
+                    <button onclick="playAudio(1.0)"
+                        style="background: #e0f2fe; color: #0ea5e9; border: 2px solid #bae6fd; border-radius: 50%; width: 65px; height: 65px; font-size: 1.8em; cursor: pointer; transition: 0.2s;"
+                        title="Nghe bình thường">🔊</button>
+                    <button onclick="playAudio(0.5)"
+                        style="background: #f1f5f9; color: #64748b; border: 2px solid #cbd5e1; border-radius: 50%; width: 65px; height: 65px; font-size: 1.8em; cursor: pointer; transition: 0.2s;"
+                        title="Nghe chậm">🐢</button>
+                    <button id="micBtn" onclick="toggleMic()"
+                        style="background: #fef2f2; color: #ef4444; border: 2px solid #fca5a5; border-radius: 50%; width: 65px; height: 65px; font-size: 1.8em; cursor: pointer; transition: 0.2s;"
+                        title="Luyện phát âm">🎤</button>
+                </div>
+
+                <div id="speakTranscriptWrapper"
+                    style="font-size: 1.5em; font-weight: bold; min-height: 40px; margin-bottom: 10px; display: flex; justify-content: center; flex-wrap: wrap;">
+                </div>
+                <div id="speakScore" style="font-size: 1.2em; font-weight: bold; color: #3b82f6; min-height: 25px;">
+                </div>
+            </div>
+
+            <div class="feedback" id="feedback-msg" style="margin-bottom: 15px;"></div>
+
+            <div class="book-nav-wrapper">
+                <button class="btn-outline btn-prev" id="btn-prev" onclick="prevQuestion()">← Câu trước</button>
+                <span id="game-page-indicator" class="page-indicator">1 / 10</span>
+                <button class="btn-outline btn-next" id="btn-next" onclick="nextQuestion()">Câu tiếp →</button>
+                <button id="btn-check" class="btn-action action-btn" onclick="handleGameAction()">Kiểm tra ✔</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- LOGIC GAME BÀI TẬP VẬN DỤNG ---
+
+        // Dữ liệu 10 câu cho ngữ pháp 수 관형사
+        const rawExercises = [
+            { vi: "Một năm có 12 tháng.", kr: "일 년은 12개월입니다.", viChunks: ["Một năm", "có", "12 tháng."], krChunks: ["일 년은", "12개월", "입니다."] },
+            { vi: "Thư viện ở tầng 3.", kr: "도서관은 삼 층에 있습니다.", viChunks: ["Thư viện", "ở", "tầng 3."], krChunks: ["도서관은", "삼 층에", "있습니다."] },
+            { vi: "Hãy ra lối ra số 3.", kr: "삼 번 출구로 가세요.", viChunks: ["Hãy ra", "lối ra", "số 3."], krChunks: ["삼 번", "출구로", "가세요."] },
+            { vi: "Hãy đợi 5 phút.", kr: "오 분 기다리세요.", viChunks: ["Hãy", "đợi", "5 phút."], krChunks: ["오 분", "기다리", "세요."] },
+            { vi: "Lớp học ở tầng 2.", kr: "교실은 이 층에 있습니다.", viChunks: ["Lớp học", "ở", "tầng 2."], krChunks: ["교실은", "이 층에", "있습니다."] },
+            { vi: "Tôi cần số 4.", kr: "사 번이 필요합니다.", viChunks: ["Tôi cần", "số", "4."], krChunks: ["사 번이", "필요", "합니다."] },
+            { vi: "Hãy cho tôi 10 cái.", kr: "십 개 주세요.", viChunks: ["Hãy cho tôi", "10", "cái."], krChunks: ["십 개", "주", "세요."] },
+            { vi: "Tôi học ở phòng 6.", kr: "나는 육 호실에서 공부합니다.", viChunks: ["Tôi học", "ở", "phòng 6."], krChunks: ["나는", "육 호실에서", "공부합니다."] },
+            { vi: "Xe buýt số 7.", kr: "칠 번 버스입니다.", viChunks: ["Xe buýt", "số", "7."], krChunks: ["칠 번", "버스", "입니다."] },
+            { vi: "Bắt đầu lúc 9 giờ.", kr: "아홉 시에 시작합니다.", viChunks: ["Bắt đầu", "lúc", "9 giờ."], krChunks: ["아홉 시에", "시작", "합니다."] }
+        ];
+
+        let gameData = [];
+        let currentIndex = 0;
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function initGame() {
+            const shuffledRaw = shuffleArray(rawExercises);
+
+            gameData = shuffledRaw.map(item => {
+                const isTargetKr = Math.random() > 0.5;
+                const promptText = isTargetKr ? item.vi : item.kr;
+                const targetSentence = isTargetKr ? item.kr : item.vi;
+                const chunks = isTargetKr ? item.krChunks : item.viChunks;
+
+                return {
+                    promptText: promptText,
+                    targetSentence: targetSentence,
+                    koreanSentence: item.kr,
+                    chips: shuffleArray(chunks.map((text, id) => ({ id, text }))),
+                    selectedOrder: []
+                };
+            });
+
+            currentIndex = 0;
+            renderCurrentQuestion();
+        }
+
+        let gameMode = "CHECK";
+
+        function handleGameAction() {
+            if (gameMode === "CHECK") {
+                checkAnswer();
+            } else if (gameMode === "SPEAK") {
+                document.getElementById('speak-controls').style.display = 'flex';
+                playAudio(1.0);
+
+                const btnCheck = document.getElementById('btn-check');
+                btnCheck.innerHTML = "🎤 Bật Micro";
+                btnCheck.style.background = "#8b5cf6";
+                gameMode = "PRACTICE";
+            } else if (gameMode === "PRACTICE") {
+                toggleMic();
+            }
+        }
+
+        function renderCurrentQuestion() {
+            const qData = gameData[currentIndex];
+
+            document.getElementById('game-page-indicator').innerText = `${currentIndex + 1} / ${gameData.length}`;
+            document.getElementById('question-text').innerText = qData.promptText;
+            document.getElementById('feedback-msg').innerHTML = "";
+
+            gameMode = "CHECK";
+            const btnCheck = document.getElementById('btn-check');
+            btnCheck.innerHTML = "Kiểm tra ✔";
+            btnCheck.style.background = "#3b82f6";
+
+            document.getElementById('answer-box').style.display = 'flex';
+            document.getElementById('chip-container').style.display = 'flex';
+            document.getElementById('speaking-ui').style.display = 'none';
+
+            document.getElementById('btn-prev').disabled = (currentIndex === 0);
+            document.getElementById('btn-next').disabled = (currentIndex === gameData.length - 1);
+
+            document.getElementById('speakTranscriptWrapper').innerHTML = "";
+            document.getElementById('speakScore').innerText = "";
+            if (window.speakingRecognition) {
+                try { window.speakingRecognition.stop(); } catch (e) { }
+            }
+            resetMicUI();
+
+            renderChipsAndBox();
+        }
+
+        function renderChipsAndBox() {
+            const qData = gameData[currentIndex];
+            const container = document.getElementById('chip-container');
+            const answerBox = document.getElementById('answer-box');
+
+            container.innerHTML = "";
+            answerBox.innerHTML = "";
+
+            qData.chips.forEach(chipInfo => {
+                const isSelected = qData.selectedOrder.includes(chipInfo.id);
+                const chipEl = document.createElement('div');
+                chipEl.className = `chip ${isSelected ? 'selected' : ''}`;
+                chipEl.innerText = chipInfo.text;
+                chipEl.onclick = () => handleChipClick(chipInfo.id);
+                container.appendChild(chipEl);
+            });
+
+            qData.selectedOrder.forEach(chipId => {
+                const chipInfo = qData.chips.find(c => c.id === chipId);
+                if (chipInfo) {
+                    const textSpan = document.createElement('span');
+                    textSpan.innerText = chipInfo.text;
+                    answerBox.appendChild(textSpan);
+                }
+            });
+        }
+
+        function handleChipClick(chipId) {
+            const qData = gameData[currentIndex];
+            const idxInSelected = qData.selectedOrder.indexOf(chipId);
+
+            document.getElementById('feedback-msg').innerHTML = "";
+
+            if (idxInSelected > -1) {
+                qData.selectedOrder.splice(idxInSelected, 1);
+            } else {
+                qData.selectedOrder.push(chipId);
+            }
+
+            renderChipsAndBox();
+        }
+
+        function checkAnswer() {
+            const qData = gameData[currentIndex];
+            const feedback = document.getElementById('feedback-msg');
+
+            const userAssembled = qData.selectedOrder.map(id => {
+                return qData.chips.find(c => c.id === id).text;
+            }).join("").replace(/\s/g, '');
+
+            const targetCompare = qData.targetSentence.replace(/\s/g, '');
+
+            if (userAssembled === targetCompare) {
+                feedback.innerHTML = "";
+                document.getElementById('answer-box').style.display = 'none';
+                document.getElementById('chip-container').style.display = 'none';
+
+                document.getElementById('speaking-ui').style.display = 'block';
+                document.getElementById('speak-controls').style.display = 'none';
+                document.getElementById('speak-target-text').innerText = qData.koreanSentence;
+
+                const btnCheck = document.getElementById('btn-check');
+                btnCheck.innerHTML = "🗣️ Luyện nói";
+                btnCheck.style.background = "#10b981";
+                gameMode = "SPEAK";
+            } else {
+                feedback.innerHTML = `<span class="error">❌ Chưa đúng thứ tự. Hãy nhấn vào thẻ để xếp lại nhé.</span>`;
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderCurrentQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIndex < gameData.length - 1) {
+                currentIndex++;
+                renderCurrentQuestion();
+            }
+        }
+
+        // --- SPEAKING API LOGIC ---
+        let synth = window.speechSynthesis;
+        window.speakingRecognition = null;
+
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            window.speakingRecognition = new SpeechRecognition();
+            window.speakingRecognition.lang = 'ko-KR';
+            window.speakingRecognition.continuous = false;
+            window.speakingRecognition.interimResults = false;
+
+            window.speakingRecognition.onstart = function () {
+                let micBtn = document.getElementById('micBtn');
+                if (micBtn) {
+                    micBtn.style.transform = "scale(1.1)";
+                    micBtn.style.background = "#fee2e2";
+                }
+                let speakScore = document.getElementById('speakScore');
+                if (speakScore) {
+                    speakScore.innerText = "Đang nghe...";
+                    speakScore.style.color = "#8b5cf6";
+                }
+                document.getElementById('speakTranscriptWrapper').innerHTML = '';
+            };
+
+            window.speakingRecognition.onresult = function (event) {
+                const transcript = event.results[0][0].transcript.trim();
+                evalSpeakResult(transcript);
+                resetMicUI();
+            };
+
+            window.speakingRecognition.onerror = function (event) {
+                let speakScore = document.getElementById('speakScore');
+                if (speakScore) {
+                    speakScore.innerText = "Không nghe rõ. Hãy thử lại!";
+                    speakScore.style.color = "#ef4444";
+                }
+                resetMicUI();
+            };
+
+            window.speakingRecognition.onend = function () {
+                resetMicUI();
+            };
+        }
+
+        function resetMicUI() {
+            let btn = document.getElementById('micBtn');
+            if (btn) {
+                btn.style.transform = "scale(1)";
+                btn.style.background = "#fef2f2";
+            }
+        }
+
+        function toggleMic() {
+            if (window.speakingRecognition) {
+                try {
+                    window.speakingRecognition.start();
+                } catch (e) {
+                    window.speakingRecognition.stop();
+                }
+            } else {
+                Swal.fire("Không hỗ trợ", "Trình duyệt của bạn không hỗ trợ nhận diện giọng nói. Vui lòng dùng trình duyệt phiên bản mới.", "error");
+            }
+        }
+
+        function playAudio(speed) {
+            if (!synth) return;
+            const qData = gameData[currentIndex];
+
+            synth.cancel();
+
+            const utterance = new SpeechSynthesisUtterance(qData.koreanSentence);
+            utterance.lang = 'ko-KR';
+            utterance.rate = speed;
+            synth.speak(utterance);
+        }
+
+        function evalSpeakResult(transcript) {
+            const target = gameData[currentIndex].koreanSentence;
+
+            let rChars = transcript.replace(/[.,?!'"\s]/g, '').split('');
+            let rIndex = 0;
+
+            let html = '';
+            let correctCount = 0;
+            let totalEvalChars = 0;
+
+            for (let i = 0; i < target.length; i++) {
+                let expected = target[i];
+
+                if (/[.,?!'"\s]/.test(expected)) {
+                    let displayChar = expected === ' ' ? '&nbsp;' : expected;
+                    html += `<span style="color: var(--text-main);">${displayChar}</span>`;
+                    continue;
+                }
+
+                totalEvalChars++;
+                let actual = rChars[rIndex] || '';
+                let color = '#ef4444';
+
+                if (expected === actual) {
+                    color = '#10b981';
+                    correctCount++;
+                } else if (actual !== '') {
+                    let eCode = expected.charCodeAt(0);
+                    let aCode = actual.charCodeAt(0);
+                    if (eCode >= 44032 && eCode <= 55203 && aCode >= 44032 && aCode <= 55203) {
+                        let eBase = Math.floor((eCode - 44032) / 28);
+                        let aBase = Math.floor((aCode - 44032) / 28);
+                        if (eBase === aBase) {
+                            color = '#3b82f6';
+                            correctCount += 0.5;
+                        }
+                    }
+                }
+                html += `<span style="color: ${color};">${expected}</span>`;
+                rIndex++;
+            }
+
+            let wrapper = document.getElementById('speakTranscriptWrapper');
+            if (wrapper) {
+                wrapper.innerHTML = html;
+                let subHtml = `<div style="width:100%; text-align:center; font-size:0.65em; color:#64748b; font-weight:normal; margin-top:8px;">(Bạn đọc: ${transcript})</div>`;
+                wrapper.innerHTML += subHtml;
+            }
+
+            let score = Math.round((correctCount / totalEvalChars) * 100);
+            let scoreEl = document.getElementById('speakScore');
+            if (scoreEl) {
+                scoreEl.innerText = `Điểm: ${score}/100`;
+                if (score >= 80) {
+                    scoreEl.style.color = "#10b981";
+                    scoreEl.innerText += " - Phát âm tốt!";
+                } else {
+                    scoreEl.style.color = "#ef4444";
+                    scoreEl.innerText += " - Thử lại nhé!";
+                }
+            }
+        }
+
+        window.onload = initGame;
+    </script>
+</body>
+
+</html>
