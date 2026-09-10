@@ -1,0 +1,175 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===== HELPERS =====
+    function isSignedIn() { return request.auth != null; }
+    // Admin được nhận diện bằng email (giống client-side hiện tại)
+    function isAdmin() {
+      return isSignedIn() &&
+        request.auth.token.email in ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+    }
+    // Chủ sở hữu tài liệu (dựa trên field userId)
+    function isDocOwner() {
+      return isSignedIn() && request.resource.data.userId == request.auth.uid;
+    }
+    // Thành viên của một mảng uid (participants / users)
+    function isMember(list) {
+      return isSignedIn() && request.auth.uid in list;
+    }
+    function chatParticipants(chatId) {
+      return get(/databases/$(database)/documents/direct_chats/$(chatId)).data.participants;
+    }
+    function friendshipMembers(friendshipId) {
+      return get(/databases/$(database)/documents/friendships/$(friendshipId)).data.users;
+    }
+
+    // ===== NGƯỜI DÙNG =====
+    // - Đọc: công khai (bảng xếp hạng leaderboard.html đọc danh sách users khi chưa đăng nhập)
+    // - Ghi: chỉ chính mình (admin được phép ghi để chạy tool bảo trì như chuẩn hóa EXP)
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+
+      // Từ vựng đã lưu (chỉ chủ sở hữu)
+      match /vocabulary/{docId} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
+
+      // Lịch sử làm đề thi — P1 (chỉ chủ sở hữu)
+      match /examAttempts/{attemptId} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
+    }
+
+    // ===== DIỄN ĐÀN =====
+    match /forum_posts/{postId} {
+      allow read: if true;
+      allow create: if isDocOwner();
+      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+    }
+    match /forum_replies/{replyId} {
+      allow read: if true;
+      allow create: if isDocOwner();
+      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+    }
+
+    // ===== HỎI ĐÁP =====
+    match /questions/{questionId} {
+      allow read: if true;
+      allow create: if isDocOwner();
+      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      match /comments/{commentId} {
+        allow read: if true;
+        allow create: if isDocOwner();
+        allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      }
+    }
+
+    // ===== CHAT CÔNG KHAI =====
+    match /public_messages/{msgId} {
+      allow read: if true;
+      allow create: if isDocOwner();
+      allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+    }
+    // Chat nổi trên trang chủ (landing): ai cũng xem được, chỉ đăng khi đăng nhập
+    match /global_chats/{msgId} {
+      allow read: if true;
+      allow create: if isDocOwner();
+      allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+    }
+
+    // ===== BẠN BÈ =====
+    // Lời mời chỉ người gửi / người nhận đọc được
+    match /friend_requests/{reqId} {
+      allow read: if isSignedIn() && (
+        request.auth.uid == resource.data.senderId ||
+        request.auth.uid == resource.data.receiverId ||
+        isAdmin()
+      );
+      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      allow delete: if isSignedIn() && (
+        request.auth.uid == resource.data.senderId ||
+        request.auth.uid == resource.data.receiverId ||
+        isAdmin()
+      );
+    }
+    // Quan hệ bạn bè chỉ thành viên trong quan hệ đọc/ghi được
+    match /friendships/{id} {
+      allow read: if isMember(resource.data.users) || isAdmin();
+      allow create: if isMember(request.resource.data.users);
+      allow update, delete: if isMember(resource.data.users) || isAdmin();
+    }
+
+    // ===== NHẮN TIN RIÊNG (hệ thống direct_chats) =====
+    match /direct_chats/{chatId} {
+      allow read: if isMember(resource.data.participants) || isAdmin();
+      allow create: if isMember(request.resource.data.participants);
+      allow update: if isMember(resource.data.participants);
+      match /messages/{msgId} {
+        allow read: if isMember(chatParticipants(chatId));
+        allow create: if isSignedIn()
+          && request.resource.data.senderId == request.auth.uid
+          && isMember(chatParticipants(chatId));
+        allow delete: if isSignedIn() && (request.auth.uid == resource.data.senderId || isAdmin());
+      }
+    }
+    // ===== NHẮN TIN RIÊNG (hệ thống direct_messages cũ, gắn với friendships) =====
+    match /direct_messages/{msgId} {
+      allow read: if isSignedIn() && (
+        request.auth.uid == resource.data.senderId ||
+        isMember(friendshipMembers(resource.data.friendshipId)) ||
+        isAdmin()
+      );
+      allow create: if isSignedIn()
+        && request.resource.data.senderId == request.auth.uid
+        && isMember(friendshipMembers(request.resource.data.friendshipId));
+      allow delete: if isSignedIn() && (request.auth.uid == resource.data.senderId || isAdmin());
+    }
+
+    // ===== THÔNG BÁO =====
+    // Chỉ người nhận (userId) đọc/cập nhật được; người gửi phải là chính mình
+    match /notifications/{notifId} {
+      allow read: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.fromUserId == request.auth.uid;
+      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+    }
+
+    // ===== BÀI BÁO (daily news) =====
+    match /daily-articles/{articleId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      // Admin toàn quyền; mọi người chỉ được tăng lượt xem (viewCount)
+      allow update: if isAdmin()
+        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount']);
+    }
+
+    // ===== NỘI DUNG BÀI HỌC (media/đáp án đồng bộ) =====
+    // Nội dung/đáp án dùng chung cho mọi học viên → chỉ admin (giáo viên) được ghi
+    match /lessons_media/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ===== BÀI HỌC VIDEO =====
+    match /video_lessons/{lessonId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ===== CẤU HÌNH ỨNG DỤNG (API key AI chấm điểm) =====
+    // Key nạp động từ Firestore để không hardcode trong mã nguồn (tránh lộ khi push GitHub).
+    // LƯU Ý: client đọc được nên key vẫn có thể bị trích xuất qua DevTools.
+    // Muốn siết hơn: đổi read thành `if isSignedIn()` (yêu cầu đăng nhập mới chấm AI).
+    match /app_config/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ===== PHẢN HỒI NGƯỜI DÙNG =====
+    match /feedback/{feedbackId} {
+      allow create: if isSignedIn();
+      allow read, update: if isAdmin();
+    }
+  }
+}
