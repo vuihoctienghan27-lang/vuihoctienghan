@@ -179,6 +179,65 @@ document.addEventListener('DOMContentLoaded', () => {
         .drawer-divider{height:1px;background:rgba(0,0,0,.06);margin:6px 18px}
         body.dark-mode .drawer-divider{background:rgba(255,255,255,.06)}
 
+        /* DRAWER — AUTH CARD */
+        .drawer-auth{padding:14px 16px;border-bottom:1px solid rgba(0,0,0,.06)}
+        body.dark-mode .drawer-auth{border-bottom-color:rgba(255,255,255,.08)}
+        .drawer-auth a{text-decoration:none}
+        .auth-login-btn{
+            display:flex;align-items:center;justify-content:center;gap:8px;width:100%;
+            padding:11px;border:none;border-radius:12px;cursor:pointer;
+            background:linear-gradient(135deg,#2563eb,#4f46e5);color:#fff;
+            font-weight:700;font-size:.92em;box-shadow:0 6px 16px rgba(37,99,235,.25);
+            transition:transform .15s,box-shadow .15s;
+        }
+        .auth-login-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(37,99,235,.32)}
+        .auth-user{
+            display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;
+            background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.15);
+            cursor:pointer;transition:background .15s;
+        }
+        .auth-user:hover{background:rgba(37,99,235,.1)}
+        .auth-user img{width:44px;height:44px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.6);flex-shrink:0}
+        body.dark-mode .auth-user img{border-color:rgba(255,255,255,.2)}
+        .auth-user-info{min-width:0;flex:1}
+        .auth-user-name{display:block;font-weight:800;font-size:.95em;color:#1f2937;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        body.dark-mode .auth-user-name{color:#f1f5f9}
+        .auth-user-role{display:block;font-size:.74em;color:#b45309;font-weight:700;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        body.dark-mode .auth-user-role{color:#fbbf24}
+        .auth-user-streak{display:block;font-size:.72em;color:#f59e0b;font-weight:800;margin-top:3px}
+        .auth-arrow{color:#94a3b8;flex-shrink:0;transition:transform .15s,color .15s}
+        .auth-user:hover .auth-arrow{transform:translateX(2px);color:#2563eb}
+        .auth-logout-btn{
+            display:flex;align-items:center;gap:11px;width:100%;
+            padding:9px 18px;background:none;border:none;cursor:pointer;
+            color:#dc2626;font-weight:600;font-size:.9em;text-align:left;transition:background .15s;
+        }
+        .auth-logout-btn:hover{background:rgba(220,38,38,.08)}
+        body.dark-mode .auth-logout-btn{color:#f87171}
+        body.dark-mode .auth-logout-btn:hover{background:rgba(248,113,113,.12)}
+
+        /* DRAWER — ACCORDION */
+        .drawer-acc{border-bottom:1px solid rgba(0,0,0,.06)}
+        body.dark-mode .drawer-acc{border-bottom-color:rgba(255,255,255,.08)}
+        .drawer-acc-head{
+            display:flex;align-items:center;justify-content:space-between;width:100%;
+            padding:13px 18px;background:none;border:none;cursor:pointer;
+            font-size:.78em;font-weight:800;text-transform:uppercase;letter-spacing:.8px;
+            color:#475569;transition:color .15s;
+        }
+        body.dark-mode .drawer-acc-head{color:#94a3b8}
+        .drawer-acc-head:hover{color:#2563eb}
+        body.dark-mode .drawer-acc-head:hover{color:#60a5fa}
+        .drawer-acc-lbl{display:flex;align-items:center;gap:9px}
+        .drawer-chevron{width:14px;height:14px;transition:transform .25s;color:#94a3b8;flex-shrink:0}
+        .drawer-acc.open .drawer-chevron{transform:rotate(180deg)}
+        .drawer-acc-body{display:none;padding-bottom:6px}
+        .drawer-acc.open .drawer-acc-body{display:block}
+        .drawer-acc-body .nav-link-side{padding-left:30px;font-size:.9em}
+
+        /* Mọi nút trong drawer kế thừa font của trang (tránh rơi về font mặc định như Arial) */
+        .side-drawer button{font-family:inherit}
+
         /* OVERLAY */
         .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:1000;display:none;opacity:0;transition:opacity .3s}
         .drawer-overlay.show{display:block;opacity:1}
@@ -207,8 +266,13 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
     document.head.appendChild(style);
 
-    // Disable vocab auto-wrap globally
-    document.body.classList.add('vocab-disabled');
+    // Restore vocab toggle state (default: enabled)
+    const vocabEnabled = localStorage.getItem('vocabEnabled');
+    if (vocabEnabled === 'false') {
+        document.body.classList.add('vocab-disabled');
+    } else {
+        document.body.classList.remove('vocab-disabled');
+    }
 
     // Inject menu.js (chỉ toggleDrawer)
     if (!document.querySelector('script[src*="menu.js"]')) {
@@ -244,6 +308,14 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <div class="nav-right">
+                <button class="nav-icon-btn" id="globalVocabBtn" onclick="window.toggleVocab()" title="Bật/Tắt tra từ điển">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                        <line x1="12" y1="6" x2="12" y2="14"/>
+                        <line x1="8" y1="10" x2="16" y2="10"/>
+                    </svg>
+                </button>
                 ${path.includes('mypage.html') ? `
                     <button class="nav-icon-btn" onclick="window.location.href='${rootPath}index.html'" title="Trang chủ">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M3 12L12 3l9 9M5 10v10h5v-6h4v6h5V10"/></svg>
@@ -268,7 +340,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </svg>
             </button>
         </div>
-        <div class="drawer-section">Luyện tập</div>
+        <div class="drawer-auth" id="drawerAuth"></div>
+
+        <div class="drawer-acc" id="accPractice">
+            <button class="drawer-acc-head" onclick="window.toggleAcc('accPractice')">
+                <span class="drawer-acc-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> Luyện tập</span>
+                <svg class="drawer-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="drawer-acc-body">
         <a href="${rootPath}reading/home.html" class="nav-link-side ${isReading?'active':''}" onclick="toggleDrawer(false)">
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
             <span>Luyện Đọc</span>
@@ -285,8 +364,15 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
             <span>Ngữ Pháp</span>
         </a>
-        <div class="drawer-divider"></div>
-        <div class="drawer-section">Công cụ</div>
+            </div>
+        </div>
+
+        <div class="drawer-acc" id="accTools">
+            <button class="drawer-acc-head" onclick="window.toggleAcc('accTools')">
+                <span class="drawer-acc-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg> Công cụ</span>
+                <svg class="drawer-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="drawer-acc-body">
         <a href="${rootPath}dict.html" class="nav-link-side" onclick="toggleDrawer(false)">
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             <span>Tra Từ Điển</span>
@@ -303,8 +389,27 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg></span>
             <span>Đọc Báo</span>
         </a>
-        <div class="drawer-divider"></div>
-        <div class="drawer-section">Cài đặt</div>
+        <a href="${rootPath}hanhan.html" class="nav-link-side" onclick="toggleDrawer(false)">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+            <span>Hán Hàn</span>
+        </a>
+        <a href="${rootPath}video/home.html" class="nav-link-side" onclick="toggleDrawer(false)">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg></span>
+            <span>Học qua Video</span>
+        </a>
+        <a href="${rootPath}games/home.html" class="nav-link-side" onclick="toggleDrawer(false)">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg></span>
+            <span>Trò Chơi</span>
+        </a>
+            </div>
+        </div>
+
+        <div class="drawer-acc" id="accSettings">
+            <button class="drawer-acc-head" onclick="window.toggleAcc('accSettings')">
+                <span class="drawer-acc-lbl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg> Cài đặt</span>
+                <svg class="drawer-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="drawer-acc-body">
         <button class="nav-link-side" onclick="window.THEME && window.THEME.openPopup()">
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
             <span>Đổi Giao Diện</span>
@@ -317,6 +422,12 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
             <span>Dashboard</span>
         </a>
+        <button class="auth-logout-btn" onclick="window.logoutUser()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            <span>Đăng xuất</span>
+        </button>
+            </div>
+        </div>
     </div>`;
 
     document.body.insertAdjacentHTML('afterbegin', navHTML);
@@ -345,6 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (typeof firebase !== 'undefined' && firebase.auth) {
             firebase.auth().onAuthStateChanged(user => {
                 const btn = document.getElementById('navAvatarBtn');
+                const drawerAuth = document.getElementById('drawerAuth');
                 if (user) {
                     if (btn) {
                         btn.style.cssText += 'color:#2563eb;background:rgba(37,99,235,.1);border-color:rgba(37,99,235,.2)';
@@ -362,18 +474,105 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (dashLink && ADMIN_EMAILS.includes(user.email)) {
                         dashLink.style.display = '';
                     }
+                    // Drawer: thẻ người dùng (tên + chức danh + streak) → bấm vào về mypage
+                    if (drawerAuth) {
+                        const uName = user.displayName || user.email || 'Học viên';
+                        const uAvatar = user.photoURL || '';
+                        drawerAuth.innerHTML = `
+                            <a href="${rootPath}mypage.html" onclick="toggleDrawer(false)" class="auth-user">
+                                <img src="${uAvatar || ''}" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'">
+                                <span class="auth-user-info">
+                                    <span class="auth-user-name">${uName.replace(/[<>&"']/g, c => ({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;',"'":'&#39;'}[c]))}</span>
+                                    <span class="auth-user-role">Đang tải...</span>
+                                    <span class="auth-user-streak">🔥 …</span>
+                                </span>
+                                <svg class="auth-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                            </a>`;
+                        try {
+                            firebase.firestore().collection('users').doc(user.uid).get().then(function (doc) {
+                                if (!doc.exists) return;
+                                const d = doc.data();
+                                const roleEl = drawerAuth.querySelector('.auth-user-role');
+                                if (roleEl) {
+                                    // Chức danh = hạng thành viên theo tổng EXP (Thường Dân → Trạng Nguyên)
+                                    const totalExp = Math.max(0, Math.floor((d.totalStudyMinutes || 0) / 10) * 5 + (d.bonusEXP || 0));
+                                    roleEl.innerText = memberRank(totalExp);
+                                }
+                                const streakEl = drawerAuth.querySelector('.auth-user-streak');
+                                if (streakEl) streakEl.innerText = '🔥 ' + (d.streakDays || 1) + ' ngày streak';
+                            }).catch(function () {});
+                        } catch (e) {}
+                    }
+                } else {
+                    // Drawer: nút đăng nhập
+                    if (drawerAuth) {
+                        drawerAuth.innerHTML = `
+                            <button class="auth-login-btn" onclick="window.handleAvatarClick()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="18" height="18" stroke-width="2" stroke-linecap="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                                <span>Đăng nhập</span>
+                            </button>`;
+                    }
                 }
             });
         }
     }, 300);
+
+    // Accordion đóng/mở cho drawer
+    window.toggleAcc = function (id) {
+        const acc = document.getElementById(id);
+        if (acc) acc.classList.toggle('open');
+    };
+
+    // Hạng thành viên theo tổng EXP (đồng bộ mypage.html getLevelInfo)
+    function memberRank(exp) {
+        if (exp > 3000) return '👑 Trạng Nguyên';
+        if (exp >= 1001) return '📜 Thượng Thư';
+        if (exp >= 401) return '🖋️ Tú Tài';
+        if (exp >= 51) return '🕯️ Sĩ Tử';
+        return '🌱 Thường Dân';
+    }
+
+    // Tự mở mục đang active khi load
+    setTimeout(function () {
+        document.querySelectorAll('.drawer-acc').forEach(function (acc) {
+            if (acc.querySelector('.nav-link-side.active')) acc.classList.add('open');
+        });
+    }, 400);
+
+    // Đăng xuất
+    window.logoutUser = function () {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().signOut().then(function () {
+                if (typeof toggleDrawer === 'function') toggleDrawer(false);
+                window.location.href = rootPath + 'index.html';
+            }).catch(function () {
+                if (typeof toggleDrawer === 'function') toggleDrawer(false);
+                window.location.href = rootPath + 'index.html';
+            });
+        } else {
+            window.location.href = rootPath + 'index.html';
+        }
+    };
 
     // Audio player
     const nav = document.getElementById('globalNavbar');
     const player = document.getElementById('sticky-audio-player');
     if (nav && player) { nav.appendChild(player); player.classList.add('integrated-player'); }
 
+    // Vocab toggle button
+    window.toggleVocab = function() {
+        const btn = document.getElementById('globalVocabBtn');
+        if (!btn || btn.disabled) return;
+        if (document.body.classList.contains('vocab-disabled')) {
+            document.body.classList.remove('vocab-disabled');
+        } else {
+            document.body.classList.add('vocab-disabled');
+        }
+        localStorage.setItem('vocabEnabled', !document.body.classList.contains('vocab-disabled'));
+    };
+
     // Global logic & Vocab scripts
-    ['user-profile-popup.js', 'vocab-external.js','vocab-dictionary.js','hover-lookup.js'].forEach(f => {
+    ['user-profile-popup.js', 'vocab-external.js','vocab-dictionary.js','hover-lookup.js','vocab-stats.js'].forEach(f => {
         if (!document.querySelector(`script[src*="${f}"]`)) {
             const s = document.createElement('script');
             s.src = `${rootPath}assets/js/${f}`; s.async = false;

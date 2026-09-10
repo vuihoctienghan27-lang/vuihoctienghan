@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOPIK II 쓰기 - 제91회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
 
 
     <link rel="stylesheet" href="../../assets/css/writing.css">
@@ -19,9 +22,9 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/writing.js"></script>
+<script src="../../assets/js/writing.js"></script>
     <script src="../../assets/js/grading-engine.js"></script>
+    <script src="../../assets/js/gemini-grader.js"></script>
 
 
     <style>
@@ -710,19 +713,20 @@
             </details>
         </div>
     </div>
-
-    <script src="exam-logic.js"></script>
-
-    <script>
+<script>
         // CÂU 51A — Ý định thay đổi/dời lịch
         function grade51A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-a').value.trim(),
                 {
                     exactAnswers: [
-                        '예약 날짜를 변경하고 싶습니다.',
-                        '진료 일정을 바꾸려고 합니다.'
+                        '변경하고 싶습니다.',
+                        '바꾸고 싶습니다.',
+                        '변경하려고 합니다.',
+                        '바꿔 주시기 바랍니다.',
+                        '미루고 싶습니다.'
                     ],
+                    context: ['시간'],
                     stems: ['변경하', '바꾸', '바꿔', '미루', '늦추'],
                     grammar: [
                         { pattern: /고\s*싶[가-힣]*/, label: 'mong muốn' },
@@ -731,20 +735,22 @@
                     ]
                 },
                 "Cần từ vựng mang nghĩa 'thay đổi / dời lịch'."
-            );
-            document.getElementById('score-51-a').innerHTML = result.display;
-            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+            , 'score-51-a', 'btn-exp-51-a');
         }
 
         // CÂU 51B — Cấu trúc giả định
         function grade51B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-b').value.trim(),
                 {
                     exactAnswers: [
-                        '안 되면 다른 날로 하겠습니다.',
-                        '어려우면 다음 주로 미루겠습니다.'
+                        '불가능하면.',
+                        '어려우면.',
+                        '안 되면.',
+                        '불가능하다면.',
+                        '힘들면.'
                     ],
+                    context: ['시간', '변경'],
                     stems: ['안 되', '어려우', '불가능하', '힘들', '힘드'],
                     grammar: [
                         { pattern: /면[가-힣]*/, label: 'nếu' },
@@ -752,20 +758,20 @@
                     ]
                 },
                 "Cần tính từ mang nghĩa 'không được / bất khả thi' + giả định."
-            );
-            document.getElementById('score-51-b').innerHTML = result.display;
-            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+            , 'score-51-b', 'btn-exp-51-b');
         }
 
         // CÂU 52A — Trích dẫn gián tiếp: nghiện
         function grade52A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-a').value.trim(),
                 {
                     exactAnswers: [
-                        '게임에 중독되기 쉽다고 한다.',
-                        '스마트폰에 빠질 수 있다고 한다.'
+                        '중독된다고 한다.',
+                        '중독될 수 있다고 한다.',
+                        '중독되기 쉽다고 한다.'
                     ],
+                    context: ['쇼츠', '영상'],
                     stems: ['중독되', '중독될', '빠지'],
                     grammar: [
                         { pattern: /ㄴ다고\s*한[가-힣]*/, label: 'trích dẫn' },
@@ -774,20 +780,21 @@
                     ]
                 },
                 "Cần động từ mang nghĩa 'bị nghiện' + trích dẫn."
-            );
-            document.getElementById('score-52-a').innerHTML = result.display;
-            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+            , 'score-52-a', 'btn-exp-52-a');
         }
 
         // CÂU 52B — Khuyên không ăn/tiêu thụ
         function grade52B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-b').value.trim(),
                 {
                     exactAnswers: [
-                        '과도하게 먹지 않도록 해야 한다.',
-                        '많이 섭취하지 않게 주의해야 한다.'
+                        '먹지 않도록.',
+                        '먹지 않게.',
+                        '섭취하지 않도록.',
+                        '먹지 않아야 한다고.'
                     ],
+                    context: ['영양소', '채소'],
                     stems: ['먹', '섭취하'],
                     grammar: [
                         { pattern: /지\s*않도록[가-힣]*/, label: 'để không' },
@@ -796,9 +803,7 @@
                     ]
                 },
                 "Cần ý khuyên 'không ăn/tiêu thụ'."
-            );
-            document.getElementById('score-52-b').innerHTML = result.display;
-            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+            , 'score-52-b', 'btn-exp-52-b');
         }
 
         // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 91 ---

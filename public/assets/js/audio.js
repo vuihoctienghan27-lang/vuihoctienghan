@@ -63,6 +63,8 @@ function onYouTubeIframeAPIReady() {
             onStateChange: onPlayerStateChange
         }
     });
+    // Expose ra global để transcript.js đọc thời gian phát realtime
+    window.ytPlayer = ytPlayer;
 }
 
 function onPlayerReady(event) {

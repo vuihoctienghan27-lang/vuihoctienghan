@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transcript Editor — Vui Học Tiếng Hàn</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: 'Pretendard', system-ui, -apple-system, sans-serif;
+            background: #0b1220;
+            color: #e2e8f0;
+            padding-bottom: 60px;
+        }
+
+        /* ===== TOP BAR ===== */
+        #topbar {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid #1e293b;
+            padding: 10px 14px;
+            display: flex; flex-direction: column; gap: 7px;
+        }
+        .tb-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .tb-title { font-weight: 800; font-size: 15px; white-space: nowrap; }
+        .badge-file {
+            font-size: 11px; font-weight: 700; color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12); padding: 3px 10px; border-radius: 99px;
+            white-space: nowrap;
+        }
+        button, select {
+            background: #1e293b; border: 1px solid #334155; color: #e2e8f0;
+            border-radius: 8px; padding: 7px 12px; cursor: pointer; font-weight: 600;
+            font-family: inherit; font-size: 13px; transition: background .15s;
+        }
+        button:hover { background: #334155; }
+        button:active { transform: scale(0.97); }
+        #seekbar { flex: 1; min-width: 140px; accent-color: #2563eb; cursor: pointer; }
+        #now-time, #dur {
+            font-family: ui-monospace, monospace; color: #93c5fd;
+            font-size: 13px; min-width: 62px; text-align: center; font-weight: 700;
+        }
+        label.chk { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: #cbd5e1; cursor: pointer; white-space: nowrap; }
+        .hint { font-size: 12px; color: #94a3b8; line-height: 1.6; }
+        .hint b { color: #cbd5e1; }
+        .grow { flex: 1; }
+        .stat { font-size: 12px; color: #94a3b8; white-space: nowrap; }
+
+        /* ===== CUE LIST ===== */
+        main { max-width: 1020px; margin: 14px auto; padding: 0 14px; display: flex; flex-direction: column; gap: 8px; }
+        .cue {
+            background: #101a2e; border: 1px solid #1e293b; border-radius: 12px;
+            padding: 10px 12px; transition: border-color .15s;
+        }
+        .cue.active { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.22); }
+        .cue.warn { border-color: #f59e0b; box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.18); }
+        .ovl {
+            font-size: 11px; font-weight: 800; color: #fbbf24;
+            background: rgba(245, 158, 11, 0.12); padding: 2px 8px; border-radius: 99px;
+        }
+        .lnk { font-size: 13px; margin-left: 2px; cursor: help; }
+
+        /* Bảng ghép cặp đồng bộ */
+        .pair-box { border: 1px solid #334155; border-radius: 8px; margin-bottom: 10px; max-height: 190px; overflow-y: auto; }
+        .pair-row { display: flex; gap: 7px; align-items: center; padding: 5px 8px; font-size: 12.5px; border-bottom: 1px dashed #1e293b; }
+        .pair-row:last-child { border-bottom: none; }
+        .pair-row.on { background: rgba(37, 99, 235, 0.1); }
+        .pair-k { color: #64748b; min-width: 34px; font-family: ui-monospace, monospace; }
+        .pair-t { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .pair-row .mini { flex-shrink: 0; padding: 3px 8px; font-size: 11.5px; }
+        .pair-ar { color: #38bdf8; flex-shrink: 0; }
+        .pair-ok { margin-left: auto; color: #22c55e; font-weight: 800; flex-shrink: 0; }
+        .row-top { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; margin-bottom: 6px; }
+        .idx { color: #64748b; font-size: 12px; font-weight: 700; min-width: 36px; }
+        .time-in {
+            width: 68px; text-align: center;
+            font-family: ui-monospace, monospace; font-size: 12.5px; font-weight: 700;
+            color: #93c5fd; background: transparent;
+            border: 1px solid transparent; border-radius: 6px; padding: 3px 4px; outline: none;
+        }
+        .time-in:hover { border-color: #334155; }
+        .time-in:focus { border-color: #2563eb; background: #0b1220; color: #e2e8f0; }
+        .nud { padding: 3px 8px; font-size: 12px; line-height: 1.2; }
+        .sep { color: #475569; font-size: 12px; }
+        .chap {
+            font-size: 11px; font-weight: 800; color: #38bdf8;
+            background: rgba(56, 189, 248, 0.12); padding: 2px 10px; border-radius: 99px;
+            margin-left: 4px; white-space: nowrap;
+        }
+        .spacer { flex: 1; }
+        .mini { padding: 4px 9px; font-size: 12px; }
+        .danger:hover { background: #7f1d1d; border-color: #ef4444; color: #fecaca; }
+        .row-text { font-size: 17px; line-height: 1.75; color: #dbe7f5; }
+        .w { cursor: pointer; border-radius: 4px; padding: 1px 2px; transition: background .1s; }
+        .w:hover { background: #2563eb; color: #fff; }
+        .row-hint { font-size: 11px; color: #475569; margin-top: 4px; }
+
+        /* ===== MODAL ===== */
+        #modal {
+            position: fixed; inset: 0; background: rgba(2, 6, 23, 0.78);
+            display: none; align-items: center; justify-content: center; z-index: 100;
+        }
+        #modal.show { display: flex; }
+        .modal-box {
+            background: #0f172a; border: 1px solid #334155; border-radius: 14px;
+            padding: 18px; width: min(600px, 94vw); max-height: 88vh; overflow-y: auto;
+        }
+        .modal-box h3 { margin: 0 0 12px; font-size: 16px; }
+        textarea, input[type=text] {
+            width: 100%; background: #0b1220; border: 1px solid #334155; border-radius: 8px;
+            color: #e2e8f0; padding: 10px; font-family: inherit; font-size: 14px; outline: none;
+        }
+        textarea:focus, input:focus { border-color: #2563eb; }
+        .fld-label { font-size: 12px; font-weight: 700; color: #94a3b8; margin: 10px 0 5px; }
+        .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+        .btn-primary { background: #2563eb; border-color: #2563eb; }
+        .btn-primary:hover { background: #1d4ed8; }
+
+        #toast {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(8px);
+            background: #2563eb; color: #fff; padding: 10px 18px; border-radius: 10px;
+            font-weight: 700; font-size: 13.5px; opacity: 0; transition: .25s;
+            pointer-events: none; z-index: 200; max-width: 90vw; text-align: center;
+        }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* ===== PREVIEW PHỤ ĐỀ (giống trang làm đề) ===== */
+        .pv-row { display: flex; justify-content: center; margin-top: 2px; }
+        #sub-preview {
+            width: 100%; max-width: 900px;
+            background: #ffffff; color: #111827;
+            border-radius: 0 0 14px 14px;
+            padding: 7px 16px 9px;
+            text-align: center;
+            box-shadow: 0 3px 14px rgba(0, 0, 0, 0.45);
+        }
+        .pv-head { display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .pv-chap {
+            display: none; font-size: 11px; font-weight: 800; color: #2563eb;
+            background: #eff6ff; padding: 2px 10px; border-radius: 99px; white-space: nowrap;
+        }
+        .pv-chap.show { display: inline-block; }
+        .pv-meta { font-size: 11px; color: #94a3b8; font-family: ui-monospace, monospace; }
+        .pv-text { font-size: 21px; line-height: 1.55; min-height: 34px; margin-top: 2px; }
+        .pv-text .tr-tok { display: inline-block; }
+        .pv-text .tr-ch {
+            color: #111827; transition: color .08s;
+            cursor: pointer; border-radius: 3px;
+        }
+        .pv-text .tr-ch:hover { background: #fecaca; box-shadow: 0 0 0 2px #fecaca; }
+        .pv-text .tr-ch.done,
+        .pv-text .tr-ch.active { color: #dc2626; }
+        .pv-idle { color: #94a3b8; font-size: 15px; }
+
+        /* ===== THANH GHÉP CẶP TỪ LỰA CHỌN ===== */
+        #pairbar {
+            position: fixed; left: 50%; transform: translateX(-50%) translateY(10px);
+            bottom: 18px; z-index: 120; display: none; align-items: center; gap: 10px;
+            background: #0f172a; border: 1px solid #2563eb; border-radius: 14px;
+            padding: 10px 16px; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+        }
+        #pairbar.show { display: flex; transform: translateX(-50%) translateY(0); }
+        #pb-info { font-size: 13px; font-weight: 800; color: #e2e8f0; max-width: 48vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #pb-link { background: #2563eb; border-color: #2563eb; font-weight: 800; }
+        #pb-link:hover { background: #1d4ed8; }
+        #pb-link:disabled { opacity: 0.45; cursor: not-allowed; }
+
+        .sel-btn {
+            min-width: 24px; height: 24px; padding: 0; border-radius: 50%;
+            font-size: 11px; line-height: 1; color: #94a3b8; flex-shrink: 0;
+        }
+        .sel-btn.on { background: #2563eb; color: #fff; border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.25); }
+
+        /* Player ẩn (chỉ lấy âm thanh) */
+        #yt-wrap { position: absolute; width: 1px; height: 1px; overflow: hidden; opacity: 0; pointer-events: none; }
+
+        /* ===== MÀN HÌNH NHẬP ĐỀ MỚI ===== */
+        #setup {
+            position: fixed; inset: 0; background: #0b1220; z-index: 300;
+            display: flex; align-items: center; justify-content: center; padding: 18px;
+        }
+        #setup.hide { display: none; }
+        .setup-box {
+            background: #0f172a; border: 1px solid #334155; border-radius: 16px;
+            padding: 22px; width: min(760px, 96vw); max-height: 94vh; overflow-y: auto;
+        }
+        .setup-box h2 { margin: 0 0 4px; font-size: 19px; }
+        .setup-sub { font-size: 12.5px; color: #94a3b8; margin-bottom: 6px; }
+        .st-opt { display: flex; gap: 18px; margin: 12px 0 6px; flex-wrap: wrap; }
+        .st-count { font-size: 12px; color: #38bdf8; font-weight: 700; margin-left: 8px; }
+        body.setup-mode #topbar { display: none; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Màn hình nhập đề mới: dán link YouTube + transcript để tạo bản nháp -->
+    <div id="setup">
+        <div class="setup-box">
+            <h2>📝 Transcript Editor — Nhập đề mới</h2>
+            <div class="setup-sub">Dán link YouTube + transcript của bất kỳ đề nào để tạo bản nháp, rồi tinh chỉnh timestamp ngay trên trang này (không cần file JS).</div>
+
+            <div class="fld-label">Link YouTube (hoặc Video ID)</div>
+            <input type="text" id="st-url" placeholder="https://www.youtube.com/watch?v=0nHb4L2AljA   hoặc   0nHb4L2AljA">
+            <div class="hint">Video audio sẽ phát trực tiếp để bạn nghe và chỉnh mốc giờ.</div>
+
+            <div class="fld-label">Transcript — mỗi dòng là một câu (có thể kèm mốc giờ ở đầu dòng)</div>
+            <textarea id="st-text" rows="14" placeholder="00:00 제35회 - 한국어 능력 시험 II - 듣기&#10;아래 1번부터 50번까지는 듣기 문제입니다&#10;[음악] 다음을 듣고 알맞은 그림을 고르십시오&#10;1번. 이거 좀 봐주실래요? 옷에 커피를 쏟았어요&#10;어디 좀 볼까요?"></textarea>
+            <div class="st-opt">
+                <label class="chk"><input type="checkbox" id="st-chapter" checked> Tự phát hiện chương (CÂU 1, CÂU 2…)</label>
+                <label class="chk"><input type="checkbox" id="st-auto" checked> Tự chia mốc thời gian theo độ dài video</label>
+                <span class="st-count" id="st-count"></span>
+            </div>
+            <div class="hint">
+                💡 Mốc giờ dán từ YouTube được <b>tự nhận diện và KHÔNG hiển thị</b> trong transcript: dạng <b>0:21</b>,
+                <b>0:21 text</b>, <b>[0:21] text</b>, <b>0:21 - 0:33 text</b> hay mốc đứng <b>riêng một dòng</b> đều được
+                gắn làm mốc bắt đầu (anchor) cho câu. Các dòng không có mốc sẽ được chia đều trong khoảng trống giữa
+                các mốc đã có (hoặc chia theo độ dài video). Sau đó dùng ▶/⏪5/5️⃣⏩, bấm thân dòng để nghe từ đầu dòng,
+                [−][+] để tinh chỉnh từng mốc.
+            </div>
+            <div id="st-restore-box" style="display:none; margin-top: 12px; border-top: 1px dashed #334155; padding-top: 10px;">
+                <div class="fld-label">🔄 Bản nháp đã lưu trên máy này (tự động lưu khi reload/đổi tab — bấm để khôi phục):</div>
+                <div id="st-restore-list"></div>
+            </div>
+            <div class="modal-actions">
+                <button id="st-build" class="btn-primary">✨ Tạo bản nháp & Bắt đầu chỉnh sửa</button>
+                <button id="st-load" class="mini" title="Nạp dữ liệu topik35 mặc định (transcript-data-35.js)">Hoặc tải file JS (topik35)</button>
+            </div>
+        </div>
+    </div>
+
+    <header id="topbar">
+        <div class="tb-row">
+            <span class="tb-title">📝 Transcript Editor</span>
+            <span class="badge-file" id="fileBadge">—</span>
+            <span class="stat" id="stat"></span>
+            <span class="grow"></span>
+            <button id="btn-new" title="Nhập một đề khác (link YouTube + transcript mới)">🆕 Nhập đề mới</button>
+            <button id="btn-undo" title="Hoàn tác (Ctrl+Z)">↩ Undo</button>
+            <button id="btn-reset" class="danger" title="Bỏ mọi chỉnh sửa, quay về dữ liệu gốc">🔄 Bản gốc</button>
+            <button id="btn-rechapter" title="Tự gán lại chương cho toàn bộ dòng theo phần thi (다음을 듣고…) + số câu">🏷️ Chạy lại chương</button>
+            <button id="btn-sync" title="Ghép cặp lần-đọc-1 ↔ lần-đọc-2 (từ câu 21 trở đi)">🔗 Đồng bộ lần 2</button>
+            <button id="btn-import" title="Dán JSON để thay toàn bộ dữ liệu">📥 Nhập JSON</button>
+            <button id="btn-copy" title="Copy nội dung file JS vào clipboard">📋 Copy JS</button>
+            <button id="btn-download" title="Tải xuống file .js">⬇️ Tải file</button>
+        </div>
+        <div class="tb-row">
+            <button id="btn-play" style="min-width:44px;">▶</button>
+            <button data-seek="-5" title="Lùi 5 giây">⏪5</button>
+            <button data-seek="5" title="Tiến 5 giây">5️⃣⏩</button>
+            <span id="now-time">00:00.0</span>
+            <input type="range" id="seekbar" value="0" step="0.1" min="0" max="100">
+            <span id="dur">--:--</span>
+            <select id="rate" title="Tốc độ phát">
+                <option value="0.5">0.5x</option>
+                <option value="0.75">0.75x</option>
+                <option value="1" selected>1x</option>
+            </select>
+            <label class="chk"><input type="checkbox" id="chk-loop"> 🔁 Lặp câu đang phát</label>
+            <label class="chk"><input type="checkbox" id="chk-scroll" checked> Cuộn tới câu đang phát</label>
+        </div>
+        <div class="hint">
+            👉 <b>Bấm vào một từ</b> trong câu để <b>tách dòng</b> bắt đầu từ từ đó (thời gian tự chia theo tỉ lệ số từ) •
+            <b>✂️ Tách tại 🔊</b>: tua audio tới đúng điểm cần ngắt rồi bấm — tách chính xác theo giây đang phát •
+            <b>➕ Thêm dòng</b>: chèn dòng trống (khi cả cụm bị thiếu trong dữ liệu) • Nút <b>⤵ Gộp</b> để nối với dòng kế tiếp •
+            <b>[−][+]</b> cạnh mốc thời gian để tinh chỉnh ±0.5s • <b>Bấm vào số giây</b> để gõ trực tiếp giá trị mới (83 hoặc 1:23.4) •
+            <b>Bấm vào thân dòng</b> (vùng trống) để nghe từ đầu dòng đó • Bấm Space: phát/dừng • <b>←/→</b>: lùi/tiến 3s • <b>Ctrl+Z</b>: hoàn tác<br>
+            💡 Có thể kéo <b>end của dòng trên vượt qua đầu dòng dưới</b> rồi sửa lại dòng dưới sau — dòng nào đang chồng lấn sẽ hiện viền cam <b>⚠</b> để còn xử lý nốt •
+            <b>Bấm vào từng chữ trong ô preview</b> để nghe đúng thời điểm đó, kiểm tra trùng khớp audio ↔ timestamp<br>
+            🏷️ Chương tự gán theo phần thi (dòng "다음을 듣고…"/"[음악]") + số câu; câu 21–50 gán cặp <b>CÂU X & X+1</b>.
+            Nếu thấy chương sai, sửa các dòng số câu ("N번") rồi bấm <b>🏷️ Chạy lại chương</b> để gán lại toàn bộ •<br>
+            🔗 Từ câu 21 trở đi audio đọc 2 lần — mở <b>Đồng bộ lần 2</b>: danh sách hiển thị từng cặp, <b>bấm ＋/✕ để bật-tắt đồng bộ riêng từng cặp</b>; nút ⇄ dựng lại lần 2 theo lần 1 và tự dọn câu hướng dẫn 다시 들으십시오<br>
+            ⭐ <b>Chủ động hoàn toàn:</b> bấm nút <b>○</b> đầu mỗi dòng để chọn 2 dòng bất kỳ → thanh dưới xác nhận <b>Ghép cặp</b> (chọn nhiều dòng chẵn → ghép tuần tự); cặp đã chọn cũng hiện trong modal 🔗 để xác nhận lại
+        </div>
+        <div class="pv-row">
+            <div id="sub-preview">
+                <div class="pv-head">
+                    <span class="pv-chap" id="pv-chap"></span>
+                    <span class="pv-meta" id="pv-meta"></span>
+                </div>
+                <div class="pv-text" id="pv-text"><span class="pv-idle">🎧 Phụ đề sẽ hiện khi audio phát…</span></div>
+            </div>
+        </div>
+    </header>
+
+    <main id="list"></main>
+
+    <!-- Modal chung -->
+    <div id="modal">
+        <div class="modal-box">
+            <h3 id="modal-title"></h3>
+            <div id="modal-body"></div>
+            <div class="modal-actions">
+                <button id="modal-cancel">Hủy</button>
+                <button id="modal-ok" class="btn-primary">Lưu</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pairbar">
+        <span id="pb-info"></span>
+        <button id="pb-link">🔗 Ghép</button>
+        <button id="pb-clear">Bỏ chọn</button>
+    </div>
+    <div id="toast"></div>
+    <div id="yt-wrap"><div id="yt-player"></div></div>
+
+    <script>
+        (function () {
+            'use strict';
+
+            // ================== CẤU HÌNH ==================
+            var params = new URLSearchParams(location.search);
+            var rawFile = params.get('file');   // nếu có → chế độ tải file JS (cũ)
+            var fileName = rawFile && /^[\w-]+$/.test(rawFile) ? rawFile : null;
+            var currentVideoId = params.get('v') || (fileName ? '0nHb4L2AljA' : '');
+            var LS_KEY = 'tr-editor:' + (fileName || 'custom');
+            var NUDGE = 0.5; // bước tinh chỉnh thời gian (giây)
+
+            // ================== TRẠNG THÁI ==================
+            var data = [];
+            var originalData = [];
+            var undoStack = [];
+            var yt = null, playerReady = false, draggingBar = false;
+            var lastActiveIdx = -2;
+            var seekTimer = null;
+            var selMap = {}; // các dòng đang được chọn để ghép cặp thủ công
+            var syncChView = null;   // chương đang mở chi tiết trong modal đồng bộ
+            var _syncChapters = [];  // ánh xạ index -> tên chương cho modal
+
+            // ================== HELPERS ==================
+            function $(id) { return document.getElementById(id); }
+            function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+            function r1(v) { return Math.round(v * 10) / 10; }
+            function copyArr(a) { return a.map(function (c) { return { start: c.start, end: c.end, text: c.text, chapter: c.chapter || '' }; }); }
+            function fmt(t) {
+                if (typeof t !== 'number' || isNaN(t)) return '--:--';
+                var m = Math.floor(t / 60), s = t - m * 60;
+                var ss = (s < 10 ? '0' : '') + s.toFixed(1);
+                return m + ':' + ss;
+            }
+            var toastTimer = null;
+            function toast(msg) {
+                var el = $('toast');
+                el.textContent = msg;
+                el.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(function () { el.classList.remove('show'); }, 2200);
+            }
+
+            // ================== NHẬP ĐỀ MỚI (link + transcript) ==================
+            function parseYouTubeId(url) {
+                url = String(url || '').trim();
+                if (/^[\w-]{11}$/.test(url)) return url;
+                var m = url.match(/[?&]v=([\w-]{11})/) || url.match(/youtu\.be\/([\w-]{11})/) || url.match(/\/embed\/([\w-]{11})/);
+                return m ? m[1] : '';
+            }
+
+            // Đọc "1:23", "1:23.4" hoặc "1:02:03" (giờ:phút:giây) — có/không dấu ngoặc
+            function parseTS(s) {
+                var m = String(s || '').trim().match(/^(?:(\d{1,3}):)?(\d{1,2}):(\d{1,2}(?:\.\d+)?)$/);
+                if (!m) return NaN;
+                var v = (m[1] ? +m[1] * 3600 : 0) + (+m[2]) * 60 + parseFloat(m[3]);
+                return isNaN(v) ? NaN : r1(v);
+            }
+
+            // Dòng mở đầu một PHẦN thi (section): "[음악] 다음을 듣고..." hoặc "다음을/다음 대화를 ... 듣고...".
+            // Đây là "mốc phân chương" chuẩn — KHÔNG tính "한 번씩 읽겠습니다"/"다시 들으십시오"
+            // (những dòng đó nằm GIỮA phần thi, không phải mở đầu).
+            function isSectionInstruction(t) {
+                t = String(t || '').trim();
+                if (/^\[?\s*음악\s*\]?\s*/.test(t) && /듣고/.test(t)) return true;
+                if (/^다음/.test(t) && /듣고/.test(t)) return true;
+                return false;
+            }
+
+            // Lấy số câu hỏi từ dòng "N번. ..." hoặc "N. ..." (có/không dấu chấm, có/không cách)
+            function questionNoOf(t) {
+                t = String(t || '').trim();
+                var m = t.match(/^(\d{1,2})\s*번(?:\s|\.|$)/);
+                if (m) return +m[1];
+                m = t.match(/^(\d{1,2})\s*\.\s/);
+                if (m) return +m[1];
+                return 0;
+            }
+
+            // Nhãn chương TOPIK II nghe: câu 1–20 mỗi câu một chương;
+            // câu 21–50 đọc CHUNG theo cặp (21&22, 23&24, … 49&50).
+            function chapterOf(q) {
+                if (q >= 21) { var b = (q % 2 === 1) ? q : q - 1; return 'CÂU ' + b + ' & ' + (b + 1); }
+                return 'CÂU ' + q;
+            }
+
+            // Gán chương theo PHẦN thi + câu hỏi:
+            // - Dòng trước phần đầu tiên → GIỚI THIỆU.
+            // - Trong một phần: hướng dẫn phần + "한 번씩..." + hội thoại chạy trước câu hỏi đầu
+            //   → gắn cho CÂU HỎI ĐẦU TIÊN của phần (cặp nếu ≥21).
+            // - Kể từ dòng "N번" → chuyển sang chương của câu đó (cặp nếu ≥21).
+            function assignChapters(items) {
+                var n = items.length;
+                var bounds = [];
+                items.forEach(function (it, i) { var q = questionNoOf(it.text); if (q) bounds.push({ i: i, q: q }); });
+                var sections = [];
+                items.forEach(function (it, i) { if (isSectionInstruction(it.text)) sections.push(i); });
+
+                var chs = new Array(n);
+                for (var i = 0; i < n; i++) {
+                    var secStart = -1, secEnd = n;
+                    for (var s = 0; s < sections.length; s++) {
+                        if (sections[s] <= i) { secStart = sections[s]; secEnd = (s + 1 < sections.length) ? sections[s + 1] : n; }
+                        else break;
+                    }
+                    if (secStart < 0) { chs[i] = 'GIỚI THIỆU'; continue; }
+
+                    // Câu hỏi cuối cùng xuất hiện từ đầu phần tới dòng này
+                    var last = -1;
+                    for (var k = 0; k < bounds.length; k++) {
+                        if (bounds[k].i >= secStart && bounds[k].i <= i) last = k;
+                        else if (bounds[k].i > i) break;
+                    }
+                    var q;
+                    if (last >= 0) {
+                        q = bounds[last].q;
+                    } else {
+                        // Dòng mở đầu phần (hướng dẫn / hội thoại trước câu hỏi đầu) → câu hỏi đầu tiên của phần
+                        q = 0;
+                        for (var k2 = 0; k2 < bounds.length; k2++) {
+                            if (bounds[k2].i >= secStart && bounds[k2].i < secEnd) { q = bounds[k2].q; break; }
+                        }
+                    }
+                    chs[i] = q ? chapterOf(q) : (i > 0 ? chs[i - 1] : 'GIỚI THIỆU');
+                }
+                return chs;
+            }
+
+            // Dựng bản nháp mốc thời gian từ transcript thô.
+            // - Dòng có mốc giờ ở đầu → giữ nguyên làm "neo".
+            // - Giữa các neo, thời gian chia theo tỉ lệ độ dài chữ (đủ phát khi chưa có độ dài video).
+            function buildDraft(text, duration) {
+                var raw = String(text || '').split(/\r?\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+
+                // Tách mốc giờ dẫn đầu dòng (định dạng khi copy từ YouTube) và ẨN nó khỏi transcript:
+                //   "0:21 text" | "[0:21] text" | "0:21 - 0:33 text" | "1:02:03 text"
+                //   "0:21" (mốc đứng riêng một dòng → gắn cho câu kế tiếp)
+                function splitLeadingTime(l) {
+                    var m = String(l).match(
+                        /^\s*[\[({]?\s*(\d{1,2}(?::\d{1,2}){1,2}(?:\.\d+)?)\s*[\])}]?\s*(?:[-–—→>]\s*[\[({]?\s*\d{1,2}(?::\d{1,2}){1,2}(?:\.\d+)?\s*[\])}]?\s*)?(?=\s|$)/
+                    );
+                    if (!m) return null;
+                    var t = parseTS(m[1]);
+                    if (isNaN(t)) return null;
+                    return { time: t, rest: l.slice(m[0].length).trim() };
+                }
+
+                var items = [];
+                var pendingStart = null; // mốc giờ YouTube đứng riêng một dòng → áp cho câu kế tiếp
+                raw.forEach(function (l) {
+                    var hit = splitLeadingTime(l);
+                    if (hit) {
+                        if (hit.rest) {
+                            items.push({ text: hit.rest, start: hit.time, anchored: true });
+                        } else {
+                            pendingStart = hit.time;
+                        }
+                    } else if (pendingStart != null) {
+                        items.push({ text: l, start: pendingStart, anchored: true });
+                        pendingStart = null;
+                    } else {
+                        items.push({ text: l, start: null, anchored: false });
+                    }
+                });
+
+                if (!items.length) return [];
+
+                if (!(duration > 0)) {
+                    var lastExp = null;
+                    items.forEach(function (it) { if (it.start != null) lastExp = Math.max(lastExp || 0, it.start); });
+                    duration = lastExp != null ? lastExp + 30 : Math.max(60, items.length * 4);
+                }
+
+                var bounds = [{ idx: -1, start: 0 }];
+                items.forEach(function (it, i) { if (it.start != null) bounds.push({ idx: i, start: it.start }); });
+                bounds.push({ idx: items.length, start: duration });
+                bounds.sort(function (a, b) { return a.idx - b.idx; });
+
+                for (var s = 0; s < bounds.length - 1; s++) {
+                    var A = bounds[s], B = bounds[s + 1];
+                    var from = A.idx < 0 ? 0 : A.idx; // gồm cả dòng neo A (trừ neo ảo đầu tiên)
+                    var to = B.idx;
+                    if (from >= to) continue;
+                    var span = B.start - A.start, total = 0, wts = [];
+                    for (var k = from; k < to; k++) { var w = Math.max(1, items[k].text.length); wts.push(w); total += w; }
+                    var t = A.start;
+                    for (var k2 = from; k2 < to; k2++) {
+                        var frac = total ? span * wts[k2 - from] / total : 0;
+                        var st = (k2 === from && A.idx >= 0) ? r1(A.start) : r1(t);
+                        var en = (k2 === to - 1) ? r1(B.start) : r1(st + Math.max(0.3, frac));
+                        if (en <= st) en = r1(st + 0.3);
+                        items[k2].start = st;
+                        items[k2].end = en;
+                        t = en;
+                    }
+                }
+                return items;
+            }
+
+            // Tạo dữ liệu từ màn hình nhập đề mới
+            function startFromInput() {
+                var vid = parseYouTubeId($('st-url').value);
+                if (!vid) return toast('Không tìm thấy Video ID trong link YouTube');
+                var txt = $('st-text').value;
+                if (!txt.trim()) return toast('Hãy dán transcript vào ô dán');
+
+                var items = buildDraft(txt, playerReady ? yt.getDuration() : null);
+                if (!items.length) return toast('Không có dòng transcript nào hợp lệ');
+
+                if ($('st-chapter').checked) {
+                    var chs = assignChapters(items);
+                    items.forEach(function (it, i) { it.chapter = chs[i] || ''; });
+                } else items.forEach(function (it) { it.chapter = ''; });
+
+                data = items.map(function (it) { return { start: it.start, end: it.end, text: it.text, chapter: it.chapter || '' }; });
+                originalData = copyArr(data);
+                undoStack = [];
+                fileName = 'transcript-' + vid;
+                LS_KEY = 'tr-editor:' + fileName;
+                if (currentVideoId !== vid) {
+                    currentVideoId = vid;
+                    if (playerReady) { try { yt.loadVideoById(vid); } catch (e) { } }
+                }
+                $('fileBadge').textContent = fileName + '.js • video ' + vid;
+                $('setup').classList.add('hide');
+                document.body.classList.remove('setup-mode');
+                saveLocal(); render(0);
+                toast('Đã tạo ' + data.length + ' dòng — bắt đầu tinh chỉnh timestamp!');
+            }
+
+            // Chế độ cũ: nạp dữ liệu từ assets/js/<file>.js
+            function bootFileMode(fname, vid) {
+                fileName = fname;
+                currentVideoId = vid;
+                LS_KEY = 'tr-editor:' + fname;
+                $('fileBadge').textContent = fileName + '.js • video ' + currentVideoId;
+
+                var saved = null;
+                try { saved = localStorage.getItem(LS_KEY); } catch (e) { }
+                var s = document.createElement('script');
+                s.src = 'assets/js/' + fileName + '.js';
+                s.onload = function () {
+                    originalData = copyArr(window.TRANSCRIPT_DATA || []);
+                    if (saved) {
+                        try {
+                            data = JSON.parse(saved);
+                            if (!Array.isArray(data) || !data.length) throw 0;
+                            toast('Đã khôi phục bản nháp đã lưu trên máy này');
+                        } catch (e) { data = copyArr(originalData); }
+                    } else {
+                        data = copyArr(originalData);
+                    }
+                    $('setup').classList.add('hide');
+                    document.body.classList.remove('setup-mode');
+                    render(0);
+                };
+                s.onerror = function () {
+                    $('stat').textContent = '⚠ Không tải được ' + fileName + '.js — dùng "Nhập đề mới"';
+                    toast('Không tìm thấy ' + fileName + '.js — hãy dán dữ liệu qua Nhập đề mới');
+                };
+                document.head.appendChild(s);
+            }
+
+            // ================== KHÔI PHỤC BẢN NHÁP ĐÃ LƯU (localStorage) ==================
+            function findSavedDrafts() {
+                var out = [];
+                for (var i = 0; i < localStorage.length; i++) {
+                    var k = localStorage.key(i);
+                    if (!k || (k.indexOf('tr-editor:transcript-') !== 0 && k !== 'tr-editor:custom')) continue;
+                    try {
+                        var v = JSON.parse(localStorage.getItem(k));
+                        if (Array.isArray(v) && v.length) out.push({ key: k, data: v });
+                    } catch (e) { }
+                }
+                return out;
+            }
+
+            function renderRestoreOptions() {
+                var box = $('st-restore-box');
+                if (!box) return;
+                var drafts = findSavedDrafts();
+                if (!drafts.length) { box.style.display = 'none'; return; }
+                var html = '';
+                drafts.forEach(function (d) {
+                    var vid = d.key.replace('tr-editor:transcript-', '').replace('tr-editor:custom', '');
+                    var label = d.key === 'tr-editor:custom' ? 'bản nháp tự do (chưa có video)' : 'video ' + vid;
+                    var last = d.data[d.data.length - 1];
+                    html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+                        '<button class="mini" data-restore="' + esc(d.key) + '">↩ Khôi phục</button>' +
+                        '<span style="font-size:12px;color:#94a3b8;">' + esc(label) + ' • ' + d.data.length + ' dòng' +
+                        (last ? ' • kết thúc ' + fmt(last.end) : '') + '</span></div>';
+                });
+                $('st-restore-list').innerHTML = html;
+                box.style.display = 'block';
+            }
+
+            function restoreDraft(key) {
+                var v;
+                try { v = JSON.parse(localStorage.getItem(key)); } catch (err) { v = null; }
+                if (!Array.isArray(v) || !v.length) { toast('Không đọc được bản nháp'); return; }
+                data = v.map(function (c) {
+                    return { start: +c.start, end: +c.end, text: String(c.text || ''), chapter: String(c.chapter || ''), link: c.link };
+                });
+                originalData = copyArr(data);
+                undoStack = [];
+                selMap = {};
+                fileName = key.replace('tr-editor:', '');
+                LS_KEY = key;
+                var vid = fileName.indexOf('transcript-') === 0 ? fileName.slice('transcript-'.length) : (currentVideoId || '');
+                if (vid) currentVideoId = vid;
+                $('fileBadge').textContent = fileName + '.js • video ' + currentVideoId;
+                $('setup').classList.add('hide');
+                document.body.classList.remove('setup-mode');
+                if (playerReady && vid) { try { yt.loadVideoById(vid); } catch (e) { } }
+                saveLocal(); render(0);
+                toast('Đã khôi phục bản nháp ' + data.length + ' dòng');
+            }
+
+            // ================== UNDO / SAVE ==================
+            function beginChange() {
+                undoStack.push(JSON.stringify(data));
+                if (undoStack.length > 80) undoStack.shift();
+            }
+            function undo() {
+                if (!undoStack.length) return toast('Không có gì để hoàn tác');
+                selMap = {};
+                data = JSON.parse(undoStack.pop());
+                saveLocal(); render(); toast('Đã hoàn tác');
+            }
+            function saveLocal() {
+                try { localStorage.setItem(LS_KEY, JSON.stringify(data)); } catch (e) { }
+            }
+
+            // ================== ĐỒNG BỘ LẦN ĐỌC 2 ==================
+            // Từ câu 21 trở đi audio đọc 2 lần. Các dòng cùng "link" là 1 cặp
+            // (lần 1 ↔ lần 2): sửa chữ/mốc thời gian bên này sẽ nhân bản sang bên kia.
+            var linkSeq = 0;
+            function newLinkId() { linkSeq++; return 'L#' + linkSeq + ':' + Date.now().toString(36); }
+
+            function partnersOf(ci) {
+                var L = data[ci] && data[ci].link;
+                if (!L) return [];
+                var r = [];
+                data.forEach(function (c, x) { if (x !== ci && c.link === L) r.push(x); });
+                return r;
+            }
+            function syncPartners(ci, fn) {
+                partnersOf(ci).forEach(function (px) { fn(data[px], px); });
+            }
+
+            function trunc(s, n) { s = String(s); return s.length > n ? s.slice(0, n) + '…' : s; }
+
+            // Loại bỏ cụm hướng dẫn "다시 들으십시오" khỏi NỘI DUNG.
+            // Cụm này chỉ là chỉ dẫn thi nên xóa ở MỌI VỊ TRÍ (kể cả giữa câu
+            // do ASR dán chung); riêng từ "다시" đơn lẻ chỉ bỏ khi nằm cuối câu
+            // để giữ lại cụm thật như "다시 한번 생각해 보시기 바랍니다".
+            function stripMarkerTail(t) {
+                var s = String(t).trim().replace(/\s+/g, ' ');
+                s = s.replace(/다시\s*들으십시오/g, ' ');   // mọi vị trí
+                s = s.replace(/다시\s*$/, '').trim();        // đuôi "…다시" bị ASR cắt rời
+                s = s.replace(/^들으십시오\s*/, '').trim();  // đầu "들으십시오…" dán vào nội dung
+                return s.replace(/\s+/g, ' ').trim();
+            }
+
+            // Hàng cặp trong modal quản lý
+            function pairRow(i, j, on, linkId) {
+                var act = on
+                    ? '<button class="mini danger" data-punlink="' + esc(linkId) + '" title="Ngắt đồng bộ riêng cặp này">✕ Bỏ ghép</button>'
+                    : '<button class="mini" data-plink="' + i + ',' + j + '" title="Bật đồng bộ riêng cặp này">＋ Ghép</button>';
+                return '<div class="pair-row' + (on ? ' on' : '') + '">' +
+                    '<span class="pair-k">#' + (i + 1) + '</span>' +
+                    '<span class="pair-t">' + esc(trunc(data[i].text, 28)) + '</span>' +
+                    '<span class="pair-ar">⇄</span>' +
+                    '<span class="pair-t">' + esc(trunc(data[j].text, 28)) + '</span>' +
+                    act + '</div>';
+            }
+
+            // Tìm dòng đánh dấu chuyển sang lần đọc 2 trong một chương.
+            // ASR thường làm vỡ cụm "다시 들으십시오" nên cần 3 mẫu:
+            function findPassMarker(idxs) {
+                // Mẫu 1: cả "다시" lẫn "들으십시오" nằm trong cùng một dòng
+                for (var i = 0; i < idxs.length; i++) {
+                    var t = data[idxs[i]].text;
+                    if (t.indexOf('다시') >= 0 && t.indexOf('들으십시오') >= 0 && t.indexOf('다시 한번') < 0)
+                        return idxs[i];
+                }
+                // Mẫu 2: dòng trước kết thúc bằng "다시", dòng sau bắt đầu bằng "들으십시오"
+                for (var j = 1; j < idxs.length; j++) {
+                    var prev = data[idxs[j - 1]].text.trim().replace(/\s+/g, ' ');
+                    var cu = data[idxs[j]].text.trim();
+                    if (/다시$/.test(prev) && /^들으십시오/.test(cu)) return idxs[j];
+                }
+                // Mẫu 3: dòng bắt đầu bằng "들으십시오"
+                for (var k = 0; k < idxs.length; k++) {
+                    if (/^들으십시오/.test(data[idxs[k]].text.trim())) return idxs[k];
+                }
+                return -1;
+            }
+
+            // Quét từng chapter: tách theo điểm chuyển lần đọc 2,
+            // bỏ qua câu intro (두 번 읽겠습니다) và câu thuần số (21번…), rồi ghép theo thứ tự.
+            function scanSyncPairs() {
+                var groups = [], cur = null;
+                data.forEach(function (c, idx) {
+                    var ch = c.chapter || '';
+                    if (!cur || cur.ch !== ch) { cur = { ch: ch, idxs: [idx] }; groups.push(cur); }
+                    else cur.idxs.push(idx);
+                });
+                var result = [];
+                groups.forEach(function (g) {
+                    if (!g.ch) return;
+                    var mi = findPassMarker(g.idxs);
+                    if (mi < 0) return;
+                    function isNum(t) { return /^\d+\s*번$/.test(t.trim()); }
+                    function isIntro(t) { return t.indexOf('두 번 읽겠습니다') >= 0 || t.indexOf('두번 읽겠습니다') >= 0; }
+                    var p1 = [], p2 = [];
+                    g.idxs.forEach(function (ix) {
+                        var t = data[ix].text;
+                        if (isIntro(t) || isNum(t)) return;
+                        // Bỏ qua dòng mà sau khi làm sạch marker sẽ rỗng
+                        if (ix <= mi) { if (stripMarkerTail(t)) p1.push(ix); }
+                        else { if (stripMarkerTail(t)) p2.push(ix); }
+                    });
+                    var n = Math.min(p1.length, p2.length);
+                    if (!n) return;
+                    var pairs = [];
+                    for (var k = 0; k < n; k++) pairs.push([p1[k], p2[k]]);
+                    result.push({ chapter: g.ch, pairs: pairs, p1: p1, p2: p2 });
+                });
+                return result;
+            }
+
+            // Xóa toàn bộ dòng lần-đọc-2 của các chương, dựng lại y hệt cấu trúc
+            // + nội dung của lần-đọc-1; thời gian co giãn theo trục thời gian lần 2.
+            // Kết quả: mỗi dòng lần 1 ghép 1-1 với một dòng lần 2 mới.
+            function rebuildPassTwo(found) {
+                var done = 0;
+                // Xử lý TỪ CUỐI LÊN ĐẦU: splice ở chương sau không làm lệch
+                // chỉ số của các chương trước đó
+                for (var gi = found.length - 1; gi >= 0; gi--) {
+                    var g = found[gi];
+                    if (!g.p1.length || !g.p2.length) continue;
+                    var last2 = g.p2[g.p2.length - 1];
+                    if (!data[g.p1[0]] || !data[last2]) continue;
+                    // ANCHOR = mốc bắt đầu của dòng ĐẦU TIÊN lần đọc 2
+                    // (người dùng có thể sửa tay trước khi bấm đồng bộ)
+                    var anchor = data[g.p2[0]].start;
+                    var base = data[g.p1[0]].start;
+                    var e1 = data[g.p1[g.p1.length - 1]].end;
+                    if (!(e1 > base)) continue;
+
+                    var newCues = [], srcFor = [];
+                    g.p1.forEach(function (ix) {
+                        var c = data[ix];
+                        // Làm sạch câu hướng dẫn 다시 들으십시오 ở CẢ HAI phía
+                        var txt = stripMarkerTail(c.text);
+                        c.text = txt;
+                        if (!txt) { delete c.link; return; }
+                        var ns = r1(anchor + (c.start - base));
+                        newCues.push({
+                            start: Math.max(0, ns),
+                            end: Math.max(0, r1(ns + (c.end - c.start))),
+                            text: txt,
+                            chapter: c.chapter
+                        });
+                        srcFor.push(ix);
+                    });
+                    // Chặn lệch làm tròn: bảo đảm tăng dần liên tục
+                    for (var j = 1; j < newCues.length; j++) {
+                        if (newCues[j].start < newCues[j - 1].end) newCues[j].start = newCues[j - 1].end;
+                        if (newCues[j].end <= newCues[j].start) newCues[j].end = r1(newCues[j].start + 0.2);
+                    }
+                    // Gán cặp 🔗 1-1 với dòng nguồn
+                    newCues.forEach(function (nc, j) {
+                        var id = newLinkId();
+                        nc.link = id;
+                        data[srcFor[j]].link = id;
+                    });
+
+                    var insertAt = g.p2[0];
+                    data.splice(insertAt, g.p2.length);          // xóa khối lần-đọc-2 cũ
+                    data.splice.apply(data, [insertAt, 0].concat(newCues));
+                    done++;
+                }
+                return done;
+            }
+
+            function openSyncManager() {
+                var found = scanSyncPairs();
+
+                // Nhóm liên kết hiện có
+                var grpByLink = {};
+                data.forEach(function (c, x) {
+                    if (!c.link) return;
+                    (grpByLink[c.link] = grpByLink[c.link] || []).push(x);
+                });
+                var linkGroups = [];
+                Object.keys(grpByLink).forEach(function (L) {
+                    var mem = grpByLink[L];
+                    if (mem.length < 2) return;
+                    linkGroups.push({ L: L, i: mem[0], j: mem[mem.length - 1], ch: data[mem[0]].chapter || '' });
+                });
+
+                // Danh sách chương (theo thứ tự xuất hiện)
+                var chapters = [], chInfo = {};
+                function touchCh(ch) {
+                    if (!chInfo[ch]) { chInfo[ch] = { linked: 0, sugg: 0, scanned: null }; chapters.push(ch); }
+                    return chInfo[ch];
+                }
+                found.forEach(function (g) { touchCh(g.chapter).scanned = g; });
+                linkGroups.forEach(function (lg) { touchCh(lg.ch).linked++; });
+                var twoRead = {};
+                data.forEach(function (c) {
+                    var ch = c.chapter || '';
+                    if (!ch || twoRead[ch]) return;
+                    if (c.text.indexOf('두 번') >= 0 || c.text.indexOf('두번') >= 0) twoRead[ch] = true;
+                });
+                Object.keys(twoRead).forEach(touchCh);
+                _syncChapters = chapters.slice();
+
+                var html = '';
+
+                if (!syncChView) {
+                    // ================== LEVEL 1: DANH SÁCH CHƯƠNG ==================
+                    var sl = selList();
+                    var selSection = '';
+                    if (sl.length >= 2) {
+                        var pairsCnt = Math.floor(sl.length / 2);
+                        selSection += '<div class="fld-label">⭐ Từ lựa chọn đang mở: <b>' + sl.length + '</b> dòng → đề xuất ' + pairsCnt + ' cặp</div>';
+                        selSection += '<div class="pair-box">';
+                        for (var s2 = 0; s2 + 1 < sl.length; s2 += 2) {
+                            selSection += '<div class="pair-row">' +
+                                '<span class="pair-k">' + (s2 / 2 + 1) + '</span>' +
+                                '<span class="pair-t">' + esc(trunc(data[sl[s2]].text, 26)) + '</span>' +
+                                '<span class="pair-ar">⇄</span>' +
+                                '<span class="pair-t">' + esc(trunc(data[sl[s2 + 1]].text, 26)) + '</span>' +
+                                '<button class="mini" data-mklink="' + sl[s2] + ',' + sl[s2 + 1] + '">＋ Ghép</button></div>';
+                        }
+                        selSection += '</div>';
+                        if (pairsCnt > 1) {
+                            selSection += '<div style="margin-bottom:8px;"><button class="mini" id="m-sellinkall">＋ Ghép cả ' + pairsCnt + ' cặp đã chọn</button></div>';
+                        }
+                    } else {
+                        selSection += '<div class="fld-label" style="color:#64748b;">⭐ Mẹo nhanh: bấm nút ○ đầu mỗi dòng để chọn 2 dòng bất kỳ rồi ghép ngay tại đây.</div>';
+                    }
+                    html += selSection;
+
+                    html += '<div class="fld-label" style="margin-top:6px;">📘 Chọn một chương để xem các cặp cần ghép:</div>';
+                    html += '<div class="pair-box">';
+                    chapters.forEach(function (ch, ci) {
+                        var inf = chInfo[ch];
+                        var warn = twoRead[ch] && !inf.scanned && !inf.linked;
+                        var stat = [];
+                        if (inf.linked) stat.push('🔗 ' + inf.linked);
+                        if (inf.sugg) stat.push('⚪ ' + inf.sugg);
+                        if (!stat.length) stat.push('—');
+                        html += '<div class="pair-row ch-row" data-syncch="' + ci + '" title="Bấm để mở chi tiết">' +
+                            '<span class="pair-t"><b>' + esc(ch) + '</b></span>' +
+                            '<span class="pair-k">' + stat.join(' • ') + '</span>' +
+                            (warn ? '<span class="ovl">⚠</span>' : '') +
+                            '<span class="pair-ar">›</span></div>';
+                    });
+                    html += '</div>';
+                    html += '<div style="margin-top:8px;"><button class="mini danger" id="m-unlinkall">Bỏ TẤT CẢ liên kết</button></div>';
+                } else {
+                    // ================== LEVEL 2: CHI TIẾT MỘT CHƯƠNG ==================
+                    var ch = syncChView.ch;
+                    var inf = chInfo[ch] || { linked: 0, sugg: 0, scanned: null };
+                    html += '<button class="mini" id="m-back">← Danh sách chương</button>';
+                    html += '<div class="fld-label" style="font-size:1.05em;color:#e2e8f0;margin-top:8px;">📘 ' + esc(ch) + '</div>';
+
+                    html += '<div class="fld-label">🔵 Đang đồng bộ: <b>' + inf.linked + '</b> cặp — ✕ để ngắt riêng từng cặp</div>';
+                    var onRows = '';
+                    linkGroups.forEach(function (lg) {
+                        if (lg.ch !== ch) return;
+                        onRows += pairRow(lg.i, lg.j, true, lg.L);
+                    });
+                    html += inf.linked ? '<div class="pair-box" style="max-height:180px;">' + onRows + '</div>' :
+                        '<div style="color:#64748b;font-size:12.5px;padding:4px 0 8px;">Chưa có cặp nào.</div>';
+
+                    var cand = [], candRows = '';
+                    if (inf.scanned) {
+                        inf.scanned.pairs.forEach(function (pr) {
+                            if (data[pr[0]].link || data[pr[1]].link) return;
+                            cand.push(pr);
+                            candRows += pairRow(pr[0], pr[1], false, null);
+                        });
+                    }
+                    html += '<div class="fld-label">⚪ Gợi ý chưa ghép: <b>' + cand.length + '</b> cặp — ＋ để ghép riêng từng cặp</div>';
+                    html += cand.length ? '<div class="pair-box" style="max-height:230px;">' + candRows + '</div>' :
+                        '<div style="color:#64748b;font-size:12.5px;padding:4px 0 8px;">Không còn gợi ý tự động.' + (inf.scanned ? '' : ' Không dò được dấu hiệu 다시 들으십시오 — hãy dùng nút ○ chọn tay ở danh sách chính.') + '</div>';
+
+                    html += '<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;">';
+                    if (cand.length) html += '<button class="mini" id="m-linkall">＋ Ghép cả ' + cand.length + ' gợi ý</button>';
+                    if (inf.scanned) html += '<button class="mini" id="m-rebuildch" style="border-color:#f59e0b;color:#fbbf24;" title="Xóa lần đọc 2 của chương này, sao chép từ lần 1. Anchor = START dòng đầu tiên của lần 2 (có thể sửa tay trước)">' +
+                        '⇄ Dựng lại lần 2</button>';
+                    if (inf.linked) html += '<button class="mini danger" id="m-unlinkch">✕ Bỏ ghép cả chương</button>';
+                    html += '</div>';
+                }
+
+                openModal('🔗 Đồng bộ lần đọc 2', html, function () { });
+                $('modal-ok').style.display = 'none';
+
+                function doLink(i, j) {
+                    beginChange();
+                    var id = newLinkId();
+                    data[i].link = id;
+                    data[j].link = id;
+                    saveLocal(); render();
+                }
+                function doUnlinkGroup(L) {
+                    beginChange();
+                    data.forEach(function (c) { if (c.link === L) delete c.link; });
+                    saveLocal(); render();
+                }
+
+                var bodyEl = $('modal-body');
+                bodyEl.querySelectorAll('[data-plink]').forEach(function (b) {
+                    b.onclick = function () {
+                        var pr = b.getAttribute('data-plink').split(',');
+                        doLink(+pr[0], +pr[1]);
+                        openSyncManager();
+                    };
+                });
+                bodyEl.querySelectorAll('[data-punlink]').forEach(function (b) {
+                    b.onclick = function () {
+                        doUnlinkGroup(b.getAttribute('data-punlink'));
+                        openSyncManager();
+                    };
+                });
+
+                // Level 1: mở chi tiết chương
+                bodyEl.querySelectorAll('[data-syncch]').forEach(function (b) {
+                    b.onclick = function () {
+                        syncChView = { ch: _syncChapters[+b.getAttribute('data-syncch')] };
+                        openSyncManager();
+                    };
+                });
+                var mb = $('m-back');
+                if (mb) mb.onclick = function () { syncChView = null; openSyncManager(); };
+
+                // Level 2: ghép tất cả gợi ý của chương đang mở
+                var la = $('m-linkall');
+                if (la) la.onclick = function () {
+                    beginChange();
+                    cand.forEach(function (pr) {
+                        var id = newLinkId();
+                        data[pr[0]].link = id;
+                        data[pr[1]].link = id;
+                    });
+                    saveLocal(); render();
+                    toast('Đã ghép ' + cand.length + ' cặp gợi ý');
+                    openSyncManager();
+                };
+
+                // Ghép từ lựa chọn thủ công (⭐)
+                bodyEl.querySelectorAll('[data-mklink]').forEach(function (b) {
+                    b.onclick = function () {
+                        var pr = b.getAttribute('data-mklink').split(',');
+                        if (pairFromSelection(+pr[0], +pr[1])) {
+                            openSyncManager();
+                            toast('Đã ghép cặp 🔗');
+                        }
+                    };
+                });
+                var sa = $('m-sellinkall');
+                if (sa) sa.onclick = function () {
+                    var arr = selList();
+                    for (var k = 0; k + 1 < arr.length; k += 2) pairFromSelection(arr[k], arr[k + 1], true);
+                    saveLocal(); render(0);
+                    updatePairBar();
+                    toast('Đã ghép các cặp đã chọn');
+                    openSyncManager();
+                };
+
+                // Level 2: bỏ ghép cả chương
+                var uc = $('m-unlinkch');
+                if (uc) uc.onclick = function () {
+                    if (!confirm('Bỏ ghép TOÀN BỘ các cặp trong ' + ch + '?')) return;
+                    beginChange();
+                    data.forEach(function (c) { if ((c.chapter || '') === ch) delete c.link; });
+                    saveLocal(); render();
+                    toast('Đã bỏ ghép: ' + ch);
+                    openSyncManager();
+                };
+
+                // Level 2: dựng lại lần đọc 2 cho đúng chương này
+                var rb = $('m-rebuildch');
+                if (rb) rb.onclick = function () {
+                    var g = inf.scanned;
+                    if (!g) return;
+                    var anchorHint = data[g.p2[0]] ? fmt(data[g.p2[0]].start) : '?';
+                    if (!confirm('Dựng lại LẦN ĐỌC 2 của ' + ch + '?\n\n' +
+                        '- Xóa các dòng lần-đọc-2 hiện tại\n' +
+                        '- Sao chép Y HỆT lần-đọc-1 (tách câu + nội dung), tự dọn câu hướng dẫn 다시 들으십시오\n' +
+                        '- ANCHOR: START hiện tại của dòng đầu tiên lần-đọc-2 = ' + anchorHint + '\n  (hãy sửa tay trước nếu muốn)\n\nTiếp tục?')) return;
+                    beginChange();
+                    selMap = {};
+                    rebuildPassTwo([g]);
+                    saveLocal(); render(0);
+                    toast('Đã dựng lại lần đọc 2: ' + ch);
+                    openSyncManager();
+                };
+
+                // Level 1: bỏ tất cả liên kết
+                var ua = $('m-unlinkall');
+                if (ua) ua.onclick = function () {
+                    beginChange();
+                    data.forEach(function (c) { delete c.link; });
+                    saveLocal(); render(); closeModal();
+                    syncChView = null;
+                    toast('Đã bỏ tất cả liên kết');
+                };
+            }
+
+            // ================== MUTATIONS ==================
+            function splitAt(ci, wi) {
+                var c = data[ci];
+                var words = c.text.split(/\s+/).filter(Boolean);
+                if (wi <= 0 || wi >= words.length) return;
+
+                var left = words.slice(0, wi).join(' ');
+                var right = words.slice(wi).join(' ');
+                var boundary = r1(c.start + (c.end - c.start) * wi / words.length);
+                boundary = Math.max(c.start + 0.2, Math.min(c.end - 0.2, boundary));
+
+                // Chuẩn bị tách đồng bộ phía cặp lần-đọc-2
+                var prts = partnersOf(ci);
+                var px = prts.length ? prts[0] : -1;
+                var pc = px >= 0 ? data[px] : null;
+                var pWords = pc ? pc.text.split(/\s+/).filter(Boolean) : null;
+                var canSync = pc && pWords && pWords.length === words.length;
+                var lidA = c.link ? newLinkId() : null;
+                var lidB = c.link ? newLinkId() : null;
+                var pBoundary = 0;
+                if (canSync) {
+                    pBoundary = r1(pc.start + (pc.end - pc.start) * wi / words.length);
+                    pBoundary = Math.max(pc.start + 0.2, Math.min(pc.end - 0.2, pBoundary));
+                }
+
+                beginChange();
+                data.splice(ci, 1,
+                    { start: c.start, end: boundary, text: left, chapter: c.chapter, link: lidA || undefined },
+                    { start: boundary, end: c.end, text: right, chapter: c.chapter, link: lidB || undefined });
+
+                if (pc) {
+                    if (canSync) {
+                        var atPx = px + (px > ci ? 1 : 0);
+                        data.splice(atPx, 0,
+                            { start: pc.start, end: pBoundary, text: left, chapter: pc.chapter, link: lidA },
+                            { start: pBoundary, end: pc.end, text: right, chapter: pc.chapter, link: lidB });
+                    } else {
+                        delete pc.link; // lệch số từ → bỏ liên kết để không lệch cặp
+                        toast('Cặp đồng bộ lệch số từ nên chỉ tách phía này');
+                    }
+                }
+                selMap = {};
+                saveLocal(); render(ci);
+                toast('Đã tách dòng tại "' + words[wi] + '"' + (lidA ? ' (kèm lần đọc 2)' : ''));
+            }
+
+            function mergeNext(ci) {
+                if (ci >= data.length - 1) return toast('Đây là dòng cuối, không gộp được');
+                if (data[ci].link || data[ci + 1].link) {
+                    return toast('Dòng thuộc cặp đồng bộ lần-đọc-2 — mở 🔗 Đồng bộ để bỏ liên kết trước khi gộp');
+                }
+                var a = data[ci], b = data[ci + 1];
+                beginChange();
+                data.splice(ci, 2, {
+                    start: a.start, end: b.end,
+                    text: a.text + ' ' + b.text,
+                    chapter: a.chapter
+                });
+                selMap = {};
+                saveLocal(); render(ci);
+                toast('Đã gộp với dòng dưới');
+            }
+
+            function insertBelow(ci) {
+                var c = data[ci];
+                var next = data[ci + 1];
+                var s = r1(c.end);
+                // Ưu tiên khoảng trống sau dòng; nếu không có thì đặt đè (chồng lấn tạm,
+                // đánh dấu ⚠ để người dùng tự kéo mốc cho hợp lý sau)
+                var e = (next && next.start - s >= 0.4) ? next.start : r1(s + 0.5);
+                beginChange();
+                data.splice(ci + 1, 0, { start: s, end: e, text: '', chapter: c.chapter || '' });
+                selMap = {};
+                saveLocal(); render(ci + 1);
+                openEditCue(ci + 1);
+            }
+
+            function splitAtPlayhead(ci) {
+                var c = data[ci];
+                var words = c.text.split(/\s+/).filter(Boolean);
+                if (words.length < 2) return toast('Dòng chỉ có 1 từ nên không tách được');
+                var t = getCurt();
+                if (!playerReady || isNaN(t)) return toast('Player chưa sẵn sàng');
+                if (t <= c.start + 0.2 || t >= c.end - 0.2) {
+                    return toast('Hãy đặt audio vào GIỮA dòng này (' + fmt(c.start + 0.3) + ' – ' + fmt(c.end - 0.3) + ') rồi bấm lại');
+                }
+                var frac = (t - c.start) / (c.end - c.start);
+                var wi = Math.max(1, Math.min(words.length - 1, Math.round(frac * words.length)));
+                var left = words.slice(0, wi).join(' ');
+                var right = words.slice(wi).join(' ');
+
+                var prts = partnersOf(ci);
+                var px = prts.length ? prts[0] : -1;
+                var pc = px >= 0 ? data[px] : null;
+                var pWords = pc ? pc.text.split(/\s+/).filter(Boolean) : null;
+                var canSync = pc && pWords && pWords.length === words.length;
+                var lidA = c.link ? newLinkId() : null;
+                var lidB = c.link ? newLinkId() : null;
+                var pT = 0, pwi = 0;
+                if (canSync) {
+                    pT = r1(pc.start + (pc.end - pc.start) * frac);
+                    pT = Math.max(pc.start + 0.2, Math.min(pc.end - 0.2, pT));
+                    pwi = Math.max(1, Math.min(pWords.length - 1, Math.round(frac * pWords.length)));
+                }
+
+                beginChange();
+                data.splice(ci, 1,
+                    { start: c.start, end: r1(t), text: left, chapter: c.chapter, link: lidA || undefined },
+                    { start: r1(t), end: c.end, text: right, chapter: c.chapter, link: lidB || undefined });
+
+                if (pc) {
+                    if (canSync) {
+                        var pLeft = pWords.slice(0, pwi).join(' ');
+                        var pRight = pWords.slice(pwi).join(' ');
+                        var atPx = px + (px > ci ? 1 : 0);
+                        data.splice(atPx, 0,
+                            { start: pc.start, end: pT, text: pLeft, chapter: pc.chapter, link: lidA },
+                            { start: pT, end: pc.end, text: pRight, chapter: pc.chapter, link: lidB });
+                    } else {
+                        delete pc.link;
+                        toast('Cặp đồng bộ lệch số từ nên chỉ tách phía này');
+                    }
+                }
+                selMap = {};
+                saveLocal(); render(ci);
+                toast('Đã tách chính xác tại giây ' + fmt(t) + (lidA ? ' (kèm lần đọc 2)' : ''));
+            }
+
+            function delCue(ci) {
+                if (data.length <= 1) return;
+                if (data[ci].link) return toast('Dòng đang đồng bộ với lần đọc 2 — mở 🔗 Đồng bộ để bỏ liên kết trước khi xóa');
+                if (!confirm('Xóa dòng này? (có thể Undo)')) return;
+                beginChange();
+                selMap = {};
+                data.splice(ci, 1);
+                saveLocal(); render(Math.max(0, ci - 1));
+            }
+
+            function nudge(ci, field, dir) {
+                var c = data[ci];
+                beginChange();
+                var oS = c.start, oE = c.end;
+                // Cho phép vượt qua mốc dòng liền kề để sửa theo thứ tự tuỳ ý
+                // (dòng bị chồng lấn sẽ được đánh dấu ⚠ để còn quay lại sửa)
+                if (field === 'start') {
+                    c.start = r1(Math.min(Math.max(0, c.start + dir * NUDGE), c.end - 0.2));
+                } else {
+                    c.end = r1(Math.max(c.start + 0.2, c.end + dir * NUDGE));
+                }
+                // Nhân bản độ lệch sang cặp lần-đọc-2
+                syncPartners(ci, function (p) {
+                    p.start = r1(p.start + (c.start - oS));
+                    p.end = r1(p.end + (c.end - oE));
+                });
+                saveLocal(); render(ci);
+            }
+
+            // Nhập trực tiếp giá trị thời gian: chấp nhận "83", "83.5", "1:23", "1:23.4"
+            function parseTime(str) {
+                str = String(str || '').trim();
+                if (!str) return NaN;
+                var p = str.split(':'), v;
+                if (p.length === 1) v = parseFloat(p[0]);
+                else if (p.length === 2) v = parseFloat(p[0]) * 60 + parseFloat(p[1]);
+                else return NaN;
+                return isNaN(v) ? NaN : r1(v);
+            }
+
+            function setTimeVal(ci, field, val) {
+                if (isNaN(val)) { render(ci); return toast('Không hiểu giá trị — hãy gõ kiểu 83 hoặc 1:23.4'); }
+                var c = data[ci];
+                var oV = (field === 'start') ? c.start : c.end;
+                beginChange();
+                // Không chặn theo dòng liền kề — cho sửa tự do theo thứ tự mong muốn
+                if (field === 'start') {
+                    c.start = r1(Math.max(0, Math.min(val, c.end - 0.2)));
+                } else {
+                    c.end = r1(Math.max(val, c.start + 0.2));
+                }
+                // Nhân bản độ lệch sang cặp lần-đọc-2
+                var d = ((field === 'start') ? c.start : c.end) - oV;
+                syncPartners(ci, function (p) { p[field] = r1(p[field] + d); });
+                saveLocal(); render(ci);
+            }
+
+            // ================== RENDER ==================
+            function rowHTML(c, i, warn) {
+                var words = c.text.split(/\s+/).filter(Boolean);
+                var ws = words.map(function (w, wi) {
+                    return '<span class="w" data-c="' + i + '" data-w="' + wi + '" title="Bấm để tách dòng từ đây">' + esc(w) + '</span>';
+                }).join(' ');
+                var h = '';
+                h += '<div class="cue' + (warn ? ' warn' : '') + '" data-i="' + i + '" id="cue-' + i + '">';
+                h += '<div class="row-top">';
+                h += '<button class="sel-btn' + (selMap[i] ? ' on' : '') + '" data-sel="' + i + '" title="Chọn dòng này để ghép cặp đồng bộ thủ công">' + (selMap[i] ? '✔' : '○') + '</button>';
+                h += '<span class="idx">#' + (i + 1) + '</span>';
+                if (warn) h += '<span class="ovl" title="Dòng này chồng lấn lên dòng kề — hãy kéo lại mốc thời gian">⚠ chồng lấn</span>';
+                if (c.link) h += '<span class="lnk" title="Đang đồng bộ với cặp tương ứng ở lần đọc 2">🔗</span>';
+                h += '<button class="nud" data-act="ns-" data-i="' + i + '" title="start −0.5s">−</button>';
+                h += '<input class="time-in" data-i="' + i + '" data-field="start" value="' + fmt(c.start) + '" title="Gõ trực tiếp: 83 hoặc 1:23.4 rồi Enter">';
+                h += '<button class="nud" data-act="ns+" data-i="' + i + '" title="start +0.5s">+</button>';
+                h += '<span class="sep">→</span>';
+                h += '<button class="nud" data-act="ne-" data-i="' + i + '" title="end −0.5s">−</button>';
+                h += '<input class="time-in" data-i="' + i + '" data-field="end" value="' + fmt(c.end) + '" title="Gõ trực tiếp: 83 hoặc 1:23.4 rồi Enter">';
+                h += '<button class="nud" data-act="ne+" data-i="' + i + '" title="end +0.5s">+</button>';
+                if (c.chapter) h += '<span class="chap">' + esc(c.chapter) + '</span>';
+                h += '<span class="spacer"></span>';
+                h += '<button class="mini" data-act="merge" data-i="' + i + '" title="Gộp với dòng kế tiếp">⤵ Gộp dòng dưới</button>';
+                h += '<button class="mini" data-act="add" data-i="' + i + '" title="Chèn một dòng mới ngay dưới dòng này">➕ Thêm dòng</button>';
+                h += '<button class="mini" data-act="splitplay" data-i="' + i + '" title="Đặt audio vào giữa dòng rồi bấm: tách chính xác theo thời gian đang phát">✂️ Tách tại 🔊</button>';
+                h += '<button class="mini" data-act="edit" data-i="' + i + '" title="Sửa chữ / chương">✏️</button>';
+                h += '<button class="mini danger" data-act="del" data-i="' + i + '" title="Xóa dòng">🗑</button>';
+                h += '</div>';
+                h += '<div class="row-text">' + ws + '</div>';
+                h += '</div>';
+                return h;
+            }
+
+            function render(scrollToIdx) {
+                var list = $('list');
+                var y = window.scrollY;
+                // Đánh dấu các dòng đang chồng lấn lên dòng kế tiếp
+                var warnMap = {};
+                var warnCount = 0;
+                for (var k = 0; k < data.length - 1; k++) {
+                    if (data[k].end > data[k + 1].start + 0.01) { warnMap[k] = true; warnCount++; }
+                }
+                list.innerHTML = data.map(function (c, i) { return rowHTML(c, i, !!warnMap[i]); }).join('');
+                window.scrollTo(0, y);
+                $('stat').textContent = data.length + ' dòng • ' + fmt(data.length ? data[data.length - 1].end : 0) +
+                    (warnCount ? ' • ⚠ ' + warnCount + ' dòng chồng lấn' : '');
+                pvLastKey = null; // buộc preview vẽ lại theo dữ liệu mới
+                updatePairBar();
+                lastActiveIdx = -2;
+                if (scrollToIdx != null) {
+                    var el = list.querySelector('[data-i="' + scrollToIdx + '"]');
+                    if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                }
+            }
+
+            // ================== PLAYER ==================
+            window.onYouTubeIframeAPIReady = function () {
+                yt = new YT.Player('yt-player', {
+                    videoId: currentVideoId,
+                    height: '160', width: '284',
+                    playerVars: { controls: 0, playsinline: 1, rel: 0 },
+                    events: {
+                        onReady: function () {
+                            playerReady = true;
+                            try {
+                                var d = yt.getDuration();
+                                $('seekbar').max = d;
+                                $('dur').textContent = fmt(d);
+                            } catch (e) { }
+                        },
+                        onStateChange: function (ev) {
+                            $('btn-play').textContent = ev.data === 1 ? '⏸' : '▶';
+                        }
+                    }
+                });
+            };
+
+            function getCurt() { try { return yt.getCurrentTime(); } catch (e) { return NaN; } }
+            function isPlaying() { try { return yt.getPlayerState() === 1; } catch (e) { return false; } }
+            function seek(t) { if (!playerReady) return; try { yt.seekTo(Math.max(0, t), true); } catch (e) { } }
+
+            function findCueIdx(t) {
+                var lo = 0, hi = data.length - 1, res = -1;
+                while (lo <= hi) {
+                    var mid = (lo + hi) >> 1;
+                    if (data[mid].start <= t) { res = mid; lo = mid + 1; } else hi = mid - 1;
+                }
+                return res;
+            }
+
+            setInterval(function () {
+                if (!playerReady) return;
+                var t = getCurt();
+                if (isNaN(t)) return;
+                if (!draggingBar) $('seekbar').value = t;
+                $('now-time').textContent = fmt(t);
+                updatePreview(t);
+
+                var idx = findCueIdx(t);
+                var inRange = idx >= 0 && t <= data[idx].end + 0.2;
+                if (!inRange) idx = -1;
+
+                if (idx !== lastActiveIdx) {
+                    var prev = document.querySelector('.cue.active');
+                    if (prev) prev.classList.remove('active');
+                    if (idx >= 0) {
+                        var el = document.getElementById('cue-' + idx);
+                        if (el) {
+                            el.classList.add('active');
+                            if ($('chk-scroll').checked && isPlaying()) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                        }
+                    }
+                    lastActiveIdx = idx;
+                }
+
+                // Lặp câu đang phát
+                if ($('chk-loop').checked && idx >= 0 && isPlaying() && t >= data[idx].end - 0.05) {
+                    seek(data[idx].start);
+                }
+            }, 200);
+
+            // ================== EXPORT / IMPORT ==================
+            function buildJS() {
+                var lines = data.map(function (c) {
+                    return '  {start:' + r1(c.start) + ', end:' + r1(c.end) + ', text:' + JSON.stringify(c.text) + ', chapter:' + JSON.stringify(c.chapter || '') + '},';
+                });
+                return '// ============================================================\n' +
+                    '// TRANSCRIPT DATA — sinh/chỉnh bởi Transcript Editor (' + fileName + ')\n' +
+                    '// ============================================================\n' +
+                    'window.TRANSCRIPT_DATA = [\n' + lines.join('\n') + '\n];\n';
+            }
+
+            function doCopy() {
+                var js = buildJS();
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(js).then(function () { toast('Đã copy! Dán đè vào ' + fileName + '.js'); }, fallbackCopy);
+                } else fallbackCopy();
+                function fallbackCopy() {
+                    var ta = document.createElement('textarea');
+                    ta.value = js; document.body.appendChild(ta); ta.select();
+                    try { document.execCommand('copy'); toast('Đã copy! Dán đè vào ' + fileName + '.js'); }
+                    catch (e) { toast('Copy lỗi — dùng nút Tải file'); }
+                    ta.remove();
+                }
+            }
+
+            function doDownload() {
+                var blob = new Blob([buildJS()], { type: 'text/javascript;charset=utf-8' });
+                var a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = fileName + '.js';
+                a.click();
+                setTimeout(function () { URL.revokeObjectURL(a.href); }, 3000);
+                toast('Đã tải ' + fileName + '.js');
+            }
+
+            // ================== MODAL ==================
+            function openModal(title, bodyHTML, onOk) {
+                $('modal-title').textContent = title;
+                $('modal-ok').style.display = ''; // reset (manager tự ẩn nút này)
+                $('modal-body').innerHTML = bodyHTML;
+                $('modal').classList.add('show');
+                $('modal-ok').onclick = function () { if (onOk() !== false) closeModal(); };
+                $('modal-cancel').onclick = closeModal;
+            }
+            function closeModal() { $('modal').classList.remove('show'); }
+
+            function openEditCue(i) {
+                var c = data[i];
+                openModal('Sửa dòng #' + (i + 1),
+                    '<div class="fld-label">Nội dung (các từ cách nhau bằng dấu cách)</div>' +
+                    '<textarea id="m-text" rows="4">' + esc(c.text) + '</textarea>' +
+                    '<div class="fld-label">Chương (chapter)</div>' +
+                    '<input type="text" id="m-chap" value="' + esc(c.chapter) + '">' +
+                    '<div class="fld-label" style="color:#64748b">Mốc thời gian sửa bằng nút [−][+] ngoài danh sách</div>',
+                    function () {
+                        var t = $('m-text').value.trim().replace(/\s+/g, ' ');
+                        if (!t) { toast('Nội dung không được trống'); return false; }
+                        beginChange();
+                        c.text = t;
+                        c.chapter = $('m-chap').value.trim();
+                        // Nội dung lần đọc 2 luôn giống lần đọc 1
+                        var newChap = c.chapter;
+                        syncPartners(i, function (p) { p.text = t; p.chapter = newChap; });
+                        saveLocal(); render(i);
+                    });
+                setTimeout(function () { var el = $('m-text'); el.focus(); el.setSelectionRange(el.value.length, el.value.length); }, 50);
+            }
+
+            function openImport() {
+                openModal('Nhập JSON',
+                    '<div class="fld-label">Dán mảng TRANSCRIPT_DATA (chấp nhận cả nguyên file JS)</div>' +
+                    '<textarea id="m-json" rows="10" placeholder=\'[{ "start":2, "end":7, "text":"...", "chapter":"..." }, ...]\'></textarea>',
+                    function () {
+                        var txt = $('m-json').value.trim();
+                        var m = txt.match(/=\s*(\[[\s\S]*\])\s*;?\s*$/);
+                        if (m) txt = m[1];
+                        var arr;
+                        try { arr = JSON.parse(txt); } catch (e) { toast('JSON không hợp lệ'); return false; }
+                        if (!Array.isArray(arr) || !arr.length || typeof arr[0].start !== 'number') {
+                            toast('Dữ liệu không đúng định dạng'); return false;
+                        }
+                        beginChange();
+                        data = arr.map(function (c) {
+                            return { start: +c.start, end: +c.end, text: String(c.text || ''), chapter: String(c.chapter || '') };
+                        });
+                        selMap = {};
+                        saveLocal(); render(0);
+                        toast('Đã nhập ' + data.length + ' dòng');
+                    });
+            }
+
+            // ================== PREVIEW PHỤ ĐỀ ==================
+            // Mô phỏng đúng thanh phụ đề trên trang làm đề (karaoke từng chữ cái)
+            function pvEsc(s) {
+                return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            }
+            function pvRenderChars(cue, charIdx) {
+                var tokens = cue.text.split(/\s+/).filter(Boolean);
+                if (!tokens.length) return '';
+                var g = 0, out = '';
+                tokens.forEach(function (tk) {
+                    var inner = '';
+                    for (var k = 0; k < tk.length; k++) {
+                        var cls = 'tr-ch';
+                        if (g + k < charIdx) cls += ' done';
+                        else if (g + k === charIdx) cls += ' active';
+                        inner += '<span class="' + cls + '" data-g="' + (g + k) + '" title="Nghe đúng thời điểm chữ này">' + pvEsc(tk[k]) + '</span>';
+                    }
+                    g += tk.length;
+                    out += '<span class="tr-tok">' + inner + '</span> ';
+                });
+                return out.trim();
+            }
+
+            var pvLastKey = null, pvCueIdx = -1;
+            function updatePreview(t) {
+                if (!data.length) return;
+                var idx = findCueIdx(t);
+                var inRange = idx >= 0 && t <= data[idx].end + 0.2;
+                var key, html, chap = '', meta = '';
+
+                if (inRange) {
+                    pvCueIdx = idx;
+                    var c = data[idx];
+                    var tokens = c.text.split(/\s+/).filter(Boolean);
+                    var total = 0;
+                    tokens.forEach(function (tk) { total += tk.length; });
+                    var ci = 0;
+                    if (total > 1) {
+                        var dur = Math.max(0.001, c.end - c.start);
+                        var p = Math.max(0, Math.min(1, (t - c.start) / dur));
+                        ci = Math.min(total - 1, Math.floor(p * total));
+                    }
+                    key = idx + ':' + ci + ':' + c.text + ':' + c.start + ':' + c.end;
+                    html = pvRenderChars(c, ci);
+                    chap = c.chapter || '';
+                    meta = '#' + (idx + 1) + ' • ' + fmt(c.start) + ' → ' + fmt(c.end);
+                } else {
+                    pvCueIdx = -1;
+                    key = '-idle-';
+                    html = '<span class="pv-idle">🎧 ...</span>';
+                }
+
+                if (key === pvLastKey) return;
+                pvLastKey = key;
+                $('pv-text').innerHTML = html;
+                var chEl = $('pv-chap');
+                chEl.textContent = chap;
+                chEl.className = 'pv-chap' + (chap ? ' show' : '');
+                $('pv-meta').textContent = meta;
+            }
+
+            // ================== CHỌN DÒNG → GHÉP CẶP THỦ CÔNG ==================
+            function selList() {
+                return Object.keys(selMap).map(Number).sort(function (a, b) { return a - b; });
+            }
+
+            // Ghép 2 dòng tự chọn; nếu 1 phía đã có liên kết thì hỏi thay thế
+            function pairFromSelection(i, j, force) {
+                if (i === j) return false;
+                if (data[i].link || data[j].link) {
+                    if (!force && !confirm('Một trong hai dòng đã ghép với cặp khác.\nThay liên kết cũ bằng cặp mới #' + (i + 1) + ' ↔ #' + (j + 1) + '?')) return false;
+                    beginChange();
+                    delete data[i].link;
+                    delete data[j].link;
+                } else {
+                    beginChange();
+                }
+                var id = newLinkId();
+                data[i].link = id;
+                data[j].link = id;
+                delete selMap[i];
+                delete selMap[j];
+                saveLocal();
+                return true;
+            }
+
+            function toggleSel(i) {
+                if (selMap[i]) delete selMap[i]; else selMap[i] = true;
+                var b = document.querySelector('.sel-btn[data-sel="' + i + '"]');
+                if (b) {
+                    var on = !!selMap[i];
+                    b.classList.toggle('on', on);
+                    b.textContent = on ? '✔' : '○';
+                }
+                updatePairBar();
+            }
+
+            function updatePairBar() {
+                var arr = selList();
+                var bar = $('pairbar');
+                if (arr.length < 2) { bar.classList.remove('show'); return; }
+
+                var info, canSeq = false;
+                if (arr.length === 2) info = 'Đã chọn #' + (arr[0] + 1) + ' ↔ #' + (arr[1] + 1);
+                else if (arr.length % 2 === 0) { canSeq = true; info = 'Đã chọn ' + arr.length + ' dòng → ghép tuần tự ' + (arr.length / 2) + ' cặp'; }
+                else { info = 'Đã chọn ' + arr.length + ' dòng (lẻ) — hãy chọn thêm hoặc bớt'; }
+
+                $('pb-info').textContent = info;
+                var lb = $('pb-link');
+                lb.disabled = !(arr.length === 2 || canSeq);
+                lb.textContent = arr.length === 2 ? '🔗 Ghép cặp' : (canSeq ? '🔗 Ghép tuần tự' : '🔗 Ghép');
+                lb.onclick = function () {
+                    if (arr.length === 2) {
+                        if (pairFromSelection(arr[0], arr[1])) {
+                            render(); updatePairBar(); toast('Đã ghép cặp 🔗 #' + (arr[0] + 1) + ' ↔ #' + (arr[1] + 1));
+                        }
+                    } else if (canSeq) {
+                        if (!confirm('Ghép tuần tự ' + (arr.length / 2) + ' cặp từ các dòng đang chọn?\n(Thứ tự: dòng 1↔2, 3↔4…)')) return;
+                        var made = 0;
+                        for (var k = 0; k + 1 < arr.length; k += 2) {
+                            if (data[arr[k]].link || data[arr[k + 1]].link) break;
+                            pairFromSelection(arr[k], arr[k + 1], true);
+                            made++;
+                        }
+                        render(); updatePairBar();
+                        toast(made ? ('Đã ghép tuần tự ' + made + ' cặp') : 'Không ghép được — có dòng đang thuộc liên kết khác');
+                    }
+                };
+                bar.classList.add('show');
+            }
+
+            // ================== EVENTS ==================
+            $('list').addEventListener('click', function (e) {
+                // Đang bấm vào ô nhập thời gian → không coi là "bấm dòng"
+                if (e.target.closest('.time-in')) return;
+                // Nút chọn dòng (○/✔) để ghép cặp thủ công
+                var sb = e.target.closest('[data-sel]');
+                if (sb) { toggleSel(+sb.getAttribute('data-sel')); return; }
+                var w = e.target.closest('.w');
+                if (w) { splitAt(+w.getAttribute('data-c'), +w.getAttribute('data-w')); return; }
+                var btn = e.target.closest('[data-act]');
+                if (btn) {
+                    var bi = +btn.getAttribute('data-i');
+                    var act = btn.getAttribute('data-act');
+                    if (act === 'ns-') nudge(bi, 'start', -1);
+                    else if (act === 'ns+') nudge(bi, 'start', 1);
+                    else if (act === 'ne-') nudge(bi, 'end', -1);
+                    else if (act === 'ne+') nudge(bi, 'end', 1);
+                    else if (act === 'merge') mergeNext(bi);
+                    else if (act === 'add') insertBelow(bi);
+                    else if (act === 'splitplay') splitAtPlayhead(bi);
+                    else if (act === 'edit') openEditCue(bi);
+                    else if (act === 'del') delCue(bi);
+                    return;
+                }
+                // Bấm vào thân dòng (chỗ trống / số thứ tự / chương…) → audio nhảy tới đoạn đó
+                var cue = e.target.closest('.cue');
+                if (cue) {
+                    var ci = +cue.getAttribute('data-i');
+                    seek(data[ci].start);
+                    try { yt.playVideo(); } catch (err) { }
+                }
+            });
+
+            // Gõ trực tiếp mốc thời gian → Enter hoặc blur để lưu
+            $('list').addEventListener('change', function (e) {
+                var inp = e.target.closest('.time-in');
+                if (!inp) return;
+                setTimeVal(+inp.getAttribute('data-i'), inp.getAttribute('data-field'), parseTime(inp.value));
+            });
+            $('list').addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter') return;
+                var inp = e.target.closest('.time-in');
+                if (!inp) return;
+                e.preventDefault();
+                inp.blur();
+            });
+
+            $('btn-play').addEventListener('click', function () {
+                if (!playerReady) return toast('Đang tải player...');
+                try { isPlaying() ? yt.pauseVideo() : yt.playVideo(); } catch (e) { }
+            });
+            document.querySelectorAll('[data-seek]').forEach(function (b) {
+                b.addEventListener('click', function () { seek(getCurt() + (+b.getAttribute('data-seek'))); });
+            });
+            var bar = $('seekbar');
+            bar.addEventListener('pointerdown', function () { draggingBar = true; });
+            bar.addEventListener('pointerup', function () { draggingBar = false; });
+            bar.addEventListener('input', function () {
+                $('now-time').textContent = fmt(parseFloat(bar.value));
+                seek(parseFloat(bar.value));
+            });
+            $('rate').addEventListener('change', function () {
+                try { yt.setPlaybackRate(parseFloat($('rate').value)); } catch (e) { }
+            });
+
+            $('pb-clear').addEventListener('click', function () {
+                selMap = {};
+                render();
+                updatePairBar();
+            });
+            $('btn-new').addEventListener('click', function () {
+                $('setup').classList.remove('hide');
+                document.body.classList.add('setup-mode');
+                renderRestoreOptions();
+            });
+            $('st-restore-list').addEventListener('click', function (e) {
+                var b = e.target.closest('[data-restore]');
+                if (b) restoreDraft(b.getAttribute('data-restore'));
+            });
+            $('st-build').addEventListener('click', startFromInput);
+            $('st-load').addEventListener('click', function () {
+                $('setup').classList.add('hide');
+                document.body.classList.remove('setup-mode');
+                bootFileMode('transcript-data-35', '0nHb4L2AljA');
+            });
+            $('st-text').addEventListener('input', function () {
+                var n = $('st-text').value.trim().split(/\r?\n/).filter(function (l) { return l.trim(); }).length;
+                $('st-count').textContent = n ? n + ' dòng' : '';
+            });
+            $('btn-undo').addEventListener('click', undo);
+            $('btn-sync').addEventListener('click', openSyncManager);
+            $('btn-rechapter').addEventListener('click', function () {
+                if (!data.length) return toast('Chưa có dữ liệu');
+                var chs = assignChapters(data.map(function (c) { return { text: c.text }; }));
+                beginChange();
+                var changed = 0;
+                data.forEach(function (c, i) {
+                    var ch = chs[i];
+                    if (ch && ch !== c.chapter) { c.chapter = ch; changed++; }
+                });
+                saveLocal(); render(0);
+                toast(changed ? 'Đã gán lại chương cho ' + changed + ' dòng' : 'Chương đã đúng, không cần đổi');
+            });
+            $('btn-copy').addEventListener('click', doCopy);
+            $('btn-download').addEventListener('click', doDownload);
+            $('btn-import').addEventListener('click', openImport);
+            $('btn-reset').addEventListener('click', function () {
+                if (!confirm('Bỏ toàn bộ chỉnh sửa đã lưu, quay về dữ liệu gốc trong file ' + fileName + '.js?')) return;
+                data = copyArr(originalData);
+                try { localStorage.removeItem(LS_KEY); } catch (e) { }
+                undoStack = []; selMap = {}; render(0); toast('Đã khôi phục bản gốc');
+            });
+
+            // Bấm vào từng chữ trong preview → phát audio đúng thời điểm chữ đó
+            $('pv-text').addEventListener('click', function (e) {
+                var ch = e.target.closest('.tr-ch');
+                if (!ch || pvCueIdx < 0) return;
+                var c = data[pvCueIdx];
+                if (!c) return;
+                var tokens = c.text.split(/\s+/).filter(Boolean);
+                var total = 0;
+                tokens.forEach(function (tk) { total += tk.length; });
+                if (total <= 0) return;
+                var g = +ch.getAttribute('data-g');
+                if (isNaN(g)) return;
+                var t = c.start + (c.end - c.start) * (g / total);
+                seek(t);
+                try { yt.playVideo(); } catch (err) { }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                var tag = (e.target.tagName || '').toUpperCase();
+                if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); return; }
+                if (e.code === 'Space') { e.preventDefault(); $('btn-play').click(); }
+                else if (e.code === 'ArrowLeft') { seek(getCurt() - 3); }
+                else if (e.code === 'ArrowRight') { seek(getCurt() + 3); }
+            });
+
+            window.addEventListener('beforeunload', saveLocal);
+
+            // ================== BOOT ==================
+            if (params.get('v')) $('st-url').value = params.get('v');
+
+            if (fileName) {
+                // Chế độ cũ: nạp file JS có sẵn
+                $('setup').classList.add('hide');
+                bootFileMode(fileName, currentVideoId || '0nHb4L2AljA');
+            } else {
+                // Chế độ mới: màn hình nhập đề (link YouTube + transcript)
+                $('setup').classList.remove('hide');
+                document.body.classList.add('setup-mode');
+                $('fileBadge').textContent = 'chưa có dữ liệu — dùng "Nhập đề mới"';
+                renderRestoreOptions();
+            }
+
+            // Nạp YouTube API sau khi đã đăng ký callback
+            var ytTag = document.createElement('script');
+            ytTag.src = 'https://www.youtube.com/iframe_api';
+            document.head.appendChild(ytTag);
+        })();
+    </script>
+</body>
+
+</html>

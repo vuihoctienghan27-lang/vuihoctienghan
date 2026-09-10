@@ -137,11 +137,6 @@
             let usedBases = new Set();
             wrapNode(block, allTokens, usedBases);
         });
-
-        // Gắn lại sự kiện Tooltip cho các thẻ vừa được tạo mới nếu file vocab-tooltip.js đã tải xong
-        if (typeof window.attachVocabTooltips === 'function') {
-            window.attachVocabTooltips();
-        }
     };
 
     function wrapNode(node, allTokens, usedBases) {
@@ -246,51 +241,12 @@
     document.head.appendChild(style);
 
     window.setVocabLevel = function(level) {
-        const btn = document.getElementById('globalVocabBtn');
-        if (!btn) return;
-        btn.setAttribute('data-level', level);
-        
-        if (level === 0) {
-            btn.style.background = '#94a3b8';
-            btn.style.color = 'white';
-            btn.innerText = 'Tắt';
-        } else if (level === 1) {
-            btn.style.background = '#3b82f6';
-            btn.style.color = 'white';
-            btn.innerText = 'Mức 1';
-        } else {
-            btn.style.background = '#10b981';
-            btn.style.color = 'white';
-            btn.innerText = 'Mức 2';
-        }
-
+        var btn = document.getElementById('globalVocabBtn');
         document.body.classList.remove('vocab-disabled', 'vocab-level-1', 'vocab-level-2');
         if (level === 0) {
             document.body.classList.add('vocab-disabled');
-        } else if (level === 1) {
-            document.body.classList.add('vocab-level-1');
-        } else {
-            document.body.classList.add('vocab-level-2');
         }
+        localStorage.setItem('vocabEnabled', level !== 0);
     };
-
-    window.cycleVocabLevel = function() {
-        const btn = document.getElementById('globalVocabBtn');
-        if (!btn) return;
-        
-        let currentLevel = parseInt(btn.getAttribute('data-level')) || 0;
-        let nextLevel = 2; // fallthrough
-        if (currentLevel === 2) nextLevel = 0;
-        else if (currentLevel === 0) nextLevel = 1;
-        else if (currentLevel === 1) nextLevel = 2;
-        
-        window.setVocabLevel(nextLevel);
-    };
-
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            window.setVocabLevel(2); // Mặc định bật ở Mức 2
-        }, 100);
-    });
 
 })();

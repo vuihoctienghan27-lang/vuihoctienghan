@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bảng Xếp Hạng - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <style>
         :root {
@@ -106,15 +109,17 @@
             .nav-btn { padding: 6px 10px; font-size: 0.82em; }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/block.js"></script>
     <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/user-profile-popup.js"></script>
     <script src="assets/js/navbar.js"></script>
 </head>
 <body>
 
 <nav class="nav">
     <div class="nav-inner">
-        <a href="index.html" class="nav-logo">📚 Vui Học Tiếng Hàn</a>
+        <a href="index.html" class="nav-logo"><img src="assets/img/logo-navbar.png" alt="Vui Học Tiếng Hàn" style="height:36px;width:auto;display:block"></a>
         <div class="nav-links">
             <a href="index.html" class="nav-btn">🏠 Trang chủ</a>
             <a href="mypage.html" class="nav-btn primary" id="mypageBtn">👤 Trang cá nhân</a>
@@ -340,6 +345,7 @@
         setTimeout(() => {
             if (typeof firebase === 'undefined') return;
             const db = firebase.firestore();
+            window.db = db;
             firebase.auth().onAuthStateChanged(user => {
                 currentUserUid = user ? user.uid : null;
                 if (!user) {

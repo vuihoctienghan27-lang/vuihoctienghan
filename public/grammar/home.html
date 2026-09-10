@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vui Học Tiếng Hàn - Ngữ Pháp Sơ Cấp</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Danh sách ngữ pháp TOPIK sơ cấp — tổng hợp ngữ pháp sơ cấp 1 và sơ cấp 2.">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-card: rgba(255, 255, 255, 0.95);
+            --text-main: #1f2937;
+            --text-sub: #6b7280;
+            --border: #e5e7eb;
+            --primary: #2563eb;
+        }
+
+        body {
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            margin: 0;
+            padding: 0 0 40px 0;
+        }
+
+        * { box-sizing: border-box; }
+
+        button, input, select { font-family: 'Pretendard', 'Inter', sans-serif !important; }
+        #authModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.85); z-index: 99999;
+            justify-content: center; align-items: center;
+        }
+        .auth-box {
+            background: #fff; padding: 40px 30px; border-radius: 16px;
+            width: 90%; max-width: 350px; text-align: center; position: relative;
+        }
+        .auth-close {
+            position: absolute; top: 15px; right: 20px; font-size: 1.5em; cursor: pointer;
+            color: #64748b; background: none; border: none;
+        }
+        .auth-close:hover { color: #0f172a; }
+        #googleAuthBtn {
+            width: 100%; background: #fff; color: #0f172a; border: 1px solid #cbd5e0;
+            padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-size: 1em; transition: 0.2s;
+        }
+        #googleAuthBtn:hover { background: #f8fafc; }
+
+        .wrapper {
+            max-width: 900px; margin: 0 auto;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px;
+            padding: 15px 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            width: 100%; box-sizing: border-box;
+        }
+
+        .hero-section {
+            position: relative;
+            background: linear-gradient(135deg, #065f46 0%, #10b981 50%, #0ea5e9 100%);
+            border-radius: 22px; padding: 34px 38px; color: #fff; margin-bottom: 28px;
+            box-shadow: 0 18px 40px rgba(16,185,129,.18);
+            display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 205px;
+        }
+        .hero-bg { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; pointer-events: none; }
+        .hero-bg::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px);
+            background-size: 22px 22px; opacity: .45;
+        }
+        .hero-blob { position: absolute; border-radius: 50%; filter: blur(64px); }
+        .hero-blob.b1 { width: 230px; height: 230px; background: rgba(255,255,255,.22); top: -70px; right: -50px; animation: blobFloat 8s ease-in-out infinite; }
+        .hero-blob.b2 { width: 170px; height: 170px; background: rgba(255,255,255,.14); bottom: -70px; left: -40px; animation: blobFloat 11s ease-in-out infinite reverse; }
+        @keyframes blobFloat { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-12px) scale(1.08); } }
+
+        .hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,.16); color: #fff;
+            font-size: .8em; font-weight: 800; padding: 6px 14px; border-radius: 99px;
+            letter-spacing: .6px; text-transform: uppercase;
+            backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.24);
+            margin-bottom: 14px;
+        }
+        .hero-title {
+            font-size: 2.5em; font-weight: 900; margin: 0; line-height: 1.12; letter-spacing: -.6px;
+            background: linear-gradient(120deg, #fff 35%, rgba(255,255,255,.5));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { margin: 9px 0 0; font-size: .95em; color: rgba(255,255,255,.88); font-weight: 500; }
+
+        /* DROPDOWN CHỌN CẤP ĐỘ */
+        .level-dropdown { position: relative; margin-top: 20px; }
+        .level-dropdown-btn {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.24);
+            color: #fff; font-weight: 800; font-size: .98em; padding: 11px 18px; border-radius: 12px;
+            cursor: pointer; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            transition: background .2s;
+        }
+        .level-dropdown-btn:hover { background: rgba(255,255,255,.26); }
+        .level-dropdown-btn .chevron { transition: transform .25s; color: rgba(255,255,255,.85); }
+        .level-dropdown.open .chevron { transform: rotate(180deg); }
+        .level-dropdown-menu {
+            position: absolute; top: calc(100% + 8px); left: 0; z-index: 50;
+            min-width: 220px; background: rgba(255,255,255,.97); border-radius: 14px;
+            box-shadow: 0 16px 40px rgba(0,0,0,.18); overflow: hidden;
+            display: none; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        }
+        .level-dropdown.open .level-dropdown-menu { display: block; animation: dropIn .18s ease; }
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+        .level-opt {
+            display: block; width: 100%; text-align: left; padding: 11px 16px;
+            background: none; border: none; cursor: pointer; font-size: .92em; font-weight: 600; color: #334155;
+            transition: background .15s, color .15s;
+        }
+        .level-opt:hover { background: rgba(37,99,235,.08); color: #2563eb; }
+        .level-opt.active { background: rgba(37,99,235,.12); color: #2563eb; font-weight: 800; }
+
+        .hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+        .hero-icon {
+            width: 116px; height: 116px; border-radius: 50%;
+            background: rgba(255,255,255,.16);
+            border: 1.5px solid rgba(255,255,255,.34);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 22px 44px rgba(0,0,0,.22), inset 0 0 34px rgba(255,255,255,.12);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            animation: heroFloat 4s ease-in-out infinite;
+        }
+        @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 14px; border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+        .section-title {
+            font-size: 1.1em; font-weight: 800; margin: 0; color: var(--text-main);
+        }
+
+        .grammar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-auto-rows: 1fr;
+            gap: 14px;
+        }
+
+        .grammar-card {
+            display: flex; align-items: center; gap: 14px; padding: 15px 16px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            border-radius: 16px; text-decoration: none; color: var(--text-main);
+            transition: all 0.25s ease; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.03);
+            min-height: 96px; height: 100%; box-sizing: border-box;
+        }
+        .grammar-card:hover {
+            transform: translateY(-3px); border-color: #fff;
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.14);
+        }
+        .grammar-cover {
+            width: 60px; height: 60px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 900; font-size: .82em; letter-spacing: .3px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+        }
+        .grammar-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .grammar-korean {
+            font-size: 1.18em; font-weight: 800; letter-spacing: -0.3px; color: #1d4ed8;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .grammar-vietnamese {
+            font-size: 0.85em; color: #64748b; font-weight: 500; line-height: 1.35;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .grammar-arrow { color: #94a3b8; flex-shrink: 0; transition: 0.2s; }
+        .grammar-card:hover .grammar-arrow { color: var(--primary); transform: translateX(2px); }
+
+        .carousel-viewport {
+            width: 100%; overflow: hidden; position: relative;
+            touch-action: pan-y pinch-zoom; margin-bottom: 16px;
+        }
+        .carousel-track { display: flex; transition: transform 0.3s ease-out; will-change: transform; }
+        .carousel-page { width: 100%; flex-shrink: 0; }
+
+        .carousel-arrows {
+            display: flex; justify-content: center; gap: 12px; margin-bottom: 12px;
+        }
+        .carousel-arrow {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 255, 255, 0.9);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.3s; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            font-size: 1.4em; color: var(--primary); line-height: 1; user-select: none;
+        }
+        .carousel-arrow:hover { background: #fff; transform: scale(1.1); box-shadow: 0 6px 20px rgba(37, 99, 235, 0.2); }
+        .carousel-arrow:active { transform: scale(0.95); }
+
+        .carousel-dots {
+            display: flex; justify-content: center; gap: 8px; margin-bottom: 6px;
+        }
+        .carousel-dot {
+            width: 8px; height: 8px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.15); transition: 0.3s; cursor: pointer;
+        }
+        .carousel-dot.active { background: var(--primary); transform: scale(1.3); }
+
+        .carousel-counter {
+            text-align: center; font-size: 0.8em; color: var(--text-sub);
+            font-weight: 600; margin-bottom: 10px;
+        }
+
+        .search-box {
+            width: 100%; margin-bottom: 18px; position: relative;
+        }
+        .search-box input {
+            width: 100%; padding: 14px 18px 14px 48px;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+            border-radius: 14px; font-size: 1em; outline: none;
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            color: var(--text-main); transition: 0.3s;
+        }
+        .search-box input:focus {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .search-box input::placeholder { color: #94a3b8; }
+        .search-icon {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            font-size: 1.2em; color: #94a3b8; pointer-events: none;
+        }
+
+        .search-result-count {
+            text-align: center; font-size: 0.85em; color: var(--text-sub);
+            font-weight: 600; margin-bottom: 14px; display: none;
+        }
+
+        .clear-search-btn {
+            display: none; margin: 0 auto 14px auto;
+            background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(255, 255, 255, 0.8);
+            border-radius: 99px; padding: 6px 18px; font-size: 0.85em; font-weight: 600;
+            color: var(--text-sub); cursor: pointer; transition: 0.2s;
+        }
+        .clear-search-btn:hover { background: #fff; color: var(--text-main); }
+
+        .global-footer {
+            max-width: 900px; margin: 10px auto 30px auto;
+            background: rgba(255, 255, 255, 0.35);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 20px;
+            padding: 16px 20px;
+            display: flex; justify-content: center; align-items: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+        }
+        .footer-link {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none; color: var(--text-main);
+            font-weight: 700; font-size: 1.05em;
+            transition: transform 0.2s ease, color 0.2s;
+        }
+        .footer-link:hover { transform: translateY(-2px); color: #1877f2; }
+        .footer-fb-icon { width: 22px; height: 22px; fill: currentColor; transition: 0.2s; }
+
+        @media (max-width: 768px) {
+            .grammar-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .grammar-cover { width: 50px; height: 50px; font-size: .78em; border-radius: 12px; }
+            .grammar-card { padding: 12px 12px; min-height: 82px; }
+            .grammar-korean { font-size: 1.05em; }
+            .grammar-vietnamese { font-size: 0.78em; }
+            .wrapper { padding: 10px 8px; border-radius: 16px;  width: 100%; box-sizing: border-box;}
+            .hero-section { padding: 26px 22px; flex-direction: column; align-items: flex-start; min-height: 0; }
+            .hero-right { position: absolute; top: 18px; right: 14px; }
+            .hero-icon { width: 60px; height: 60px; }
+            .hero-icon svg { width: 30px !important; height: 30px !important; }
+            .hero-title { padding-right: 64px; }
+            .hero-title { white-space: nowrap; font-size: 1.35em; }
+            .hero-sub { font-size: .86em; }
+            .level-dropdown-btn { width: 100%; justify-content: space-between; }
+            .level-dropdown-menu { left: 0; right: 0; }
+            .carousel-arrow { width: 38px; height: 38px; font-size: 1.2em; }
+            .nav-desktop-links { display: none !important; }
+        }
+        @media (max-width: 520px) {
+            .grammar-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+    <script src="../assets/js/block.js"></script>
+    <script src="../assets/js/theme-picker.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+    <script src="../assets/js/hero-rain.js"></script>
+</head>
+
+<body>
+
+    <div id="authModal">
+        <div class="auth-box">
+            <button class="auth-close" onclick="document.getElementById('authModal').style.display='none'">&times;</button>
+            <h2 style="color:#0f172a;margin-top:0;font-size:1.6em;font-weight:800;">Bắt đầu học</h2>
+            <p style="color:#64748b;font-size:0.95em;margin-bottom:28px;">Đăng nhập để lưu tiến độ và từ vựng của bạn.</p>
+            <button id="googleAuthBtn">
+                <svg width="22" height="22" viewBox="0 0 48 48">
+                    <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                    <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                    <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                    <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
+                </svg>
+                Tiếp tục với Google
+            </button>
+        </div>
+    </div>
+
+    <div class="wrapper">
+
+        <div class="hero-section">
+            <div class="hero-bg"><canvas class="hero-rain-canvas"></canvas><div class="hero-blob b1"></div><div class="hero-blob b2"></div></div>
+            <div class="hero-left">
+                <div class="hero-tag">📘 Ngữ pháp</div>
+                <h1 class="hero-title">Luyện ngữ pháp</h1>
+                <p class="hero-sub">Tổng hợp ngữ pháp TOPIK từ sơ cấp đến cao cấp.</p>
+                <div class="level-dropdown" id="levelDropdown">
+                    <button class="level-dropdown-btn" id="levelDropdownBtn" onclick="toggleLevelMenu(event)">
+                        <span id="levelDropdownLabel">Sơ cấp 1</span>
+                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+                    </button>
+                    <div class="level-dropdown-menu" id="levelMenu"></div>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="54" height="54" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="search-box">
+            <span class="search-icon">&#x1F50D;</span>
+            <input type="text" id="searchInput" placeholder="Tìm ngữ pháp... (tiếng Hàn hoặc tiếng Việt)" oninput="onSearch()">
+        </div>
+        <div class="search-result-count" id="searchResultCount"></div>
+        <button class="clear-search-btn" id="clearSearchBtn" onclick="clearSearch()">&#x2716; Xoá tìm kiếm</button>
+
+        <div class="section-header">
+            <h3 class="section-title" id="sectionTitle">📖 Danh sách ngữ pháp Sơ cấp 1</h3>
+        </div>
+
+        <div class="carousel-viewport" id="carouselViewport">
+            <div class="carousel-track" id="grammarCarouselTrack"></div>
+        </div>
+        <div class="carousel-arrows">
+            <button class="carousel-arrow" id="arrowLeft" onclick="prevPage()" aria-label="Trang trước">&#8249;</button>
+            <button class="carousel-arrow" id="arrowRight" onclick="nextPage()" aria-label="Trang sau">&#8250;</button>
+        </div>
+        <div class="carousel-dots" id="carouselDots"></div>
+        <div class="carousel-counter" id="pageCounter"></div>
+
+    </div>
+
+    <footer class="global-footer">
+        <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer" class="footer-link">
+            <span>📚 Vui Học Tiếng Hàn</span>
+            <svg class="footer-fb-icon" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+            </svg>
+        </a>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+
+    <script>
+        const GRAMMAR_DATA = [
+            // ===== SƠ CẤP 1 =====
+            { korean: "은/는", vietnamese: "Tiểu từ chủ đề", file: "socap/은_는.html", level: 1 },
+            { korean: "여기/거기/저기", vietnamese: "Đây/đó/kia (chỉ địa điểm)", file: "socap/여기_거기_저기.html", level: 1 },
+            { korean: "이것/그것/저것", vietnamese: "Cái này/đó/kia (chỉ đồ vật)", file: "socap/이것_그것_저것.html", level: 1 },
+            { korean: "이/가", vietnamese: "Tiểu từ chủ ngữ", file: "socap/이_가.html", level: 1 },
+            { korean: "에 있다", vietnamese: "Ở tại (tồn tại)", file: "socap/에_있다.html", level: 1 },
+            { korean: "이/가 아니다", vietnamese: "Không phải là (phủ định)", file: "socap/이_가_아니다.html", level: 1 },
+            { korean: "입니다", vietnamese: "Là (trần thuật trang trọng)", file: "socap/입니다.html", level: 1 },
+            { korean: "입니까", vietnamese: "Là... phải không? (nghi vấn)", file: "socap/입니까.html", level: 1 },
+            { korean: "을/를", vietnamese: "Tiểu từ tân ngữ", file: "socap/을_를.html", level: 1 },
+            { korean: "에서 (장소)", vietnamese: "Ở/tại (nơi hành động)", file: "socap/에서_장소.html", level: 1 },
+            { korean: "일/이/삼...", vietnamese: "Số từ Hán Hàn", file: "socap/일_이_삼.html", level: 1 },
+            { korean: "와/과", vietnamese: "Và (liên từ nối danh từ)", file: "socap/와_과.html", level: 1 },
+            { korean: "에 (thời gian)", vietnamese: "Vào (trợ từ thời gian)", file: "socap/에_시간.html", level: 1 },
+            { korean: "하나/둘/셋...", vietnamese: "Số từ thuần Hàn", file: "socap/하나_둘_셋.html", level: 1 },
+            { korean: "이/그/저 (định từ)", vietnamese: "Này/đó/kia (định từ)", file: "socap/이_그_저.html", level: 1 },
+            { korean: "아/어요", vietnamese: "Đuôi câu thân mật lịch sự", file: "socap/아_어요.html", level: 1 },
+            { korean: "에 가다", vietnamese: "Đi đến (nơi)", file: "socap/에_가다.html", level: 1 },
+            { korean: "안", vietnamese: "Không (phủ định ngắn)", file: "socap/안.html", level: 1 },
+            { korean: "았/었어요", vietnamese: "Thì quá khứ", file: "socap/았_었어요.html", level: 1 },
+            { korean: "하고", vietnamese: "Và/với (liên từ)", file: "socap/하고.html", level: 1 },
+            { korean: "ㅂ시다", vietnamese: "Chúng ta hãy... (đề nghị)", file: "socap/ㅂ시다.html", level: 1 },
+            { korean: "ㅡ 탈락", vietnamese: "Giản lược ㅡ", file: "socap/ㅡ_탈락.html", level: 1 },
+            { korean: "은/는 (đối chiếu)", vietnamese: "Thì...còn... (đối chiếu)", file: "socap/은_는_대조.html", level: 1 },
+            { korean: "고 싶다", vietnamese: "Muốn (diễn tả mong muốn)", file: "socap/고_싶다.html", level: 1 },
+            { korean: "겠 (ý định)", vietnamese: "Sẽ (ý định)", file: "socap/겠.html", level: 1 },
+            { korean: "지 않다", vietnamese: "Không (phủ định dài)", file: "socap/지_않다.html", level: 1 },
+            { korean: "(으)세요", vietnamese: "Hãy... (kính ngữ cầu khiến)", file: "socap/으세요.html", level: 1 },
+            { korean: "(으)로 (hướng)", vietnamese: "Về phía (phương hướng)", file: "socap/로_방향.html", level: 1 },
+            { korean: "(으)ㄹ래요", vietnamese: "Sẽ... (ý định/đề nghị)", file: "socap/ㄹ래요.html", level: 1 },
+            { korean: "도", vietnamese: "Cũng (trợ từ)", file: "socap/도.html", level: 1 },
+            { korean: "께서", vietnamese: "Chủ ngữ kính ngữ", file: "socap/께서.html", level: 1 },
+            { korean: "(으)시", vietnamese: "Kính ngữ (hậu tố)", file: "socap/으시.html", level: 1 },
+            { korean: "ㄹ 탈락", vietnamese: "Giản lược ㄹ", file: "socap/ㄹ_탈락.html", level: 1 },
+            { korean: "ㅂ니다", vietnamese: "Đuôi trang trọng (trần thuật)", file: "socap/ㅂ니다.html", level: 1 },
+            { korean: "ㅂ니까", vietnamese: "Đuôi trang trọng (nghi vấn)", file: "socap/ㅂ니까.html", level: 1 },
+            { korean: "고 (nối)", vietnamese: "Và/rồi (nối câu)", file: "socap/고_연결.html", level: 1 },
+            { korean: "부터~까지", vietnamese: "Từ...đến...", file: "socap/부터_까지.html", level: 1 },
+            { korean: "(으)ㄹ 거예요", vietnamese: "Sẽ (tương lai)", file: "socap/ㄹ_거예요.html", level: 1 },
+            { korean: "ㅂ 불규칙", vietnamese: "Bất quy tắc ㅂ", file: "socap/ㅂ_불규칙.html", level: 1 },
+            { korean: "에게/한테/께", vietnamese: "Cho (tặng cách)", file: "socap/에게_한테_께.html", level: 1 },
+            { korean: "지만", vietnamese: "Nhưng (nối câu)", file: "socap/지만.html", level: 1 },
+            { korean: "(으)려고 하다", vietnamese: "Định làm (dự định)", file: "socap/려고_하다.html", level: 1 },
+            { korean: "아/어서 (lý do)", vietnamese: "Nên (nguyên nhân)", file: "socap/아_어서.html", level: 1 },
+            { korean: "(으)ㄹ까요", vietnamese: "Cùng...nhé? (đề nghị)", file: "socap/ㄹ까요.html", level: 1 },
+            { korean: "못", vietnamese: "Không thể (phủ định)", file: "socap/못.html", level: 1 },
+            { korean: "(으)ㄹ 수 있다/없다", vietnamese: "Có/không thể (năng lực)", file: "socap/ㄹ_수_있다_없다.html", level: 1 },
+            { korean: "기/는 것", vietnamese: "Việc... (danh hóa)", file: "socap/기_는_것.html", level: 1 },
+            { korean: "ㄷ 불규칙", vietnamese: "Bất quy tắc ㄷ", file: "socap/ㄷ_불규칙.html", level: 1 },
+            { korean: "에서~까지", vietnamese: "Từ...đến... (địa điểm)", file: "socap/에서_까지.html", level: 1 },
+            { korean: "(으)로 (phương tiện)", vietnamese: "Bằng (phương tiện/công cụ)", file: "socap/로_수단.html", level: 1 },
+            { korean: "(으)러 가다", vietnamese: "Đi để (mục đích)", file: "socap/으러_가다.html", level: 1 },
+            { korean: "고 있다", vietnamese: "Đang (tiếp diễn)", file: "socap/고_있다.html", level: 1 },
+
+            // ===== SƠ CẤP 2 =====
+            { korean: "수 관형사", vietnamese: "Số đếm từ Hán Hàn", file: "socap/수_관형사.html", level: 2 },
+            { korean: "의", vietnamese: "Của (sở hữu)", file: "socap/의.html", level: 2 },
+            { korean: "(으)ㄹ 때", vietnamese: "Khi (thời gian)", file: "socap/ㄹ_때.html", level: 2 },
+            { korean: "아/어 주다", vietnamese: "Làm cho/giúp", file: "socap/아_어_주다.html", level: 2 },
+            { korean: "만", vietnamese: "Chỉ (trợ từ)", file: "socap/만.html", level: 2 },
+            { korean: "(으)니까", vietnamese: "Bởi vì (lý do)", file: "socap/으니까.html", level: 2 },
+            { korean: "지 말다", vietnamese: "Đừng (cấm)", file: "socap/지_말다.html", level: 2 },
+            { korean: "아/어도 되다", vietnamese: "Được phép", file: "socap/아_어도_되다.html", level: 2 },
+            { korean: "보다", vietnamese: "Hơn (so sánh)", file: "socap/보다.html", level: 2 },
+            { korean: "정 관형사 (으)ㄴ", vietnamese: "Định ngữ tính từ", file: "socap/정_관형사_ㄹ.html", level: 2 },
+            { korean: "현 관형사 는", vietnamese: "Định ngữ hiện tại", file: "socap/현_관형사_는.html", level: 2 },
+            { korean: "기 관형사 (으)ㄴ", vietnamese: "Định ngữ quá khứ", file: "socap/기_관형사_ㄴ.html", level: 2 },
+            { korean: "마다", vietnamese: "Mỗi (trợ từ)", file: "socap/마다.html", level: 2 },
+            { korean: "아/어야 하다", vietnamese: "Phải (bắt buộc)", file: "socap/아_어야_하다.html", level: 2 },
+            { korean: "지 못하다", vietnamese: "Không thể (dài)", file: "socap/지_못하다.html", level: 2 },
+            { korean: "(으)면", vietnamese: "Nếu (điều kiện)", file: "socap/으면.html", level: 2 },
+            { korean: "래 관형사 (으)ㄹ", vietnamese: "Định ngữ tương lai", file: "socap/래_관형사_ㄹ.html", level: 2 },
+            { korean: "아/어서 (thời gian)", vietnamese: "Rồi (thứ tự thời gian)", file: "socap/아_어서_시간순서.html", level: 2 },
+            { korean: "지요", vietnamese: "Phải không? (xác nhận)", file: "socap/지요.html", level: 2 },
+            { korean: "수 서수", vietnamese: "Số thứ tự", file: "socap/수_서수.html", level: 2 },
+            { korean: "(으)려고", vietnamese: "Để (mục đích)", file: "socap/으려고.html", level: 2 },
+            { korean: "기 전에", vietnamese: "Trước khi", file: "socap/기_전에.html", level: 2 },
+            { korean: "(으)ㄹ게요", vietnamese: "Sẽ... (hứa hẹn)", file: "socap/ㄹ게요.html", level: 2 },
+            { korean: "겠 (suy đoán)", vietnamese: "Chắc là (suy đoán)", file: "socap/겠2.html", level: 2 },
+            { korean: "네요", vietnamese: "Thật là... (cảm thán)", file: "socap/네요.html", level: 2 },
+            { korean: "아/어 보다", vietnamese: "Thử... (làm thử)", file: "socap/아_어_보다.html", level: 2 },
+            { korean: "(이)나 (lựa chọn)", vietnamese: "Hoặc (lựa chọn danh từ)", file: "socap/이나_선택.html", level: 2 },
+            { korean: "(으)면 좋겠다", vietnamese: "Giá mà (mong ước)", file: "socap/으면_좋겠다.html", level: 2 },
+            { korean: "기 위해서", vietnamese: "Để (mục đích trang trọng)", file: "socap/기_위해서.html", level: 2 },
+            { korean: "아/어지다", vietnamese: "Trở nên (biến hóa)", file: "socap/아_어지다.html", level: 2 },
+            { korean: "기 때문에", vietnamese: "Bởi vì (nguyên nhân mạnh)", file: "socap/기_때문에.html", level: 2 },
+            { korean: "ㅎ 불규칙", vietnamese: "Bất quy tắc ㅎ", file: "socap/ㅎ_불규칙.html", level: 2 },
+            { korean: "거나", vietnamese: "Hoặc (lựa chọn)", file: "socap/거나.html", level: 2 },
+            { korean: "(으)ㄴ 적이 있다", vietnamese: "Đã từng (kinh nghiệm)", file: "socap/ㄴ_적이_있다.html", level: 2 },
+            { korean: "(으)면서", vietnamese: "Vừa...vừa... (cùng lúc)", file: "socap/으면서.html", level: 2 },
+            { korean: "요", vietnamese: "Đuôi lịch sự", file: "socap/요.html", level: 2 },
+            { korean: "(으)면 안 되다", vietnamese: "Không được (cấm)", file: "socap/으면_안_되다.html", level: 2 },
+            { korean: "(이)나 (nhấn mạnh)", vietnamese: "Đến... (nhấn mạnh số lượng)", file: "socap/이나_강조.html", level: 2 },
+            { korean: "(으)ㄹ 것 같다", vietnamese: "Có vẻ như (suy đoán)", file: "socap/ㄹ_것_같다.html", level: 2 },
+            { korean: "ㅅ 불규칙", vietnamese: "Bất quy tắc ㅅ", file: "socap/ㅅ_불규칙.html", level: 2 },
+            { korean: "(으)ㄴ 지", vietnamese: "Đã được...từ khi", file: "socap/은_지.html", level: 2 },
+            { korean: "(으)ㄴ 후에", vietnamese: "Sau khi", file: "socap/은_후에.html", level: 2 },
+            { korean: "기로 하다", vietnamese: "Quyết định (dự định)", file: "socap/기로_하다.html", level: 2 },
+            { korean: "에게서/한테서", vietnamese: "Từ (nguồn gốc)", file: "socap/에게서_한테서.html", level: 2 },
+            { korean: "(으)ㄴ/는데", vietnamese: "Mà/thế mà (nền tảng)", file: "socap/는데.html", level: 2 },
+            { korean: "르 불규칙", vietnamese: "Bất quy tắc 르", file: "socap/르_불규칙.html", level: 2 },
+
+            // ===== TRUNG CẤP 3 =====
+            { korean: "네요", vietnamese: "Thật là... (cảm thán)", file: "trungcap/네요.html", level: 3 },
+            { korean: "마다", vietnamese: "Mỗi (trợ từ)", file: "trungcap/마다.html", level: 3 },
+            { korean: "수 관형사", vietnamese: "Số đếm từ Hán Hàn", file: "trungcap/수_관형사.html", level: 3 },
+            { korean: "아/어 보다", vietnamese: "Thử làm", file: "trungcap/아_어_보다.html", level: 3 },
+            { korean: "아/어야 하다", vietnamese: "Phải (bắt buộc)", file: "trungcap/아_어야_하다.html", level: 3 },
+            { korean: "요", vietnamese: "Đuôi lịch sự", file: "trungcap/요.html", level: 3 },
+            { korean: "(으)면 안 되다", vietnamese: "Không được (cấm)", file: "trungcap/으면_안_되다.html", level: 3 },
+            { korean: "의", vietnamese: "Của (sở hữu)", file: "trungcap/의.html", level: 3 },
+        ];
+
+        // Các cấp độ ngữ pháp (dropdown)
+        const LEVEL_OPTIONS = [
+            { val: 1, label: 'Sơ cấp 1' },
+            { val: 2, label: 'Sơ cấp 2' },
+            { val: 3, label: 'Trung cấp 3' },
+            { val: 4, label: 'Trung cấp 4' },
+            { val: 5, label: 'Cao cấp 5' },
+            { val: 6, label: 'Cao cấp 6' },
+            { val: 0, label: 'Tất cả' }
+        ];
+        // Nhãn cấp độ hiển thị trên ô màu của thẻ (có ý nghĩa hơn chữ cái đầu)
+        function levelShort(val) {
+            var map = { 1: 'SC1', 2: 'SC2', 3: 'TC3', 4: 'TC4', 5: 'CC5', 6: 'CC6' };
+            return map[val] || 'TẤT CẢ';
+        }
+        function levelColor(val) {
+            if (val >= 5) return 'linear-gradient(135deg,#7c3aed,#db2777)';
+            if (val >= 3) return 'linear-gradient(135deg,#d97706,#f59e0b)';
+            return 'linear-gradient(135deg,#2563eb,#06b6d4)';
+        }
+        function levelLabel(val) { var o = LEVEL_OPTIONS.find(function(x){ return x.val === val; }); return o ? o.label : 'Tất cả'; }
+
+        let currentLevel = 1;
+        let currentPage = 0;
+        let totalPages = 0;
+        let startX = 0;
+        let isDragging = false;
+        const itemsPerPage = 12;
+        let searchQuery = '';
+        const track = document.getElementById('grammarCarouselTrack');
+        const dotsContainer = document.getElementById('carouselDots');
+        const pageCounter = document.getElementById('pageCounter');
+
+        function getFilteredData() {
+            var data = currentLevel === 0
+                ? GRAMMAR_DATA.slice()
+                : GRAMMAR_DATA.filter(function(g) { return g.level === currentLevel; });
+            if (searchQuery.trim()) {
+                var q = searchQuery.trim().toLowerCase();
+                data = data.filter(function(g) {
+                    return g.korean.toLowerCase().includes(q) ||
+                        g.vietnamese.toLowerCase().includes(q);
+                });
+            }
+            return data;
+        }
+
+        function generateCard(item, idx) {
+            return '<a href="' + item.file + '" class="grammar-card">' +
+                '<span class="grammar-cover" style="background:' + levelColor(item.level) + ';">' + levelShort(item.level) + '</span>' +
+                '<span class="grammar-body">' +
+                    '<span class="grammar-korean">' + item.korean + '</span>' +
+                    '<span class="grammar-vietnamese">' + item.vietnamese + '</span>' +
+                '</span>' +
+                '<svg class="grammar-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>' +
+                '</a>';
+        }
+
+        function renderCarousel(keepPage) {
+            const data = getFilteredData();
+            totalPages = Math.ceil(data.length / itemsPerPage);
+            if (totalPages === 0) totalPages = 1;
+
+            track.innerHTML = '';
+            dotsContainer.innerHTML = '';
+
+            if (data.length === 0) {
+                track.innerHTML = '<div class="carousel-page"><div class="grammar-grid"><div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub); font-weight:700;">Cấp độ này chưa có nội dung. Hãy chọn cấp độ khác nhé! 🚧</div></div></div>';
+                track.style.transition = 'none';
+                track.style.transform = 'translateX(0)';
+                updatePageCounter();
+                return;
+            }
+
+            if (keepPage && currentPage >= totalPages) currentPage = totalPages - 1;
+            if (!keepPage) currentPage = 0;
+
+            for (let i = 0; i < totalPages; i++) {
+                const start = i * itemsPerPage;
+                const chunk = data.slice(start, start + itemsPerPage);
+                let pageHtml = '<div class="carousel-page"><div class="grammar-grid">';
+                chunk.forEach(function(item, j) { pageHtml += generateCard(item, start + j); });
+                pageHtml += '</div></div>';
+                track.innerHTML += pageHtml;
+                dotsContainer.innerHTML += '<div class="carousel-dot ' + (i === 0 ? 'active' : '') + '" onclick="goToPage(' + i + ')"></div>';
+            }
+
+            if (totalPages > 1) {
+                var firstClone = track.firstElementChild.cloneNode(true);
+                var lastClone = track.lastElementChild.cloneNode(true);
+                track.appendChild(firstClone);
+                track.insertBefore(lastClone, track.firstElementChild);
+                track.style.transition = 'none';
+                track.style.transform = 'translateX(-100%)';
+            } else {
+                track.style.transition = 'none';
+                track.style.transform = 'translateX(0)';
+            }
+
+            updatePageCounter();
+        }
+
+        function updateSectionTitle() {
+            var title = document.getElementById('sectionTitle');
+            if (searchQuery.trim()) {
+                title.textContent = '🔍 Kết quả tìm kiếm cho "' + searchQuery + '"';
+            } else {
+                title.textContent = '📖 Danh sách ngữ pháp ' + levelLabel(currentLevel);
+            }
+        }
+
+        function renderLevelMenu() {
+            var menu = document.getElementById('levelMenu');
+            if (!menu) return;
+            menu.innerHTML = LEVEL_OPTIONS.map(function(o) {
+                return '<button class="level-opt' + (o.val === currentLevel ? ' active' : '') + '" onclick="setLevel(' + o.val + ')">' + o.label + '</button>';
+            }).join('');
+        }
+
+        function toggleLevelMenu(e) {
+            if (e) e.stopPropagation();
+            var dd = document.getElementById('levelDropdown');
+            if (dd) dd.classList.toggle('open');
+        }
+
+        function setLevel(level) {
+            currentLevel = level;
+            var dd = document.getElementById('levelDropdown');
+            if (dd) dd.classList.remove('open');
+            document.getElementById('levelDropdownLabel').textContent = levelLabel(level);
+            sessionStorage.setItem('grammarLevel', level);
+            searchQuery = '';
+            document.getElementById('searchInput').value = '';
+            document.getElementById('clearSearchBtn').style.display = 'none';
+            document.getElementById('searchResultCount').style.display = 'none';
+            updateSectionTitle();
+            renderCarousel(false);
+            renderLevelMenu();
+        }
+
+        // Bấm ra ngoài thì đóng dropdown
+        document.addEventListener('click', function() {
+            var dd = document.getElementById('levelDropdown');
+            if (dd) dd.classList.remove('open');
+        });
+
+        function updateDots(index) {
+            var dots = document.querySelectorAll('.carousel-dot');
+            dots.forEach(function(d) { d.classList.remove('active'); });
+            if (dots[index]) dots[index].classList.add('active');
+        }
+
+        function updatePageCounter() {
+            pageCounter.textContent = 'Trang ' + (currentPage + 1) + ' / ' + totalPages;
+        }
+
+        function goToPage(index, withTransition) {
+            if (totalPages <= 1) { currentPage = 0; return; }
+            currentPage = index;
+            if (withTransition !== false) track.style.transition = 'transform 0.3s ease-out';
+            else track.style.transition = 'none';
+            track.style.transform = 'translateX(-' + ((index + 1) * 100) + '%)';
+            updateDots(index);
+            updatePageCounter();
+        }
+
+        function prevPage() {
+            if (totalPages <= 1) return;
+            currentPage--;
+            track.style.transition = 'transform 0.3s ease-out';
+            track.style.transform = 'translateX(-' + ((currentPage + 1) * 100) + '%)';
+            if (currentPage < 0) {
+                updateDots(totalPages - 1);
+                setTimeout(function() { currentPage = totalPages - 1; goToPage(currentPage, false); }, 300);
+            } else { updateDots(currentPage); }
+        }
+
+        function nextPage() {
+            if (totalPages <= 1) return;
+            currentPage++;
+            track.style.transition = 'transform 0.3s ease-out';
+            track.style.transform = 'translateX(-' + ((currentPage + 1) * 100) + '%)';
+            if (currentPage >= totalPages) {
+                updateDots(0);
+                setTimeout(function() { currentPage = 0; goToPage(0, false); }, 300);
+            } else { updateDots(currentPage); }
+        }
+
+        function onSearch() {
+            searchQuery = document.getElementById('searchInput').value;
+            if (searchQuery.trim()) {
+                document.getElementById('clearSearchBtn').style.display = 'block';
+                var data = getFilteredData();
+                document.getElementById('searchResultCount').style.display = 'block';
+                document.getElementById('searchResultCount').textContent = 'Tìm thấy ' + data.length + ' kết quả';
+            } else {
+                document.getElementById('clearSearchBtn').style.display = 'none';
+                document.getElementById('searchResultCount').style.display = 'none';
+            }
+            sessionStorage.setItem('grammarQuery', searchQuery);
+            updateSectionTitle();
+            renderCarousel(false);
+        }
+
+        function clearSearch() {
+            document.getElementById('searchInput').value = '';
+            searchQuery = '';
+            document.getElementById('clearSearchBtn').style.display = 'none';
+            document.getElementById('searchResultCount').style.display = 'none';
+            sessionStorage.setItem('grammarQuery', '');
+            updateSectionTitle();
+            renderCarousel(false);
+        }
+
+        track.addEventListener('touchstart', function(e) {
+            if (totalPages <= 1) return;
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            track.style.transition = 'none';
+        });
+        track.addEventListener('touchmove', function(e) {
+            if (!isDragging) return;
+            var diff = startX - e.touches[0].clientX;
+            track.style.transform = 'translateX(-' + ((currentPage + 1) * track.clientWidth + diff) + 'px)';
+        });
+        track.addEventListener('touchend', function(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            var diff = startX - e.changedTouches[0].clientX;
+            if (Math.abs(diff) > 50) { diff > 0 ? nextPage() : prevPage(); }
+            else { track.style.transition = 'transform 0.3s ease-out'; track.style.transform = 'translateX(-' + ((currentPage + 1) * 100) + '%)'; }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') prevPage();
+            else if (e.key === 'ArrowRight') nextPage();
+        });
+
+        function restoreState() {
+            var savedLevel = sessionStorage.getItem('grammarLevel');
+            var savedPage = sessionStorage.getItem('grammarPage');
+            var savedQuery = sessionStorage.getItem('grammarQuery');
+
+            if (savedLevel && LEVEL_OPTIONS.some(function(o) { return o.val === parseInt(savedLevel); })) {
+                currentLevel = parseInt(savedLevel);
+            }
+            var lbl = document.getElementById('levelDropdownLabel');
+            if (lbl) lbl.textContent = levelLabel(currentLevel);
+            if (savedQuery) {
+                searchQuery = savedQuery;
+                document.getElementById('searchInput').value = savedQuery;
+                if (savedQuery.trim()) {
+                    document.getElementById('clearSearchBtn').style.display = 'block';
+                    document.getElementById('searchResultCount').style.display = 'block';
+                }
+            }
+            renderLevelMenu();
+        }
+
+        window.addEventListener('pageshow', function() {
+            restoreState();
+            updateSectionTitle();
+            renderCarousel(true);
+            var savedPage = sessionStorage.getItem('grammarPage');
+            if (savedPage && parseInt(savedPage) < totalPages) {
+                goToPage(parseInt(savedPage));
+            }
+        });
+
+        window.addEventListener('beforeunload', function() {
+            sessionStorage.setItem('grammarLevel', currentLevel);
+            sessionStorage.setItem('grammarPage', currentPage);
+        });
+
+        updateSectionTitle();
+        restoreState();
+        renderCarousel(true);
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                if (typeof firebase !== 'undefined' && firebase.auth) {
+                    firebase.auth().onAuthStateChanged(function(user) {
+                        var btn = document.getElementById('navAvatarBtn');
+                        if (!btn) return;
+                        if (user) {
+                            btn.style.color = '#2563eb'; btn.style.background = '#eff6ff';
+                            btn.style.borderRadius = '8px';
+                            btn.title = 'Tài khoản (' + (user.displayName || user.email) + ')';
+                            btn.onclick = function() { window.location.href = '../mypage.html'; };
+                        } else {
+                            btn.style.color = '#0f172a'; btn.style.background = '';
+                            btn.title = 'Chưa đăng nhập — Nhấn để đăng nhập';
+                            btn.onclick = function() {
+                                document.getElementById('authModal').style.display = 'flex';
+                            };
+                        }
+                    });
+                }
+            }, 300);
+        });
+    </script>
+    <script src="../auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
+    <script src="../assets/js/menu.js"></script>
+</body>
+
+</html>

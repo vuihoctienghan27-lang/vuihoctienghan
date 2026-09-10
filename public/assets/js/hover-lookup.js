@@ -2,6 +2,10 @@
 (function() {
     'use strict';
 
+    // Disable on these pages
+    var _hp = window.location.pathname.split('/').pop() || 'index.html';
+    if (['index.html', 'vocab.html', 'mypage.html'].indexOf(_hp) !== -1) return;
+
     var rootPath = '';
     (function() {
         var p = window.location.pathname;
@@ -24,11 +28,13 @@
     var svgClose = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
     var svgExpand = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
     var svgCollapse = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>';
+    var svgPinOff = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.89A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.89A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z"/></svg>';
+    var svgPinOn = '<svg viewBox="0 0 24 24" width="15" height="15" fill="#ef4444" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.89A2 2 0 0 0 5 15.24V17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.89A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1z"/></svg>';
 
     // ── Panel ──
     var panel = document.createElement('div');
     panel.id = 'hover-vocab-panel';
-    panel.style.cssText = 'display:none;position:fixed;z-index:99999;right:16px;bottom:16px;width:380px;min-width:300px;max-width:90vw;max-height:80vh;overflow:auto;resize:both;background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);font-family:Pretendard,sans-serif;font-size:0.92em;';
+    panel.style.cssText = 'display:none;position:fixed;z-index:99999;right:16px;bottom:16px;width:380px;min-width:280px;max-width:90vw;max-height:80vh;overflow:auto;background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);font-family:Pretendard,sans-serif;font-size:0.92em;';
     panel.innerHTML = '<div id="hv-hdr" style="padding:10px 14px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:6px;position:sticky;top:0;background:#fff;z-index:10;border-radius:16px 16px 0 0;cursor:grab;user-select:none;">'+
         '<img src="'+rootPath+'assets/img/logo-navbar.png" style="width:22px;height:22px;flex-shrink:0;" alt="">'+
         '<span id="hv-word" style="font-weight:700;font-size:1.05em;color:#1e293b;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span>'+
@@ -36,14 +42,21 @@
         '<button id="hv-speak" title="Phát âm" style="background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0;border-radius:6px;">'+svgSpk+'</button>'+
         '<button id="hv-search" title="Tra từ khác" style="background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0;border-radius:6px;">'+svgSearch+'</button>'+
         '<button id="hv-expand" title="Mở rộng" style="display:none;background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0;border-radius:6px;">'+svgExpand+'</button>'+
+        '<button id="hv-pin" title="Ghim panel" style="background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0;border-radius:6px;">'+svgPinOff+'</button>'+
         '<button id="hv-close" title="Đóng" style="background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0;border-radius:6px;">'+svgClose+'</button>'+
-        '</div><div style="padding:10px 16px 14px 16px;" id="hv-body"></div>';
+        '</div><div style="padding:10px 16px 14px 16px;" id="hv-body"></div>'+
+        '<div class="hv-resize-top"></div><div class="hv-resize-bottom"></div><div class="hv-resize-left"></div><div class="hv-resize-right"></div>';
     document.body.appendChild(panel);
 
     // ── Mobile CSS ──
     var mobileCSS = document.createElement('style');
-    mobileCSS.textContent = '@media(max-width:768px){#hover-vocab-panel{left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;max-width:100%!important;min-width:unset!important;height:40vh!important;max-height:40vh!important;border-radius:20px 20px 0 0!important;resize:none!important;box-shadow:0 -4px 24px rgba(0,0,0,0.12)!important;transition:height 0.35s cubic-bezier(0.4,0,0.2,1),max-height 0.35s cubic-bezier(0.4,0,0.2,1)!important;will-change:height}#hover-vocab-panel.hv-exp{height:65vh!important;max-height:65vh!important}#hover-vocab-panel.hv-shrink{height:15vh!important;max-height:15vh!important}#hover-vocab-panel #hv-hdr{border-radius:20px 20px 0 0!important;cursor:default!important}#hover-vocab-panel #hv-expand{display:inline-block!important}}';
+    mobileCSS.textContent = '@media(max-width:768px){#hover-vocab-panel{left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;max-width:100%!important;min-width:unset!important;height:50vh!important;max-height:50vh!important;border-radius:20px 20px 0 0!important;resize:none!important;box-shadow:0 -4px 24px rgba(0,0,0,0.12)!important;transition:height 0.35s cubic-bezier(0.4,0,0.2,1),max-height 0.35s cubic-bezier(0.4,0,0.2,1)!important;will-change:height}#hover-vocab-panel.hv-exp{height:80vh!important;max-height:80vh!important}#hover-vocab-panel.hv-shrink{height:15vh!important;max-height:15vh!important}#hover-vocab-panel #hv-hdr{border-radius:20px 20px 0 0!important;cursor:default!important}#hover-vocab-panel #hv-expand{display:inline-block!important}.hv-resize-top,.hv-resize-bottom,.hv-resize-left,.hv-resize-right{display:none!important}}';
     document.head.appendChild(mobileCSS);
+
+    // ── Resize handle CSS ──
+    var resizeCSS = document.createElement('style');
+    resizeCSS.textContent = '.hv-resize-top{position:absolute;top:0;left:8px;right:8px;height:5px;cursor:n-resize;z-index:20}.hv-resize-bottom{position:absolute;bottom:0;left:8px;right:8px;height:5px;cursor:s-resize;z-index:20}.hv-resize-left{position:absolute;left:0;top:8px;bottom:8px;width:5px;cursor:w-resize;z-index:20}.hv-resize-right{position:absolute;right:0;top:8px;bottom:8px;width:5px;cursor:e-resize;z-index:20}';
+    document.head.appendChild(resizeCSS);
 
     // ── Button handlers ──
     document.getElementById('hv-close').addEventListener('click',function(e){e.stopPropagation();panel.style.display='none';});
@@ -105,6 +118,70 @@
     });
     document.addEventListener('mouseup',function(){dragInfo=null;});
 
+    // ── Pin button ──
+    var hvPinned = false;
+    document.getElementById('hv-pin').addEventListener('click',function(e){
+        e.stopPropagation();
+        hvPinned = !hvPinned;
+        panel.classList.toggle('hv-pinned', hvPinned);
+        this.innerHTML = hvPinned ? svgPinOn : svgPinOff;
+        this.title = hvPinned ? 'Bỏ ghim' : 'Ghim panel';
+    });
+
+    // ── Edge resize ──
+    var resizeInfo = null;
+    function bindResize(handleCls, edges){
+        var h = panel.querySelector(handleCls);
+        if(!h) return;
+        h.addEventListener('mousedown',function(e){
+            if(window.innerWidth<=768) return;
+            resizeInfo = {
+                sx: e.clientX, sy: e.clientY,
+                w: panel.offsetWidth, h: panel.offsetHeight,
+                l: panel.offsetLeft, t: panel.offsetTop,
+                edges: edges
+            };
+            e.preventDefault(); e.stopPropagation();
+        });
+    }
+    bindResize('.hv-resize-top',    {top:true});
+    bindResize('.hv-resize-bottom', {bottom:true});
+    bindResize('.hv-resize-left',   {left:true});
+    bindResize('.hv-resize-right',  {right:true});
+
+    document.addEventListener('mousemove',function(e){
+        if(!resizeInfo) return;
+        var dx = e.clientX - resizeInfo.sx;
+        var dy = e.clientY - resizeInfo.sy;
+        var ri = resizeInfo;
+        if(ri.edges.right){
+            panel.style.width = Math.max(280, ri.w + dx) + 'px';
+        }
+        if(ri.edges.left){
+            var nw = Math.max(280, ri.w - dx);
+            panel.style.width = nw + 'px';
+            panel.style.right = 'auto';
+            panel.style.left = (ri.l + ri.w - nw) + 'px';
+        }
+        if(ri.edges.bottom){
+            panel.style.height = Math.max(150, ri.h + dy) + 'px';
+        }
+        if(ri.edges.top){
+            var nh = Math.max(150, ri.h - dy);
+            panel.style.height = nh + 'px';
+            panel.style.bottom = 'auto';
+            panel.style.top = (ri.t + ri.h - nh) + 'px';
+        }
+    });
+    document.addEventListener('mouseup',function(){resizeInfo=null;});
+
+    // Don't propagate mousedown from resize handles
+    panel.addEventListener('mousedown',function(e){
+        if(e.target.closest('.hv-resize-top,.hv-resize-bottom,.hv-resize-left,.hv-resize-right')){
+            e.stopPropagation();
+        }
+    });
+
     // ── Korean helpers ──
     function isKorean(ch){var c=ch.charCodeAt(0);return(c>=0xAC00&&c<=0xD7AF)||(c>=0x1100&&c<=0x11FF)||(c>=0x3130&&c<=0x318F);}
     function getWord(e){
@@ -119,15 +196,26 @@
     }
 
     // ── Dict ──
-    var fullMap=null,fullLoaded=false,fullLoading=false,loadQueue=[],fullFailed=false;
+    var fullMap=null,krMap=null,fullLoaded=false,fullLoading=false,loadQueue=[],fullFailed=false;
     function buildMap(){
-        if(fullMap||!window.AutoVocabDictFull||!Array.isArray(window.AutoVocabDictFull)) return;
-        fullMap=new Map();
-        for(var i=0;i<window.AutoVocabDictFull.length;i++){var e=window.AutoVocabDictFull[i];if(!fullMap.has(e.w))fullMap.set(e.w,e);}
-        fullLoaded=true;var q=loadQueue;loadQueue=[];q.forEach(function(cb){cb();});
+        fullMap=new Map();krMap=new Map();
+        // 1. Hand-edited dict (takes priority, indexed first)
+        if(window.AutoVocabDict&&Array.isArray(window.AutoVocabDict)){
+            for(var i=0;i<window.AutoVocabDict.length;i++){
+                var e=window.AutoVocabDict[i];
+                fullMap.set(e.base.toLowerCase(),e);
+                if(e.variants)for(var j=0;j<e.variants.length;j++){var vk=e.variants[j].toLowerCase();if(!fullMap.has(vk))fullMap.set(vk,e);}
+            }
+        }
+        // 2. KRDict full dict — always store in krMap for enrichment lookup
+        if(window.AutoVocabDictFull&&Array.isArray(window.AutoVocabDictFull)){
+            for(var i=0;i<window.AutoVocabDictFull.length;i++){var e=window.AutoVocabDictFull[i];var wk=e.w.toLowerCase();krMap.set(wk,e);if(!fullMap.has(wk))fullMap.set(wk,e);}
+            fullLoaded=true;
+        }
+        var q=loadQueue;loadQueue=[];q.forEach(function(cb){cb();});
     }
     window.addEventListener('fulldictready',buildMap);
-    if(window.AutoVocabDictFull) buildMap();
+    if(window.AutoVocabDict||window.AutoVocabDictFull) buildMap();
     function loadDict(){
         return new Promise(function(resolve){
             if(fullLoaded||fullFailed){resolve();return;}
@@ -254,7 +342,7 @@
             '시켜','시킬','시키는',
             // 기 nominalizer combos
             '기로','기로는','기로써','기로도','기로만',
-            '기에','기에는','기에는','기도',
+            '기에','기에는','기도','기만',
             '기를','기는','기가','기의',
             '기때문에','기때문','기위해서','기위해','기위한',
             '기까지','기부터','기보다',
@@ -357,9 +445,16 @@
         // Irregular patterns — massively expanded
         var I={
             // ㅆ-past contractions
-            '했':'하','됐':'되','켰':'키',
-            '갔':'가','왔':'오','봤':'보','줬':'주','샀':'사',
+            '했':'하','해':'하',
+            '줬':'주','줘':'주',
+            '봤':'보','봐':'보',
+            '놨':'놓','놔':'놓',
+            '둬':'두',
+            '됐':'되','켰':'키',
+            '갔':'가','왔':'오','샀':'사',
             '섰':'서','컸':'크','났':'나','썼':'쓰','붰':'붓',
+            // ㅣ+었 contractions (내렸다→내리다, 마셨다→마시다)
+            '렸':'리','겼':'기','혔':'히','폈':'피','졌':'지','쳤':'치','볐':'비','셨':'시','뼜':'삐',
             // ㅂ-irregular (present & past)
             '더워':'덥','추워':'춥','매워':'맵','쉬워':'쉽','고마워':'고맙','어려워':'어렵',
             '무서워':'무섭','가까워':'가깝','뜨거워':'뜨겁','아름다워':'아름답',
@@ -421,7 +516,18 @@
 
     function lookup(word){
         var q=word.toLowerCase().trim();
-        if(fullMap){var cands=unfold(q);for(var i=0;i<cands.length;i++){var e=fullMap.get(cands[i]);if(e)return e;}}
+        var cands=[q];
+        var noSpace=q.replace(/\s+/g,'');
+        if(noSpace!==q)cands.push(noSpace);
+        if(fullMap){
+            // Direct match first
+            for(var ci=0;ci<cands.length;ci++){var e=fullMap.get(cands[ci]);if(e)return e;}
+            // Then unfold
+            for(var ci=0;ci<cands.length;ci++){
+                var unfolded=unfold(cands[ci]);
+                for(var i=0;i<unfolded.length;i++){var u=unfolded[i];if(u!==cands[ci]){var e=fullMap.get(u);if(e)return e;}}
+            }
+        }
         return null;
     }
 
@@ -438,12 +544,26 @@
     // ── Show panel ──
     var curData=null;
     function showPanel(data){
+        var senses=[],src='📚 KRDict';
+        if(data.base){
+            // Hand-edited entry — also check KRDict for enrichment
+            var krEntry=krMap?krMap.get(data.base):null;
+            if(krEntry&&krEntry.w&&!krEntry.base){
+                senses.push({m:data.meaning,x:data.examples||[]});
+                var krS=krEntry.s||[{m:krEntry.m,d:krEntry.d,x:krEntry.x}];
+                senses=senses.concat(krS);
+                data={w:krEntry.w,t:krEntry.t||'',k:krEntry.k||'',s:senses,src:'📚 TOPIK + KRDict'};
+            }else{
+                senses=[{m:data.meaning,x:data.examples||[]}];
+                data={w:data.base,m:data.meaning,t:'',x:data.examples||[],s:null,k:'',src:'📚 TOPIK'};
+            }
+        }else{
+            senses=data.s||[{m:data.m,d:data.d,x:data.x}];
+        }
         curData=data;
         document.getElementById('hv-word').textContent=data.w;
         resetSearchUI();
-        hvExpanded=false;panel.classList.remove('hv-exp');document.getElementById('hv-expand').innerHTML=svgExpand;
         var body=document.getElementById('hv-body');
-        var senses=data.s||[{m:data.m,d:data.d,x:data.x}];
         var html='';
         for(var i=0;i<senses.length;i++){
             var sp=senses[i];
@@ -453,7 +573,8 @@
             html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;">';
             html+='<div style="flex:1;"><div style="font-size:0.7em;color:#94a3b8;font-weight:600;margin-bottom:2px;">NGHĨA '+(i+1)+'</div>';
             html+='<div style="color:#0f172a;font-weight:500;">'+sp.m+'</div>';
-            if(sp.d)html+='<div style="color:#64748b;font-size:0.85em;line-height:1.45;margin-top:2px;">'+sp.d+'</div></div>';
+            if(sp.d)html+='<div style="color:#64748b;font-size:0.85em;line-height:1.45;margin-top:2px;">'+sp.d+'</div>';
+            html+='</div>';
             html+='<button class="hv-sv" data-word="'+data.w.replace(/"/g,'&quot;')+'" data-mean="'+sp.m.replace(/"/g,'&quot;')+'" data-key="'+sk+'" data-sidx="'+i+'" style="flex-shrink:0;background:none;border:none;cursor:pointer;font-size:1.1em;padding:2px 4px;margin-left:6px;'+(saved?'color:#f59e0b;':'color:#cbd5e1;')+'" title="'+(saved?'Bỏ lưu':'Lưu vào sổ từ')+'">'+(saved?'★':'☆')+'</button>';
             html+='</div>';
             if(sp.x&&sp.x.length)for(var j=0;j<sp.x.length;j++){var ex=typeof sp.x[j]==='string'?sp.x[j]:(sp.x[j].ko||'');if(ex)html+='<div class="hv-ex" data-idx="'+i+'-'+j+'" style="margin-top:3px;padding:5px 8px;background:#fff;border:1px solid #e2e8f0;border-radius:6px;font-size:0.82em;color:#475569;">'+ex+'</div>';}
@@ -461,9 +582,9 @@
         }
         if(data.t)html+='<span style="display:inline-block;margin-top:4px;padding:2px 10px;background:#eff6ff;color:#2563eb;border-radius:6px;font-size:0.75em;">'+data.t+'</span>';
         if(data.k)html+='<div style="margin-top:10px;padding:8px 12px;background:#fffbeb;border:1px solid #fef3c7;border-radius:10px;"><div style="font-size:0.7em;color:#92400e;font-weight:600;margin-bottom:2px;">한국어 정의</div><div style="color:#78350f;font-size:0.85em;line-height:1.5;">'+data.k+'</div></div>';
-        html+='<div style="font-size:0.6em;color:#cbd5e1;margin-top:8px;text-align:right;">📚 KRDict</div>';
+        html+='<div style="font-size:0.6em;color:#cbd5e1;margin-top:8px;text-align:right;">'+(data.src||'📚 KRDict')+'</div>';
         body.innerHTML=html;
-        if(window.innerWidth<=768){panel.style.left='';panel.style.right='';panel.style.top='';panel.style.bottom='';}
+        if(window.innerWidth<=768){panel.style.left='';panel.style.right='';panel.style.top='';panel.style.bottom='';panel.style.height='';panel.style.maxHeight='';panel.style.transform='';}
         panel.style.display='block';
         // Scroll on mobile after display
         scrollForMobile();
@@ -631,7 +752,7 @@
         if(typeof Swal==='undefined'){alert('Cần SweetAlert2');return;}
         Swal.fire({title:'📁 Lưu từ vựng',html:showFolderPicker(),showCloseButton:true,showConfirmButton:false,
             didOpen:function(){bindFolderEvents();},
-            didClose:function(){panel.classList.remove('hv-shrink');}
+            didClose:function(){panel.classList.remove('hv-shrink');if(window.innerWidth<=768){panel.style.left='';panel.style.right='';panel.style.bottom='';panel.style.top='';panel.style.height='';panel.style.maxHeight='';panel.style.transform='';}}
         });
     }
     function updateStars(word){
@@ -646,17 +767,39 @@
 
     // ── Click handler ──
     document.addEventListener('click',async function(e){
-        if(e.target.closest('#hover-vocab-panel')||e.target.closest('.swal2-container')) return;
+        if(document.body.classList.contains('vocab-disabled')){panel.style.display='none';return;}
+        if(e.target.closest('#hover-vocab-panel')||e.target.closest('.swal2-container')||e.target.closest('.subtitle-list')) return;
         if(panel._ignoreClick) return;
+        var opt = e.target.closest('.option');
+        if(opt){
+            var qBlock = opt.closest('.question-block');
+            if(!qBlock){
+                if(!hvPinned) panel.style.display='none';
+                return;
+            }
+            if(!qBlock.querySelector('.option.correct')){
+                qBlock.removeAttribute('data-hv-ready');
+                if(!hvPinned) panel.style.display='none';
+                return;
+            }
+            if(!qBlock.hasAttribute('data-hv-ready')){
+                qBlock.setAttribute('data-hv-ready','1');
+                if(!hvPinned) panel.style.display='none';
+                return;
+            }
+        }
         _lastClickY=e.clientY;
         var word=getWord(e);
-        if(!word){panel.style.display='none';return;}
+        if(!word){
+            if(!hvPinned) panel.style.display='none';
+            return;
+        }
         var result=lookup(word);
         if(result){showPanel(result);return;}
         if(!fullLoaded){await loadDict();result=lookup(word);if(result){showPanel(result);return;}}
         // API fallback
         if(typeof VocabExternal!=='undefined'){try{var res=await VocabExternal.fetchExamples(word,word);if(res&&res.length>0){showPanel({w:word,m:res[0].viMeaning||res[0].meaning||'',t:res[0].pos||'',x:(res[0].examples||res).slice(0,3).map(function(r){return r.ko||'';}),k:'',src:'📚 KRDict'});return;}}catch(_){}}
-        panel.style.display='none';
+        if(!hvPinned) panel.style.display='none';
     });
 
     console.log('[HoverLookup] v6 ready — full UI');

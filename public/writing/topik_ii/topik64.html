@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOPIK II 읽기 - 제64회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     
 
     <link rel="stylesheet" href="../../assets/css/writing.css">
@@ -18,9 +21,9 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/writing.js"></script>
+<script src="../../assets/js/writing.js"></script>
     <script src="../../assets/js/grading-engine.js"></script>
+    <script src="../../assets/js/gemini-grader.js"></script>
 
 
 <style>
@@ -423,19 +426,19 @@
         <details><summary>10. 명사 + 에 저항하거나 ~에 대해 강한 반항심을 보이다</summary><div class="details-content">Chống cự lại [Danh từ] hoặc thể hiện sự phản kháng mạnh mẽ đối với...</div></details>
     </div>
 </div>
-
-<script src="exam-logic.js"></script>
-
-    <script>
+<script>
         // CÂU 51A — Cấu trúc mục đích di chuyển
         function grade51A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-a').value.trim(),
                 {
                     exactAnswers: [
-                        '일하러 갑니다.',
-                        '아르바이트하러 가기로 했습니다.'
+                        '하러 갑니다.',
+                        '하러 갈 예정입니다.',
+                        '하러 가게 되었습니다.',
+                        '시작하게 되었습니다.'
                     ],
+                    context: ['특강'],
                     stems: ['하', '가', '시작하'],
                     grammar: [
                         { pattern: /러\s*갑[가-힣]*/, label: 'đi để' },
@@ -444,20 +447,21 @@
                     ]
                 },
                 "Cần động từ 'đi làm / bắt đầu làm' + mục đích."
-            );
-            document.getElementById('score-51-a').innerHTML = result.display;
-            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+            , 'score-51-a', 'btn-exp-51-a');
         }
 
         // CÂU 51B — Nguyện vọng tặng quà vừa lòng
         function grade51B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-b').value.trim(),
                 {
                     exactAnswers: [
-                        '마음에 들면 좋겠습니다.',
-                        '마음에 들었으면 좋겠습니다.'
+                        '들면.',
+                        '들었으면 좋겠습니다.',
+                        '들기를 바랍니다.',
+                        '들면 기쁘겠습니다.'
                     ],
+                    context: ['마음'],
                     stems: ['들', '맞'],
                     grammar: [
                         { pattern: /면\s*좋겠[가-힣]*/, label: 'mong' },
@@ -465,40 +469,41 @@
                     ]
                 },
                 "Cần động từ mang nghĩa 'vừa lòng / ưng ý'."
-            );
-            document.getElementById('score-51-b').innerHTML = result.display;
-            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+            , 'score-51-b', 'btn-exp-51-b');
         }
 
         // CÂU 52A — Cấu trúc tương phản (모습)
         function grade52A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-a').value.trim(),
                 {
                     exactAnswers: [
-                        '겉으로 보는 모습과 다를 수 있다.',
-                        '겉모습만 보고 판단하는 것이다.'
+                        '모습을 보는 것이다.',
+                        '모습을 보는 셈이다.',
+                        '상태를 보는 것이다.'
                     ],
+                    context: ['달의'],
                     stems: ['모습', '상태'],
                     grammar: [
                         { pattern: /보[가-힣]*\s*것[가-힣]*/, label: 'việc nhìn' }
                     ]
                 },
                 "Cần danh từ '모습' và động từ '보다'."
-            );
-            document.getElementById('score-52-a').innerHTML = result.display;
-            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+            , 'score-52-a', 'btn-exp-52-a');
         }
 
         // CÂU 52B — Điều kiện thời gian
         function grade52B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-b').value.trim(),
                 {
                     exactAnswers: [
-                        '시간이 지나야 알 수 있다.',
-                        '세월이 흘러야 깨닫게 된다.'
+                        '지나야 알 수 있다.',
+                        '지난 후에야 알 수 있다.',
+                        '흘러야 알게 된다.',
+                        '지나야 깨닫게 된다.'
                     ],
+                    context: ['시간'],
                     stems: ['지나야', '지난 후', '흘러야'],
                     grammar: [
                         { pattern: /알\s*수\s*있[가-힣]*/, label: 'có thể biết' },
@@ -507,9 +512,7 @@
                     ]
                 },
                 "Cần cụm từ chỉ sự 'trôi qua' của thời gian."
-            );
-            document.getElementById('score-52-b').innerHTML = result.display;
-            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+            , 'score-52-b', 'btn-exp-52-b');
         }
 
         // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 64 ---

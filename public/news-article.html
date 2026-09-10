@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đọc Báo - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="auth.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/navbar.js"></script>
+    <script src="assets/js/vocab-dictionary.js"></script>
+    <script src="assets/js/vocab-dictionary-full.js"></script>
+    <script src="assets/js/vocab-external.js"></script>
+    <script src="assets/js/theme.js"></script>
+
+    <style>
+        :root {
+            --text-main: #1e293b; --text-sub: #64748b; --primary: #4f46e5; --primary-hover: #4338ca;
+            --primary-light: #eef2ff; --bg-card: rgba(255,255,255,0.78); --border-card: rgba(255,255,255,0.6);
+        }
+        body {
+            font-family: 'Pretendard','Inter',sans-serif;
+            background: var(--random-bg-gradient, linear-gradient(135deg,#e0e7ff,#c7d2fe,#e0e7ff));
+            background-attachment: fixed; margin: 0; padding: 0 0 60px 0; color: var(--text-main);
+        }
+        * { box-sizing: border-box; }
+        button, input, textarea, select { font-family: 'Pretendard','Inter',sans-serif; }
+
+        .na-wrapper {
+            max-width: 900px; margin: 0 auto; padding: 0;
+        }
+
+        /* Back link */
+        .na-back {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 16px; border-radius: 12px; color: var(--primary);
+            font-weight: 700; font-size: 0.88em; text-decoration: none;
+            transition: 0.2s; margin-top: 16px; margin-bottom: 0;
+            background: rgba(255,255,255,0.5); backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        .na-back:hover { background: rgba(255,255,255,0.8); transform: translateX(-3px); }
+
+        /* Admin bar */
+        .na-admin-bar {
+            display: none; align-items: center; gap: 8px; margin-top: 16px;
+        }
+        .na-admin-bar.visible { display: flex; }
+        .na-admin-bar button {
+            padding: 8px 16px; border-radius: 10px; border: 1.5px solid #e2e8f0;
+            background: #fff; cursor: pointer; font-size: 0.82em; font-weight: 700;
+            color: #64748b; transition: 0.2s; display: flex; align-items: center; gap: 5px;
+        }
+        .na-admin-bar .na-btn-edit:hover { border-color: #4f46e5; color: #4f46e5; background: #eef2ff; }
+        .na-admin-bar .na-btn-del:hover { border-color: #ef4444; color: #ef4444; background: #fef2f2; }
+        body.dark-mode .na-admin-bar button { background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.08); color: #94a3b8; }
+        body.dark-mode .na-admin-bar .na-btn-edit:hover { background: rgba(99,102,241,0.15); color: #93c5fd; }
+        body.dark-mode .na-admin-bar .na-btn-del:hover { background: rgba(239,68,68,0.15); color: #fca5a5; }
+
+        /* Article header */
+        .na-header {
+            background: var(--bg-card); backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card);
+            border-radius: 20px; overflow: hidden; margin: 16px 0 24px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+        }
+        .na-thumb {
+            width: 100%; max-height: 360px; object-fit: cover; display: block;
+            background: linear-gradient(135deg, #e0e7ff 0%, #ddd6fe 50%, #fce7f3 100%);
+        }
+        .na-thumb.no-img {
+            display: flex; align-items: center; justify-content: center;
+            height: 160px; font-size: 3em;
+        }
+        .na-thumb.no-img::after { content: '📰'; opacity: 0.3; }
+        .na-header-body { padding: 24px 28px; }
+        .na-header-body h1 {
+            font-size: 1.6em; font-weight: 900; color: #1e293b;
+            margin: 0 0 10px 0; line-height: 1.4; letter-spacing: -0.3px;
+        }
+        .na-meta {
+            font-size: 0.82em; color: #94a3b8; display: flex; align-items: center;
+            gap: 12px; flex-wrap: wrap;
+        }
+        .na-meta span { display: inline-flex; align-items: center; gap: 4px; }
+
+        /* Tab bar */
+        .na-tab-bar {
+            display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px;
+            gap: 4px; position: sticky; top: 72px; z-index: 10;
+            background: var(--bg-card); backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 14px 14px 0 0; padding: 6px;
+        }
+        .na-tab-btn {
+            flex: 1; padding: 10px 6px; border: none; background: transparent;
+            cursor: pointer; font-weight: 700; font-size: 0.85em; color: #94a3b8;
+            border-radius: 10px; transition: 0.2s; text-align: center;
+        }
+        .na-tab-btn:hover { background: #f1f5f9; color: #4f46e5; }
+        .na-tab-btn.active { background: #eef2ff; color: #4f46e5; }
+
+        /* Content card */
+        .na-content {
+            background: var(--bg-card); backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px); border: 1px solid var(--border-card);
+            border-radius: 0 0 20px 20px; padding: 24px 28px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+            min-height: 300px;
+        }
+
+        /* KR text */
+        .na-kr-text {
+            font-size: 1.05em; line-height: 1.9; color: #334155;
+            white-space: pre-wrap; user-select: text; cursor: default;
+        }
+
+        /* Sentence pairs */
+        .na-sentence-pair {
+            margin-bottom: 16px; padding-bottom: 12px;
+            border-bottom: 1px dashed #e2e8f0;
+        }
+        .na-sentence-pair:last-child { border-bottom: none; }
+        .na-sentence-ko {
+            font-size: 1em; font-weight: 600; color: #1e293b;
+            line-height: 1.7; margin-bottom: 4px;
+        }
+        .na-sentence-vi {
+            font-size: 0.88em; color: #64748b; line-height: 1.55;
+            font-style: italic; padding-left: 12px; border-left: 3px solid #e2e8f0;
+        }
+
+        /* Grammar cards — accordion */
+        .na-grammar-list { display: flex; flex-direction: column; gap: 10px; }
+        .na-grammar-card {
+            background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px;
+            overflow: hidden; transition: 0.2s;
+        }
+        .na-grammar-card:hover { border-color: #fbbf24; }
+        .na-grammar-card .gm-title {
+            background: #fefce8; padding: 12px 16px; font-weight: 800; font-size: 0.95em;
+            color: #92400e; cursor: pointer; user-select: none;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid transparent; transition: 0.2s;
+        }
+        .na-grammar-card.open .gm-title { border-bottom-color: #fef3c7; }
+        .na-grammar-card .gm-title::after {
+            content: '▸'; font-size: 0.8em; transition: transform 0.2s; color: #a16207;
+        }
+        .na-grammar-card.open .gm-title::after { transform: rotate(90deg); }
+        .na-grammar-card .gm-body {
+            padding: 0 16px; max-height: 0; overflow: hidden;
+            font-size: 0.92em; color: #475569; line-height: 1.7;
+            transition: max-height 0.35s ease, padding 0.35s ease;
+        }
+        .na-grammar-card.open .gm-body { max-height: 600px; padding: 14px 16px; }
+
+        /* Lookup overlay popup */
+        .na-lookup-close-btn {
+            position: absolute !important; top: 10px !important; right: 16px !important;
+            background: none !important; border: none !important; font-size: 1.6em !important;
+            cursor: pointer !important; color: #94a3b8 !important; line-height: 1 !important;
+            z-index: 1;
+        }
+        .na-lookup-speak-btn {
+            position: absolute !important; top: 14px !important; right: 50px !important;
+            background: none !important; border: none !important; font-size: 1.2em !important;
+            cursor: pointer !important; z-index: 1;
+        }
+
+        /* Vocab tab */
+        .na-vocab-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .na-vocab-card {
+            background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px;
+            padding: 14px 16px; transition: 0.2s; position: relative;
+        }
+        .na-vocab-card:hover { border-color: #2563eb; }
+        .na-vocab-card .vw-word { font-size: 1.05em; font-weight: 800; color: #2563eb; margin-bottom: 4px; }
+        .na-vocab-card .vw-meaning { font-size: 0.88em; color: #475569; }
+        .na-vocab-del {
+            position: absolute; top: 6px; right: 10px; font-size: 1.2em;
+            color: #94a3b8; cursor: pointer; transition: 0.15s; line-height: 1;
+        }
+        .na-vocab-del:hover { color: #ef4444; }
+        .na-vocab-star {
+            position: absolute; top: 8px; right: 10px; font-size: 1.1em;
+            color: #94a3b8; cursor: pointer; transition: 0.15s;
+        }
+        .na-vocab-star:hover { color: #f59e0b; transform: scale(1.2); }
+        .na-vocab-admin { margin-top: 20px; padding-top: 16px; border-top: 2px dashed #e2e8f0; }
+        .na-vocab-admin textarea { width: 100%; min-height: 100px; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 0.9em; font-family: Pretendard,Inter,sans-serif; resize: vertical; }
+        .na-vocab-admin input { width: 100%; padding: 10px; border: 1.5px solid #e2e8f0; border-radius: 10px; font-size: 0.9em; font-family: Pretendard,Inter,sans-serif; }
+        /* Vocab admin */
+        .na-vocab-add-row {
+            display: flex; flex-wrap: wrap; gap: 10px;
+            background: rgba(255,255,255,0.5); backdrop-filter: blur(4px);
+            padding: 15px; border-radius: 12px; border: 1px dashed rgba(255,255,255,0.8);
+        }
+        .na-vocab-input-wrap { flex: 1; min-width: 180px; position: relative; }
+        .na-vocab-add-row input {
+            width: 100%; padding: 12px; border: 2px solid rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.9); border-radius: 8px;
+            font-size: 0.95em; outline: none; box-sizing: border-box;
+        }
+        .na-vocab-add-row input:focus { border-color: #3b82f6; }
+        .na-vocab-add-row button {
+            background: #10b981; color: #fff; border: none;
+            padding: 12px 25px; border-radius: 8px; font-weight: 700;
+            cursor: pointer; white-space: nowrap; font-size: 0.95em;
+        }
+        .na-vocab-suggest-box {
+            position: absolute; top: 100%; left: 0; width: 100%;
+            background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); z-index: 9999;
+            max-height: 200px; overflow-y: auto; display: none; margin-top: 5px;
+        }
+        .na-vocab-suggest-box .suggest-item {
+            padding: 10px 14px; cursor: pointer; border-bottom: 1px solid #f3f4f6;
+            font-size: 0.9em; font-weight: 600; color: #334155;
+        }
+        .na-vocab-suggest-box .suggest-item:hover { background: #eff6ff; color: #3b82f6; }
+        .na-vocab-suggest-box .suggest-item .src {
+            display: inline-block; font-size: 0.7em; padding: 1px 6px;
+            border-radius: 4px; margin-right: 6px; font-weight: 700;
+        }
+        .na-vocab-suggest-box .suggest-item .src.krdict { background:#dbeafe; color:#1e40af; }
+        .na-vocab-suggest-box .suggest-item .src.gtrans { background:#fef3c7; color:#92400e; }
+        body.dark-mode .na-vocab-add-row { background: rgba(15,23,42,0.5); border-color: rgba(255,255,255,0.08); }
+        body.dark-mode .na-vocab-add-row input { background: rgba(30,41,59,0.9); border-color: rgba(255,255,255,0.1); color: #e2e8f0; }
+        body.dark-mode .na-vocab-suggest-box { background: #1e293b; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .na-vocab-suggest-box .suggest-item { color: #cbd5e1; border-color: rgba(255,255,255,0.05); }
+        body.dark-mode .na-vocab-suggest-box .suggest-item:hover { background: rgba(99,102,241,0.15); }
+        body.dark-mode .na-vocab-admin select { background: #1e293b; border-color: rgba(255,255,255,0.1); color: #e2e8f0; }
+        @media(max-width:640px) { .na-vocab-add-row { flex-direction: column; } }
+        body.dark-mode .na-vocab-card .vw-word { color: #60a5fa; }
+        body.dark-mode .na-vocab-card .vw-meaning { color: #cbd5e1; }
+        @media(max-width:640px) { .na-vocab-grid { grid-template-columns: 1fr; } }
+        .na-share-bar {
+            display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px;
+        }
+        .na-share-bar button {
+            padding: 8px 16px; border-radius: 10px; border: 1px solid #e2e8f0;
+            background: #fff; cursor: pointer; font-size: 0.82em; font-weight: 600;
+            color: #64748b; transition: 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .na-share-bar button:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+        /* Skeleton */
+        .na-skeleton { padding: 30px 0; }
+        .na-skel-line {
+            height: 18px; border-radius: 8px; background: rgba(0,0,0,0.06);
+            margin-bottom: 12px; animation: naShimmer 1.5s infinite;
+        }
+        .na-skel-line.short { width: 40%; }
+        .na-skel-line.med { width: 70%; }
+        @keyframes naShimmer {
+            0%,100% { opacity: 0.3; } 50% { opacity: 0.7; }
+        }
+
+        /* Dark mode */
+        body.dark-mode .na-back { background: rgba(15,23,42,0.6); color: #93c5fd; border-color: rgba(255,255,255,0.08); }
+        body.dark-mode .na-header { background: rgba(15,23,42,0.72); border-color: rgba(255,255,255,0.08); }
+        body.dark-mode .na-header-body h1 { color: #f1f5f9; }
+        body.dark-mode .na-content { background: rgba(15,23,42,0.72); border-color: rgba(255,255,255,0.08); }
+        body.dark-mode .na-tab-bar { background: rgba(15,23,42,0.72); border-color: rgba(255,255,255,0.08); }
+        body.dark-mode .na-tab-btn:hover { background: rgba(99,102,241,0.1); }
+        body.dark-mode .na-tab-btn.active { background: rgba(99,102,241,0.15); }
+        body.dark-mode .na-kr-text { color: #cbd5e1; }
+        body.dark-mode .na-sentence-ko { color: #e2e8f0; }
+        body.dark-mode .na-sentence-vi { color: #94a3b8; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .na-grammar-card { background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.08); }
+        body.dark-mode .na-grammar-card .gm-title { background: rgba(245,158,11,0.1); color: #fde68a; }
+        body.dark-mode .na-grammar-card.open .gm-title { border-bottom-color: rgba(245,158,11,0.12); }
+        body.dark-mode .na-grammar-card .gm-body { color: #cbd5e1; }
+        body.dark-mode .na-grammar-card .gm-title::after { color: #fde68a; }
+        body.dark-mode .kr-click-word:hover { background: rgba(59,130,246,0.15); }
+        body.dark-mode .na-share-bar button { background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.08); color: #94a3b8; }
+        body.dark-mode .na-share-bar button:hover { background: rgba(99,102,241,0.15); color: #93c5fd; }
+
+        @media(max-width:640px) {
+            .na-wrapper { padding: 0 12px; }
+            .na-header-body { padding: 18px 16px; }
+            .na-header-body h1 { font-size: 1.25em; }
+            .na-content { padding: 16px; }
+            .na-thumb { max-height: 220px; }
+            .na-tab-btn { font-size: 0.78em; }
+        }
+        /* ===== FULL GAME MODAL (from vocab.html) ===== */
+        :root { --bg-hoc: #f472b6; --bg-on: #60a5fa; --bg-thanh: #34d399; }
+        .na-fc-overlay { display:none; position:fixed; inset:0; background:rgba(15,23,42,0.85); z-index:2147483640; justify-content:center; align-items:center; backdrop-filter:blur(5px); }
+        .na-fc-box { background:#fff; width:95%; max-width:620px; border-radius:20px; padding:30px; position:relative; max-height:90vh; overflow-y:auto; transition:max-width .3s; }
+        .na-fc-box.large { width:80vw; max-width:80vw; min-width:min(700px,95vw); overflow:hidden; display:flex; flex-direction:column; min-height:80vh; max-height:80vh; height:80vh; }
+        .na-fc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:2px solid #f3f4f6; padding-bottom:15px; }
+        .na-fc-header h3 { font-size:1.2em; font-weight:800; margin:0; }
+        .na-fc-modes { display:flex; gap:6px; margin-bottom:15px; flex-wrap:wrap; }
+        .na-fc-modes button { padding:8px 14px; border:1.5px solid #e2e8f0; border-radius:10px; background:rgba(255,255,255,.7); cursor:pointer; font-weight:700; font-size:.82em; color:#64748b; transition:.2s; }
+        .na-fc-modes button:hover { border-color:#3b82f6; color:#3b82f6; }
+        .na-fc-modes button.active { background:#1f2937; color:#fff; border-color:#1f2937; }
+        .na-fc-close { background:none; border:none; font-size:1.8em; cursor:pointer; color:#9ca3af; line-height:1; }
+        .na-fc-close:hover { color:#1f2937; }
+        /* Flashcard */
+        .na-fc-container { perspective:1000px; display:flex; align-items:center; justify-content:space-between; margin-bottom:25px; }
+        .na-fc-card { width:100%; height:320px; position:relative; transition:transform .6s cubic-bezier(.175,.885,.32,1.275); transform-style:preserve-3d; cursor:pointer; border-radius:20px; box-shadow:0 15px 35px rgba(0,0,0,.1); margin:0 15px; background:linear-gradient(135deg,#2563eb 0%,#1e40af 100%); color:#fff; }
+        .na-fc-card.flipped { transform:rotateY(180deg); background:linear-gradient(135deg,#eff6ff,#dbeafe); color:#1e293b; border:3px solid rgba(37,99,235,.3); }
+        .na-fc-txt { position:absolute; width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:2.8em; font-weight:900; backface-visibility:hidden; text-align:center; }
+        .na-fc-card.flipped .na-fc-txt { transform:rotateY(180deg); font-size:1.4em; color:#3b82f6; font-weight:400!important; }
+        .na-fc-card.flipped .na-fc-txt * { font-weight:400!important; }
+        .na-fc-hint { position:absolute; bottom:15px; width:100%; text-align:center; font-size:.85em; opacity:.7; backface-visibility:hidden; font-weight:500; }
+        .na-fc-card.flipped .na-fc-hint { display:none; }
+        .na-fc-nav { background:none; border:none; font-size:2.5em; cursor:pointer; color:#9ca3af; padding:10px; transition:.2s; flex-shrink:0; }
+        .na-fc-nav:hover { color:#3b82f6; transform:scale(1.1); }
+        .na-fc-controls { display:flex; justify-content:center; gap:20px; margin-bottom:10px; }
+        .na-fc-controls button { background:#f8fafc; border:none; width:50px; height:50px; border-radius:50%; color:#64748b; cursor:pointer; transition:.2s; display:flex; align-items:center; justify-content:center; }
+        .na-fc-controls button:hover { background:#e2e8f0; color:#0f172a; }
+        /* Match */
+        .na-fc-match-grid { display:flex; flex-wrap:wrap; justify-content:center; align-content:flex-start; gap:15px; overflow-y:auto; padding:5px; min-height:300px;flex:1; }
+        .na-fc-match-grid .mc { width:130px;height:130px;background:#fff;border:2px solid #e2e8f0;border-radius:10px;padding:15px;text-align:center;font-weight:800;cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:center;box-sizing:border-box;font-size:.9em;transition:.15s; }
+        .na-fc-match-grid .mc:hover { transform:translateY(-2px); }
+        .na-fc-match-grid .mc.kr { color:#2563eb; }
+        .na-fc-match-grid .mc.vn { color:#059669; }
+        .na-fc-match-grid .mc.sel { border-color:#3b82f6; background:#eff6ff; }
+        .na-fc-match-grid .mc.err { border-color:#ef4444!important; background:#fef2f2!important; }
+        .na-fc-match-grid .mc.done { opacity:0; pointer-events:none; }
+        /* Type & Dictation */
+        .na-fc-type-ctr { display:flex; justify-content:center; gap:10px; margin-bottom:20px; }
+        .na-fc-word { font-size:2.2em; font-weight:900; margin-bottom:20px; text-align:center; }
+        .na-fc-input { width:100%; max-width:300px; padding:15px; font-size:1.2em; text-align:center; border:2px solid #e2e8f0; border-radius:10px; outline:none; margin-bottom:15px; }
+        .na-fc-input:focus { border-color:#3b82f6; }
+        .na-fc-res { height:25px; font-weight:700; margin-bottom:15px; text-align:center; }
+        .na-fc-submit { background:#111827; color:#fff; border:none; padding:15px 30px; border-radius:10px; font-weight:bold; width:100%; max-width:300px; cursor:pointer; }
+        /* Speaking */
+        .na-fc-speak-word { font-size:2.5em; font-weight:900; margin-bottom:10px; text-align:center; color:#2563eb; }
+        .na-fc-speak-meaning { font-size:1.1em; color:#64748b; font-weight:500; margin-bottom:30px; text-align:center; }
+        .na-fc-mic-btn { width:80px; height:80px; border-radius:50%; font-size:2em; cursor:pointer; transition:.2s; background:#fef2f2; color:#ef4444; border:2px solid #fca5a5; display:flex; align-items:center; justify-content:center; margin:0 auto 20px; }
+        .na-fc-mic-btn.listening { transform:scale(1.1); background:#fee2e2; }
+        .na-fc-transcript { text-align:center; font-size:1.8em; font-weight:bold; min-height:45px; margin-bottom:5px; display:flex; justify-content:center; gap:4px; flex-wrap:wrap; }
+        .na-fc-speak-score { text-align:center; font-size:1.2em; font-weight:bold; color:#3b82f6; margin-bottom:15px; min-height:25px; }
+        .na-fc-skip { background:#f1f5f9; color:#334155; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; cursor:pointer; }
+        /* Dictation */
+        .na-fc-dict-ctr { display:flex; justify-content:center; gap:20px; margin-bottom:20px; }
+        .na-fc-dict-ctr button { width:60px; height:60px; border-radius:50%; font-size:1.5em; cursor:pointer; }
+        /* Result */
+        .na-fc-result { display:none; position:fixed; inset:0; z-index:2147483647; justify-content:center; align-items:center; background:rgba(15,23,42,.85); }
+        .na-fc-result-box { background:#fff; padding:50px 40px; border-radius:28px; text-align:center; width:100%; max-width:480px; box-shadow:0 10px 40px rgba(0,0,0,.2); position:relative; }
+        .na-fc-result-box button { background:#f3f4f6; border:none; border-radius:50%; width:36px; height:36px; cursor:pointer; position:absolute; top:15px; right:15px; }
+        .na-fc-result-box h2 { color:#10b981; font-size:2.4em; margin:0 0 10px; font-weight:900; }
+        @media(max-width:600px) { .na-fc-box { padding:12px 8px; width:98%; max-width:100%; border-radius:16px; } .na-fc-card { height:280px; margin:0 5px; } .na-fc-txt { font-size:1.8em; } .na-fc-card.flipped .na-fc-txt { font-size:1em; padding:10px 8px!important; display:flex!important; flex-direction:column!important; align-items:center!important; justify-content:center!important; } .na-fc-nav { font-size:1.8em; padding:5px; } .na-fc-match-grid .mc { width:110px;height:110px; } .na-fc-box.large { width:100%; max-width:100%; min-width:100%; min-height:98vh; max-height:98vh; height:98vh; } }
+        /* FAB menu (exact from vocab.html) */
+        .na-fab-container { position:fixed; right:20px; bottom:40px; z-index:2147483640; }
+        .na-fab-hide { display:none !important; }
+        .na-fab-btn { width:64px; height:64px; border-radius:50%; background:#2563eb; color:#fff; border:none; font-size:1.8em; box-shadow:0 4px 20px rgba(37,99,235,0.4); cursor:pointer; transition:.3s; display:flex; justify-content:center; align-items:center; }
+        .na-fab-btn:hover { transform:scale(1.08); background:#1d4ed8; }
+        .na-fab-menu { background:rgba(0,0,0,0.4); padding:15px; border-radius:40px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); position:absolute; bottom:85px; right:0; display:flex; flex-direction:column-reverse; gap:15px; opacity:0; visibility:hidden; transition:.3s cubic-bezier(.175,.885,.32,1.275); transform:translateY(20px); }
+        .na-fab-container.open .na-fab-menu { background:rgba(0,0,0,0.4); padding:15px; border-radius:40px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); opacity:1; visibility:visible; transform:translateY(0); }
+        .na-fab-item { display:flex; align-items:center; justify-content:flex-end; gap:15px; cursor:pointer; }
+        .na-fab-item .label { background:#1e293b; color:#fff; padding:8px 14px; border-radius:8px; font-size:.95em; font-weight:700; box-shadow:0 4px 10px rgba(0,0,0,.15); white-space:nowrap; transform:translateX(10px); opacity:0; transition:.3s; min-width:170px; text-align:center; }
+        .na-fab-container.open .na-fab-item .label { transform:translateX(0); opacity:1; min-width:170px; text-align:center; }
+        .na-fab-item .icon { width:50px; height:50px; border-radius:50%; background:#fff; border:2px solid #2563eb; color:#2563eb; font-size:1.3em; display:flex; justify-content:center; align-items:center; box-shadow:0 4px 10px rgba(0,0,0,.1); transition:.2s; font-weight:bold; flex-shrink:0; }
+        .na-fab-item:hover .icon { background:#2563eb; color:#fff; transform:scale(1.1); }
+        .na-fab-tooltip { position:absolute; top:-50px; right:-15px; background:#ef4444; color:#fff; padding:8px 15px; border-radius:8px; font-size:.95em; font-weight:800; white-space:nowrap; animation:naFabBounce 2s infinite; pointer-events:none; opacity:.95; box-shadow:0 4px 10px rgba(239,68,68,.4); }
+        .na-fab-tooltip::after { content:''; position:absolute; top:100%; right:40px; border-width:6px; border-style:solid; border-color:#ef4444 transparent transparent transparent; }
+        @keyframes naFabBounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    </style>
+</head>
+<body>
+    <div class="na-wrapper wrapper" id="naRoot">
+        <!-- Back link -->
+        <a href="dailynews.html" class="na-back">← Quay lại danh sách bài báo</a>
+
+        <!-- Admin bar -->
+        <div class="na-admin-bar" id="naAdminBar">
+            <button class="na-btn-edit" id="naBtnEdit">✏️ Sửa bài viết</button>
+            <button class="na-btn-del" id="naBtnDelete">🗑️ Xóa bài viết</button>
+        </div>
+
+        <!-- Article Header -->
+        <div class="na-header" id="naHeader">
+            <div class="na-header-body">
+                <div class="na-skeleton">
+                    <div class="na-skel-line"></div>
+                    <div class="na-skel-line short"></div>
+                    <div class="na-skel-line med"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Bar -->
+        <div class="na-tab-bar" id="naTabBar">
+            <button class="na-tab-btn active" data-tab="kr">🇰🇷 Tiếng Hàn</button>
+            <button class="na-tab-btn" data-tab="vn">🇻🇳 Tiếng Việt</button>
+            <button class="na-tab-btn" data-tab="grammar">📝 Ngữ pháp</button>
+            <button class="na-tab-btn" data-tab="vocab">📚 Từ vựng</button>
+        </div>
+
+        <!-- Content -->
+        <div class="na-content" id="naContent">
+            <div class="na-skeleton">
+                <div class="na-skel-line" style="width:90%;"></div>
+                <div class="na-skel-line" style="width:95%;"></div>
+                <div class="na-skel-line" style="width:85%;"></div>
+                <div class="na-skel-line" style="width:92%;"></div>
+                <div class="na-skel-line short"></div>
+            </div>
+        </div>
+
+        <!-- Share bar -->
+        <div class="na-share-bar" id="naShareBar"></div>
+    </div>
+
+    <!-- FAB luyện tập -->
+    <div class="na-fab-container na-fab-hide" id="naFabContainer">
+        <div class="na-fab-tooltip">Ấn vào đây để luyện tập 🎮</div>
+        <button class="na-fab-btn" id="naFabBtn" onclick="window.naToggleFab()">📖</button>
+        <div class="na-fab-menu">
+            <!-- column-reverse: last item appears at top, first at bottom -->
+            <div class="na-fab-item" onclick="window.naOpenStudy('speaking')"><span class="label">🎤 Luyện nói</span><span class="icon">🎤</span></div>
+            <div class="na-fab-item" onclick="window.naOpenStudy('dictation')"><span class="label">🎧 Nghe viết</span><span class="icon">🎧</span></div>
+            <div class="na-fab-item" onclick="window.naOpenStudy('type')"><span class="label">⌨️ Nhập từ</span><span class="icon">⌨️</span></div>
+            <div class="na-fab-item" onclick="window.naOpenStudy('match')"><span class="label">🧩 Ghép thẻ</span><span class="icon">🧩</span></div>
+            <div class="na-fab-item" onclick="window.naOpenStudy('flashcard')"><span class="label">🎴 Flashcard</span><span class="icon">🎴</span></div>
+        </div>
+    </div>
+
+    <!-- Full study modal -->
+    <div class="na-fc-overlay" id="naFcOverlay">
+        <div class="na-fc-box" id="naFcBox">
+            <div class="na-fc-header"><h3 id="naFcTitle">Ôn tập từ vựng</h3><button class="na-fc-close" onclick="window.naCloseStudy()">&times;</button></div>
+            <!-- Flashcard -->
+            <div id="naFcFlashcard">
+                <div style="text-align:center;font-weight:800;color:#64748b;margin-bottom:10px;font-size:1.1em;" id="naFcCount">1/10</div>
+                <div class="na-fc-container">
+                    <button class="na-fc-nav" onclick="window.naFcMove(-1)">&#10094;</button>
+                    <div class="na-fc-card" id="naFcCard" onclick="window.naFcFlip()">
+                        <div class="na-fc-txt" id="naFcTxt">Word</div>
+                        <div class="na-fc-hint" id="naFcHint">Chạm hoặc Space để lật</div>
+                    </div>
+                    <button class="na-fc-nav" onclick="window.naFcMove(1)">&#10095;</button>
+                </div>
+                <div class="na-fc-controls">
+                    <button id="naBtnPlay" onclick="window.naFcTogglePlay()" title="Tự động lật"><svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M8 5v14l11-7z"/></svg></button>
+                    <button id="naBtnAudio" onclick="window.naFcToggleAudio()" title="Âm thanh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+                    <button id="naBtnShuffle" onclick="window.naFcShuffle()" title="Xáo trộn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></button>
+                </div>
+            </div>
+            <!-- Match -->
+            <div id="naFcMatch" style="display:none;flex-direction:column;flex:1;min-height:0;">
+                <div class="na-fc-match-grid" id="naFcMatchGrid"></div>
+            </div>
+            <!-- Type -->
+            <div id="naFcType" style="display:none;text-align:center;">
+                <div class="na-fc-type-ctr">
+                    <button class="na-fc-mode-btn" onclick="window.naSetupType('kr2vn',this)" style="padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;font-weight:700;font-size:.85em;background:#1f2937;color:#fff;">Hàn → Việt</button>
+                    <button class="na-fc-mode-btn" onclick="window.naSetupType('vn2kr',this)" style="padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;font-weight:700;font-size:.85em;">Việt → Hàn</button>
+                    <button class="na-fc-mode-btn" onclick="window.naSetupType('mix',this)" style="padding:8px 14px;border:1.5px solid #e2e8f0;border-radius:10px;cursor:pointer;font-weight:700;font-size:.85em;">Ngẫu nhiên</button>
+                </div>
+                <div style="font-weight:700;color:#64748b;margin-bottom:15px;" id="naTypeCount">1/10</div>
+                <div class="na-fc-word" id="naTypeWord">Word</div>
+                <input class="na-fc-input" id="naTypeInput" placeholder="Nhập đáp án..." onkeydown="if(event.key==='Enter')window.naCheckType()">
+                <div class="na-fc-res" id="naTypeRes"></div>
+                <button class="na-fc-submit" onclick="window.naCheckType()">Kiểm tra</button>
+            </div>
+            <!-- Dictation -->
+            <div id="naFcDictation" style="display:none;text-align:center;">
+                <div style="font-weight:700;color:#64748b;margin-bottom:15px;" id="naDictCount">1/10</div>
+                <div class="na-fc-dict-ctr">
+                    <button onclick="window.naPlayDictAudio()" style="background:#eff6ff;color:#3b82f6;border:2px solid #bfdbfe;" title="Nghe lại">🔊</button>
+                    <button onclick="window.naShowDictHint()" style="background:#fef9c3;color:#ca8a04;border:2px solid #fef08a;" title="Gợi ý">💡</button>
+                </div>
+                <div style="font-size:1.2em;font-weight:bold;color:#059669;margin-bottom:20px;min-height:30px;" id="naDictHint"></div>
+                <input class="na-fc-input" id="naDictInput" placeholder="Nhập từ bạn nghe được..." onkeydown="if(event.key==='Enter')window.naCheckDict()">
+                <div class="na-fc-res" id="naDictRes"></div>
+                <button class="na-fc-submit" onclick="window.naCheckDict()">Kiểm tra</button>
+            </div>
+            <!-- Speaking -->
+            <div id="naFcSpeaking" style="display:none;text-align:center;">
+                <div style="font-weight:700;color:#64748b;margin-bottom:15px;" id="naSpeakCount">1/10</div>
+                <div class="na-fc-speak-word" id="naSpeakWord">Word</div>
+                <div class="na-fc-speak-meaning" id="naSpeakMeaning">Meaning</div>
+                <button class="na-fc-mic-btn" id="naFcMicBtn" onclick="window.naToggleMic()">🎤</button>
+                <div class="na-fc-transcript" id="naSpeakTranscript"></div>
+                <div class="na-fc-speak-score" id="naSpeakScore"></div>
+                <button class="na-fc-skip" onclick="window.naSkipSpeak()">Bỏ qua</button>
+            </div>
+        </div>
+    </div>
+    <!-- Result modal -->
+    <div class="na-fc-result" id="naFcResult">
+        <div class="na-fc-result-box">
+            <button onclick="document.getElementById('naFcResult').style.display='none';window.naCloseStudy()">✕</button>
+            <div style="font-size:4.5em;margin-bottom:12px;line-height:1;">🎉</div>
+            <h2>Tuyệt vời!</h2>
+            <div style="font-size:1.05em;color:#64748b;font-weight:600;margin-bottom:20px;">Bạn đã hoàn thành!</div>
+            <div style="font-size:4em;font-weight:900;margin-bottom:30px;color:#3b82f6;" id="naFcResultScore">0/0</div>
+            <button onclick="document.getElementById('naFcResult').style.display='none';window.naSwitchMode(window._naGameMode);" style="background:#10b981;color:#fff;border:none;padding:15px 30px;border-radius:10px;font-weight:bold;cursor:pointer;">🔄 Làm lại</button>
+        </div>
+    </div>
+
+    <script src="assets/js/news-article.js"></script>
+</body>
+</html>

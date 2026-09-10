@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luyện Dạng Câu 53 | TOPIK II Viết - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -39,19 +42,6 @@
         }
 
         /* ===== NAVBAR KÍNH MỜ ===== */
-        .global-nav {
-            position: sticky;
-            top: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            max-width: 900px;
-            margin: 20px auto 30px auto;
-        }
 
         .nav-top-row {
             display: flex;
@@ -115,10 +105,10 @@
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 24px;
-            padding: 30px 40px;
+            padding: 15px 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
             margin-bottom: 30px;
-        }
+         width: 100%; box-sizing: border-box;}
 
         /* ===== HERO SECTION (BANNER) ===== */
         .hero-section {
@@ -214,15 +204,13 @@
         }
 
         @media (max-width: 600px) {
-            .global-nav, .wrapper, .global-footer { margin-left: 5px; margin-right: 5px; border-radius: 16px; }
-            .wrapper { padding: 20px 16px; }
             .hero-section { padding: 24px 20px; margin-bottom: 20px; }
             .hero-title { font-size: 1.6em; }
         }
 
         /* ===== DARK MODE DÀNH CHO WRITING ===== */
         body.dark-mode { color: #e2e8f0 !important; }
-        body.dark-mode .wrapper { background: rgba(15,23,42,0.75) !important; border-color: rgba(255,255,255,0.1) !important; }
+        body.dark-mode .wrapper { background: rgba(15,23,42,0.75) !important; border-color: rgba(255,255,255,0.1) !important;  width: 100%; box-sizing: border-box;}
         body.dark-mode .section-title { color: #93c5fd !important; border-bottom-color: rgba(255,255,255,0.1) !important; }
         body.dark-mode .badge { background: rgba(59,130,246,0.2) !important; color: #93c5fd !important; border-color: rgba(59,130,246,0.3) !important; }
         body.dark-mode .writing-box { background: rgba(30,41,59,0.7) !important; border-color: rgba(255,255,255,0.1) !important; color: #e2e8f0 !important; }
@@ -258,8 +246,7 @@
 
     <script src="../../assets/js/theme-picker.js"></script>
     <script src="../../assets/js/navbar.js"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/type-navigator.js"></script>
+<script src="../../assets/js/type-navigator.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="../../assets/js/writing.js"></script>
 </head>
@@ -332,6 +319,8 @@
                             wrapper.classList.add('question-block');
 
                             let uid = `q53_${examName.replace(/\s/g, '')}_${idx}`;
+                            let cssClass = 'exam-' + examFile.replace('.html','').replace('topik','de');
+                            wrapper.classList.add(cssClass);
                             wrapper.id = uid;
                             wrapper.insertAdjacentHTML('afterbegin', `<div class="q-number" style="display:none;">53</div>`);
 
@@ -359,35 +348,29 @@
 
                             let badge = `<div class="exam-source-badge">📚 Trích từ: ${examName.toUpperCase()}</div>`;
                             
-                            // Trích xuất style nội tuyến của đề bài
+                            // Trích xuất style nội tuyến của đề bài, scoped vào wrapper
                             let styleHTML = '';
                             doc.querySelectorAll('style').forEach(st => {
                                 let stText = st.textContent || '';
                                 if (!stText.includes('global-nav') && !stText.includes('hero-section')) {
+                                    stText = '.' + cssClass + ' ' + stText.replace(/\}/g, '} .' + cssClass + ' ');
                                     styleHTML += `<style>${stText}</style>`;
                                 }
                             });
                             
                             tempHTML += `<div>${badge}${styleHTML}${contentHTML}</div>`;
 
-                            // Clone script
+                            // Clone script - create scoped book functions
                             doc.querySelectorAll('script').forEach(s => {
                                 let t = s.textContent || '';
                                 if (t.includes('bookData') || t.includes('initBook') || t.includes('book-vi')) {
                                     let wrapped = t
                                         .replace(/const\s+bookData/g, 'var bookData')
-                                        .replace(/document\.getElementById\('book-vi'\)/g, `document.getElementById('book-vi-${uid}')`)
-                                        .replace(/document\.getElementById\('book-ko-text'\)/g, `document.getElementById('book-ko-text-${uid}')`)
-                                        .replace(/document\.getElementById\('book-page-indicator'\)/g, `document.getElementById('book-page-indicator-${uid}')`)
-                                        .replace(/document\.getElementById\('bookToggleBtn'\)/g, `document.getElementById('bookToggleBtn-${uid}')`)
-                                        .replace(/document\.getElementById\('book-ko-input-area'\)/g, `document.getElementById('book-ko-input-area-${uid}')`)
-                                        .replace(/document\.getElementById\('book-input'\)/g, `document.getElementById('book-input-${uid}')`)
-                                        .replace(/document\.getElementById\('diff-result-box'\)/g, `document.getElementById('diff-result-box-${uid}')`)
-                                        .replace(/document\.getElementById\('diff-correct-ans'\)/g, `document.getElementById('diff-correct-ans-${uid}')`)
-                                        .replace(/\binitBook\b/g, `initBook_${uid}`)
+                                        .replace(/document\.addEventListener\('DOMContentLoaded',\s*\(\)\s*=>\s*\{\s*\n?\s*(\w+)\((\w+)\);\s*\n?\s*\}\);/g,
+                                            "window._prepareBookScope('" + uid + "', $2);")
                                         .replace(/\bchangePage\b/g, `changePage_${uid}`)
                                         .replace(/\bhandleBookAction\b/g, `handleBookAction_${uid}`);
-                                    finalScripts += wrapped + '\\n';
+                                    finalScripts += wrapped + '\n';
                                 }
                             });
                             totalQuestions++;
@@ -402,8 +385,78 @@
                 container.innerHTML = tempHTML;
                 const scriptNode = document.createElement('script');
                 scriptNode.text = `
+                    window._prepareBookScope = function(suffix, data) {
+                        var currentPage = 0;
+                        var bookState = 'study';
+                        window['loadBookPage_' + suffix] = function() {
+                            var vi = document.getElementById('book-vi-' + suffix);
+                            var ko = document.getElementById('book-ko-text-' + suffix);
+                            var ind = document.getElementById('book-page-indicator-' + suffix);
+                            if (vi) vi.innerText = data[currentPage].vi;
+                            if (ko) ko.innerText = data[currentPage].ko;
+                            if (ind) ind.innerText = (currentPage + 1) + ' / ' + data.length;
+                            bookState = 'study';
+                            var btn = document.getElementById('bookToggleBtn-' + suffix);
+                            if (btn) { btn.innerText = 'Luyện tập'; btn.className = 'btn-action action-btn'; btn.style.background = ''; }
+                            var koEl = document.getElementById('book-ko-text-' + suffix);
+                            var ia = document.getElementById('book-ko-input-area-' + suffix);
+                            if (koEl) koEl.style.display = 'block';
+                            if (ia) ia.style.display = 'none';
+                            var inp = document.getElementById('book-input-' + suffix);
+                            if (inp) inp.value = '';
+                            var dr = document.getElementById('diff-result-box-' + suffix);
+                            var da = document.getElementById('diff-correct-ans-' + suffix);
+                            if (dr) dr.style.display = 'none';
+                            if (da) da.style.display = 'none';
+                        };
+                        window['changePage_' + suffix] = function(step) {
+                            currentPage += step;
+                            if (currentPage < 0) currentPage = 0;
+                            if (currentPage >= data.length) currentPage = data.length - 1;
+                            window['loadBookPage_' + suffix]();
+                        };
+                        window['handleBookAction_' + suffix] = function() {
+                            var btn = document.getElementById('bookToggleBtn-' + suffix);
+                            if (bookState === 'study') {
+                                bookState = 'testing';
+                                btn.innerText = 'Đáp án'; btn.style.background = '#059669';
+                                var koEl = document.getElementById('book-ko-text-' + suffix);
+                                var ia = document.getElementById('book-ko-input-area-' + suffix);
+                                if (koEl) koEl.style.display = 'none';
+                                if (ia) ia.style.display = 'block';
+                                var inp = document.getElementById('book-input-' + suffix);
+                                if (inp) inp.focus();
+                            } else if (bookState === 'testing') {
+                                var ui = (document.getElementById('book-input-' + suffix) || {}).value;
+                                ui = ui ? ui.trim() : '';
+                                var ca = data[currentPage].ko;
+                                if (!ui) { alert('Vui lòng nhập đáp án của bạn trước khi xem!'); return; }
+                                var a = ui.split(/\\s+/), b = ca.split(/\\s+/);
+                                var m = Array(a.length + 1).fill().map(function() { return Array(b.length + 1).fill(0); });
+                                for (var i = 1; i <= a.length; i++)
+                                    for (var j = 1; j <= b.length; j++)
+                                        m[i][j] = a[i-1] === b[j-1] ? m[i-1][j-1] + 1 : Math.max(m[i-1][j], m[i][j-1]);
+                                var i = a.length, j = b.length, res = [];
+                                while (i > 0 || j > 0) {
+                                    if (i > 0 && j > 0 && a[i-1] === b[j-1]) { res.unshift('<span class=\"diff-correct\">' + a[i-1] + '</span>'); i--; j--; }
+                                    else if (j > 0 && (!i || m[i][j-1] >= m[i-1][j])) { res.unshift('<span class=\"diff-missing\">' + b[j-1] + '</span>'); j--; }
+                                    else { res.unshift('<span class=\"diff-added\">' + a[i-1] + '</span>'); i--; }
+                                }
+                                var dr = document.getElementById('diff-result-box-' + suffix);
+                                var da = document.getElementById('diff-correct-ans-' + suffix);
+                                if (dr) { dr.innerHTML = res.join(' '); dr.style.display = 'block'; }
+                                if (da) { da.innerText = 'Câu chuẩn: ' + ca; da.style.display = 'block'; }
+                                bookState = 'checked';
+                                btn.innerText = 'Học lại'; btn.style.background = '#d97706';
+                            } else {
+                                window['loadBookPage_' + suffix]();
+                            }
+                        };
+                        window['loadBookPage_' + suffix]();
+                    };
+
                     ${finalScripts}
-                    
+
                     window.openTab = function(tabId, btn, contentClass) {
                         let container = btn.closest('.question-block') || btn.closest('.wrapper');
                         if (!container) return;
@@ -424,7 +477,6 @@
 
         document.addEventListener('DOMContentLoaded', fetchQuestionsByType);
     </script>
-    <script src="../../assets/js/study-timer.js"></script>
 </body>
 
 </html>

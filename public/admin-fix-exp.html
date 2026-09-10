@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Chuẩn hóa EXP | Vui Học Tiếng Hàn</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a, #1e1b4b 60%, #4c1d95);
+            min-height: 100vh;
+            color: #e2e8f0;
+            padding: 24px;
+        }
+        .wrap { max-width: 860px; margin: 0 auto; }
+        .card {
+            background: rgba(2, 6, 23, 0.72);
+            border: 1px solid #334155;
+            border-radius: 20px;
+            padding: 22px 24px;
+            margin-bottom: 18px;
+            backdrop-filter: blur(10px);
+        }
+        h1 { font-size: 1.35rem; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+        h1 span { font-size: 1.5rem; }
+        .sub { color: #94a3b8; font-size: 0.85rem; margin-top: 6px; line-height: 1.6; }
+        .pill {
+            display: inline-block; font-size: 11px; font-weight: 700;
+            padding: 3px 10px; border-radius: 20px; margin-top: 10px;
+        }
+        .pill.ok { background: #022c22; color: #4ade80; border: 1px solid #065f46; }
+        .pill.bad { background: #450a0a; color: #f87171; border: 1px solid #7f1d1d; }
+        .row { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 14px; }
+        button {
+            font-family: inherit; cursor: pointer; font-weight: 800; font-size: 0.9rem;
+            border: none; border-radius: 10px; padding: 11px 20px; color: #fff;
+        }
+        .btn-blue { background: #2563eb; }
+        .btn-green { background: #059669; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .stat { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+        .stat div {
+            background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 10px 12px;
+        }
+        .stat b { font-size: 1.4rem; color: #fbbf24; }
+        .stat span { font-size: 11px; color: #94a3b8; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.8rem; }
+        th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid #1e293b; }
+        th { color: #94a3b8; font-weight: 700; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.4px; }
+        td.num { font-variant-numeric: tabular-nums; }
+        .changed { color: #4ade80; font-weight: 800; }
+        .skip { color: #64748b; }
+        .note { background: rgba(180, 83, 9, 0.15); border: 1px solid rgba(180, 83, 9, 0.4); border-radius: 12px; padding: 10px 14px; font-size: 0.78rem; color: #fdba74; line-height: 1.7; margin-top: 14px; }
+        #log { max-height: 220px; overflow-y: auto; font-size: 0.78rem; color: #cbd5e1; background: #0b1120; border: 1px solid #1e293b; border-radius: 10px; padding: 10px 12px; margin-top: 12px; white-space: pre-wrap; font-family: monospace; }
+        .hidden { display: none; }
+        .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: -2px; margin-right: 6px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card">
+            <h1><span>🧮</span> Chuẩn Hóa EXP (Dữ Liệu Cũ)</h1>
+            <div class="sub">
+                Do bug lịch sử, <b>bonusEXP</b> bị cộng 2 lần: vừa tính từ <b>totalStudyMinutes</b> (công thức hiển thị:
+                <code>floor(minutes/10)*5 + bonusEXP</code>) vừa được activity-tracker ghi trực tiếp vào <b>bonusEXP</b>.
+                <br>
+                Tool này trừ phần EXP block (5/10 phút) đã bị ghi nhầm vào bonusEXP: <b>bonusEXP = bonusEXP − Σ floor(phút_từng_ngày / 10) * 5</b>.
+                Không đụng tới <b>totalStudyMinutes</b>/<b>dailyStudyData</b> (không thể khôi phục phút bị đếm x2 ở trang đề thi cũ).
+                Chạy <b>1 lần duy nhất</b>, bấm "Phân tích" để xem trước rồi "Chạy chuẩn hóa".
+            </div>
+            <div id="authStatus"><span class="pill bad">⏳ Đang kết nối Firebase...</span></div>
+            <div class="row">
+                <button id="btnAnalyze" class="btn-blue" disabled>🔍 Phân tích (thử)</button>
+                <button id="btnRun" class="btn-green hidden" disabled>🚀 Chạy chuẩn hóa</button>
+            </div>
+            <div class="stat hidden" id="stats">
+                <div><b id="stUsers">0</b><br><span>Tổng user</span></div>
+                <div><b id="stNeed">0</b><br><span>Sẽ sửa</span></div>
+                <div><b id="stExp">0</b><br><span>EXP sẽ trừ</span></div>
+            </div>
+            <div id="results" class="hidden" style="margin-top: 12px; background: #0f172a; border: 1px solid #1e293b; border-radius: 12px; padding: 10px 12px; max-height: 320px; overflow-y: auto;"></div>
+            <div id="log"></div>
+            <div class="note">
+                ⚠️ Chỉ admin (nmhieu2526@gmail.com, vuihoctienghan27@gmail.com) được chạy. Cần deploy rules mới trước:
+                <code>firebase deploy --only firestore:rules</code>. Việc thay đổi chỉ ghi lại trường <b>bonusEXP</b>.
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script>
+        const ADMIN_EMAILS = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU",
+            authDomain: "vuihoctienghan2027.firebaseapp.com",
+            projectId: "vuihoctienghan2027",
+            storageBucket: "vuihoctienghan2027.firebasestorage.app",
+            messagingSenderId: "346757373399",
+            appId: "1:346757373399:web:526625b339fc9a1a523f92",
+            measurementId: "G-JHCHNDDY1S"
+        };
+
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        const authStatus = document.getElementById('authStatus');
+        const btnAnalyze = document.getElementById('btnAnalyze');
+        const btnRun = document.getElementById('btnRun');
+        const statsBox = document.getElementById('stats');
+        const resultsEl = document.getElementById('results');
+        const logEl = document.getElementById('log');
+
+        let analyzedRows = null;
+        let isAdminUser = false;
+
+        function log(msg) {
+            logEl.textContent += msg + '\n';
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+        function clearLog() { logEl.textContent = ''; }
+
+        function blockExpAdded(daily) {
+            if (!daily || typeof daily !== 'object') return 0;
+            let total = 0;
+            for (const k in daily) {
+                const v = Number(daily[k]);
+                if (isFinite(v) && v > 0) total += Math.floor(v / 10) * 5;
+            }
+            return total;
+        }
+
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                try {
+                    await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+                } catch (e) {
+                    authStatus.innerHTML = '<span class="pill bad">❌ Đăng nhập thất bại: ' + e.message + '</span>';
+                    return;
+                }
+                return;
+            }
+            isAdminUser = ADMIN_EMAILS.includes((user.email || '').toLowerCase());
+            if (!isAdminUser) {
+                authStatus.innerHTML = '<span class="pill bad">🚫 Bạn không phải admin.</span>';
+                return;
+            }
+            authStatus.innerHTML = '<span class="pill ok">✅ Admin: ' + user.email + '</span>';
+            btnAnalyze.disabled = false;
+        });
+
+        btnAnalyze.addEventListener('click', async () => {
+            clearLog();
+            log('Đang đọc toàn bộ users...');
+            const snap = await db.collection('users').get();
+            const rows = [];
+            let totalExpReduce = 0;
+
+            snap.forEach(doc => {
+                const d = doc.data();
+                const oldBonus = Number(d.bonusEXP) || 0;
+                const reduce = blockExpAdded(d.dailyStudyData);
+                const newBonus = Math.max(0, oldBonus - reduce);
+                if (oldBonus !== newBonus) {
+                    totalExpReduce += (oldBonus - newBonus);
+                    rows.push({ uid: doc.id, name: d.fullName || d.name || doc.id, oldBonus, newBonus, reduce });
+                }
+            });
+
+            analyzedRows = rows;
+            log('Tổng user: ' + snap.size + ' — Sẽ sửa: ' + rows.length + ' — Tổng EXP trừ: ' + totalExpReduce);
+
+            statsBox.classList.remove('hidden');
+            document.getElementById('stUsers').innerText = snap.size;
+            document.getElementById('stNeed').innerText = rows.length;
+            document.getElementById('stExp').innerText = totalExpReduce.toLocaleString();
+
+            const tbl = rows.slice(0, 50).map(r =>
+                '<tr><td>' + r.name + '</td><td class="num skip">' + r.oldBonus.toLocaleString() + '</td>' +
+                '<td class="num changed">' + r.newBonus.toLocaleString() + '</td><td class="num changed">−' + r.reduce.toLocaleString() + '</td></tr>'
+            ).join('');
+            resultsEl.innerHTML = '<table><tr><th>User</th><th>Bonus cũ</th><th>Bonus mới</th><th>Trừ</th></tr>' + tbl + '</table>';
+            resultsEl.classList.remove('hidden');
+            log(rows.length > 50 ? '📋 Hiển thị 50/' + rows.length + ' user đầu tiên (xem chi tiết ở bảng bên trên).' : '📋 Chi tiết từng user ở bảng bên trên.');
+
+            btnRun.classList.remove('hidden');
+            btnRun.disabled = false;
+        });
+
+        btnRun.addEventListener('click', async () => {
+            if (!analyzedRows || !analyzedRows.length) { log('Không có gì để sửa.'); return; }
+            btnRun.disabled = true;
+            btnAnalyze.disabled = true;
+            log('Bắt đầu ghi Firestore...');
+
+            const BATCH = 400;
+            let done = 0;
+            for (let i = 0; i < analyzedRows.length; i += BATCH) {
+                const chunk = analyzedRows.slice(i, i + BATCH);
+                const batch = db.batch();
+                chunk.forEach(r => {
+                    batch.update(db.collection('users').doc(r.uid), { bonusEXP: r.newBonus });
+                });
+                await batch.commit();
+                done += chunk.length;
+                log('✓ Đã ghi ' + done + '/' + analyzedRows.length + ' user');
+            }
+            log('✅ Hoàn tất! Đã chuẩn hóa ' + analyzedRows.length + ' user.');
+        });
+    </script>
+</body>
+</html>

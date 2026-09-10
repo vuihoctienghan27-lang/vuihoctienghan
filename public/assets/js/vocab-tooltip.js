@@ -50,10 +50,14 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener('DOMContentLoaded', () => {
     if (window.location.pathname.includes('mypage.html')) return;
 
+    // Xoá tooltip cũ của script.js nếu đã tồn tại để tránh xung đột
+    const oldTooltip = document.getElementById('smart-vocab-tooltip');
+    if (oldTooltip) oldTooltip.remove();
+
     const tooltip = document.createElement('div');
     tooltip.id = 'smart-vocab-tooltip';
     tooltip.style.cssText = `
-        display: none; position: absolute; z-index: 10000; background: #ffffff; border: 1px solid #e2e8f0;
+        display: none; position: fixed; z-index: 2147483647; background: #ffffff; border: 1px solid #e2e8f0;
         border-radius: 12px; padding: 15px; width: max-content; min-width: 220px; max-width: 320px;
         box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); font-family: 'Pretendard', sans-serif;
     `;
@@ -216,32 +220,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         await db.collection('users').doc(cu.uid).collection('vocabulary').doc(base).delete();
                         this.innerHTML = svgSv;
                     } else {
-                        if (window.userVocabLists && window.userVocabLists.length > 1) {
-                            let listBtns = window.userVocabLists.map(l => `<button class="folder-list-btn" data-list="${l}" style="width: 100%; text-align: left; padding: 8px 12px; border: none; background: #f8fafc; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-weight: 600; color: #1e293b; transition: 0.2s;">📁 ${l}</button>`).join('');
-                            tooltip.innerHTML = `
-                                <div style="font-size:0.95em; font-weight:700; color:#64748b; margin-bottom:10px;">Lưu "${base}" vào:</div>
-                                <div style="max-height: 150px; overflow-y: auto;">${listBtns}</div>
-                            `;
-
-                            tooltip.querySelectorAll('.folder-list-btn').forEach(btn => {
-                                btn.onmouseenter = function () { this.style.background = '#e0f2fe'; this.style.color = '#2563eb'; };
-                                btn.onmouseleave = function () { this.style.background = '#f8fafc'; this.style.color = '#1e293b'; };
-                                btn.onclick = async function (e) {
-                                    e.stopPropagation();
-                                    const selectedList = this.getAttribute('data-list');
-                                    tooltip.innerHTML = `<div style="text-align:center; padding:15px 10px; font-size:1.1em; font-weight:bold; color:#10b981;">Đã lưu vào ${selectedList}!</div>`;
-                                    await db.collection('users').doc(cu.uid).collection('vocabulary').doc(base).set({
-                                        word: base, meaning: mean, listName: selectedList, status: 0, savedAt: firebase.firestore.FieldValue.serverTimestamp()
-                                    });
-                                    window.savedVocabSet.add(base);
-                                    setTimeout(() => { tooltip.style.display = 'none'; }, 1000);
-                                };
+                        const folders = window.userVocabLists || ['Đã lưu'];
+                        if (folders.length > 0) {
+                            let html = `<div style="font-size:0.95em;font-weight:700;color:#64748b;margin-bottom:10px;">Lưu "${base}" vào:</div><div style="max-height:180px;overflow-y:auto;">`;
+                            folders.forEach(f => {
+                                html += `<button class="folder-list-btn save-folder-btn" data-folder="${f}" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#f8fafc;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#1e293b;transition:0.2s;">📁 ${f}</button>`;
                             });
+                            html += `<button class="folder-list-btn save-new-folder-btn" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#fef3c7;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#d97706;transition:0.2s;">＋ Tạo thư mục mới</button></div>`;
+                            tooltip.innerHTML = html;
+                            window.__bindSaveFolderBtns(tooltip, base, mean, db, cu);
                         } else {
                             this.innerHTML = '⏳';
                             window.savedVocabSet.add(base);
-                            await db.collection('users').doc(cu.uid).collection('vocabulary').doc(base).set({
-                                word: base, meaning: mean, listName: 'Đã lưu', status: 0, savedAt: firebase.firestore.FieldValue.serverTimestamp()
+                            await db.collection('users').doc(cu.uid).collection('vocabulary').doc('Đã_lưu_Đã_lưu_' + base).set({
+                                word: base, meaning: mean, listName: 'Đã lưu/Đã lưu', status: 0, savedAt: firebase.firestore.FieldValue.serverTimestamp()
                             });
                             this.innerHTML = svgSvd;
                         }
@@ -250,11 +242,39 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         };
 
+        // Shared helper for saving vocab with Thư mục → Bài học hierarchy
+        window.__bindSaveFolderBtns = function(tooltip, base, mean, db, cu) {
+            tooltip.querySelectorAll('.save-folder-btn').forEach(btn => {
+                btn.onclick = async function(ev){
+                    ev.stopPropagation();
+                    const folder = this.getAttribute('data-folder');
+                    const snap = await db.collection('users').doc(cu.uid).collection('vocabulary')
+                        .where('listName','>=',folder+'/').where('listName','<=',folder+'/\uf8ff').get();
+                    const lessons = new Set();
+                    snap.forEach(doc => { const ln=doc.data().listName||''; if(ln.startsWith(folder+'/')) lessons.add(ln); });
+                    let lessonArr = Array.from(lessons).sort();
+                    if(lessonArr.length===0) lessonArr=[folder+'/Đã lưu'];
+                    let lhtml = `<div style="font-size:0.9em;font-weight:700;color:#64748b;margin-bottom:8px;">📁 ${folder} → Chọn Bài học:</div><div style="max-height:140px;overflow-y:auto;">`;
+                    lessonArr.forEach(l=>{const sn=l.includes('/')?l.split('/').slice(1).join('/'):l;lhtml+=`<button class="folder-list-btn save-lesson-btn" data-list="${l}" style="width:100%;text-align:left;padding:8px 12px;border:none;background:#f0fdf4;border-radius:6px;margin-bottom:4px;cursor:pointer;font-weight:600;color:#059669;transition:0.2s;">📖 ${sn}</button>`;});
+                    lhtml+=`<button class="folder-list-btn save-new-lesson-btn" data-folder="${folder}" style="width:100%;text-align:left;padding:6px 12px;border:none;background:#fef3c7;border-radius:6px;cursor:pointer;font-weight:600;color:#d97706;">＋ Tạo bài học mới</button>`;
+                    lhtml+=`<button class="folder-list-btn save-back-btn" style="width:100%;text-align:left;padding:6px 12px;border:none;background:#f1f5f9;border-radius:6px;cursor:pointer;font-weight:600;color:#64748b;">← Trở về danh sách thư mục</button></div>`;
+                    tooltip.innerHTML=lhtml;
+                    const nlb=tooltip.querySelector('.save-new-lesson-btn');
+                    if(nlb)nlb.onclick=async function(e2){e2.stopPropagation();const f=this.getAttribute('data-folder');const{value:name}=await Swal.fire({title:'Tạo Bài học trong \"'+f+'\"',input:'text',inputPlaceholder:'Tên bài học...',showCancelButton:true,confirmButtonColor:'#3b82f6',confirmButtonText:'Tạo'});if(!name||!name.trim())return;const fp=f+'/'+name.trim();await db.collection('users').doc(cu.uid).collection('vocabulary').doc('__folder__'+fp.replace(/[/\s]/g,'_')).set({word:'__folder_marker__',meaning:'',listName:fp,status:0,order:-1,savedAt:firebase.firestore.FieldValue.serverTimestamp()});const sid=fp.replace(/[/\s]/g,'_')+'_'+base;await db.collection('users').doc(cu.uid).collection('vocabulary').doc(sid).set({word:base,meaning:mean,listName:fp,status:0,savedAt:firebase.firestore.FieldValue.serverTimestamp()});window.savedVocabSet.add(base);tooltip.innerHTML='<div style=\"text-align:center;padding:15px 10px;font-size:1.1em;font-weight:bold;color:#10b981;\">Đã lưu vào '+name.trim()+'!</div>';setTimeout(()=>{tooltip.style.display='none';},1000);};
+                    const bb=tooltip.querySelector('.save-back-btn');
+                    if(bb)bb.onclick=function(e2){e2.stopPropagation();const fo=window.userVocabLists||['Đã lưu'];let bh='<div style=\"font-size:0.95em;font-weight:700;color:#64748b;margin-bottom:10px;\">Lưu \"'+base+'\" vào:</div><div style=\"max-height:180px;overflow-y:auto;\">';fo.forEach(f=>{bh+='<button class=\"folder-list-btn save-folder-btn\" data-folder=\"'+f+'\" style=\"width:100%;text-align:left;padding:8px 12px;border:none;background:#f8fafc;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#1e293b;transition:0.2s;\">📁 '+f+'</button>';});bh+='<button class=\"folder-list-btn save-new-folder-btn\" style=\"width:100%;text-align:left;padding:8px 12px;border:none;background:#fef3c7;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#d97706;transition:0.2s;\">＋ Tạo thư mục mới</button></div>';tooltip.innerHTML=bh;window.__bindSaveFolderBtns(tooltip,base,mean,db,cu);};
+                    tooltip.querySelectorAll('.save-lesson-btn').forEach(lb=>{lb.onclick=async function(e2){e2.stopPropagation();const ln=this.getAttribute('data-list');tooltip.innerHTML='<div style=\"text-align:center;padding:15px 10px;font-size:1.1em;font-weight:bold;color:#10b981;\">Đã lưu vào '+ln.split('/').pop()+'!</div>';const si=ln.replace(/[/\s]/g,'_')+'_'+base;await db.collection('users').doc(cu.uid).collection('vocabulary').doc(si).set({word:base,meaning:mean,listName:ln,status:0,savedAt:firebase.firestore.FieldValue.serverTimestamp()});window.savedVocabSet.add(base);setTimeout(()=>{tooltip.style.display='none';},1000);};});
+                };
+            });
+            const nfb=tooltip.querySelector('.save-new-folder-btn');
+            if(nfb)nfb.onclick=async function(ev){ev.stopPropagation();const{value:name}=await Swal.fire({title:'Tạo Thư mục mới',input:'text',inputPlaceholder:'Tên thư mục...',showCancelButton:true,confirmButtonColor:'#3b82f6',confirmButtonText:'Tạo'});if(!name||!name.trim())return;const n=name.trim();await db.collection('users').doc(cu.uid).set({vocabLists:firebase.firestore.FieldValue.arrayUnion(n)},{merge:true});const nf=[...(window.userVocabLists||[]),n].filter((v,i,a)=>a.indexOf(v)===i);let nh='<div style=\"font-size:0.95em;font-weight:700;color:#64748b;margin-bottom:10px;\">Lưu \"'+base+'\" vào:</div><div style=\"max-height:180px;overflow-y:auto;\">';nf.forEach(f=>{nh+='<button class=\"folder-list-btn save-folder-btn\" data-folder=\"'+f+'\" style=\"width:100%;text-align:left;padding:8px 12px;border:none;background:#f8fafc;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#1e293b;transition:0.2s;\">📁 '+f+'</button>';});nh+='<button class=\"folder-list-btn save-new-folder-btn\" style=\"width:100%;text-align:left;padding:8px 12px;border:none;background:#fef3c7;border-radius:6px;margin-bottom:5px;cursor:pointer;font-weight:600;color:#d97706;transition:0.2s;\">＋ Tạo thư mục mới</button></div>';tooltip.innerHTML=nh;window.__bindSaveFolderBtns(tooltip,base,mean,db,cu);};
+        };
+
         renderDefaultTooltip();
         tooltip.style.display = 'block';
         const r = span.getBoundingClientRect();
-        let topPos = r.bottom + window.scrollY + 10;
-        let leftPos = r.left + window.scrollX;
+        let topPos = r.bottom + 10;
+        let leftPos = r.left;
         if (leftPos + tooltip.offsetWidth > window.innerWidth) leftPos = window.innerWidth - tooltip.offsetWidth - 20;
         tooltip.style.left = leftPos + 'px';
         tooltip.style.top = topPos + 'px';

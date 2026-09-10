@@ -1,3 +1,6 @@
+// Kích hoạt theo dõi thời gian học cho activity-tracker.js (trang writing không có exam.js)
+window.learningActive = true;
+
 // Kiểm tra mảng từ khóa có tồn tại trong bài làm không
 function checkKeywords(text, keywordsArray) {
     return keywordsArray.some(kw => text.includes(kw));

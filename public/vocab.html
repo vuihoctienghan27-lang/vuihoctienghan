@@ -762,6 +762,42 @@
             height: 80vh;
         }
 
+        #studyModal .modal-box.bansung-modal {
+            width: 100%;
+            max-width: 100%;
+            flex-shrink: 0;
+            height: 100vh;
+            max-height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
+            min-width: 0;
+            border-radius: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 0;
+            background: #0a0f24;
+        }
+        #studyModal .bansung-modal .modal-header {
+            margin-bottom: 0;
+            padding: 10px 14px 8px;
+            background: rgba(10,15,36,0.65);
+            border-bottom: 1px solid rgba(244,185,66,0.15);
+        }
+        #studyModal .bansung-modal .modal-title {
+            color: #f5f3ea;
+            font-size: 1.05em;
+        }
+        #studyModal .bansung-modal .close-btn {
+            color: #9aa3c9;
+        }
+        #studyModal .bansung-modal .close-btn:hover {
+            color: #ffffff;
+        }
+        #studyModal .bansung-modal .bgb {
+            border-radius: 0;
+        }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -1172,21 +1208,21 @@
                 <div class="fab-item-label">Flashcard</div>
                 <div class="fab-item-btn">🎴</div>
             </div>
-            <div class="fab-item" onclick="startStudy('match')">
-                <div class="fab-item-label">Ghép thẻ</div>
-                <div class="fab-item-btn">🧩</div>
+            <div class="fab-item" onclick="startStudy('bansung')">
+                <div class="fab-item-label">Bắn từ vựng</div>
+                <div class="fab-item-btn">🎯</div>
             </div>
-            <div class="fab-item" onclick="startStudy('type')">
-                <div class="fab-item-label">Nhập từ</div>
-                <div class="fab-item-btn">⌨️</div>
+            <div class="fab-item" onclick="startStudy('mugonghwa')">
+                <div class="fab-item-label">Hoa dâm bụt</div>
+                <div class="fab-item-btn">🌺</div>
             </div>
-            <div class="fab-item" onclick="startStudy('dictation')">
-                <div class="fab-item-label">Nghe viết</div>
-                <div class="fab-item-btn">🎧</div>
+            <div class="fab-item" onclick="startStudy('froggame')">
+                <div class="fab-item-label">Ếch săn từ vựng</div>
+                <div class="fab-item-btn">🐸</div>
             </div>
-            <div class="fab-item" onclick="startStudy('speaking')">
-                <div class="fab-item-label">Luyện nói</div>
-                <div class="fab-item-btn">🎤</div>
+            <div class="fab-item" onclick="startStudy('starship')">
+                <div class="fab-item-label">Phi thuyền vũ trụ</div>
+                <div class="fab-item-btn">🚀</div>
             </div>
         </div>
     </div>
@@ -1215,6 +1251,8 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="assets/js/vocab-daily.js"></script>
+    <script src="assets/js/vocab-dictionary.js"></script>
+    <script src="assets/js/vocab-dictionary-full.js" defer></script>
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU", authDomain: "vuihoctienghan2027.firebaseapp.com", projectId: "vuihoctienghan2027", storageBucket: "vuihoctienghan2027.firebasestorage.app", messagingSenderId: "346757373399", appId: "1:346757373399:web:526625b339fc9a1a523f92", measurementId: "G-JHCHNDDY1S" };
@@ -1332,11 +1370,26 @@
         window.syncDailyVocab = syncDailyVocab;
     </script>
     <script src="assets/js/mypage-vocab.js"></script>
+    <script src="assets/js/game-bansung-vocab.js"></script>
+    <script src="assets/js/game-mugonghwa-vocab.js"></script>
+    <script src="assets/js/game-froggame-vocab.js"></script>
+    <script src="assets/js/game-starship-vocab.js"></script>
+    <script src="assets/js/tts-read.js"></script>
+    <script>
+        // Mở sẵn tab "Thư mục" khi truy cập với tham số ?tab=folders
+        (function () {
+            try {
+                var p = new URLSearchParams(window.location.search).get('tab');
+                if (p === 'folders' && typeof switchVocabTab === 'function') {
+                    switchVocabTab('folders');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <script src="assets/js/game-dictation.js"></script>
     <script src="assets/js/game-speaking.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <script src="assets/js/menu.js"></script>
-    <script src="assets/js/study-timer.js"></script>
 </body>
 
 </html>

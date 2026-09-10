@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 01 · 소개 Giới thiệu — Vui Học Tiếng Hàn</title>
+<meta name="description" content="Bài 01 Tiếng Hàn: Chào hỏi và tự giới thiệu — học nghe, nói, đọc, viết quanh chủ đề quốc gia và nghề nghiệp.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="../../auth.js"></script>
+<!-- Global assets -->
+<link rel="stylesheet" href="../../assets/css/style.css" onerror="this.remove()">
+<style>
+  :root{
+    --paper:#FAF6EE; --paper-card:#FFFFFF; --ink:#1D2B45; --ink-soft:#4B5A78;
+    --stamp:#D8482B; --stamp-dark:#A83A22; --jade:#2E7A5B; --gold:#C79A2E;
+    --line:#E3DBC7; --line-strong:#CFC4A5;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; 
+    background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+    background-attachment: fixed;
+    color:var(--ink); font-family:'Pretendard', 'Inter', 'Be Vietnam Pro', sans-serif;
+    line-height:1.6; padding-bottom:6rem;
+  }
+  .kr{font-family:'Noto Serif KR','Be Vietnam Pro',serif;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit;}
+
+  /* ---------- Floating TOC (Taskbar) ---------- */
+  .toc-fab {
+    position:fixed; bottom:95px; right:24px; z-index:9000;
+    width:52px; height:52px; border-radius:50%;
+    background:var(--paper-card); color:var(--ink); border:1px solid var(--line-strong);
+    display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1); transition:transform .2s, box-shadow .2s;
+  }
+  .toc-fab:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(0,0,0,0.15); }
+  
+  .toc-drawer {
+    position:fixed; top:0; right:-280px; width:280px; height:100vh;
+    background:rgba(250,246,238,0.95); backdrop-filter:blur(10px);
+    border-left:1px solid var(--line-strong); box-shadow:-5px 0 25px rgba(0,0,0,0.05);
+    z-index:9999; padding:20px; transition:all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display:flex; flex-direction:column; overflow-y:auto;
+  }
+  body.toc-open .toc-drawer { right:0; }
+  
+  @media (min-width: 768px) {
+    body { transition:margin 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+    body.toc-open { margin-left:-120px; margin-right:120px; }
+  }
+
+  .toc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom:0.75rem; border-bottom:1px solid var(--line); }
+  .toc-title { font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:700; color:var(--ink); letter-spacing:0.05em; }
+  .toc-close { background:transparent; border:none; font-size:20px; color:var(--ink-soft); cursor:pointer; line-height:1; }
+  .toc-close:hover { color:var(--stamp); }
+
+  .nav-pill{display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; padding:10px 14px; border-radius:12px; border:1px solid transparent; background:transparent; color:var(--ink-soft); cursor:pointer; transition:all .2s ease; text-align:left; width:100%; margin-bottom:6px;}
+  .nav-pill:hover{background:var(--line); color:var(--ink);}
+  .nav-pill .dot{width:8px; height:8px; border-radius:50%; background:var(--line-strong); transition:all .2s ease; flex-shrink:0;}
+  .nav-pill.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .nav-pill.active .dot{background:var(--stamp);}
+  .nav-pill.done .dot{background:var(--jade);}
+
+  /* ---------- Floating admin pencil FAB ---------- */
+  #adminFab{
+    display:none; position:fixed; bottom:28px; right:24px; z-index:9999;
+    width:52px; height:52px; border-radius:50%;
+    background:linear-gradient(135deg,#1D2B45,#D8482B);
+    color:#fff; border:none; cursor:pointer;
+    align-items:center; justify-content:center; font-size:22px;
+    box-shadow:0 4px 20px rgba(0,0,0,.28);
+    transition:transform .2s, box-shadow .2s;
+  }
+  #adminFab.visible{display:flex;}
+  #adminFab:hover{transform:scale(1.1); box-shadow:0 6px 28px rgba(0,0,0,.38);}
+  #adminFab.admin-active{background:linear-gradient(135deg,#2E7A5B,#1D2B45); box-shadow:0 4px 20px rgba(46,122,91,.5);}
+  #adminFab .fab-tooltip{
+    display:none; position:absolute; right:60px; bottom:50%; transform:translateY(50%);
+    background:rgba(29,43,69,.92); color:#fff; border-radius:8px;
+    padding:6px 12px; font-size:12px; white-space:nowrap; font-family:'Be Vietnam Pro',sans-serif;
+  }
+  #adminFab:hover .fab-tooltip{display:block;}
+  body.admin-on #adminFab{background:linear-gradient(135deg,#2E7A5B,#142657);}
+
+  /* ---------- Hero ---------- */
+  .hero{max-width:950px; margin:0 auto; padding:2.5rem 1.25rem 1.5rem;}
+  .passport{background:var(--paper-card); border:1px solid var(--line); border-radius:18px; padding:2rem; position:relative; overflow:hidden;}
+  .passport::before{content:""; position:absolute; inset:8px; border:1px dashed var(--line-strong); border-radius:12px; pointer-events:none;}
+  .eyebrow{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono', monospace; font-size:11.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--stamp); margin-bottom:0.75rem;}
+  .eyebrow::before{content:"●"; font-size:8px;}
+  .hero h1{margin:0 0 0.35rem; font-size:clamp(2.2rem, 6vw, 3.2rem); font-weight:700;}
+  .hero h1 .kr-big{font-family:'Noto Serif KR',serif; color:var(--ink);}
+  .hero .sub{font-size:1.05rem; color:var(--ink-soft); margin:0 0 1.5rem; max-width:40ch;}
+  .obj-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.9rem; border-top:1px solid var(--line); padding-top:1.25rem;}
+  .obj-item .obj-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); margin-bottom:3px;}
+  .obj-item .obj-val{font-size:14.5px; font-weight:500;}
+  .hero-photo-row{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid var(--line);}
+  @media(max-width:520px){.hero-photo-row{grid-template-columns:1fr;}}
+  .stamp-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--line);}
+  .stamp-slot{width:52px; height:52px; border-radius:50%; border:2px dashed var(--line-strong); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; text-align:center; color:var(--line-strong); position:relative; transition:transform .3s ease;}
+  .stamp-slot span{padding:0 3px; line-height:1.1;}
+  .stamp-slot.stamped{border:2px solid var(--stamp); color:var(--stamp); transform:rotate(-8deg); animation:stampIn .35s ease;}
+  .stamp-slot.stamped::after{content:""; position:absolute; inset:-2px; border-radius:50%; border:1px solid var(--stamp); opacity:0.5;}
+  @keyframes stampIn{0%{transform:scale(1.6) rotate(-8deg); opacity:0;} 60%{transform:scale(0.92) rotate(-8deg); opacity:1;} 100%{transform:scale(1) rotate(-8deg); opacity:1;}}
+
+  /* ---------- Section shell ---------- */
+  section{max-width:950px; margin:0 auto; padding:3rem 1.25rem 0.5rem; scroll-margin-top:70px;}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:1.5rem;}
+  .sec-num{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--stamp); font-weight:600;}
+  .sec-head h2{margin:0; font-size:1.6rem; font-weight:700;}
+  .sec-head h2 .kr-tag{font-family:'Noto Serif KR',serif; color:var(--ink-soft); font-size:1.1rem; margin-left:8px;}
+  .sec-desc{color:var(--ink-soft); font-size:0.95rem; margin:-0.75rem 0 1.5rem; max-width:64ch;}
+  .card{background:var(--paper-card); border:1px solid var(--line); border-radius:14px; padding:1.5rem; margin-bottom:1rem;}
+  .sub-heading{font-weight:700; font-size:1rem; margin:0 0 0.9rem;}
+  .sub-heading .tag{font-weight:400; font-size:0.78rem; color:var(--ink-soft); margin-left:6px;}
+  .block-hint{font-size:0.85rem; color:var(--ink-soft); margin:-0.4rem 0 0.9rem;}
+
+  /* ---------- Image slot ---------- */
+  .img-slot{position:relative; border-radius:12px; border:1px dashed var(--line-strong); background:var(--paper); display:flex; align-items:center; justify-content:center; overflow:hidden; min-height:120px; font-size:12.5px; color:var(--ink-soft); text-align:center;}
+  .img-slot img{width:100%; height:100%; object-fit:cover; display:block;}
+  .img-slot .placeholder-text{padding:0 1rem; line-height:1.5;}
+  .img-slot .pencil-btn{display:none; position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:var(--ink); color:var(--paper); border:none; align-items:center; justify-content:center; font-size:13px; cursor:pointer; z-index:2;}
+  body.admin-on .img-slot .pencil-btn{display:flex;}
+  .img-slot .url-form{display:none; position:absolute; inset:auto 8px 8px 8px; background:var(--paper-card); border:1px solid var(--line-strong); border-radius:8px; padding:6px; gap:6px; z-index:2;}
+  .img-slot .url-form.open{display:flex;}
+  .img-slot .url-form input{flex:1; min-width:0; border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:12px; font-family:'Be Vietnam Pro',sans-serif;}
+  .img-slot .url-form button{border:none; background:var(--jade); color:#fff; border-radius:6px; padding:0 10px; font-size:12px; cursor:pointer; flex-shrink:0;}
+  .img-slot.compact{min-height:64px; font-size:11px; border-radius:9px;}
+  .img-slot.compact .placeholder-text{padding:0 0.6rem;}
+  .img-slot.compact .pencil-btn{width:22px; height:22px; font-size:11px; top:5px; right:5px;}
+  .img-slot.compact .url-form{inset:auto 5px 5px 5px; padding:5px;}
+  .img-slot.compact .url-form input{font-size:10.5px; padding:5px 6px;}
+  .img-slot.compact .url-form button{font-size:10.5px; padding:0 7px;}
+  .img-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px;}
+  .img-grid-cap{font-size:11.5px; text-align:center; margin-top:5px; color:var(--ink-soft);}
+  /* Flip card real image */
+  .flip-img{width:52px; height:52px; object-fit:cover; border-radius:10px; display:block; margin:0 auto 2px;}
+
+  /* ---------- Audio slot ---------- */
+  .audio-slot{border:1px dashed var(--line-strong); border-radius:10px; padding:10px 12px; background:var(--paper); margin:0 0 12px;}
+  .audio-slot-head{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft);}
+  .audio-icon{font-size:15px; flex-shrink:0;}
+  .audio-label{flex:1;}
+  .audio-pencil{display:none; width:24px; height:24px; border-radius:50%; background:var(--ink); color:var(--paper); border:none; font-size:11px; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0;}
+  body.admin-on .audio-pencil{display:inline-flex;}
+  .audio-form{display:none; margin-top:8px;}
+  .audio-form.open{display:flex;}
+  .audio-form input{flex:1; width:100%; border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:12px;}
+  .audio-player-wrap audio{width:100%; margin-top:8px; height:34px;}
+
+  /* ---------- Vocab flip cards (reused) ---------- */
+  .flip-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(128px,1fr)); gap:10px;}
+  .flip-card{aspect-ratio:1/1; perspective:800px; cursor:pointer;}
+  .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .5s cubic-bezier(.4,.2,.2,1);}
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; gap:4px;}
+  .flip-front{background:var(--paper-card); position:relative;}
+  .flip-front .emo{font-size:1.7rem;}
+  .flip-front .kr{font-size:0.95rem; font-weight:700;}
+  .flip-back{background:var(--ink); color:var(--paper); transform:rotateY(180deg);}
+  .flip-back .vi{font-size:0.85rem; font-weight:600;}
+  .flip-back .kr-small{font-family:'Noto Serif KR',serif; font-size:0.78rem; color:var(--gold); margin-top:3px;}
+  .flip-card.seen .flip-front{border-color:var(--jade);}
+  .flip-front .pencil-btn{display:none; position:absolute; width:22px; height:22px; border-radius:50%; background:var(--ink); color:var(--paper); border:none; font-size:11px; top:4px; right:4px; align-items:center; justify-content:center; cursor:pointer; z-index:2;}
+  body.admin-on .flip-front .pencil-btn{display:flex;}
+  .flip-front .url-form{display:none; position:absolute; inset:auto 4px 4px 4px; padding:4px; background:var(--paper-card); border:1px solid var(--line-strong); border-radius:8px; z-index:2;}
+  .flip-front .url-form.open{display:flex;}
+  .flip-front .url-form input{width:100%; font-size:10.5px; padding:5px 6px;}
+  .helper-row{display:flex; align-items:center; justify-content:space-between; margin:0.6rem 0 1.5rem; font-size:12.5px; color:var(--ink-soft);}
+  .progress-bar{flex:1; height:5px; background:var(--line); border-radius:3px; margin:0 10px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--jade); width:0%; transition:width .3s ease;}
+  .greet-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(max-width:520px){.greet-grid{grid-template-columns:1fr;}}
+  .greet-card{background:var(--paper-card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; cursor:pointer; transition:border-color .15s ease;}
+  .greet-card .kr{font-size:1rem; font-weight:700;}
+  .greet-card .vi{font-size:12.5px; color:var(--ink-soft); margin-top:2px; display:none;}
+  .greet-card.revealed .vi{display:block;}
+  .greet-card:hover{border-color:var(--stamp);}
+  .speak-btn{border:none; background:transparent; cursor:pointer; color:var(--ink-soft); font-size:14px; padding:2px 4px;}
+  .speak-btn:hover{color:var(--stamp);}
+
+  /* ---------- Grammar (reused) ---------- */
+  .gram-card{border:1px solid var(--line); border-radius:14px; background:var(--paper-card); margin-bottom:14px; overflow:hidden;}
+  .gram-head{display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer;}
+  .gram-head .g-title{font-size:1.15rem; font-weight:700;}
+  .gram-head .g-title .kr{font-family:'Noto Serif KR',serif; color:var(--stamp);}
+  .gram-head .g-mean{font-size:0.85rem; color:var(--ink-soft); font-weight:400;}
+  .gram-chevron{transition:transform .2s ease; color:var(--ink-soft); font-size:14px;}
+  .gram-card.open .gram-chevron{transform:rotate(180deg);}
+  .gram-body{max-height:0; overflow:hidden; transition:max-height .3s ease; padding:0 1.25rem;}
+  .gram-card.open .gram-body{max-height:520px; padding:0 1.25rem 1.25rem;}
+  .gram-note{font-size:0.9rem; color:var(--ink-soft); margin:0 0 0.9rem;}
+  .ex-row{display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid var(--line); font-size:0.92rem;}
+  .ex-row:first-of-type{border-top:none;}
+  .ex-row .kr{font-weight:600;}
+  .ex-row .vi{color:var(--ink-soft); text-align:right;}
+  .mini-quiz{border-top:1px dashed var(--line-strong); margin-top:1rem; padding-top:1rem;}
+  .mq-item{margin-bottom:0.9rem; font-size:0.92rem;}
+  .mq-sentence{margin-bottom:6px;}
+  .mq-choices{display:flex; gap:8px;}
+  .choice-btn{font-family:'JetBrains Mono',monospace; font-size:13px; border:1px solid var(--line-strong); background:transparent; color:var(--ink); padding:6px 12px; border-radius:8px; cursor:pointer;}
+  .choice-btn.correct{background:var(--jade); border-color:var(--jade); color:#fff;}
+  .choice-btn.wrong{background:#F3D9D2; border-color:var(--stamp); color:var(--stamp-dark);}
+  .choice-btn:disabled{cursor:default;}
+
+  /* ---------- Speaking / matching (reused) ---------- */
+  .ex-block{margin-bottom:2rem;}
+  .ex-block:last-child{margin-bottom:0;}
+  .ex-block-title{font-weight:700; font-size:1rem; margin-bottom:0.35rem;}
+  .match-wrap{display:grid; grid-template-columns:1fr 1fr; gap:10px 20px;}
+  @media(max-width:560px){.match-wrap{grid-template-columns:1fr;}}
+  .match-item{border:1px solid var(--line-strong); border-radius:9px; padding:10px 12px; font-size:0.9rem; cursor:pointer; background:var(--paper-card); transition:all .15s ease; margin-bottom:8px;}
+  .match-item.kr{font-weight:600;}
+  .match-item.selected{border-color:var(--gold); background:#FCF4E0;}
+  .match-item.paired-correct{border-color:var(--jade); background:#E4F2EA; color:var(--jade); cursor:default;}
+  .match-item.paired-wrong{border-color:var(--stamp); background:#F8E2DC;}
+  .flag-drill{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:0.9rem;}
+  .flag-btn{font-size:0.88rem; padding:7px 13px; border-radius:999px; border:1px solid var(--line-strong); background:var(--paper-card); cursor:pointer;}
+  .flag-btn.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .flag-output{min-height:52px; border-radius:10px; background:var(--paper); border:1px dashed var(--line-strong); padding:12px 14px; font-size:0.95rem;}
+  .flag-output .kr{font-weight:700; font-size:1.05rem;}
+  .flag-output .vi{color:var(--ink-soft); font-size:0.85rem; margin-top:3px;}
+  .flag-output.placeholder{color:var(--ink-soft); font-size:0.85rem; display:flex; align-items:center;}
+  .sub-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px;}
+  .sub-card{border:1px solid var(--line-strong); border-radius:10px; padding:12px; background:var(--paper-card); cursor:pointer; min-height:64px;}
+  .sub-card .prompt{font-weight:600; font-size:0.92rem;}
+  .sub-card .reveal{display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--line); font-size:0.85rem; line-height:1.55;}
+  .sub-card.open .reveal{display:block;}
+  .sub-card .reveal b{color:var(--stamp-dark);}
+
+  /* ---------- Fill-check exercises ---------- */
+  .fill-row{margin-bottom:14px;}
+  .fill-prompt{font-size:0.92rem; margin-bottom:6px;}
+  .fill-input-wrap{display:flex; gap:8px; flex-wrap:wrap;}
+  .fill-input{flex:1; min-width:160px; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-family:'Noto Serif KR',serif; font-size:0.95rem;}
+  .fill-input.correct{border-color:var(--jade); background:#E4F2EA;}
+  .fill-input.incorrect{border-color:var(--stamp); background:#F8E2DC;}
+  .fill-check-btn{border:1px solid var(--line-strong); background:var(--paper-card); border-radius:8px; padding:0 14px; font-size:12.5px; cursor:pointer; flex-shrink:0;}
+  .fill-feedback{font-size:12.5px; margin-top:5px; color:var(--ink-soft);}
+  .fill-feedback.ok{color:var(--jade); font-weight:600;}
+  .fill-feedback.no{color:var(--stamp-dark);}
+  .fill-with-img{display:flex; align-items:center; gap:10px; margin-bottom:12px;}
+  .fill-with-img .img-slot{width:64px; height:64px; flex-shrink:0; min-height:0;}
+  .fill-with-img .fill-body{flex:1;}
+  .fill-with-img .fill-cap{font-size:12px; color:var(--ink-soft); margin-bottom:3px;}
+
+  /* ---------- O/X + Yes/No ---------- */
+  .ox-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-top:1px solid var(--line); font-size:0.9rem; flex-wrap:wrap;}
+  .ox-row:first-child{border-top:none;}
+  .ox-btns{display:flex; gap:6px; flex-shrink:0; align-items:center;}
+  .ox-btn{min-width:34px; height:34px; padding:0 8px; border-radius:8px; border:1px solid var(--line-strong); background:var(--paper-card); font-weight:700; cursor:pointer;}
+  .ox-btn.correct{background:var(--jade); border-color:var(--jade); color:#fff;}
+  .ox-btn.wrong{background:#F3D9D2; border-color:var(--stamp); color:var(--stamp-dark);}
+  .ox-btn.picked-neutral{background:#FCF4E0; border-color:var(--gold);}
+
+  /* ---------- Answer-editing pencil (admin) ---------- */
+  .answer-pencil{display:none; width:22px; height:22px; border-radius:50%; background:var(--gold); color:#fff; border:none; font-size:11px; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; line-height:1;}
+  body.admin-on .answer-pencil{display:inline-flex;}
+  .answer-pencil.unset{background:var(--ink-soft);}
+  .fill-prompt .answer-pencil{margin-left:6px; vertical-align:middle;}
+  .answer-editor{width:100%; margin-top:8px; padding:8px; background:#FCF4E0; border:1px dashed var(--gold); border-radius:8px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .answer-editor-label{font-size:11px; color:#6B5416; flex-shrink:0;}
+  .answer-editor-opt{font-family:'JetBrains Mono',monospace; font-size:12px; border:1px solid var(--line-strong); background:#fff; padding:4px 10px; border-radius:6px; cursor:pointer;}
+  .answer-editor-opt.active{background:var(--gold); border-color:var(--gold); color:#fff;}
+  .answer-editor-input{flex:1; min-width:120px; border:1px solid var(--line-strong); border-radius:6px; padding:6px 8px; font-size:12px; font-family:'Noto Serif KR',serif;}
+  .answer-editor-select{flex:1; min-width:140px; border:1px solid var(--line-strong); border-radius:6px; padding:5px 6px; font-size:12px; font-family:'Be Vietnam Pro',sans-serif;}
+
+  /* ---------- Open prompts ---------- */
+  .open-textarea{width:100%; border:1px solid var(--line-strong); border-radius:10px; padding:10px 12px; font-family:'Be Vietnam Pro',sans-serif; font-size:0.9rem; resize:vertical;}
+  .lined-textarea{background-image:repeating-linear-gradient(var(--paper-card) 0 31px, var(--line) 31px 32px); line-height:32px; padding-top:8px;}
+  .hint-btn{margin-top:6px; font-size:12px; border:1px solid var(--line-strong); background:transparent; border-radius:999px; padding:5px 12px; cursor:pointer; color:var(--ink-soft);}
+  .hint-box{display:none; margin-top:8px; padding:10px 12px; background:var(--paper); border:1px dashed var(--line-strong); border-radius:8px; font-size:0.85rem; color:var(--ink-soft);}
+  .hint-box.open{display:block;}
+
+  /* ---------- Reference table ---------- */
+  .ref-table{width:100%; border-collapse:collapse; font-size:0.88rem; margin:0.75rem 0;}
+  .ref-table th,.ref-table td{border:1px solid var(--line); padding:8px 10px; text-align:left;}
+  .ref-table th{background:var(--paper); font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft);}
+  .ref-table input{width:100%; border:none; background:transparent; font-family:'Be Vietnam Pro',sans-serif; font-size:0.88rem; padding:2px;}
+  .ref-table input:focus{outline:1px solid var(--gold); border-radius:4px;}
+
+  /* ---------- Pronunciation ---------- */
+  .rule-box{background:var(--paper); border:1px dashed var(--line-strong); border-radius:10px; padding:12px 14px; font-size:0.85rem; color:var(--ink-soft); margin-top:10px;}
+  .rule-box b{color:var(--ink);}
+  .pron-line{display:flex; align-items:center; gap:10px; padding:6px 0; border-top:1px solid var(--line); font-size:0.95rem;}
+  .pron-line:first-child{border-top:none;}
+
+  /* ---------- Culture ---------- */
+  .culture-title{font-family:'Noto Serif KR',serif; font-size:1.4rem; text-align:center; margin:0 0 2px;}
+  .culture-sub{text-align:center; color:var(--ink-soft); font-size:0.85rem; margin:0 0 1.25rem;}
+  .culture-photos{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:1.25rem;}
+  @media(max-width:600px){.culture-photos{grid-template-columns:1fr;}}
+  .culture-p{font-size:0.92rem; color:var(--ink-soft); margin:0 0 0.9rem;}
+
+  /* ---------- Quiz ---------- */
+  .quiz-item{margin-bottom:1.4rem;}
+  .quiz-q{font-weight:600; margin-bottom:0.6rem; font-size:0.95rem;}
+  .quiz-opts{display:flex; flex-direction:column; gap:6px;}
+  .quiz-opt{text-align:left; border:1px solid var(--line-strong); border-radius:9px; padding:9px 13px; background:var(--paper-card); cursor:pointer; font-size:0.9rem;}
+  .quiz-opt.picked{border-color:var(--gold); background:#FCF4E0;}
+  .quiz-opt.correct{border-color:var(--jade); background:#E4F2EA; color:var(--jade); font-weight:600;}
+  .quiz-opt.incorrect{border-color:var(--stamp); background:#F8E2DC; color:var(--stamp-dark);}
+  .quiz-submit{margin-top:0.5rem; font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13.5px; background:var(--ink); color:var(--paper); border:none; border-radius:9px; padding:11px 22px; cursor:pointer;}
+  .quiz-submit:disabled{opacity:0.4; cursor:default;}
+  .quiz-result{margin-top:1.25rem; padding:1.1rem 1.25rem; border-radius:12px; background:var(--paper); border:1px dashed var(--line-strong); display:none;}
+  .quiz-result.show{display:block;}
+  .quiz-result .score{font-size:1.4rem; font-weight:700; font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- Từ mới ---------- */
+  .word-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px;}
+  .word-card{border:1px solid var(--line); border-radius:9px; padding:9px 11px; background:var(--paper-card);}
+  .word-card .kr{font-size:0.95rem; font-weight:700;}
+  .word-card .vi{font-size:0.8rem; color:var(--ink-soft); margin-top:2px;}
+
+  footer{max-width:1040px; margin:3rem auto 0; padding:0 1.25rem; color:var(--ink-soft); font-size:0.8rem; text-align:center;}
+  ::selection{background:var(--gold); color:var(--ink);}
+</style>
+</head>
+<body>
+
+<div id="tocDrawer" class="toc-drawer">
+  <div class="toc-header">
+    <div class="toc-title">BÀI 01 · 소개</div>
+    <button class="toc-close" id="tocCloseBtn" title="Đóng">×</button>
+  </div>
+  <div id="lessonNav" style="display:flex; flex-direction:column;">
+    <button class="nav-pill" data-target="sec-obj"><span class="dot"></span>Mục tiêu</button>
+    <button class="nav-pill" data-target="sec-vocab"><span class="dot"></span>Từ vựng</button>
+    <button class="nav-pill" data-target="sec-gram"><span class="dot"></span>Ngữ pháp</button>
+    <button class="nav-pill" data-target="sec-speak"><span class="dot"></span>Nói</button>
+    <button class="nav-pill" data-target="sec-listen"><span class="dot"></span>Nghe</button>
+    <button class="nav-pill" data-target="sec-read"><span class="dot"></span>Đọc</button>
+    <button class="nav-pill" data-target="sec-write"><span class="dot"></span>Viết</button>
+    <button class="nav-pill" data-target="sec-pron"><span class="dot"></span>Phát âm</button>
+    <button class="nav-pill" data-target="sec-culture"><span class="dot"></span>Văn hoá</button>
+    <button class="nav-pill" data-target="sec-quiz"><span class="dot"></span>Kiểm tra</button>
+  </div>
+</div>
+
+<button id="tocFab" class="toc-fab" title="Mục lục bài học">☰</button>
+
+<!-- Floating admin pencil FAB — chỉ hiện khi đăng nhập bằng email admin -->
+<button id="adminFab" title="Chế độ quản trị">
+  <span class="fab-tooltip">Bật/tắt chế độ chỉnh sửa</span>
+  ✎
+</button>
+
+<div class="hero">
+  <div class="passport">
+    <div class="eyebrow">Bài 01 / Hộ chiếu học tập</div>
+    <h1><span class="kr-big">소개</span> — Giới thiệu</h1>
+    <p class="sub">Học cách chào hỏi, tự giới thiệu, nghe – nói – đọc – viết quanh chủ đề quốc gia, nghề nghiệp và lời chào.</p>
+    <div class="obj-grid">
+      <div class="obj-item"><div class="obj-label">Kỹ năng</div><div class="obj-val">Chào hỏi, tự giới thiệu</div></div>
+      <div class="obj-item"><div class="obj-label">Từ vựng</div><div class="obj-val">Quốc gia, nghề nghiệp, lời chào</div></div>
+      <div class="obj-item"><div class="obj-label">Ngữ pháp</div><div class="obj-val kr">입니다 · 입니까 · 은/는</div></div>
+      <div class="obj-item"><div class="obj-label">Văn hoá</div><div class="obj-val">Cách chào hỏi của người Hàn Quốc</div></div>
+    </div>
+    <div class="hero-photo-row" id="heroPhotoRow"></div>
+    <div class="stamp-row" id="stampRow">
+      <div class="stamp-slot" data-stamp="obj"><span>MỤC TIÊU</span></div>
+      <div class="stamp-slot" data-stamp="vocab"><span>TỪ VỰNG</span></div>
+      <div class="stamp-slot" data-stamp="gram"><span>NGỮ PHÁP</span></div>
+      <div class="stamp-slot" data-stamp="speak"><span>NÓI</span></div>
+      <div class="stamp-slot" data-stamp="listen"><span>NGHE</span></div>
+      <div class="stamp-slot" data-stamp="read"><span>ĐỌC</span></div>
+      <div class="stamp-slot" data-stamp="write"><span>VIẾT</span></div>
+      <div class="stamp-slot" data-stamp="pron"><span>PHÁT ÂM</span></div>
+      <div class="stamp-slot" data-stamp="culture"><span>VĂN HOÁ</span></div>
+      <div class="stamp-slot" data-stamp="quiz"><span>KIỂM TRA</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="sec-obj">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Mục tiêu bài học<span class="kr-tag">학습 목표</span></h2></div>
+  <p class="sec-desc">Sau bài học này, bạn có thể chào hỏi, giới thiệu tên/quốc tịch/nghề nghiệp, và luyện đủ 4 kỹ năng nghe – nói – đọc – viết quanh chủ đề này.</p>
+  <div class="card" style="display:flex; gap:1rem; flex-wrap:wrap;">
+    <div style="flex:1; min-width:220px;">
+      <p style="margin:0 0 8px; font-weight:600; font-size:0.9rem;">Tình huống</p>
+      <p style="margin:0; font-size:0.9rem; color:var(--ink-soft);">Đối tác Hàn Quốc và Việt Nam gặp nhau lần đầu — bạn cần chào đúng cách, nói mình đến từ đâu, làm nghề gì, và hiểu được khi người khác giới thiệu về họ.</p>
+    </div>
+    <div style="flex:1; min-width:220px;">
+      <p style="margin:0 0 8px; font-weight:600; font-size:0.9rem;">Bạn sẽ làm được</p>
+      <ul style="margin:0; padding-left:1.1rem; font-size:0.9rem; color:var(--ink-soft);">
+        <li>Chào hỏi phù hợp hoàn cảnh, nói "Tôi là..." / hỏi lại bằng 입니까?</li>
+        <li>Nghe hiểu đoạn giới thiệu ngắn, đọc và viết đoạn tự giới thiệu</li>
+        <li>Biết quy tắc nối âm cơ bản và cách chào hỏi của người Hàn</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="sec-vocab">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Từ vựng cơ bản<span class="kr-tag">기본 어휘</span></h2></div>
+  <p class="sec-desc">Chạm vào từng thẻ để lật xem nghĩa. Bấm biểu tượng loa để nghe cách đọc (giọng máy, tạm dùng trong lúc chưa có audio thật).</p>
+  <div class="helper-row">
+    <span id="vocabProgLabel">Đã xem 0/26 thẻ</span>
+    <div class="progress-bar"><div class="progress-fill" id="vocabProgFill"></div></div>
+    <span class="mono" style="font-size:11px;">🔊 = phát âm</span>
+  </div>
+  <p class="sub-heading">나라 · Quốc gia <span class="tag">(bật quản trị để thay cờ emoji bằng ảnh cờ thật)</span></p>
+  <div class="flip-grid" id="grid-country" style="margin-bottom:1.75rem;"></div>
+  <p class="sub-heading">직업 · Nghề nghiệp <span class="tag">(bật quản trị để thay icon bằng ảnh thật)</span></p>
+  <div class="flip-grid" id="grid-job" style="margin-bottom:1.75rem;"></div>
+  <p class="sub-heading">인사말 · Lời chào — chạm để xem nghĩa</p>
+  <div class="greet-grid" id="grid-greet"></div>
+</section>
+
+<section id="sec-gram">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Ngữ pháp cơ bản<span class="kr-tag">기본 문법</span></h2></div>
+  <p class="sec-desc">Bấm vào từng khung để mở rộng ví dụ. Cuối phần có bài luyện nhanh 3 câu.</p>
+  <div id="gramList"></div>
+  <div class="card">
+    <p class="sub-heading">Luyện nhanh — chọn đúng trợ từ / vĩ tố</p>
+    <div class="mini-quiz" id="miniQuiz"></div>
+  </div>
+</section>
+
+<section id="sec-speak">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Nói<span class="kr-tag">말하기</span></h2></div>
+  <p class="sec-desc">Ba bài luyện dựa trên tình huống làm quen thực tế.</p>
+  <div class="card">
+    <div class="ex-block">
+      <div class="ex-block-title">1 · Nối câu chào với đúng tình huống</div>
+      <div class="block-hint">Chạm 1 câu bên trái, sau đó chạm 1 tình huống bên phải để ghép cặp. Mỗi tình huống có ô ảnh minh hoạ gốc từ PDF.</div>
+      <div class="match-wrap"><div id="matchLeft"></div><div id="matchRight"></div></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2 · Bạn đến từ đâu?</div>
+      <div class="block-hint">Chạm một lá cờ để xem cách nói "Tôi là người (quốc gia)".</div>
+      <div class="flag-drill" id="flagDrill"></div>
+      <div class="flag-output placeholder" id="flagOutput">Chạm vào một lá cờ phía trên…</div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">3 · Mẫu hội thoại làm quen</div>
+      <div class="block-hint">저는 ~입니다 / 제 이름은 ~입니다 — chạm mỗi thẻ để xem hội thoại mẫu.</div>
+      <div id="ex3ImageWrap" style="margin-bottom:12px; max-width:220px;"></div>
+      <div class="sub-grid" id="subGrid"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-listen">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Nghe<span class="kr-tag">듣기</span></h2></div>
+  <p class="sec-desc">Các bài nghe phụ thuộc nội dung audio gốc (CD Track 06–10) nên không tự chấm đúng/sai — dán audio thật ở chế độ quản trị để học viên luyện, đối chiếu đáp án trong sách giấy nếu cần.</p>
+
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Nghe và ghi số hiệu đúng với bức tranh</div>
+      <div id="audioT06a"></div>
+      <div class="img-grid" id="listenImgGrid1"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Nghe và chọn bức tranh đúng</div>
+      <div id="audioT06b"></div>
+      <div id="listenChoice2"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện nghe <span class="tag">들어 봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">2.1 · Nghe hội thoại, đánh dấu O nếu đúng, X nếu sai</div>
+      <div id="audioT07"></div>
+      <div id="listenOX"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.2 · Nghe và nối tên người với nghề nghiệp của họ</div>
+      <div id="audioT08"></div>
+      <div class="match-wrap"><div id="listenMatchLeft"></div><div id="listenMatchRight"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">3.1 · Nghe và điền vào chỗ trống</div>
+      <div id="audioT09"></div>
+      <div id="listenFillDialog"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">3.2 · Nghe hội thoại giữa hai người và chọn câu trả lời phù hợp</div>
+      <div id="audioT10"></div>
+      <div id="listenMCQ"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-read">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Đọc<span class="kr-tag">읽기</span></h2></div>
+  <p class="sec-desc">Các câu trả lời đúng/sai dưới đây được chấm dựa trên nội dung văn bản.</p>
+
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Nối câu bên trái với bức tranh phù hợp bên phải</div>
+      <div class="block-hint">Chạm 1 câu, sau đó chạm bức tranh tương ứng.</div>
+      <div class="match-wrap"><div id="readMatchLeft"></div><div id="readMatchRight"></div></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Đọc và đánh dấu O (đúng) / X (sai)</div>
+      <div id="readCardImages" class="img-grid" style="margin-bottom:12px; max-width:420px;"></div>
+      <div id="readOX1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện đọc <span class="tag">읽어 봅시다</span></p>
+    <div id="readPassage1"></div>
+    <div class="ex-block" style="margin-top:1.25rem;">
+      <div class="ex-block-title">Đánh dấu O / X</div>
+      <div id="readOX2"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">Viết lại nội dung vào bảng</div>
+      <div class="block-hint">Điền tên, quốc tịch, nghề nghiệp của 3 người vừa đọc rồi bấm "Xem đáp án" để đối chiếu.</div>
+      <table class="ref-table" id="readTable"></table>
+      <button class="hint-btn" id="readTableCheck">Xem đáp án</button>
+      <div class="hint-box" id="readTableAnswer"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div id="readBlogs"></div>
+    <div class="ex-block" style="margin-top:1.25rem;">
+      <div class="ex-block-title">Trả lời Có/Không dựa vào 3 blog trên</div>
+      <div id="readYesNo"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-write">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Viết<span class="kr-tag">쓰기</span></h2></div>
+  <p class="sec-desc">Nhập câu trả lời bằng tiếng Hàn rồi bấm "Kiểm tra" — các câu hỏi mở sẽ có nút "Xem gợi ý" thay vì chấm đúng/sai.</p>
+
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Viết tên quốc gia / nghề nghiệp bằng tiếng Hàn</div>
+      <div id="writeImgFill"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Dùng 2 từ cho sẵn để đặt câu</div>
+      <div id="writeSentence1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện viết <span class="tag">써 봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">2.1 · Dịch câu sau sang tiếng Hàn</div>
+      <div id="writeTranslate"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.2 · Viết nghề nghiệp và quốc tịch của bạn</div>
+      <div id="writeOpen1"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.3 · Viết 1 bài giới thiệu về người Hàn Quốc (박수진)</div>
+      <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;">
+        <div id="writeAvatarSlot" style="width:80px; flex-shrink:0;"></div>
+        <div style="flex:1; min-width:200px;" id="writeFillPassage"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">3.1 · Điền thông tin của bạn vào bảng</div>
+      <table class="ref-table" id="writeSelfTable"></table>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">3.2 · Viết đoạn giới thiệu về bản thân</div>
+      <div id="writeEssay"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-pron">
+  <div class="sec-head"><span class="sec-num">08</span><h2>Phát âm<span class="kr-tag">발음</span></h2></div>
+  <p class="sec-desc">Quy tắc nối âm cơ bản — dán audio thật ở chế độ quản trị, hoặc dùng nút 🔊 để nghe tạm bằng giọng máy.</p>
+  <div class="card">
+    <div class="ex-block">
+      <div class="ex-block-title">1 · Nghe và lưu ý phần gạch chân</div>
+      <div id="audioT11"></div>
+      <div id="pronPairs"></div>
+      <div class="rule-box">
+        <b>Quy tắc phát âm:</b> Khi âm trước kết thúc bằng phụ âm và âm sau bắt đầu bằng nguyên âm thì phụ âm của âm trước sẽ được đọc nối vào nguyên âm của âm sau.<br>
+        한국어 → [한구거] · 이 사람은 → [이 사라믄] · 공무원입니다 → [공무워님니다]
+      </div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2 · Hãy nghe và đọc theo</div>
+      <div id="audioT12"></div>
+      <div id="pronRepeat"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">3 · Hãy đọc to đoạn văn sau</div>
+      <div id="audioT13"></div>
+      <div id="pronParagraph"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-culture">
+  <div class="sec-head"><span class="sec-num">09</span><h2>Văn hoá<span class="kr-tag">문화</span></h2></div>
+  <div class="card">
+    <div class="culture-title">한국인의 인사법</div>
+    <div class="culture-sub">Cách chào hỏi của người Hàn Quốc</div>
+    <div class="culture-photos" id="culturePhotos"></div>
+    <p class="culture-p"><b>1.</b> Bạn có bao giờ thấy người Hàn Quốc chào chưa? Chúng ta thử nói xem họ chào như thế nào?</p>
+    <p class="culture-p"><b>2.</b> Đọc bài sau và tìm hiểu xem cách chào hỏi của người Hàn như thế nào?</p>
+    <p class="culture-p">Trong chào hỏi của người Hàn Quốc, thông thường họ chào nhau bằng cách cúi đầu; những trường hợp đặc biệt thì chào bằng cách cúi lạy; khi giao tiếp xã hội thì chào bằng cách bắt tay.</p>
+    <p class="culture-p">Thông thường người Hàn Quốc cúi đầu để chào hỏi. Họ chào nhau khi lần đầu gặp mặt và lúc chia tay, đối với người lớn tuổi thì họ chào hỏi một cách kính cẩn bằng cách cúi đầu xuống từ 30 đến 60 độ và giữ lại khoảng 2 đến 3 giây. Việc cúi đầu càng thấp để chào, càng thể hiện sự kính trọng người đối diện. Nếu gặp lại người lớn tuổi đó trong cùng một ngày thì có thể chỉ chào bằng cách cúi nhẹ đầu. Với những người có vị trí ngang bằng hoặc thấp hơn mình thì có thể chào bằng cách vẫy tay.</p>
+    <p class="culture-p">Trong trường hợp đặc biệt, hình thức chào hỏi truyền thống là cúi lạy. Cúi lạy là một hình thức chào rất kính cẩn bằng cách nắm hai tay lại, quỳ gối và cúi xụp xuống để chào. Hình thức chào cúi lạy được dùng trong một số dịp đặc biệt như các ngày lễ, Tết; khi lâu ngày gặp lại người lớn tuổi; hay khi về chào bố mẹ sau khi thành hôn.</p>
+    <p class="culture-p">Ngoài ra, trong giao tiếp xã hội thì người ta chào xã giao bằng cách bắt tay nhau. Người ta thường bắt tay chào trong quan hệ công việc, chủ yếu giữa đàn ông với nhau. Khi bắt tay, người lớn tuổi hơn hoặc có địa vị cao hơn sẽ chìa tay ra trước.</p>
+    <p class="culture-p">Đối với người Việt Nam, trong những trường hợp đặc biệt như chào hỏi ông bà, cha mẹ, cô bác v.v… thì có thể khoanh tay, cúi đầu và nói "Con chào…". Nhưng thông thường thì cúi đầu và nói "Con chào…", "Em chào…". Còn trong quan hệ công việc thì thường là bắt tay. Người Việt Nam không có thói quen cúi lạy người còn sống khi chào hỏi như người Hàn Quốc.</p>
+    <p class="culture-p"><b>3.</b> Hãy so sánh điểm giống và khác biệt giữa cách chào hỏi của người Hàn Quốc và người Việt Nam.</p>
+    <div id="cultureReflect"></div>
+  </div>
+</section>
+
+<section id="sec-newwords">
+  <div class="sec-head"><span class="sec-num">10</span><h2>Từ mới<span class="kr-tag">새 단어</span></h2></div>
+  <p class="sec-desc">Từ vựng bổ sung xuất hiện trong các bài tập của Bài 01.</p>
+  <div class="card"><div class="word-grid" id="newWordsGrid"></div></div>
+</section>
+
+<section id="sec-quiz">
+  <div class="sec-head"><span class="sec-num">11</span><h2>Kiểm tra nhanh<span class="kr-tag">퀴즈</span></h2></div>
+  <p class="sec-desc">8 câu hỏi tổng hợp cả bài — trả lời hết rồi bấm nộp bài để xem điểm và nhận dấu mộc hoàn thành.</p>
+  <div class="card">
+    <div id="quizList"></div>
+    <button class="quiz-submit" id="quizSubmit">Nộp bài</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+</section>
+
+<footer>Phỏng theo tài liệu 소개 (Bài 01) — trình bày lại dưới dạng bài học tương tác cho vuihoctienghan.online</footer>
+
+<script>
+const state = { stamped:{} };
+function stamp(key){
+  if(state.stamped[key]) return;
+  state.stamped[key]=true;
+  const slot = document.querySelector('.stamp-slot[data-stamp="'+key+'"]');
+  if(slot) slot.classList.add('stamped');
+  const pill = document.querySelector('.nav-pill[data-target="sec-'+key+'"]');
+  if(pill) pill.classList.add('done');
+}
+function speak(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang='ko-KR'; u.rate=0.85;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ================= Admin mode — Firebase Auth ================= */
+const ADMIN_EMAILS = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+let isAdmin = false;
+const adminFab = document.getElementById('adminFab');
+
+function setAdminMode(on) {
+  isAdmin = on;
+  document.body.classList.toggle('admin-on', on);
+  if (adminFab) adminFab.classList.toggle('admin-active', on);
+}
+
+// Lắng nghe Firebase Auth
+(function waitForFirebase() {
+  if (typeof firebase !== 'undefined' && firebase.auth) {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user && ADMIN_EMAILS.includes(user.email)) {
+        // Hiện FAB cho admin
+        if (adminFab) adminFab.classList.add('visible');
+      } else {
+        // Không phải admin — ẩn FAB và tắt admin mode
+        if (adminFab) adminFab.classList.remove('visible');
+        setAdminMode(false);
+      }
+    });
+  } else {
+    setTimeout(waitForFirebase, 300);
+  }
+})();
+
+// Nhấn FAB để bật/tắt admin mode
+if (adminFab) {
+  adminFab.addEventListener('click', () => {
+    setAdminMode(!isAdmin);
+  });
+}
+
+/* ================= Reusable: image slot ================= */
+const LESSON_KEY = 'bai01_media';
+function getMediaStore() {
+  try { return JSON.parse(localStorage.getItem(LESSON_KEY) || '{}'); } catch(e){ return {}; }
+}
+function saveMediaStore(store) {
+  try { localStorage.setItem(LESSON_KEY, JSON.stringify(store)); } catch(e){}
+  if (window.db) {
+    window.db.collection('lessons_media').doc('socap1_bai01').set(store, {merge: true}).catch(console.error);
+  }
+}
+
+// Sync from Firebase
+if (window.db) {
+  window.db.collection('lessons_media').doc('socap1_bai01').onSnapshot(doc => {
+    if (doc.exists) {
+      const data = doc.data();
+      try { localStorage.setItem(LESSON_KEY, JSON.stringify(data)); } catch(e){}
+      // Update DOM if needed
+      document.querySelectorAll('[data-media-key]').forEach(el => {
+        const key = el.getAttribute('data-media-key');
+        if (data[key]) {
+          if (el.classList.contains('flip-card')) {
+            const emoEl = el.querySelector('.emo');
+            if (emoEl) {
+              const kr = el.querySelector('.kr') ? el.querySelector('.kr').textContent : '';
+              emoEl.outerHTML = `<img src="${data[key]}" alt="${kr}" class="flip-img">`;
+            } else {
+              const img = el.querySelector('img');
+              if (img && img.src !== data[key]) img.src = data[key];
+            }
+          } else if (el.classList.contains('audio-slot')) {
+            const pw = el.querySelector('.audio-player-wrap');
+            if (pw && !pw.querySelector('audio')) {
+              pw.innerHTML = `<audio controls src="${data[key]}"></audio>`;
+            } else {
+              const audio = el.querySelector('audio');
+              if (audio && audio.src !== data[key]) audio.src = data[key];
+            }
+          } else {
+            const ph = el.querySelector('.placeholder-text');
+            if (ph) {
+              ph.outerHTML = `<img src="${data[key]}" alt="">`;
+            } else {
+              const img = el.querySelector('img');
+              if (img && img.src !== data[key]) img.src = data[key];
+            }
+          }
+        }
+      });
+    }
+  });
+}
+
+/* ================= Reusable: answer-key store (same store/sync as media) ================= */
+function getAnswer(key, fallback){
+  const s = getMediaStore();
+  const v = s['ans_' + key];
+  return (v === undefined || v === null || v === '') ? fallback : v;
+}
+function setAnswer(key, value){
+  const s = getMediaStore();
+  s['ans_' + key] = value;
+  saveMediaStore(s);
+}
+
+function buildImageSlot({label, ratio, compact, storageKey}){
+  storageKey = storageKey || label;
+  const wrap = document.createElement('div');
+  wrap.className='img-slot' + (compact ? ' compact' : '');
+  wrap.setAttribute('data-media-key', 'img_' + storageKey);
+  if(ratio) wrap.style.aspectRatio = ratio;
+
+  // Restore from localStorage if available
+  const store = getMediaStore();
+  const savedUrl = store['img_' + storageKey];
+
+  function applyImage(url) {
+    wrap.innerHTML = `
+      <img src="${url}" alt="${label}">
+      <button class="pencil-btn" type="button" title="Đổi ảnh">✎</button>
+      <div class="url-form">
+        <input type="url" placeholder="Dán link ảnh mới..." value="${url}">
+      </div>`;
+    const pencil2 = wrap.querySelector('.pencil-btn');
+    const form2 = wrap.querySelector('.url-form');
+    const input2 = wrap.querySelector('input');
+    pencil2.addEventListener('click',(e)=>{ e.stopPropagation(); form2.classList.toggle('open'); if(form2.classList.contains('open')){ input2.focus(); input2.select(); } });
+    function saveNew(e){
+      e.stopPropagation();
+      const newUrl = input2.value.trim(); if(!newUrl) return;
+      if(storageKey){ const s=getMediaStore(); s['img_'+storageKey]=newUrl; saveMediaStore(s); }
+      applyImage(newUrl);
+    }
+    input2.addEventListener('keydown',(e)=>{ if(e.key==='Enter') saveNew(e); });
+    wrap.addEventListener('click',(e)=>e.stopPropagation());
+  }
+
+  if(savedUrl){
+    applyImage(savedUrl);
+  } else {
+    wrap.innerHTML = `
+      <div class="placeholder-text">🖼️<br>${label}</div>
+      <button class="pencil-btn" type="button" title="Thêm link ảnh">✎</button>
+      <div class="url-form">
+        <input type="url" placeholder="Dán link rồi nhấn Enter...">
+      </div>`;
+    const pencil = wrap.querySelector('.pencil-btn');
+    const form = wrap.querySelector('.url-form');
+    const input = wrap.querySelector('input');
+    pencil.addEventListener('click',(e)=>{ e.stopPropagation(); form.classList.toggle('open'); if(form.classList.contains('open')) input.focus(); });
+    function save(e){
+      e.stopPropagation();
+      const url = input.value.trim(); if(!url) return;
+      if(storageKey){ const s=getMediaStore(); s['img_'+storageKey]=url; saveMediaStore(s); }
+      applyImage(url);
+    }
+    input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') save(e); });
+    wrap.addEventListener('click',(e)=>e.stopPropagation());
+  }
+  return wrap;
+}
+
+/* ================= Reusable: audio slot ================= */
+function buildAudioSlot({label, storageKey}){
+  storageKey = storageKey || label;
+  const wrap = document.createElement('div');
+  wrap.className='audio-slot';
+  wrap.setAttribute('data-media-key', 'audio_' + storageKey);
+
+  const store = getMediaStore();
+  const savedUrl = store['audio_' + storageKey];
+
+  function buildHead(hasAudio) {
+    return `
+      <div class="audio-slot-head">
+        <span class="audio-icon">🔊</span>
+        <span class="audio-label">${label}</span>
+        <button class="audio-pencil" type="button" title="${hasAudio ? 'Đổi audio' : 'Thêm link audio'}">✎</button>
+      </div>
+      <div class="audio-form">
+        <input type="url" placeholder="Dán link audio rồi nhấn Enter..."${hasAudio ? ' value="'+savedUrl+'"' : ''}>
+      </div>
+      <div class="audio-player-wrap">${hasAudio ? '<audio controls src="'+savedUrl+'"></audio>' : ''}</div>`;
+  }
+
+  wrap.innerHTML = buildHead(!!savedUrl);
+
+  function attachEvents() {
+    const pencil = wrap.querySelector('.audio-pencil');
+    const form = wrap.querySelector('.audio-form');
+    const input = wrap.querySelector('.audio-form input');
+    const playerWrap = wrap.querySelector('.audio-player-wrap');
+    pencil.addEventListener('click',(e)=>{ e.stopPropagation(); form.classList.toggle('open'); if(form.classList.contains('open')) input.focus(); });
+    function save(e){
+      e.stopPropagation();
+      const url = input.value.trim(); if(!url) return;
+      if(storageKey){ const s=getMediaStore(); s['audio_'+storageKey]=url; saveMediaStore(s); }
+      playerWrap.innerHTML = `<audio controls src="${url}"></audio>`;
+      input.value = url;
+      form.classList.remove('open');
+    }
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') save(e); });
+  }
+  attachEvents();
+  return wrap;
+}
+
+/* ================= Reusable: graded fill-in (with admin-editable correct answer) ================= */
+function buildFillChecklist(container, items, onAnyCheck){
+  items.forEach((it, idx)=>{
+    const key = it.key || (container.id||'fill') + '_' + idx;
+    let currentAnswer = getAnswer('fill_'+key, it.answer || '');
+    const row = document.createElement('div');
+    row.className='fill-row';
+    row.innerHTML = `
+      <div class="fill-prompt">${it.prompt} <button type="button" class="answer-pencil" title="Sửa đáp án chuẩn">✎</button></div>
+      <div class="fill-input-wrap">
+        <input type="text" class="fill-input" placeholder="Nhập câu trả lời bằng tiếng Hàn...">
+        <button type="button" class="fill-check-btn">Kiểm tra</button>
+      </div>
+      <div class="fill-feedback"></div>`;
+    const input = row.querySelector('.fill-input');
+    const btn = row.querySelector('.fill-check-btn');
+    const fb = row.querySelector('.fill-feedback');
+    const pencil = row.querySelector('.answer-pencil');
+    function refreshPencil(){ pencil.classList.toggle('unset', !currentAnswer); pencil.title = currentAnswer ? ('Đáp án chuẩn: '+currentAnswer+' — bấm để sửa') : 'Chưa có đáp án chuẩn — bấm để nhập'; }
+    refreshPencil();
+    btn.addEventListener('click', ()=>{
+      if(!currentAnswer){ fb.textContent='Chưa có đáp án chuẩn cho câu này — bật chế độ quản trị để nhập.'; fb.className='fill-feedback no'; return; }
+      const norm = s => (s||'').replace(/\s+/g,'').replace(/[.?!,]/g,'');
+      const ok = norm(input.value) === norm(currentAnswer);
+      fb.textContent = ok ? '✓ Chính xác!' : ('Đáp án gợi ý: ' + currentAnswer);
+      fb.className = 'fill-feedback ' + (ok ? 'ok':'no');
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('incorrect', !ok);
+      if(onAnyCheck) onAnyCheck();
+    });
+    pencil.addEventListener('click', (e)=>{
+      e.stopPropagation();
+      const existing = row.querySelector('.answer-editor');
+      if(existing){ existing.remove(); return; }
+      const editor = document.createElement('div'); editor.className='answer-editor';
+      editor.innerHTML = `<span class="answer-editor-label">Đáp án chuẩn:</span><input type="text" class="answer-editor-input" value="${currentAnswer||''}" placeholder="Nhập đáp án rồi nhấn Enter...">`;
+      const ei = editor.querySelector('.answer-editor-input');
+      function save(){
+        const v = ei.value.trim(); if(!v) return;
+        currentAnswer = v; setAnswer('fill_'+key, v);
+        fb.textContent=''; fb.className='fill-feedback'; input.classList.remove('correct','incorrect');
+        refreshPencil(); editor.remove();
+      }
+      ei.addEventListener('keydown', ev=>{ if(ev.key==='Enter') save(); });
+      row.insertBefore(editor, row.querySelector('.fill-input-wrap'));
+      ei.focus(); ei.select();
+    });
+    container.appendChild(row);
+  });
+}
+
+/* ================= Reusable: choice list (O/X, Yes/No, MCQ...) with admin-editable correct answer =================
+   items: [{ key, text, choices:[{value,label}], answer(optional default) }]
+   - If no correct answer is set (audio-dependent exercises), picking a choice just highlights it
+     neutrally (gold) instead of grading — this avoids fabricating answers we don't actually know.
+   - Admin (pencil, only visible in quản trị mode) can set/change the correct choice; it's saved
+     to the same store used for images/audio, so it persists and syncs via Firebase too.
+================================================================================================= */
+function buildChoiceList(container, items, onAllDone){
+  let doneCount=0;
+  items.forEach((it, idx)=>{
+    const key = it.key || (container.id||'choice') + '_' + idx;
+    let currentAnswer = getAnswer('choice_'+key, it.answer || '');
+    const row=document.createElement('div');
+    row.className='ox-row';
+    const btnsHtml = it.choices.map(c=>`<button type="button" class="ox-btn" data-v="${c.value}"${c.wide?' style="width:auto;"':''}>${c.label}</button>`).join('');
+    row.innerHTML = `<div class="ox-text">${it.text}</div><div class="ox-btns">${btnsHtml}<button type="button" class="answer-pencil" title="Sửa đáp án đúng">✎</button></div>`;
+    const btns = row.querySelectorAll('.ox-btn');
+    const pencil = row.querySelector('.answer-pencil');
+    function refreshPencil(){ pencil.classList.toggle('unset', !currentAnswer); pencil.title = currentAnswer ? ('Đáp án đúng: '+currentAnswer+' — bấm để sửa') : 'Chưa đặt đáp án — bấm để chọn'; }
+    refreshPencil();
+    btns.forEach(b=>b.addEventListener('click', ()=>{
+      if(row.dataset.done) return;
+      if(currentAnswer){
+        const correct = b.dataset.v === currentAnswer;
+        b.classList.add(correct?'correct':'wrong');
+        if(!correct){ [...btns].find(x=>x.dataset.v===currentAnswer).classList.add('correct'); }
+      } else {
+        b.classList.add('picked-neutral');
+      }
+      row.dataset.done='1'; doneCount++;
+      if(doneCount===items.length && onAllDone) onAllDone();
+    }));
+    pencil.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      const existing = row.querySelector('.answer-editor');
+      if(existing){ existing.remove(); return; }
+      const editor=document.createElement('div'); editor.className='answer-editor';
+      editor.innerHTML = `<span class="answer-editor-label">Đáp án đúng:</span>` + it.choices.map(c=>`<button type="button" class="answer-editor-opt${c.value===currentAnswer?' active':''}" data-v="${c.value}">${c.label}</button>`).join('');
+      editor.querySelectorAll('.answer-editor-opt').forEach(ob=>{
+        ob.addEventListener('click',(ev)=>{
+          ev.stopPropagation();
+          currentAnswer = ob.dataset.v; setAnswer('choice_'+key, currentAnswer);
+          editor.querySelectorAll('.answer-editor-opt').forEach(x=>x.classList.remove('active'));
+          ob.classList.add('active');
+          refreshPencil();
+          // reset row so it can be re-answered under the corrected key
+          if(row.dataset.done){ doneCount--; row.dataset.done=''; }
+          btns.forEach(b=>b.classList.remove('correct','wrong','picked-neutral'));
+          editor.remove();
+        });
+      });
+      row.appendChild(editor);
+    });
+    container.appendChild(row);
+  });
+}
+function buildOXList(container, items, onAllDone){
+  buildChoiceList(container, items.map((it,i)=>({key:it.key||((container.id||'ox')+'_'+i), text:it.text, answer:it.answer, choices:[{value:'O',label:'O'},{value:'X',label:'X'}]})), onAllDone);
+}
+function buildYesNoList(container, items, onAllDone){
+  buildChoiceList(container, items.map((it,i)=>({key:it.key||((container.id||'yn')+'_'+i), text:it.text, answer:it.answer, choices:[{value:'네',label:'네',wide:true},{value:'아니요',label:'아니요',wide:true}]})), onAllDone);
+}
+
+/* ================= Reusable: open prompt with optional hint ================= */
+function buildOpenPrompt(container, {prompt, placeholder, hint, lines, lined}){
+  const wrap=document.createElement('div');
+  wrap.className='fill-row';
+  wrap.innerHTML = `
+    <div class="fill-prompt">${prompt||''}</div>
+    <textarea class="open-textarea ${lined?'lined-textarea':''}" rows="${lines||3}" placeholder="${placeholder||''}"></textarea>
+    ${hint ? `<button type="button" class="hint-btn">Xem gợi ý</button><div class="hint-box"></div>` : ''}`;
+  if(hint){
+    const btn = wrap.querySelector('.hint-btn');
+    const box = wrap.querySelector('.hint-box');
+    btn.addEventListener('click', ()=>{
+      box.classList.toggle('open');
+      box.innerHTML = box.classList.contains('open') ? hint : '';
+    });
+  }
+  container.appendChild(wrap);
+}
+
+/* ================= Reusable: generic matching (with admin-editable correct pairing) =================
+   leftItems:  [{key, label, html|node}]   — label used in the admin dropdown, html or a real DOM node
+   rightItems: [{key, html|node, correctKey}] — correctKey = which left item's key is the right answer
+   matchId: stable id for this exercise, used to persist admin overrides of correctKey per right item.
+   If a right item ends up with no correctKey (neither default nor admin-set) it accepts ANY pairing —
+   this is how audio-dependent listening matches stay "free practice" until a teacher sets the answer.
+================================================================================================= */
+function buildMatching(leftEl, rightEl, leftItems, rightItems, onAllMatched, graded, matchId){
+  let selected=null, matched=0;
+  leftItems.forEach(it=>{
+    const el=document.createElement('div');
+    el.className='match-item kr'; el.dataset.key=it.key;
+    if(it.node) el.appendChild(it.node); else el.innerHTML = it.html;
+    el.addEventListener('click', (e)=>{
+      if(e.target.closest('.img-slot') || e.target.closest('.answer-editor') || e.target.closest('.answer-pencil')) return;
+      if(el.classList.contains('paired-correct')) return;
+      leftEl.querySelectorAll('.match-item').forEach(x=>x.classList.remove('selected'));
+      el.classList.add('selected'); selected=el;
+    });
+    leftEl.appendChild(el);
+  });
+  rightItems.forEach(it=>{
+    const el=document.createElement('div');
+    el.className='match-item';
+    const storeKey = matchId ? ('match_'+matchId+'_'+it.key) : null;
+    let correctKey = storeKey ? getAnswer(storeKey, it.correctKey || '') : (it.correctKey || '');
+    el.dataset.correctKey = correctKey;
+    const content = document.createElement('div');
+    if(it.node) content.appendChild(it.node); else content.innerHTML = it.html;
+    el.appendChild(content);
+    if(matchId){
+      const pencil = document.createElement('button');
+      pencil.type='button'; pencil.className='answer-pencil'; pencil.style.cssText='margin-top:6px;';
+      function refreshPencil(){
+        pencil.classList.toggle('unset', !correctKey);
+        const l = leftItems.find(x=>x.key===correctKey);
+        pencil.title = correctKey ? ('Đáp án đúng: '+(l?l.label:correctKey)+' — bấm để sửa') : 'Chưa đặt đáp án đúng — bấm để chọn';
+        pencil.textContent = '✎';
+      }
+      refreshPencil();
+      pencil.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        const existing = el.querySelector('.answer-editor');
+        if(existing){ existing.remove(); return; }
+        const editor=document.createElement('div'); editor.className='answer-editor';
+        const sel=document.createElement('select'); sel.className='answer-editor-select';
+        sel.innerHTML = `<option value="">— chưa chọn —</option>` + leftItems.map(l=>`<option value="${l.key}"${l.key===correctKey?' selected':''}>${l.label||l.key}</option>`).join('');
+        sel.addEventListener('click', ev=>ev.stopPropagation());
+        sel.addEventListener('change', ()=>{
+          correctKey = sel.value; el.dataset.correctKey = correctKey;
+          if(storeKey) setAnswer(storeKey, correctKey);
+          el.classList.remove('paired-correct','paired-wrong');
+          refreshPencil(); editor.remove();
+        });
+        editor.appendChild(sel);
+        el.appendChild(editor);
+      });
+      el.appendChild(pencil);
+    }
+    el.addEventListener('click',(e)=>{
+      if(e.target.closest('.img-slot') || e.target.closest('.answer-editor') || e.target.closest('.answer-pencil')) return;
+      if(!selected || el.classList.contains('paired-correct')) return;
+      const ck = el.dataset.correctKey;
+      const isMatch = (graded===false || !ck) ? true : (selected.dataset.key===ck);
+      if(isMatch){
+        selected.classList.add('paired-correct'); selected.classList.remove('selected');
+        el.classList.add('paired-correct');
+        matched++;
+        if(matched===leftItems.length && onAllMatched) onAllMatched();
+      } else {
+        el.classList.add('paired-wrong');
+        setTimeout(()=>el.classList.remove('paired-wrong'),500);
+      }
+      selected=null;
+    });
+    rightEl.appendChild(el);
+  });
+}
+
+/* ================================================================
+   HERO PHOTOS
+================================================================ */
+const heroRow = document.getElementById('heroPhotoRow');
+heroRow.appendChild(buildImageSlot({label:'Ảnh 1 · Bắt tay chào hỏi đối tác', ratio:'4/3', storageKey:'hero1'}));
+heroRow.appendChild(buildImageSlot({label:'Ảnh 2 · Giới thiệu trong văn phòng', ratio:'4/3', storageKey:'hero2'}));
+new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) stamp('obj'); }); },{rootMargin:'-40% 0px -50% 0px'}).observe(document.getElementById('sec-obj'));
+
+/* ================================================================
+   NAV SCROLLSPY
+================================================================ */
+// TOC Drawer logic
+const tocFab = document.getElementById('tocFab');
+const tocCloseBtn = document.getElementById('tocCloseBtn');
+if (tocFab) tocFab.addEventListener('click', () => document.body.classList.toggle('toc-open'));
+if (tocCloseBtn) tocCloseBtn.addEventListener('click', () => document.body.classList.remove('toc-open'));
+
+const pills = document.querySelectorAll('.nav-pill');
+pills.forEach(p => p.addEventListener('click', ()=>{
+  document.getElementById(p.dataset.target).scrollIntoView({behavior:'smooth'});
+  if (window.innerWidth < 768) document.body.classList.remove('toc-open'); // Auto close on mobile
+}));
+const sectionIds = ['sec-obj','sec-vocab','sec-gram','sec-speak','sec-listen','sec-read','sec-write','sec-pron','sec-culture','sec-newwords','sec-quiz'];
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{
+    const pill = document.querySelector('.nav-pill[data-target="'+en.target.id+'"]');
+    if(en.isIntersecting && pill){ pills.forEach(p=>p.classList.remove('active')); pill.classList.add('active'); }
+  });
+},{rootMargin:'-40% 0px -50% 0px'});
+sectionIds.forEach(id=>{ const el=document.getElementById(id); if(el) io.observe(el); });
+
+/* ================================================================
+   VOCAB
+================================================================ */
+const countries = [
+  ['한국','🇰🇷','Hàn Quốc'],['베트남','🇻🇳','Việt Nam'],['말레이시아','🇲🇾','Malaysia'],['일본','🇯🇵','Nhật Bản'],
+  ['미국','🇺🇸','Mỹ'],['중국','🇨🇳','Trung Quốc'],['태국','🇹🇭','Thái Lan'],['호주','🇦🇺','Úc'],
+  ['몽골','🇲🇳','Mông Cổ'],['인도네시아','🇮🇩','Indonesia'],['필리핀','🇵🇭','Philippines'],['인도','🇮🇳','Ấn Độ'],
+  ['영국','🇬🇧','Anh'],['독일','🇩🇪','Đức'],['프랑스','🇫🇷','Pháp'],['러시아','🇷🇺','Nga']
+];
+const jobs = [
+  ['학생','🎓','Học sinh'],['회사원','💼','Nhân viên công ty'],['은행원','🏦','Nhân viên ngân hàng'],['선생님','📚','Giáo viên'],
+  ['의사','🩺','Bác sĩ'],['공무원','🏛️','Công chức'],['관광 가이드','🧭','Hướng dẫn viên du lịch'],['주부','🏠','Nội trợ'],
+  ['약사','💊','Dược sĩ'],['운전기사','🚗','Lái xe']
+];
+const greetings = [
+  ['안녕하세요?','Xin chào? (thân mật lịch sự)'],['안녕하십니까?','Xin chào? (trang trọng)'],
+  ['안녕히 가세요.','Tạm biệt — nói với người ra về'],['안녕히 계세요.','Tạm biệt — nói với người ở lại'],
+  ['처음 뵙겠습니다.','Rất hân hạnh (lần đầu gặp)'],['반갑습니다.','Rất vui được gặp']
+];
+let seenCount = 0;
+const totalVocab = countries.length + jobs.length;
+function updateVocabProgress(){
+  document.getElementById('vocabProgLabel').textContent = 'Đã xem '+seenCount+'/'+totalVocab+' thẻ';
+  document.getElementById('vocabProgFill').style.width = Math.min(100, Math.round(seenCount/totalVocab*100))+'%';
+  if(seenCount >= 6) stamp('vocab');
+}
+function buildFlipGrid(container, data, imgEditable){
+  data.forEach(([kr,emo,vi])=>{
+    const sKey = 'flip_' + kr;  // storage key per word
+    const store = getMediaStore();
+    const savedImg = imgEditable ? store['img_' + sKey] : null;
+
+    const card = document.createElement('div');
+    card.className='flip-card';
+    if (imgEditable) card.setAttribute('data-media-key', 'img_' + sKey);
+
+    // Build front face content
+    let frontContent;
+    if(savedImg) {
+      frontContent = `
+        <img src="${savedImg}" alt="${kr}" class="flip-img">
+        <div class="kr">${kr}</div>
+        ${imgEditable ? `<button class="pencil-btn" type="button" title="Đổi ảnh cho ${kr}">✎</button>
+        <div class="url-form"><input type="url" placeholder="Link mới rồi Enter..."></div>` : ''}`;
+    } else {
+      frontContent = `
+        <div class="emo">${emo}</div>
+        <div class="kr">${kr}</div>
+        ${imgEditable ? `<button class="pencil-btn" type="button" title="Thêm ảnh thật cho ${kr}">✎</button>
+        <div class="url-form"><input type="url" placeholder="Dán link rồi Enter..."></div>` : ''}`;
+    }
+
+    card.innerHTML = `
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          ${frontContent}
+        </div>
+        <div class="flip-face flip-back">
+          <div class="vi">${vi}</div>
+          <div class="kr-small">${kr} <span class="speak-btn" data-kr="${kr}">🔊</span></div>
+        </div>
+      </div>`;
+
+    card.addEventListener('click',(e)=>{
+      if(e.target.classList.contains('speak-btn')){ speak(e.target.dataset.kr); return; }
+      if(imgEditable && (e.target.closest('.pencil-btn') || e.target.closest('.url-form'))) return;
+      card.classList.toggle('flipped');
+      if(!card.classList.contains('seen')){ card.classList.add('seen'); seenCount++; updateVocabProgress(); }
+    });
+
+    if(imgEditable){
+      function attachFlipImgEditor() {
+        const front = card.querySelector('.flip-front');
+        const pencil = front.querySelector('.pencil-btn');
+        const form   = front.querySelector('.url-form');
+        const input  = front.querySelector('input');
+        if(!pencil || !form || !input) return;
+
+        pencil.addEventListener('click',(e)=>{
+          e.stopPropagation();
+          form.classList.toggle('open');
+          if(form.classList.contains('open')) input.focus();
+        });
+        function saveFlipImg(e){
+          e.stopPropagation();
+          const url = input.value.trim(); if(!url) return;
+          // Persist
+          const s = getMediaStore(); s['img_' + sKey] = url; saveMediaStore(s);
+          // Update UI: swap emo/existing img → new img + Korean label
+          const emoEl = front.querySelector('.emo');
+          const imgEl = front.querySelector('.flip-img');
+          if(emoEl) emoEl.outerHTML = `<img src="${url}" alt="${kr}" class="flip-img">`;
+          else if(imgEl) imgEl.src = url;
+          front.querySelector('.kr').style.display = ''; // ensure kr visible
+          form.classList.remove('open');
+        }
+        input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') saveFlipImg(e); });
+      }
+      attachFlipImgEditor();
+    }
+    container.appendChild(card);
+  });
+}
+buildFlipGrid(document.getElementById('grid-country'), countries, true);
+buildFlipGrid(document.getElementById('grid-job'), jobs, true);
+const greetGrid = document.getElementById('grid-greet');
+greetings.forEach(([kr,vi])=>{
+  const d = document.createElement('div');
+  d.className='greet-card';
+  d.innerHTML = `<div class="kr">${kr} <span class="speak-btn" data-kr="${kr}">🔊</span></div><div class="vi">${vi}</div>`;
+  d.addEventListener('click',(e)=>{
+    if(e.target.classList.contains('speak-btn')){ e.stopPropagation(); speak(e.target.dataset.kr); return; }
+    d.classList.toggle('revealed');
+  });
+  greetGrid.appendChild(d);
+});
+
+/* ================================================================
+   GRAMMAR
+================================================================ */
+const grammar = [
+  {kr:'입니다', mean:'là… (thể trần thuật, kính ngữ)', note:'이다 gắn sau danh từ, nghĩa tương đương "là" trong tiếng Việt. 입니다 là hình thức kính ngữ, dùng trong câu trần thuật.',
+   examples:[['화입니다.','Tôi là Hoa.'],['학생입니다.','Tôi là học sinh.'],['베트남 사람입니다.','Tôi là người Việt Nam.'],['회사원입니다.','Tôi là nhân viên công ty.']]},
+  {kr:'입니까?', mean:'(là)…phải không?', note:'입니까 là hình thức nghi vấn của 입니다, tương đương "là…phải không?" trong tiếng Việt.',
+   examples:[['남 씨입니까?','Anh là Nam phải không?'],['학생입니까?','Anh là học sinh phải không?'],['베트남 사람입니까?','Anh là người Việt Nam phải không?']]},
+  {kr:'은/는', mean:'trợ từ chủ đề', note:'Gắn sau danh từ để chỉ ra chủ thể của hành động. 은 kết hợp với danh từ có phụ âm cuối (patchim); 는 kết hợp với danh từ không có phụ âm cuối.',
+   examples:[['저는 남입니다.','Tôi là Nam.'],['제 이름은 남입니다.','Tên tôi là Nam.'],['남 씨는 학생입니까?','Nam là học sinh phải không?'],['선생님은 한국 사람입니다.','Giáo viên là người Hàn Quốc.']]}
+];
+const gramList = document.getElementById('gramList');
+grammar.forEach(g=>{
+  const card = document.createElement('div'); card.className='gram-card';
+  card.innerHTML = `<div class="gram-head"><div><span class="g-title kr">${g.kr}</span><br><span class="g-mean">${g.mean}</span></div><span class="gram-chevron">▾</span></div>
+    <div class="gram-body"><p class="gram-note">${g.note}</p>${g.examples.map(([kr,vi])=>`<div class="ex-row"><span class="kr">${kr}</span><span class="vi">${vi}</span></div>`).join('')}</div>`;
+  card.querySelector('.gram-head').addEventListener('click',()=>card.classList.toggle('open'));
+  gramList.appendChild(card);
+});
+const mq = [
+  {sentence:'저 ___ 뚜안입니다.', choices:['은','는'], answer:'는'},
+  {sentence:'저는 학생___', choices:['입니다','입니까'], answer:'입니다'},
+  {sentence:'베트남 사람___?', choices:['입니다','입니까'], answer:'입니까'}
+];
+let mqCorrect = 0;
+const mqBox = document.getElementById('miniQuiz');
+mq.forEach((q,qi)=>{
+  const key = 'mq_'+qi;
+  let currentAnswer = getAnswer('choice_'+key, q.answer);
+  const row = document.createElement('div'); row.className='mq-item';
+  row.innerHTML = `<div class="mq-sentence kr">${q.sentence} <button type="button" class="answer-pencil" title="Sửa đáp án đúng">✎</button></div><div class="mq-choices"></div>`;
+  const choicesEl = row.querySelector('.mq-choices');
+  const pencil = row.querySelector('.answer-pencil');
+  q.choices.forEach(c=>{
+    const btn = document.createElement('button'); btn.className='choice-btn'; btn.textContent=c;
+    btn.addEventListener('click',()=>{
+      const btns = choicesEl.querySelectorAll('button'); btns.forEach(b=>b.disabled=true);
+      if(c===currentAnswer){ btn.classList.add('correct'); mqCorrect++; }
+      else{ btn.classList.add('wrong'); [...btns].find(b=>b.textContent===currentAnswer).classList.add('correct'); }
+      if(mqCorrect===mq.length) stamp('gram');
+    });
+    choicesEl.appendChild(btn);
+  });
+  pencil.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const existing = row.querySelector('.answer-editor');
+    if(existing){ existing.remove(); return; }
+    const editor=document.createElement('div'); editor.className='answer-editor';
+    editor.innerHTML = `<span class="answer-editor-label">Đáp án đúng:</span>` + q.choices.map(c=>`<button type="button" class="answer-editor-opt${c===currentAnswer?' active':''}" data-v="${c}">${c}</button>`).join('');
+    editor.querySelectorAll('.answer-editor-opt').forEach(ob=>{
+      ob.addEventListener('click',()=>{
+        currentAnswer = ob.dataset.v; setAnswer('choice_'+key, currentAnswer);
+        editor.querySelectorAll('.answer-editor-opt').forEach(x=>x.classList.remove('active'));
+        ob.classList.add('active');
+        choicesEl.querySelectorAll('button').forEach(b=>{ b.disabled=false; b.classList.remove('correct','wrong'); });
+        editor.remove();
+      });
+    });
+    row.appendChild(editor);
+  });
+  mqBox.appendChild(row);
+});
+
+/* ================================================================
+   SPEAKING
+================================================================ */
+const pairs = [
+  {key:'sp0', kr:'안녕하세요?', desc:'Gặp đồng nghiệp trong văn phòng, cúi chào'},
+  {key:'sp1', kr:'안녕히 가세요.', desc:'Tạm biệt người sắp ra về, mình ở lại'},
+  {key:'sp2', kr:'안녕히 계세요.', desc:'Tạm biệt trước khi mình rời đi, người kia ở lại'}
+];
+const shuffledDesc = [pairs[1],pairs[2],pairs[0]];
+const matchLeft = document.getElementById('matchLeft');
+const matchRight = document.getElementById('matchRight');
+let speakMatchDone = false;
+buildMatching(matchLeft, matchRight,
+  pairs.map(p=>({key:p.key, label:p.kr, html:p.kr})),
+  shuffledDesc.map((p,i)=>{
+    const node=document.createElement('div');
+    node.appendChild(buildImageSlot({label:'Ảnh tình huống '+(i+1), ratio:'4/3', compact:true, storageKey:'speak_ex1_img'+i}));
+    const textEl=document.createElement('div'); textEl.textContent=p.desc; node.appendChild(textEl);
+    return {key:'r'+i, node, correctKey:p.key};
+  }),
+  ()=>{ speakMatchDone = true; checkSpeakDone(); }, true, 'speak_ex1');
+const flagData = [['프랑스','🇫🇷','Pháp'],['중국','🇨🇳','Trung Quốc'],['한국','🇰🇷','Hàn Quốc'],['일본','🇯🇵','Nhật Bản'],['베트남','🇻🇳','Việt Nam'],['호주','🇦🇺','Úc']];
+const flagDrill = document.getElementById('flagDrill');
+const flagOutput = document.getElementById('flagOutput');
+let flagUsed = new Set();
+flagData.forEach(([kr,emo,vi])=>{
+  const btn = document.createElement('button'); btn.className='flag-btn'; btn.innerHTML = emo+' '+kr;
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.flag-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active');
+    flagOutput.classList.remove('placeholder');
+    flagOutput.innerHTML = `<div class="kr">저는 ${kr} 사람입니다. <span class="speak-btn" data-kr="저는 ${kr} 사람입니다">🔊</span></div><div class="vi">Tôi là người ${vi}.</div>`;
+    flagOutput.querySelector('.speak-btn').addEventListener('click',(e)=>speak(e.target.dataset.kr));
+    flagUsed.add(kr);
+    if(flagUsed.size>=2) checkSpeakDone();
+  });
+  flagDrill.appendChild(btn);
+});
+const subs = [['반','박수빈'],['한지원','남'],['하이','최정우'],['조현우','안']];
+const subGrid = document.getElementById('subGrid');
+document.getElementById('ex3ImageWrap').appendChild(buildImageSlot({label:'Ảnh minh hoạ hội thoại mẫu (풍/효영)', ratio:'4/3', compact:true}));
+let subOpened = new Set();
+subs.forEach(([a,b])=>{
+  const c = document.createElement('div'); c.className='sub-card';
+  c.innerHTML = `<div class="prompt">${a} / ${b}</div><div class="reveal">A: 안녕하세요? 저는 <b>${a}</b>입니다.<br>B: 안녕하세요? 제 이름은 <b>${b}</b>입니다.</div>`;
+  c.addEventListener('click',()=>{ c.classList.toggle('open'); subOpened.add(a); if(subOpened.size>=2) checkSpeakDone(); });
+  subGrid.appendChild(c);
+});
+function checkSpeakDone(){ if(speakMatchDone && flagUsed.size>=2 && subOpened.size>=2) stamp('speak'); }
+
+/* ================================================================
+   LISTENING (audio-dependent → not auto-graded)
+================================================================ */
+document.getElementById('audioT06a').appendChild(buildAudioSlot({label:'CD1 Track 06 — Nghe và ghi số hiệu đúng với bức tranh', storageKey:'t06a'}));
+const listenJobLabels = ['Bác sĩ','Nhân viên cửa hàng','Hướng dẫn viên','Giáo viên','Nhân viên ngân hàng'];
+const listenGrid1 = document.getElementById('listenImgGrid1');
+listenJobLabels.forEach((lab,i)=>{
+  const itemKey = 't06a_'+i;
+  let correctNum = getAnswer('choice_'+itemKey, '');
+  const wrap = document.createElement('div');
+  wrap.appendChild(buildImageSlot({label:'Ảnh '+(i+1)+' · '+lab, ratio:'4/3', compact:true, storageKey:'listen_t06a_'+i}));
+  const row = document.createElement('div'); row.style.cssText='display:flex; gap:4px; margin-top:4px; align-items:center;';
+  const inp = document.createElement('input');
+  inp.type='text'; inp.placeholder='Số nghe được'; inp.style.cssText='flex:1; min-width:0; border:1px solid var(--line-strong); border-radius:6px; padding:4px 6px; font-size:12px;';
+  const checkBtn = document.createElement('button');
+  checkBtn.type='button'; checkBtn.textContent='✓'; checkBtn.style.cssText='flex-shrink:0; border:1px solid var(--line-strong); background:var(--paper-card); border-radius:6px; font-size:11px; padding:3px 6px; cursor:pointer;';
+  const pencil = document.createElement('button');
+  pencil.type='button'; pencil.className='answer-pencil'; pencil.title='Sửa đáp án đúng';
+  checkBtn.addEventListener('click', ()=>{
+    if(!correctNum){ inp.title='Chưa có đáp án chuẩn — bật quản trị để nhập.'; return; }
+    const ok = inp.value.trim()===correctNum;
+    inp.style.borderColor = ok ? 'var(--jade)' : 'var(--stamp)';
+    inp.style.background = ok ? '#E4F2EA' : '#F8E2DC';
+  });
+  pencil.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const existing = wrap.querySelector('.answer-editor');
+    if(existing){ existing.remove(); return; }
+    const editor=document.createElement('div'); editor.className='answer-editor'; editor.style.marginTop='4px';
+    editor.innerHTML = `<input type="text" class="answer-editor-input" style="max-width:60px;" value="${correctNum||''}" placeholder="Số đúng, Enter...">`;
+    const ei = editor.querySelector('.answer-editor-input');
+    function save(){ const v=ei.value.trim(); if(!v) return; correctNum=v; setAnswer('choice_'+itemKey, v); inp.style.borderColor=''; inp.style.background=''; editor.remove(); }
+    ei.addEventListener('keydown', ev=>{ if(ev.key==='Enter') save(); });
+    wrap.appendChild(editor); ei.focus();
+  });
+  row.appendChild(inp); row.appendChild(checkBtn); row.appendChild(pencil);
+  wrap.appendChild(row);
+  listenGrid1.appendChild(wrap);
+});
+
+document.getElementById('audioT06b').appendChild(buildAudioSlot({label:'CD1 Track 06 — Nghe và chọn bức tranh đúng', storageKey:'t06b'}));
+const listenChoice2 = document.getElementById('listenChoice2');
+for(let i=1;i<=6;i++){
+  const itemKey = 't06b_'+i;
+  let correctLetter = getAnswer('choice_'+itemKey, '');
+  const row = document.createElement('div');
+  row.style.cssText='display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;';
+  row.innerHTML = `<span class="mono" style="width:22px; flex-shrink:0; font-size:12px;">(${i})</span>`;
+  const btnsByLetter = {};
+  ['a','b'].forEach(letter=>{
+    const optWrap = document.createElement('div');
+    optWrap.style.cssText='flex:1; display:flex; align-items:center; gap:6px;';
+    const btn = document.createElement('button');
+    btn.type='button'; btn.className='flag-btn'; btn.textContent= letter==='a' ? 'ⓐ' : 'ⓑ';
+    btn.dataset.v = letter;
+    btnsByLetter[letter]=btn;
+    btn.addEventListener('click', ()=>{
+      row.querySelectorAll('.flag-btn').forEach(b=>{ b.classList.remove('active','correct','wrong'); });
+      if(correctLetter){
+        const ok = letter===correctLetter;
+        btn.classList.add(ok?'correct':'wrong');
+        if(!ok) btnsByLetter[correctLetter].classList.add('correct');
+      } else {
+        btn.classList.add('active');
+      }
+    });
+    optWrap.appendChild(btn);
+    optWrap.appendChild(buildImageSlot({label:'Tranh '+i+letter, ratio:'1/1', compact:true, storageKey:'listen_t06b_'+i+letter}));
+    row.appendChild(optWrap);
+  });
+  const pencil = document.createElement('button');
+  pencil.type='button'; pencil.className='answer-pencil'; pencil.title='Sửa đáp án đúng';
+  pencil.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const existing = row.querySelector('.answer-editor');
+    if(existing){ existing.remove(); return; }
+    const editor=document.createElement('div'); editor.className='answer-editor';
+    editor.innerHTML = `<span class="answer-editor-label">Đáp án đúng:</span>
+      <button type="button" class="answer-editor-opt${correctLetter==='a'?' active':''}" data-v="a">ⓐ</button>
+      <button type="button" class="answer-editor-opt${correctLetter==='b'?' active':''}" data-v="b">ⓑ</button>`;
+    editor.querySelectorAll('.answer-editor-opt').forEach(ob=>{
+      ob.addEventListener('click',()=>{
+        correctLetter = ob.dataset.v; setAnswer('choice_'+itemKey, correctLetter);
+        editor.querySelectorAll('.answer-editor-opt').forEach(x=>x.classList.remove('active'));
+        ob.classList.add('active');
+        row.querySelectorAll('.flag-btn').forEach(b=>b.classList.remove('active','correct','wrong'));
+        editor.remove();
+      });
+    });
+    row.appendChild(editor);
+  });
+  row.appendChild(pencil);
+  listenChoice2.appendChild(row);
+}
+
+document.getElementById('audioT07').appendChild(buildAudioSlot({label:'CD1 Track 07 — Nghe hội thoại, đánh dấu O/X', storageKey:'t07'}));
+const listenOXItems = [
+  {text:'(1) 남 씨는 학생입니다.'},{text:'(2) 이지훈 씨는 회사원입니다.'},
+  {text:'(3) 조현우 씨는 공무원입니다.'},{text:'(4) 와완 씨는 의사입니다.'}
+];
+const listenOXBox = document.getElementById('listenOX');
+listenOXItems.forEach(it=>{
+  const row=document.createElement('div'); row.className='ox-row';
+  row.innerHTML = `<div class="ox-text">${it.text}</div><div class="ox-btns"><button type="button" class="ox-btn" data-v="O">O</button><button type="button" class="ox-btn" data-v="X">X</button></div>`;
+  row.querySelectorAll('.ox-btn').forEach(b=>b.addEventListener('click', ()=>{
+    row.querySelectorAll('.ox-btn').forEach(x=>x.classList.remove('correct'));
+    b.classList.add('correct');
+  }));
+  listenOXBox.appendChild(row);
+});
+
+document.getElementById('audioT08').appendChild(buildAudioSlot({label:'CD1 Track 08 — Nghe và nối tên người với nghề nghiệp', storageKey:'t08'}));
+const lmLeft1 = document.getElementById('listenMatchLeft');
+const lmRight1 = document.getElementById('listenMatchRight');
+function iconNode(label, storageKey){ const n=document.createElement('div'); n.appendChild(buildImageSlot({label, ratio:'1/1', compact:true, storageKey})); return n; }
+// Nhóm 1: 최정우 / 만 — chưa có đáp án mặc định (phụ thuộc audio), admin đặt đáp án đúng khi có file nghe
+buildMatching(lmLeft1, lmRight1,
+  [{key:'1a', label:'최정우', html:'최정우'},{key:'1b', label:'만', html:'만'}],
+  [{key:'x', node:iconNode('Icon a','listen_t08_g1_a')},
+   {key:'y', node:iconNode('Icon b','listen_t08_g1_b')},
+   {key:'z', node:iconNode('Icon c','listen_t08_g1_c')}],
+  ()=>{}, true, 'listen_t08_g1');
+// Nhóm 2: 박수빈 / 화
+const lmLeft2 = document.createElement('div'); lmLeft2.style.marginTop='10px';
+const lmRight2 = document.createElement('div'); lmRight2.style.marginTop='10px';
+lmLeft1.appendChild(lmLeft2); lmRight1.appendChild(lmRight2);
+buildMatching(lmLeft2, lmRight2,
+  [{key:'2a', label:'박수빈', html:'박수빈'},{key:'2b', label:'화', html:'화'}],
+  [{key:'p', node:iconNode('Icon a','listen_t08_g2_a')},
+   {key:'q', node:iconNode('Icon b (병원)','listen_t08_g2_b')},
+   {key:'r', node:iconNode('Icon c','listen_t08_g2_c')}],
+  ()=>{}, true, 'listen_t08_g2');
+
+document.getElementById('audioT09').appendChild(buildAudioSlot({label:'CD1 Track 09 — Nghe và điền vào chỗ trống', storageKey:'t09'}));
+const listenFillBox = document.getElementById('listenFillDialog');
+const listenFillNote = document.createElement('p');
+listenFillNote.style.cssText='font-size:12.5px; color:var(--ink-soft); margin:-4px 0 10px;';
+listenFillNote.textContent = 'Chưa có đáp án chuẩn cho các câu dưới đây vì phụ thuộc audio gốc — bật chế độ quản trị, nghe file audio đã dán rồi bấm ✎ để nhập đáp án đúng cho từng dòng.';
+listenFillBox.appendChild(listenFillNote);
+function dialogFillRows(dialogKey, lines){
+  const rows = lines.map(([who, text], i)=>({
+    key: dialogKey+'_'+i,
+    prompt: `<b class="mono" style="font-size:11px; color:var(--ink-soft);">${who}</b> ${text}`,
+    answer: ''
+  }));
+  buildFillChecklist(listenFillBox, rows);
+}
+dialogFillRows('t09_d1', [
+  ['수빈','_______________? 박수빈입니다.'],['화','_______________ 화입니다. 반갑습니다.'],
+  ['수빈','화 씨는 _______________ 입니까?'],['화','_______________ , 의사입니다. 박수빈 씨는 _______________ 입니까?'],
+  ['수빈','_______________ , 한국어 _______________ 입니다.']
+]);
+dialogFillRows('t09_d2', [
+  ['지훈','히엔 씨, _______________ 박준영 씨입니다.'],['지훈','박준영 씨, _______________ 히엔 씨입니다.'],
+  ['준영','_______________? 박준영입니다.'],['히엔','안녕하세요? _______________ 히엔입니다.'],
+  ['준영','히엔 씨는 학생_______________?'],['히엔','네, 학생_______________.'],
+  ['준영','박준영 씨는 회사원_______________?'],['히엔','아니요, 학생_______________.']
+]);
+
+document.getElementById('audioT10').appendChild(buildAudioSlot({label:'CD1 Track 10 — Nghe hội thoại, chọn câu trả lời phù hợp', storageKey:'t10'}));
+const listenMCQBox = document.getElementById('listenMCQ');
+buildChoiceList(listenMCQBox, [
+  {key:'t10_1', text:'(1) 남 씨는 누구를 찾고 있습니까?', choices:[{value:'박준영 씨',label:'박준영 씨',wide:true},{value:'최정우 씨',label:'최정우 씨',wide:true},{value:'이지훈 씨',label:'이지훈 씨',wide:true}]},
+  {key:'t10_2', text:'(2) 남 씨의 직업은 무엇입니까?', choices:[{value:'의사',label:'의사',wide:true},{value:'학생',label:'학생',wide:true},{value:'회사원',label:'회사원',wide:true}]}
+]);
+stamp('listen'); // Nghe stamp is contingent on visiting since content can't be auto-graded without real audio
+const listenObs = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting){ /* require some interaction instead of auto stamp */ } }); });
+state.stamped.listen = false; // require manual interaction below
+document.querySelector('.stamp-slot[data-stamp="listen"]').classList.remove('stamped');
+document.querySelector('.nav-pill[data-target="sec-listen"]').classList.remove('done');
+let listenInteractions = 0;
+document.getElementById('sec-listen').addEventListener('click', ()=>{ listenInteractions++; if(listenInteractions>=4) stamp('listen'); });
+
+/* ================================================================
+   READING (gradable from text)
+================================================================ */
+const readLeftSentences = [
+  {key:'s1', text:'(1) 저는 학생입니다.'},
+  {key:'s2', text:'(2) 메이 씨는 중국 사람입니다.'},
+  {key:'s3', text:'(3) 지원 씨는 한국 사람입니다.'},
+  {key:'s4', text:'(4) 저는 선생님입니다.'},
+  {key:'s5', text:'(5) 화 씨는 의사입니다.'}
+];
+const readRightShuffled = [
+  {letter:'a', label:'Cờ Trung Quốc'},{letter:'b', label:'Người gọi điện (병원 = bệnh viện)'},
+  {letter:'c', label:'Học sinh đeo cặp'},{letter:'d', label:'Giáo viên và học sinh'},{letter:'e', label:'Cờ Hàn Quốc'}
+];
+const readLettertoKey = {a:'s2', b:'s5', c:'s1', d:'s4', e:'s3'};
+const readMatchLeftEl = document.getElementById('readMatchLeft');
+const readMatchRightEl = document.getElementById('readMatchRight');
+buildMatching(readMatchLeftEl, readMatchRightEl,
+  readLeftSentences.map(s=>({key:s.key, label:s.text, html:s.text})),
+  readRightShuffled.map(r=>{
+    const node=document.createElement('div');
+    const letterEl=document.createElement('div'); letterEl.style.cssText='font-weight:700; margin-bottom:4px;';
+    letterEl.textContent = 'ⓐⓑⓒⓓⓔ'[['a','b','c','d','e'].indexOf(r.letter)];
+    node.appendChild(letterEl);
+    node.appendChild(buildImageSlot({label:r.label, ratio:'4/3', compact:true, storageKey:'read_ex1_'+r.letter}));
+    return {key:'r_'+r.letter, node, correctKey: readLettertoKey[r.letter]};
+  }),
+  ()=>stamp('read'), true, 'read_ex1');
+
+const readCardImgWrap = document.getElementById('readCardImages');
+readCardImgWrap.appendChild(buildImageSlot({label:'Ảnh thẻ sinh viên (학생증)', ratio:'3/4', compact:true, storageKey:'read_haksaengjeung'}));
+readCardImgWrap.appendChild(buildImageSlot({label:'Ảnh danh thiếp (명함)', ratio:'3/4', compact:true, storageKey:'read_myeongham'}));
+buildOXList(document.getElementById('readOX1'), [
+  {text:'(1-①) 이 사람은 김민준 씨입니다.', answer:'X'},
+  {text:'(1-②) 이 사람은 학생입니다.', answer:'O'},
+  {text:'(2-①) 이 사람은 조현우 씨입니다.', answer:'O'},
+  {text:'(2-②) 이 사람은 한국어 선생님입니다.', answer:'X'}
+]);
+
+const readPassage1 = document.getElementById('readPassage1');
+const passagePeople = [
+  {name:'박수진', img:'Ảnh 박수진', lines:['안녕하세요? 제 이름은 박수진입니다.','한국 사람입니다.','저는 회사원입니다.']},
+  {name:'최유진', img:'Ảnh 최유진', lines:['안녕하세요? 제 이름은 최유진입니다.','한국 사람입니다.','한국대학교 학생입니다.','반갑습니다.']},
+  {name:'리양', img:'Ảnh 리양', lines:['안녕하십니까? 저는 리양입니다.','중국 사람입니다.','은행원입니다.']}
+];
+passagePeople.forEach(p=>{
+  const row=document.createElement('div'); row.style.cssText='display:flex; gap:12px; align-items:flex-start; margin-bottom:14px;';
+  const imgBox=document.createElement('div'); imgBox.style.width='64px'; imgBox.style.flexShrink='0';
+  imgBox.appendChild(buildImageSlot({label:p.img, ratio:'1/1', compact:true}));
+  const textBox=document.createElement('div'); textBox.className='kr'; textBox.style.fontSize='0.92rem';
+  textBox.innerHTML = p.lines.join('<br>');
+  row.appendChild(imgBox); row.appendChild(textBox);
+  readPassage1.appendChild(row);
+});
+buildOXList(document.getElementById('readOX2'), [
+  {text:'(1) 박수진 씨는 의사입니다.', answer:'X'},
+  {text:'(2) 최유진 씨는 대학생입니다.', answer:'O'},
+  {text:'(3) 리양 씨는 한국 사람입니다.', answer:'X'}
+]);
+
+const readTable = document.getElementById('readTable');
+readTable.innerHTML = `<tr><th>이름</th><th>국적</th><th>직업</th></tr>` +
+  [1,2,3].map(i=>`<tr><td><input data-row="${i}" data-col="name"></td><td><input data-row="${i}" data-col="nat"></td><td><input data-row="${i}" data-col="job"></td></tr>`).join('');
+document.getElementById('readTableCheck').addEventListener('click', ()=>{
+  const box = document.getElementById('readTableAnswer');
+  box.classList.toggle('open');
+  box.innerHTML = box.classList.contains('open') ? '박수진 / 한국 / 회사원 · 최유진 / 한국 / 학생(대학생) · 리양 / 중국 / 은행원' : '';
+});
+
+const readBlogs = document.getElementById('readBlogs');
+const blogPeople = [
+  {name:'흐엉', img:'Ảnh blogger 흐엉', lines:['안녕하세요?','제 이름은 흐엉입니다.','베트남대학교 한국어과 학생입니다.','반갑습니다.']},
+  {name:'만', img:'Ảnh blogger 만', lines:['안녕하세요? 제 이름은 만입니다.','저는 한국어과 학생입니다.','반갑습니다.']},
+  {name:'란', img:'Ảnh blogger 란', lines:['안녕하세요? 제 이름은 란입니다.','베트남 사람입니다.','저는 한국어 선생님입니다.']}
+];
+blogPeople.forEach(p=>{
+  const row=document.createElement('div'); row.style.cssText='display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; background:var(--paper); border-radius:10px; padding:10px; border:1px solid var(--line);';
+  const imgBox=document.createElement('div'); imgBox.style.width='56px'; imgBox.style.flexShrink='0';
+  imgBox.appendChild(buildImageSlot({label:p.img, ratio:'1/1', compact:true}));
+  const textBox=document.createElement('div'); textBox.className='kr'; textBox.style.fontSize='0.9rem';
+  textBox.innerHTML = `<b style="font-family:'Be Vietnam Pro',sans-serif; font-size:11px; color:var(--ink-soft);">Blogger</b><br>` + p.lines.join('<br>');
+  row.appendChild(imgBox); row.appendChild(textBox);
+  readBlogs.appendChild(row);
+});
+buildYesNoList(document.getElementById('readYesNo'), [
+  {text:'(1) 흐엉 씨는 한국 사람입니까?', answer:'아니요'},
+  {text:'(2) 란 씨는 베트남 사람입니까?', answer:'네'},
+  {text:'(3) 만 씨는 학생입니까?', answer:'네'},
+  {text:'(4) 란 씨는 베트남대학교 학생입니까?', answer:'아니요'},
+  {text:'(5) 흐엉 씨는 한국대학교 학생입니까?', answer:'아니요'}
+], ()=>stamp('read'));
+
+/* ================================================================
+   WRITING (gradable)
+================================================================ */
+const writeImgFillData = [
+  {key:'w1_vn', label:'Việt Nam', answer:'베트남'}, {key:'w1_uc', label:'Úc', answer:'호주'}, {key:'w1_my', label:'Mỹ', answer:'미국'}, {key:'w1_nb', label:'Nhật', answer:'일본'},
+  {key:'w1_gv', label:'giáo viên', answer:'선생님'}, {key:'w1_nv', label:'nhân viên công ty', answer:'회사원'}, {key:'w1_bs', label:'bác sĩ', answer:'의사'}, {key:'w1_nh', label:'nhân viên ngân hàng', answer:'은행원'}
+];
+const writeImgFillEl = document.getElementById('writeImgFill');
+const wGrid = document.createElement('div'); wGrid.className='img-grid';
+writeImgFillEl.appendChild(wGrid);
+writeImgFillData.forEach((it,i)=>{
+  let currentAnswer = getAnswer('fill_'+it.key, it.answer);
+  const cell=document.createElement('div');
+  cell.appendChild(buildImageSlot({label:it.label, ratio:'4/3', compact:true, storageKey:'write1_'+it.key}));
+  const inputWrap=document.createElement('div'); inputWrap.style.cssText='display:flex; gap:4px; margin-top:4px; align-items:center;';
+  inputWrap.innerHTML = `<input type="text" class="fill-input" style="font-size:12px; padding:5px 7px;" placeholder="Viết tiếng Hàn"><button type="button" class="fill-check-btn" style="font-size:11px; padding:0 8px;">✓</button><button type="button" class="answer-pencil" title="Sửa đáp án đúng"></button>`;
+  const inp = inputWrap.querySelector('input'); const btn = inputWrap.querySelector('.fill-check-btn'); const pencil = inputWrap.querySelector('.answer-pencil');
+  function refreshPencil(){ pencil.classList.toggle('unset', !currentAnswer); pencil.title = currentAnswer ? ('Đáp án: '+currentAnswer+' — bấm để sửa') : 'Chưa có đáp án — bấm để nhập'; pencil.textContent='✎'; }
+  refreshPencil();
+  btn.addEventListener('click', ()=>{
+    if(!currentAnswer){ inp.title='Chưa có đáp án chuẩn — bật quản trị để nhập.'; return; }
+    const ok = inp.value.replace(/\s+/g,'')===currentAnswer;
+    inp.classList.toggle('correct', ok); inp.classList.toggle('incorrect', !ok);
+    if(!ok) inp.title = 'Đáp án: '+currentAnswer;
+  });
+  pencil.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const existing = cell.querySelector('.answer-editor');
+    if(existing){ existing.remove(); return; }
+    const editor=document.createElement('div'); editor.className='answer-editor'; editor.style.marginTop='4px';
+    editor.innerHTML = `<input type="text" class="answer-editor-input" value="${currentAnswer||''}" placeholder="Đáp án, Enter để lưu...">`;
+    const ei = editor.querySelector('.answer-editor-input');
+    function save(){ const v=ei.value.trim(); if(!v) return; currentAnswer=v; setAnswer('fill_'+it.key, v); inp.classList.remove('correct','incorrect'); refreshPencil(); editor.remove(); }
+    ei.addEventListener('keydown', ev=>{ if(ev.key==='Enter') save(); });
+    cell.appendChild(editor); ei.focus(); ei.select();
+  });
+  cell.appendChild(inputWrap);
+  wGrid.appendChild(cell);
+});
+
+buildFillChecklist(document.getElementById('writeSentence1'), [
+  {prompt:'(1) 하이 씨 / 의사 →', answer:'하이 씨는 의사입니다.'},
+  {prompt:'(2) 한지원 씨 / 주부 →', answer:'한지원 씨는 주부입니다.'},
+  {prompt:'(3) 이 사람 / 히엔 씨 →', answer:'이 사람은 히엔 씨입니다.'},
+  {prompt:'(4) 이 사람 / 베트남 사람 →', answer:'이 사람은 베트남 사람입니다.'},
+  {prompt:'(5) 남 씨 / 학생 →', answer:'남 씨는 학생입니다.'}
+], ()=>stamp('write'));
+
+buildFillChecklist(document.getElementById('writeTranslate'), [
+  {prompt:'(1) Tôi là học sinh.', answer:'저는 학생입니다.'},
+  {prompt:'(2) Tôi là người Mỹ.', answer:'저는 미국 사람입니다.'},
+  {prompt:'(3) Anh Nam là nhân viên văn phòng.', answer:'남 씨는 회사원입니다.'},
+  {prompt:'(4) Lee Yoo Na là người Hàn Quốc.', answer:'이유나 씨는 한국 사람입니다.'}
+], ()=>stamp('write'));
+
+buildOpenPrompt(document.getElementById('writeOpen1'), {prompt:'Viết 2 câu: nghề nghiệp của bạn và quốc tịch của bạn.', placeholder:'저는 ...입니다.\n저는 ...입니다.', lines:2, hint:'Ví dụ: 저는 선생님입니다.<br>저는 한국 사람입니다.'});
+
+document.getElementById('writeAvatarSlot').appendChild(buildImageSlot({label:'Ảnh 박수진', ratio:'1/1', compact:true, storageKey:'write_parksoojin'}));
+buildFillChecklist(document.getElementById('writeFillPassage'), [
+  {prompt:'안녕하세요? 제 이름은 _______ 입니다.', answer:'박수진'},
+  {prompt:'_______ 사람입니다.', answer:'한국'},
+  {prompt:'_______ 입니다. 반갑습니다.', answer:'회사원'}
+], ()=>stamp('write'));
+
+const writeSelfTable = document.getElementById('writeSelfTable');
+writeSelfTable.innerHTML = `<tr><th>이름</th><td><input placeholder="Tên của bạn"></td></tr><tr><th>국적</th><td><input placeholder="Quốc tịch"></td></tr><tr><th>직업</th><td><input placeholder="Nghề nghiệp"></td></tr>`;
+
+buildOpenPrompt(document.getElementById('writeEssay'), {prompt:'Dùng nội dung bảng trên viết thành 1 đoạn giới thiệu bản thân.', placeholder:'안녕하세요? 제 이름은 ...입니다.\n저는 ...사람입니다.\n저는 ...입니다.\n반갑습니다.', lines:6, lined:true});
+
+/* ================================================================
+   PRONUNCIATION
+================================================================ */
+document.getElementById('audioT11').appendChild(buildAudioSlot({label:'CD1 Track 11 — Nghe và lưu ý phần gạch chân', storageKey:'t11'}));
+const pronPairsData = [['한국','한국어'],['공무원','공무원입니다'],['이 사람','이 사람은 남 씨입니다']];
+const pronPairsBox = document.getElementById('pronPairs');
+pronPairsData.forEach(([a,b])=>{
+  const row=document.createElement('div'); row.className='pron-line';
+  row.innerHTML = `<span class="kr">${a}</span><span style="color:var(--line-strong);">→</span><span class="kr">${b}</span><span class="speak-btn" data-kr="${b}">🔊</span>`;
+  row.querySelector('.speak-btn').addEventListener('click',(e)=>speak(e.target.dataset.kr));
+  pronPairsBox.appendChild(row);
+});
+
+document.getElementById('audioT12').appendChild(buildAudioSlot({label:'CD1 Track 12 — Nghe và đọc theo', storageKey:'t12'}));
+const pronRepeatData = ['저는 회사원입니다.','이 사람은 풍입니다.','제 이름은 최유진입니다.','저는 베트남 사람입니다.'];
+const pronRepeatBox = document.getElementById('pronRepeat');
+pronRepeatData.forEach((s,i)=>{
+  const row=document.createElement('div'); row.className='pron-line';
+  row.innerHTML = `<span class="mono" style="font-size:11px; color:var(--ink-soft);">(${i+1})</span><span class="kr" style="flex:1;">${s}</span><span class="speak-btn" data-kr="${s}">🔊</span>`;
+  row.querySelector('.speak-btn').addEventListener('click',(e)=>speak(e.target.dataset.kr));
+  pronRepeatBox.appendChild(row);
+});
+
+document.getElementById('audioT13').appendChild(buildAudioSlot({label:'CD1 Track 13 — Đọc to đoạn văn', storageKey:'t13'}));
+const pronParagraphBox = document.getElementById('pronParagraph');
+const paragraph = '안녕하세요?<br>제 이름은 마이입니다.<br>베트남 사람입니다.<br>한국어 선생님입니다.';
+pronParagraphBox.innerHTML = `<div class="rule-box kr" style="font-size:1rem; line-height:1.9;">${paragraph}</div>`;
+const pronSpeakBtn = document.createElement('button'); pronSpeakBtn.className='speak-btn'; pronSpeakBtn.textContent='🔊 Nghe mẫu';
+pronSpeakBtn.style.cssText='margin-top:8px; border:1px solid var(--line-strong); border-radius:999px; padding:6px 14px; font-size:12px;';
+pronSpeakBtn.addEventListener('click', ()=>speak('안녕하세요? 제 이름은 마이입니다. 베트남 사람입니다. 한국어 선생님입니다.'));
+pronParagraphBox.appendChild(pronSpeakBtn);
+document.getElementById('sec-pron').addEventListener('click', ()=>stamp('pron'));
+
+/* ================================================================
+   CULTURE
+================================================================ */
+const culturePhotos = document.getElementById('culturePhotos');
+['Ảnh cúi đầu chào','Ảnh bắt tay chào','Ảnh cúi lạy (hanbok)'].forEach(l=>{
+  culturePhotos.appendChild(buildImageSlot({label:l, ratio:'4/3'}));
+});
+buildOpenPrompt(document.getElementById('cultureReflect'), {prompt:'Ghi lại điểm giống và khác nhau bạn nhận thấy giữa cách chào hỏi của người Hàn Quốc và người Việt Nam.', placeholder:'Giống: ...\nKhác: ...', lines:4});
+new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) stamp('culture'); }); },{rootMargin:'-40% 0px -50% 0px'}).observe(document.getElementById('sec-culture'));
+
+/* ================================================================
+   NEW WORDS
+================================================================ */
+const newWords = [
+  ['국어국문학과','khoa ngữ văn'],['국적','quốc tịch'],['네','vâng'],['대학교','trường đại học'],['대학생','sinh viên'],
+  ['보기','mẫu, ví dụ'],['사람','người'],['씨','bạn — (kính ngữ tên riêng)'],['아니요','không'],['은행','ngân hàng'],
+  ['이','này'],['이름','tên'],['이메일','email, thư điện tử'],['저','tôi'],['전화','điện thoại'],['제','của tôi'],
+  ['주소','địa chỉ'],['직업','nghề nghiệp'],['학과','bộ môn'],['학번','mã số sinh viên'],['학생증','thẻ sinh viên'],
+  ['한국어','tiếng Hàn'],['한국어과','khoa Hàn ngữ']
+];
+const newWordsGrid = document.getElementById('newWordsGrid');
+newWords.forEach(([kr,vi])=>{
+  const c=document.createElement('div'); c.className='word-card';
+  c.innerHTML = `<div class="kr">${kr} <span class="speak-btn" data-kr="${kr}" style="font-size:12px;">🔊</span></div><div class="vi">${vi}</div>`;
+  c.querySelector('.speak-btn').addEventListener('click',(e)=>speak(e.target.dataset.kr));
+  newWordsGrid.appendChild(c);
+});
+new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) stamp('newwords'); }); },{rootMargin:'-40% 0px -50% 0px'}).observe(document.getElementById('sec-newwords'));
+
+/* ================================================================
+   QUIZ
+================================================================ */
+const quizData = [
+  {q:'Thể kính ngữ trang trọng của "이다" (là) khi trần thuật là gì?', opts:['입니다','입니까','은','는'], answer:'입니다'},
+  {q:'Trợ từ nào kết hợp với danh từ CÓ phụ âm cuối (patchim)?', opts:['는','은','가','도'], answer:'은'},
+  {q:'"저는 베트남 사람입니다." nghĩa là gì?', opts:['Tôi là người Việt Nam.','Bạn là người Việt Nam à?','Tôi là người Hàn Quốc.','Đây là người Việt Nam.'], answer:'Tôi là người Việt Nam.'},
+  {q:'"학생" nghĩa là gì?', opts:['Học sinh','Giáo viên','Bác sĩ','Công chức'], answer:'Học sinh'},
+  {q:'Cách nói "Rất vui được gặp" bằng tiếng Hàn là?', opts:['반갑습니다','안녕히 가세요','처음 뵙겠습니다','안녕히 계세요'], answer:'반갑습니다'},
+  {q:'"회사원" nghĩa là gì?', opts:['Nhân viên công ty','Nhân viên ngân hàng','Nội trợ','Lái xe'], answer:'Nhân viên công ty'},
+  {q:'"국적" nghĩa là gì?', opts:['Quốc tịch','Địa chỉ','Tên','Nghề nghiệp'], answer:'Quốc tịch'},
+  {q:'Theo bài Văn hoá, người Hàn Quốc thường chào nhau bằng cách nào là phổ biến nhất?', opts:['Cúi đầu','Cúi lạy','Ôm','Hôn má'], answer:'Cúi đầu'}
+];
+const quizList = document.getElementById('quizList');
+const picks = {};
+quizData.forEach((q,i)=>{
+  const key = 'quiz_'+i;
+  q._currentAnswer = getAnswer('choice_'+key, q.answer);
+  const wrap = document.createElement('div'); wrap.className='quiz-item';
+  wrap.innerHTML = `<div class="quiz-q">${i+1}. ${q.q} <button type="button" class="answer-pencil" title="Sửa đáp án đúng">✎</button></div><div class="quiz-opts"></div>`;
+  const optsEl = wrap.querySelector('.quiz-opts');
+  const pencil = wrap.querySelector('.answer-pencil');
+  q.opts.forEach(o=>{
+    const b = document.createElement('button'); b.className='quiz-opt'; b.textContent=o;
+    b.addEventListener('click',()=>{ optsEl.querySelectorAll('.quiz-opt').forEach(x=>x.classList.remove('picked')); b.classList.add('picked'); picks[i]=o; });
+    optsEl.appendChild(b);
+  });
+  pencil.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const existing = wrap.querySelector('.answer-editor');
+    if(existing){ existing.remove(); return; }
+    const editor=document.createElement('div'); editor.className='answer-editor';
+    editor.innerHTML = `<span class="answer-editor-label">Đáp án đúng:</span>` + q.opts.map(o=>`<button type="button" class="answer-editor-opt${o===q._currentAnswer?' active':''}" data-v="${o}">${o}</button>`).join('');
+    editor.querySelectorAll('.answer-editor-opt').forEach(ob=>{
+      ob.addEventListener('click',()=>{
+        q._currentAnswer = ob.dataset.v; setAnswer('choice_'+key, q._currentAnswer);
+        editor.querySelectorAll('.answer-editor-opt').forEach(x=>x.classList.remove('active'));
+        ob.classList.add('active');
+        editor.remove();
+      });
+    });
+    wrap.appendChild(editor);
+  });
+  quizList.appendChild(wrap);
+});
+document.getElementById('quizSubmit').addEventListener('click',()=>{
+  let score=0;
+  quizData.forEach((q,i)=>{
+    const optsEl = quizList.children[i].querySelector('.quiz-opts');
+    const correctAnswer = q._currentAnswer;
+    if(picks[i]===correctAnswer) score++;
+    [...optsEl.children].forEach(b=>{
+      b.disabled=true;
+      if(b.textContent===correctAnswer) b.classList.add('correct');
+      else if(b.textContent===picks[i]) b.classList.add('incorrect');
+    });
+  });
+  const result = document.getElementById('quizResult');
+  result.classList.add('show');
+  result.innerHTML = `<div class="score">${score}/${quizData.length} câu đúng</div>
+    <p style="margin:0.5rem 0 0; color:var(--ink-soft); font-size:0.9rem;">${score>=6 ? 'Xuất sắc — bạn đã nắm chắc Bài 01! Dấu mộc hoàn thành đã được đóng.' : 'Ổn rồi — xem lại các phần chưa chắc rồi thử lại nhé.'}</p>`;
+  document.getElementById('quizSubmit').disabled = true;
+  if(score>=6) stamp('quiz');
+});
+</script>
+
+<!-- Global navbar & theme scripts (inject after page content) -->
+<script src="../../assets/js/script.js"></script>
+<script src="../../assets/js/navbar.js"></script>
+<script src="../../assets/js/theme-picker.js"></script>
+<script src="../../assets/js/theme.js"></script>
+</body>
+</html>

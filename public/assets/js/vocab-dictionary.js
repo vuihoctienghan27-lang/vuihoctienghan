@@ -319,5 +319,33 @@ window.AutoVocabDict = [
         base: "주말",
         meaning: "cuối tuần",
         level: 2
+    },
+    {
+        base: "정도",
+        meaning: "mức độ, khoảng chừng",
+        level: 2,
+        examples: [
+            "한 시간 정도 기다려 주세요.",
+            "이 책의 정도는 중급 수준입니다."
+        ]
+    },
+    {
+        base: "가격",
+        meaning: "giá cả",
+        level: 2,
+        examples: [
+            "이 제품의 가격이 너무 비싸요.",
+            "가격을 비교해 보고 구매하세요."
+        ]
+    },
+    {
+        base: "먹다",
+        meaning: "ăn",
+        level: 2,
+        variants: ["먹는", "먹을", "먹어", "먹어서", "먹고", "먹지", "먹은", "먹습니다", "먹었", "먹겠"],
+        examples: [
+            "밥을 먹고 학교에 갔어요.",
+            "이 음식을 먹어 봤어요?"
+        ]
     }
 ];

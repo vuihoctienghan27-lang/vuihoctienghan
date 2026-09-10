@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Nói - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="/public/assets/img/favicon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root { --text-main:#1f2937; --text-sub:#6b7280; --border:#e5e7eb; }
+        body { font-family:'Pretendard','Inter',sans-serif; background:linear-gradient(120deg,#e0c3fc 0%,#8ec5fc 100%); background-attachment:fixed; color:var(--text-main); margin:0; padding:0 0 40px 0; }
+        * { box-sizing:border-box; }
+        button,input,select { font-family:'Pretendard','Inter',sans-serif !important; }
+        .wrapper { max-width:760px; margin:0 auto; background:rgba(255,255,255,.35); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.5); border-radius:24px; padding:15px 20px; box-shadow:0 15px 35px rgba(0,0,0,.05); width:100%; box-sizing:border-box; }
+
+        .hero-section { position:relative; background:linear-gradient(135deg,#047857 0%,#10b981 50%,#06b6d4 100%); border-radius:22px; padding:28px 32px; color:#fff; margin-bottom:20px; box-shadow:0 18px 40px rgba(16,185,129,.2); display:flex; align-items:center; justify-content:space-between; gap:20px; min-height:140px; }
+        .hero-bg { position:absolute; inset:0; border-radius:22px; overflow:hidden; pointer-events:none; }
+        .hero-bg::before { content:''; position:absolute; inset:0; background-image:radial-gradient(rgba(255,255,255,.13) 1px, transparent 1px); background-size:22px 22px; opacity:.45; }
+        .hero-blob { position:absolute; border-radius:50%; filter:blur(64px); }
+        .hero-blob.b1 { width:200px; height:200px; background:rgba(255,255,255,.2); top:-60px; right:-40px; animation:blobFloat 8s ease-in-out infinite; }
+        .hero-blob.b2 { width:150px; height:150px; background:rgba(255,255,255,.13); bottom:-60px; left:-30px; animation:blobFloat 11s ease-in-out infinite reverse; }
+        @keyframes blobFloat { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(14px,-12px) scale(1.08)} }
+        .hero-left { position:relative; z-index:1; }
+        .hero-tag { display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,.16); color:#fff; font-size:.75em; font-weight:800; padding:5px 12px; border-radius:99px; letter-spacing:.5px; text-transform:uppercase; backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,.24); margin-bottom:10px; }
+        .hero-title { font-size:1.9em; font-weight:900; margin:0; line-height:1.1; letter-spacing:-.5px; background:linear-gradient(120deg,#fff 35%,rgba(255,255,255,.5)); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
+        .hero-sub { margin:7px 0 0; font-size:.9em; color:rgba(255,255,255,.88); font-weight:500; }
+        .hero-right { position:relative; z-index:1; flex-shrink:0; }
+        .hero-icon { width:86px; height:86px; border-radius:50%; background:rgba(255,255,255,.16); border:1.5px solid rgba(255,255,255,.34); display:flex; align-items:center; justify-content:center; box-shadow:0 20px 40px rgba(0,0,0,.22), inset 0 0 30px rgba(255,255,255,.12); backdrop-filter:blur(8px); animation:heroFloat 4s ease-in-out infinite; }
+        @keyframes heroFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+        .controls { display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:16px; }
+        .controls select { padding:10px 12px; border:1px solid var(--border); border-radius:10px; font-size:.9em; background:#fff; color:var(--text-main); outline:none; cursor:pointer; }
+        .btn-start { background:linear-gradient(135deg,#059669,#06b6d4); color:#fff; border:none; padding:11px 22px; border-radius:10px; font-weight:800; cursor:pointer; font-size:.95em; box-shadow:0 6px 16px rgba(5,150,105,.25); transition:.2s; }
+        .btn-start:hover { transform:translateY(-1px); box-shadow:0 8px 20px rgba(5,150,105,.32); }
+
+        .game-panel { background:rgba(255,255,255,.8); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,.9); border-radius:18px; padding:24px 20px; min-height:280px; box-shadow:0 4px 12px rgba(0,0,0,.04); }
+        .note { margin-top:14px; font-size:.78em; color:var(--text-sub); text-align:center; line-height:1.5; }
+
+        @media (max-width:600px) {
+            .hero-section { padding:24px 20px; min-height:0; }
+            .hero-right { position:absolute; top:16px; right:12px; }
+            .hero-icon { width:54px; height:54px; }
+            .hero-icon svg { width:26px !important; height:26px !important; }
+            .hero-title { white-space:nowrap; font-size:1.25em; padding-right:56px; }
+        }
+    </style>
+    <script src="../assets/js/theme-picker.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+    <script src="../assets/js/hero-rain.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="hero-section">
+            <div class="hero-bg"><canvas class="hero-rain-canvas"></canvas><div class="hero-blob b1"></div><div class="hero-blob b2"></div></div>
+            <div class="hero-left">
+                <div class="hero-tag">🎤 Luyện nói</div>
+                <h1 class="hero-title">Luyện Nói</h1>
+                <p class="hero-sub">Đọc to từ tiếng Hàn, máy chấm điểm chuẩn xác!</p>
+            </div>
+            <div class="hero-right">
+                <div class="hero-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="42" height="42" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="8" y1="21" x2="16" y2="21"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <select id="levelSelect"></select>
+            <button class="btn-start" onclick="startGame()">▶ Bắt đầu</button>
+        </div>
+
+        <div class="game-panel" id="gameSpeakingWrapper">
+            <div style="text-align:center; color:var(--text-sub); padding:40px 0;">Chọn cấp độ từ vựng và bấm Bắt đầu! 🎤</div>
+        </div>
+        <div class="note">💡 Nên dùng Chrome / Edge để nhận diện giọng nói tốt nhất. Bạn cần cho phép sử dụng micro.</div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="../auth.js"></script>
+
+    <script src="../assets/js/vocab-dictionary.js"></script>
+    <script src="../assets/js/game-speaking.js"></script>
+    <script>
+        (function () {
+            var sel = document.getElementById('levelSelect');
+            var levels = {};
+            (window.AutoVocabDict || []).forEach(function (d) { levels[d.level] = (levels[d.level] || 0) + 1; });
+            var keys = Object.keys(levels).sort(function (a, b) { return a - b; });
+            sel.innerHTML = '<option value="0">Tất cả (' + (window.AutoVocabDict || []).length + ' từ)</option>' +
+                keys.map(function (k) { return '<option value="' + k + '">Cấp ' + k + ' (' + levels[k] + ' từ)</option>'; }).join('');
+            if (keys.length) sel.value = keys[0];
+        })();
+
+        function startGame() {
+            var lv = document.getElementById('levelSelect').value;
+            var list = (window.AutoVocabDict || []).filter(function (d) { return lv == 0 || d.level == lv; })
+                .map(function (d) { return { word: d.base, meaning: d.meaning }; });
+            if (!list.length) { Swal.fire('Lỗi', 'Không có từ vựng ở cấp này.', 'warning'); return; }
+            initSpeaking(list);
+        }
+    </script>
+</body>
+</html>

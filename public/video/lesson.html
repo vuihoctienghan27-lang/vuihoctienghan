@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Bài học Video - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/video.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="../assets/js/theme-picker.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+    <script src="../assets/js/video-lessons.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../auth.js"></script>
+    <script src="../assets/js/vocab-dictionary.js"></script>
+    <script src="../assets/js/vocab-dictionary-full.js" defer></script>
+    <script src="../assets/js/vocab-external.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+<script defer>
+(function(){
+    function sync() {
+        var h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+        document.body.style.setProperty('height', h + 'px', 'important');
+        document.documentElement.style.setProperty('height', h + 'px', 'important');
+    }
+    sync();
+    window.addEventListener('resize', sync);
+    if (window.visualViewport) { window.visualViewport.addEventListener('resize', sync); window.visualViewport.addEventListener('scroll', sync); }
+})();
+</script>
+
+<div class="video-sticky-shell">
+<div class="video-wrapper">
+
+    <!-- 5-tab navigation bar (mobile: fixed to the bottom of the screen) -->
+    <nav class="mobile-bottom-nav" id="mobile-bottom-nav">
+        <button class="mobile-tab-btn active" data-mode="listen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+            <span>Luyện nghe</span>
+        </button>
+        <button class="mobile-tab-btn" data-mode="sublist">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+            <span>Phụ đề</span>
+        </button>
+        <button class="mobile-tab-btn" data-mode="speak">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
+            <span>Luyện nói</span>
+        </button>
+        <button class="mobile-tab-btn" data-mode="dictation">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            <span>Chính tả</span>
+        </button>
+        <button class="mobile-tab-btn" data-mode="notes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            <span>Ghi chú</span>
+        </button>
+    </nav>
+
+    <!-- 2-column CSS Grid layout -->
+    <div class="video-grid">
+
+        <!-- Row 1, Col 1: Video -->
+        <div class="video-grid-video">
+            <div class="video-player-wrap">
+                <div id="youtube-player"></div>
+            </div>
+        </div>
+
+        <!-- Row 1-2, Col 2: Subtitle List (spans video + controls height) -->
+        <div class="video-grid-sublist">
+            <div class="subtitle-panel">
+                <div class="subtitle-header">
+                    <input type="text" class="subtitle-search" id="sub-search" placeholder="Tìm..." autocomplete="off">
+                    <button class="sub-header-btn" id="btn-star-filter" title="Chỉ hiện đã lưu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
+                    <button class="sub-header-btn" id="btn-eye-toggle" title="Ẩn/Hiện nội dung"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+                </div>
+                <div class="subtitle-list" id="subtitle-list">
+                    <div class="sub-item" style="pointer-events:none;"><span class="sub-idx">1</span><span class="sub-time">0:00</span><div class="sub-text-wrap"><div class="sub-ko">Đang tải phụ đề...</div></div></div>
+                </div>
+                <div class="subtitle-footer">
+                    <span id="sub-foot-count">Đang tải...</span>
+                    <span id="sub-foot-filter" style="display:none;color:#f59e0b;">(Đã lưu)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2, Col 1: Controls Bar -->
+        <div class="video-grid-controls">
+            <div class="video-controls-bar">
+                <button id="vb-stop" class="video-ctrl-btn" title="Dừng"><svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14"><path d="M6 6h12v12H6z"/></svg></button>
+                <button id="vb-back5" class="video-ctrl-btn" title="Lùi 5s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M11 17l-5-5 5-5"/><path d="M18 17l-5-5 5-5"/></svg></button>
+                <button id="vb-play-pause" class="video-ctrl-btn" title="Phát / Tạm dừng"><svg id="icon-vplay" viewBox="0 0 24 24" fill="currentColor" width="16" height="16"><path d="M8 5v14l11-7z"/></svg><svg id="icon-vpause" viewBox="0 0 24 24" fill="currentColor" width="16" height="16" style="display:none"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg></button>
+                <button id="vb-fwd5" class="video-ctrl-btn" title="Tiến 5s"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M13 17l5-5-5-5"/><path d="M6 17l5-5-5-5"/></svg></button>
+                <span class="video-time-display" id="vb-time-current">0:00</span>
+                <div class="video-progress-wrap" id="video-progress-wrap"><input type="range" class="video-progress" id="vb-progress" min="0" max="1000" value="0" title="Tua"><div class="progress-notes-layer" id="progress-notes-layer"></div></div>
+                <span class="video-time-display" id="vb-time-total">0:00</span>
+                <select class="video-speed-select" id="vb-speed" title="Tốc độ"><option value="0.5">0.5x</option><option value="0.75">0.75x</option><option value="1" selected>1x</option><option value="1.25">1.25x</option><option value="1.5">1.5x</option></select>
+                <div class="cc-dropdown-wrap" id="cc-dropdown-wrap"><button class="cc-toggle-btn" id="cc-toggle-btn" title="Phụ đề CC"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><rect x="1" y="3" width="22" height="14" rx="2"/><path d="M7 17l1 3 1-3"/><line x1="4" y1="8" x2="10" y2="8"/><line x1="4" y1="12" x2="8" y2="12"/><line x1="12" y1="8" x2="20" y2="8"/><line x1="12" y1="12" x2="20" y2="12"/></svg></button><div class="cc-dropdown" id="cc-dropdown"><button class="cc-option active" data-cc="bilingual">Song ngữ</button><button class="cc-option" data-cc="kr">KR</button><button class="cc-option" data-cc="vn">VN</button><button class="cc-option" data-cc="off">Tắt</button></div></div>
+                <div class="gear-dropdown-wrap" id="gear-dropdown-wrap"><button class="gear-toggle-btn" id="gear-toggle-btn" title="Cài đặt">⚙️</button><div class="gear-dropdown" id="gear-dropdown"><div class="gear-row"><span>Font</span><select id="set-font"><option value="">Mặc định</option><option value="'Noto Sans KR',sans-serif">Noto Sans KR</option><option value="'Inter',sans-serif">Inter</option><option value="'Pretendard',sans-serif">Pretendard</option></select></div><div class="gear-row"><span>Cỡ chữ</span><select id="set-size"><option value="">Mặc định</option><option value="1.6em">Nhỏ</option><option value="2em" selected>Vừa</option><option value="2.4em">Lớn</option><option value="2.8em">Rất lớn</option></select></div><div class="gear-row"><span>Màu</span><select id="set-color"><option value="">Mặc định</option><option value="#1e293b">Xám đen</option><option value="#1e40af">Xanh dương</option><option value="#15803d">Xanh lá</option><option value="#b91c1c">Đỏ</option><option value="#6d28d9">Tím</option></select></div><div class="gear-row"><span>Dòng</span><select id="set-spacing"><option value="">Mặc định</option><option value="1.2">Hẹp</option><option value="1.5" selected>Vừa</option><option value="1.9">Rộng</option></select></div><div class="gear-row"><span>Câu tiếp</span><label class="gear-toggle"><input type="checkbox" id="set-nextsub" checked><span class="gear-slider"></span></label></div><div class="gear-row"><span>Che CC gốc</span><label class="gear-toggle"><input type="checkbox" id="set-cover-cc"><span class="gear-slider"></span></label></div></div></div>
+            </div>
+        </div>
+
+        <!-- Row 3, Col 1: Bilingual Subtitle -->
+        <div class="video-grid-cursub">
+            <div class="video-current-sub" id="video-current-sub">
+                <div class="cur-sub-active"><div class="cur-sub-ko" id="cur-sub-ko">---</div><div class="cur-sub-vi" id="cur-sub-vi">---</div></div>
+                <div class="cur-sub-next" id="cur-sub-next"><div class="cur-sub-next-ko" id="cur-sub-next-ko"></div><div class="cur-sub-next-vi" id="cur-sub-next-vi"></div></div>
+                <div id="speak-result-in-sub" class="speak-result-in-sub"></div>
+                <div class="dict-score" id="dict-score" style="margin-top:10px; text-align:center;"></div>
+                <div class="dict-result" id="dict-result"></div>
+                <div class="dict-vi-hint-wrapper" id="dict-vi-hint-wrapper" style="display:none; position:relative; margin-top:40px; font-size:0.9em; cursor:pointer; align-items:center; justify-content:center;" title="Nhấn để xem gợi ý">
+                    <span class="dict-hint-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg></span>
+                    <span class="dict-target-vi dict-hidden-text" id="dict-vi-hint" style="text-align:center;">---</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3, Col 2: 2x2 Mode Buttons -->
+        <div class="video-grid-modebtns">
+            <div class="mode-grid-2x2">
+                <button class="mbtn-card active" data-mode="listen"><span class="mbtn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg></span><span class="mbtn-label">Luyện<br>Nghe</span></button>
+                <button class="mbtn-card" data-mode="speak"><span class="mbtn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg></span><span class="mbtn-label">Luyện<br>Nói</span></button>
+                <button class="mbtn-card" data-mode="dictation"><span class="mbtn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg></span><span class="mbtn-label">Chính<br>Tả</span></button>
+                <button class="mbtn-card" data-mode="notes"><span class="mbtn-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg></span><span class="mbtn-label">Ghi<br>Chú</span></button>
+            </div>
+        </div>
+
+        <!-- Row 4, Col 1: Mode Content + Actions -->
+        <div class="video-grid-mode">
+            <div class="video-mode-content" id="video-mode-content">
+                <div id="mode-listen" class="vmode-pane active"></div>
+                <div id="mode-speak" class="vmode-pane">
+                    <!-- hidden shadow-ko/vi used by JS, no visual duplicate frame -->
+                    <span id="shadow-ko" style="display:none;"></span>
+                    <span id="shadow-vi-hint" style="display:none;"></span>
+                    <div class="video-actions-row" style="transition:none;">
+                        <div class="vact-wrap"><button class="vact-btn" id="vact-prev" title="Lùi đoạn"><span class="vact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><polygon points="19 20 9 12 19 4 19 20"></polygon><line x1="5" y1="19" x2="5" y2="5"></line></svg></span></button><span class="vact-label">Lùi đoạn</span></div>
+                        <div class="vact-wrap"><button class="vact-btn" id="vact-next" title="Đoạn kế"><span class="vact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg></span></button><span class="vact-label">Đoạn kế</span></div>
+                        <div class="vact-wrap"><button class="vact-btn" id="vact-mic" title="Ghi âm"><span class="vact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg></span></button><span class="vact-label">Ghi âm</span></div>
+                        <div class="vact-wrap"><button class="vact-btn" id="vact-loop" title="Lặp lại"><span class="vact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg></span></button><span class="vact-label">Lặp lại</span></div>
+                    </div>
+                </div>
+                <div id="mode-dictation" class="vmode-pane">
+                    <div class="dict-actions-big" style="display:flex; gap:12px; margin-top:12px; justify-content:center;">
+                        <button class="dict-btn-big dict-btn-secondary" id="vact-dict-replay" title="Nghe lại"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-3.54"></path></svg> Nghe lại</button>
+                        <button class="dict-btn-big dict-btn-primary" id="dict-check-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="20 6 9 17 4 12"></polyline></svg> Kiểm tra</button>
+                        <button class="dict-btn-big dict-btn-secondary" id="vact-dict-next" title="Câu tiếp">Tiếp <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg></button>
+                    </div>
+                </div>
+                <div id="mode-notes" class="vmode-pane">
+                    <div class="notes-add-area"><textarea class="notes-input" id="notes-input" rows="2" placeholder="Thêm ghi chú..."></textarea><button class="notes-add-btn" id="notes-add-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Thêm</button></div>
+                    <div class="notes-list" id="notes-list"><div class="practice-empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="36" height="36"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div><div>Chưa có ghi chú</div></div></div>
+                </div>
+            </div>
+        </div>
+    </div><!-- end video-grid -->
+</div><!-- end wrapper -->
+</div><!-- end sticky shell -->
+
+<div class="note-tooltip" id="note-tooltip" style="display:none;"></div>
+
+<!-- Removed Sticky sizing script to allow normal page scrolling -->
+
+<!-- Lesson data -->
+<script>
+(function(){var p=new URLSearchParams(window.location.search),lid=p.get('id');if(!lid){document.title='Thiếu ID bài học - Vui Học Tiếng Hàn';return;}
+function apply(d){var cs=(d.subtitles||[]).map(function(s){var r={start:s.start,end:s.end,ko:s.ko||'',vi:s.vi||''},si=r.ko.indexOf('/');if(si===-1)si=r.ko.indexOf('／');if(si>0&&!r.vi){r.vi=r.ko.substring(si+1).trim();r.ko=r.ko.substring(0,si).trim();}return r;});window._videoLesson={id:d.id||lid,videoId:d.videoId,title:d.title,subtitles:cs};document.title=d.title+' - Vui Học Tiếng Hàn';if(typeof window.initVideoLesson==='function')window.initVideoLesson();}
+var local=window.VideoLessons||[],ll=null;for(var i=0;i<local.length;i++){if(local[i].id===lid){ll=local[i];break;}}if(ll)apply(ll);
+if(typeof firebase!=='undefined'&&firebase.firestore){firebase.firestore().collection('video_lessons').doc(lid).get().then(function(doc){if(doc.exists){var d=doc.data();d.id=doc.id;apply(d);}}).catch(function(){});}else if(!ll)document.title='Không tìm thấy bài học - Vui Học Tiếng Hàn';})();
+</script>
+
+<script src="../assets/js/video.js"></script>
+</body>
+</html>

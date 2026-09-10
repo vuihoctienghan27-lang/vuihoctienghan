@@ -115,118 +115,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ========================================================
-// HỆ THỐNG POPUP TRA TỪ THÔNG MINH
-// ========================================================
-document.addEventListener('DOMContentLoaded', () => {
-    if(window.location.pathname.includes('mypage.html')) return; 
-
-    const tooltip = document.createElement('div');
-    tooltip.id = 'smart-vocab-tooltip';
-    tooltip.style.cssText = `
-        display: none; position: absolute; z-index: 10000; background: #ffffff; border: 1px solid #e2e8f0;
-        border-radius: 12px; padding: 15px; width: max-content; min-width: 220px; max-width: 320px;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); font-family: 'Pretendard', sans-serif;
-    `;
-    document.body.appendChild(tooltip);
-    let hideTimeout;
-
-    const svgSpk = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
-    const svgSv  = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#cbd5e1" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
-    const svgSvd = `<svg viewBox="0 0 24 24" width="20" height="20" fill="#f59e0b" stroke="#f59e0b" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>`;
-
-    function showTooltip(span) {
-        clearTimeout(hideTimeout);
-        const base = span.getAttribute('data-base') || span.innerText.trim();
-        const mean = span.getAttribute('data-meaning') || 'Chưa có nghĩa';
-        const isSaved = window.savedVocabSet && window.savedVocabSet.has(base);
-
-        const renderDefaultTooltip = () => {
-            tooltip.innerHTML = `
-                <div style="display:flex;justify-content:space-between;border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin-bottom:8px;align-items:center;">
-                    <strong style="font-size:1.3em;color:#2563eb;line-height:1;">${base}</strong>
-                    <div style="display:flex;gap:8px;">
-                        <button class="flat-icon-btn" style="padding:6px;width:auto;border:none;background:#f8fafc;border-radius:6px;cursor:pointer;color:#475569;" onclick="speakText('${base}')">${svgSpk}</button>
-                        <button class="flat-icon-btn save-btn" style="padding:6px;width:auto;border:none;background:#f8fafc;border-radius:6px;cursor:pointer;" data-w="${base}" data-m="${mean.replace(/"/g,'&quot;')}">${isSaved ? svgSvd : svgSv}</button>
-                    </div>
-                </div>
-                <div style="font-weight:500; color:#334155; font-size:1.05em; line-height:1.4;">${mean}</div>`;
-                
-            const sBtn = tooltip.querySelector('.save-btn');
-            if (sBtn) {
-                sBtn.onclick = async function(evt) {
-                    evt.stopPropagation();
-                    const cu = typeof firebase !== 'undefined' ? firebase.auth().currentUser : null;
-                    if (!cu) { 
-                        if (typeof Swal !== 'undefined') Swal.fire({icon: 'warning', title: 'Yêu cầu đăng nhập', text: 'Vui lòng đăng nhập để lưu từ vựng!', confirmButtonColor: '#2563eb'});
-                        else alert('Vui lòng đăng nhập để lưu từ vựng!'); 
-                        return; 
-                    }
-                    const db = firebase.firestore();
-                    
-                    if (window.savedVocabSet.has(base)) {
-                        this.innerHTML = '⏳';
-                        window.savedVocabSet.delete(base);
-                        await db.collection('users').doc(cu.uid).collection('vocabulary').doc(base).delete();
-                        this.innerHTML = svgSv; 
-                    } else {
-                        if (window.userVocabLists && window.userVocabLists.length > 1) {
-                            let listBtns = window.userVocabLists.map(l => `<button class="folder-list-btn" data-list="${l}" style="width: 100%; text-align: left; padding: 8px 12px; border: none; background: #f8fafc; border-radius: 6px; margin-bottom: 5px; cursor: pointer; font-weight: 600; color: #1e293b; transition: 0.2s;">📁 ${l}</button>`).join('');
-                            tooltip.innerHTML = `
-                                <div style="font-size:0.95em; font-weight:700; color:#64748b; margin-bottom:10px;">Lưu "${base}" vào:</div>
-                                <div style="max-height: 150px; overflow-y: auto;">${listBtns}</div>
-                            `;
-                            
-                            tooltip.querySelectorAll('.folder-list-btn').forEach(btn => {
-                                btn.onmouseenter = function() { this.style.background = '#e0f2fe'; this.style.color = '#2563eb'; };
-                                btn.onmouseleave = function() { this.style.background = '#f8fafc'; this.style.color = '#1e293b'; };
-                                btn.onclick = async function(e) {
-                                    e.stopPropagation();
-                                    const selectedList = this.getAttribute('data-list');
-                                    tooltip.innerHTML = `<div style="text-align:center; padding:15px 10px; font-size:1.1em; font-weight:bold; color:#10b981;">Đã lưu vào ${selectedList}!</div>`;
-                                    await db.collection('users').doc(cu.uid).collection('vocabulary').doc(base).set({
-                                        word: base, meaning: mean, listName: selectedList, status: 0, savedAt: firebase.firestore.FieldValue.serverTimestamp()
-                                    });
-                                    window.savedVocabSet.add(base);
-                                    setTimeout(() => { tooltip.style.display = 'none'; }, 1000);
-                                };
-                            });
-                        } else {
-                            this.innerHTML = '⏳';
-                            window.savedVocabSet.add(base);
-                            await db.collection('users').doc(cu.uid).collection('vocabulary').doc(base).set({
-                                word: base, meaning: mean, listName: 'Đã lưu', status: 0, savedAt: firebase.firestore.FieldValue.serverTimestamp()
-                            });
-                            this.innerHTML = svgSvd; 
-                        }
-                    }
-                };
-            }
-        };
-        
-        renderDefaultTooltip();
-        tooltip.style.display = 'block';
-        const r = span.getBoundingClientRect();
-        let topPos = r.bottom + window.scrollY + 10;
-        let leftPos = r.left + window.scrollX;
-        if (leftPos + tooltip.offsetWidth > window.innerWidth) leftPos = window.innerWidth - tooltip.offsetWidth - 20;
-        tooltip.style.left = leftPos + 'px';
-        tooltip.style.top  = topPos + 'px';
-    }
-
-    document.querySelectorAll('.vocab-word').forEach(span => {
-        span.addEventListener('mouseenter', () => showTooltip(span));
-        span.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { tooltip.style.display = 'none'; }, 250); });
-        span.addEventListener('click', (e) => { e.stopPropagation(); showTooltip(span); });
-    });
-
-    tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
-    tooltip.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { tooltip.style.display = 'none'; }, 250); });
-    document.addEventListener('click', (e) => {
-        if (!tooltip.contains(e.target) && !e.target.classList.contains('vocab-word')) tooltip.style.display = 'none';
-    });
-});
-
-// ========================================================
 // LOGIC GAME ĐỀ THI
 // ========================================================
 let isExamMode = false, isExamSubmitted = false, timeLeft = 70 * 60, examTimer = null;
@@ -236,6 +124,7 @@ window.selectMode = (mode) => {
     document.body.classList.add('app-started');
     const startScreen = document.getElementById('startScreen');
     if (startScreen) startScreen.style.display = 'none';
+    window.learningActive = true;
     if (mode === 'exam') {
         isExamMode = true;
         const ec = document.getElementById('examControls'); if (ec) ec.style.display = 'block';
@@ -257,17 +146,15 @@ window.selectMode = (mode) => {
 
 function saveExamTime() {
     if (typeof firebase === 'undefined' || !firebase.auth().currentUser) return;
-    const uid = firebase.auth().currentUser.uid;
-    const today = new Date().toISOString().split('T')[0];
-    
+
+    // Thời gian học (totalStudyMinutes / dailyStudyData) do activity-tracker.js đếm
+    // (chạy song song trên mọi trang có activity-tracker) — không cộng lại ở đây.
+
     let sessionMins = parseInt(sessionStorage.getItem('studySessionMins') || '0');
     sessionMins++;
     sessionStorage.setItem('studySessionMins', sessionMins);
 
-    let updates = {
-        totalStudyMinutes: firebase.firestore.FieldValue.increment(1),
-        dailyStudyData: { [today]: firebase.firestore.FieldValue.increment(1) }
-    };
+    let updates = {};
 
     if (sessionMins === 60) {
         updates.bonusEXP = firebase.firestore.FieldValue.increment(10);
@@ -277,7 +164,9 @@ function saveExamTime() {
             alert("🎉 Chúc mừng! Bạn đã giải đề liên tục 1 giờ và nhận được 10 EXP!");
         }
     }
-    firebase.firestore().collection("users").doc(uid).set(updates, {merge: true});
+    if (Object.keys(updates).length > 0) {
+        firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).set(updates, {merge: true});
+    }
 }
 
 function startTimer() {
@@ -298,22 +187,22 @@ window.lastScrollPositionBeforeExplain = window.lastScrollPositionBeforeExplain 
 
 window.toggleExplain = (btn) => {
     const content = btn.nextElementSibling;
-    if (content) {
-        if (content.style.display === 'block') {
-            content.style.display = 'none';
-            window.scrollTo({ top: window.lastScrollPositionBeforeExplain, behavior: 'instant' });
-        } else {
-            window.lastScrollPositionBeforeExplain = window.scrollY;
-            content.style.display = 'block';
-            if (!content.querySelector('.btn-close-explain-injected')) {
-                const closeBtn = document.createElement('div');
-                closeBtn.className = 'btn-close-explain-injected';
-                closeBtn.innerHTML = '❌ Đóng';
-                closeBtn.style = 'text-align: center; color: #ef4444; font-weight: bold; cursor: pointer; margin-top: 15px; padding: 10px; background: #fee2e2; border-radius: 8px; font-size: 1.1em;';
-                content.appendChild(closeBtn);
-            }
-        }
+    if (!content) return;
+    if (typeof Swal === 'undefined') {
+        content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+        return;
     }
+    const html = content.innerHTML;
+    Swal.fire({
+        title: '📖 Giải thích chi tiết',
+        html: `<div class="explain-popup-body" style="text-align:left;max-height:70vh;overflow-y:auto;line-height:1.7;padding-right:4px;">${html}</div>`,
+        width: 'min(920px, 95vw)',
+        showConfirmButton: false,
+        showCloseButton: true,
+        background: 'var(--bg-card)',
+        color: 'var(--primary-text)',
+        customClass: { popup: 'explain-popup' }
+    });
 };
 
 document.addEventListener('click', function(e) {
@@ -335,11 +224,16 @@ document.addEventListener('click', function(e) {
 
 window.toggleGlobalVocab = () => { 
     const tog = document.getElementById('globalVocabToggle'); 
-    if (tog && tog.checked) {
-        document.body.classList.remove('vocab-disabled'); 
+    if (tog) {
+        if (tog.checked) {
+            document.body.classList.remove('vocab-disabled'); 
+        } else {
+            document.body.classList.add('vocab-disabled'); 
+        }
     } else {
-        document.body.classList.add('vocab-disabled'); 
+        document.body.classList.toggle('vocab-disabled');
     }
+    localStorage.setItem('vocabEnabled', !document.body.classList.contains('vocab-disabled'));
 };
 
 window.checkAnswer = (el, isCorrect_Original) => {
@@ -424,7 +318,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const footerHTML = `
         <footer id="global-auto-footer" class="global-footer">
             <div class="footer-content">
-                <div class="footer-logo">📚 Vui Học Tiếng Hàn</div>
+                <div class="footer-logo"><img src="assets/img/logo-navbar.png" alt="Vui Học Tiếng Hàn" style="height:32px;width:auto;display:inline-block;vertical-align:middle"></div>
                 <p class="footer-slogan">Hệ thống học và luyện thi tiếng Hàn</p>
                 <div class="footer-contact">
                     <span>Liên hệ:</span>

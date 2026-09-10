@@ -5,870 +5,783 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vui Học Tiếng Hàn - Nền Tảng Luyện Thi TOPIK</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     <meta name="description"
         content="Hệ thống luyện thi TOPIK thông minh với Flashcard từ vựng, minigame và chế độ thi thử chuẩn xác.">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Giao diện bài thi -->
+    <link rel="stylesheet" href="assets/css/exam-layout.css">
+    <link rel="stylesheet" href="assets/css/exam-controls.css">
 
+    <!-- CSS của riêng Landing Page -->
     <style>
         :root {
-            --bg-card: rgba(255, 255, 255, 0.95);
+            --bg-card: rgba(255,255,255,0.65);
+            --bg-card-hover: rgba(255,255,255,0.95);
             --text-main: #1f2937;
             --text-sub: #6b7280;
-            --border: #e5e7eb;
+            --border: rgba(255,255,255,0.5);
+            --border-hover: rgba(255,255,255,0.9);
             --primary: #2563eb;
+            --correct-bg: #f0fdf4;
+            --wrong-bg: #fef2f2;
+            --border-color: #e5e7eb;
         }
-
+        body.dark-mode {
+            --bg-card: rgba(30,41,59,0.65);
+            --bg-card-hover: rgba(30,41,59,0.95);
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border: rgba(255,255,255,0.1);
+            --border-hover: rgba(255,255,255,0.25);
+            --primary: #60a5fa;
+            --correct-bg: rgba(34,197,94,0.1);
+            --wrong-bg: rgba(239,68,68,0.1);
+            --border-color: #334155;
+        }
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Pretendard', 'Inter', sans-serif;
-            background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+            font-family: 'Pretendard','Inter',sans-serif;
+            background: linear-gradient(120deg,#e0c3fc 0%,#8ec5fc 100%);
             background-attachment: fixed;
             color: var(--text-main);
             margin: 0;
             padding: 0 0 40px 0;
+            overflow-x: hidden;
         }
+        body { transition: padding-right 0.35s ease; }
+        button,input,select { font-family: 'Pretendard','Inter',sans-serif !important; }
 
-        * {
-            box-sizing: border-box;
+        /* AUTH MODAL */
+        #authModal { display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(15,23,42,0.85);z-index:99999;justify-content:center;align-items:center; }
+        .auth-box { background:#fff;padding:40px 30px;border-radius:16px;width:90%;max-width:350px;text-align:center;position:relative; }
+        body.dark-mode .auth-box { background:#1e293b;color:#f8fafc; }
+        .auth-close { position:absolute;top:15px;right:20px;font-size:1.5em;cursor:pointer;color:#64748b;background:none;border:none; }
+        #googleAuthBtn { width:100%;background:#fff;color:#0f172a;border:1px solid #cbd5e0;padding:12px;border-radius:8px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;font-size:1em;transition:0.2s; }
+        #googleAuthBtn:hover { background:#f8fafc; }
+        body.dark-mode #googleAuthBtn { background:#0f172a;border-color:#334155;color:#f8fafc; }
+
+        /* DESKTOP DECORATIONS */
+        .desktop-decorations { position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:-1;display:none; }
+        @media(min-width:1200px) { .desktop-decorations { display:block; } }
+        .floating-img { position:absolute;animation:float 6s ease-in-out infinite;filter:drop-shadow(0 15px 25px rgba(0,0,0,0.15));opacity:0.85; }
+        body.dark-mode .floating-img { opacity:0.5; }
+        .img-left { top:22%;left:4%;width:130px;animation-delay:0s; }
+        .img-right { bottom:28%;right:4%;width:150px;animation-delay:-3s; }
+        .img-top-right { top:18%;right:7%;width:100px;animation-delay:-1.5s; }
+        .img-bottom-left { bottom:18%;left:7%;width:110px;animation-delay:-4.5s; }
+        @keyframes float { 0%,100% { transform:translateY(0px); } 50% { transform:translateY(-20px); } }
+
+        /* WRAPPER */
+        .wrapper {
+            max-width:950px;margin:0 auto;
+            background:rgba(255,255,255,0.25);
+            backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+            border:1px solid var(--border);border-radius:28px;
+            padding:25px 28px;
+            box-shadow:0 20px 40px rgba(0,0,0,0.08);
+            width:100%;
         }
-
-        button,
-        input,
-        select {
-            font-family: 'Pretendard', 'Inter', sans-serif !important;
+        @media (min-width: 1400px) {
+            .wrapper { max-width: 950px; }
         }
+        body.dark-mode .wrapper { background:rgba(15,23,42,0.4); }
 
-        /* Mobile: navbar width = body width, no desktop links */
-        @media (max-width: 768px) {
-            .global-nav, .wrapper {
-                margin-left: 15px !important;
-                margin-right: 15px !important;
-                width: auto !important;
-            }
-        }
-
-        #authModal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.85);
-            z-index: 99999;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .auth-box {
-            background: #fff;
-            padding: 40px 30px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 350px;
-            text-align: center;
-            position: relative;
-        }
-
-        .auth-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 1.5em;
-            cursor: pointer;
-            color: #64748b;
-            background: none;
-            border: none;
-        }
-
-        .auth-close:hover {
-            color: #0f172a;
-        }
-
-        #googleAuthBtn {
-            width: 100%;
-            background: #fff;
-            color: #0f172a;
-            border: 1px solid #cbd5e0;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            font-size: 1em;
-            transition: 0.2s;
-        }
-
-        #googleAuthBtn:hover {
-            background: #f8fafc;
-        }
-
-        /* ===== WRAPPER KÍNH MỜ ===== */
-        .wrapper { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 30px 40px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box; }
-
-        /* ===== HERO SECTION (BANNER) ===== */
+        /* HERO */
         .hero-section {
-            background: var(--random-bg-gradient, linear-gradient(135deg, #1e40af 0%, #3b82f6 100%));
-            border-radius: 16px;
-            padding: 32px 36px;
-            color: white;
-            margin-bottom: 28px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
+            /* Styles replaced by inline styles and image */
+            position:relative;
         }
 
+        /* SECTION HEADERS */
+        .section-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:2px dashed rgba(255,255,255,0.4); }
+        body.dark-mode .section-header { border-bottom-color:rgba(255,255,255,0.1); }
+        .section-title { font-size:1.3em;font-weight:900;margin:0;color:var(--text-main);display:flex;align-items:center;gap:10px; }
+        .section-more-link { font-size:0.85em;font-weight:700;color:var(--primary);text-decoration:none;display:flex;align-items:center;gap:4px;transition:0.2s; }
+        .section-more-link:hover { opacity:0.8; }
 
-        .hero-title {
-            font-size: 2.2em;
-            font-weight: 800;
-            margin: 0;
-            line-height: 1.2;
-            letter-spacing: -0.5px;
+        /* 4 PILLARS */
+        .pillars-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:32px; }
+        .pillar-card { background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:22px;text-decoration:none;color:var(--text-main);transition:all 0.3s cubic-bezier(0.4,0,0.2,1);display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 15px rgba(0,0,0,0.02); }
+        .pillar-card:hover { background:var(--bg-card-hover);border-color:var(--border-hover);transform:translateY(-5px);box-shadow:0 15px 30px rgba(0,0,0,0.08); }
+        .pillar-icon-wrapper { width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.7em; }
+        .c-read { background:#fee2e2; } .c-listen { background:#e0e7ff; } .c-write { background:#fef3c7; } .c-grammar { background:#dcfce7; }
+        body.dark-mode .c-read { background:rgba(239,68,68,0.2); } body.dark-mode .c-listen { background:rgba(99,102,241,0.2); } body.dark-mode .c-write { background:rgba(245,158,11,0.2); } body.dark-mode .c-grammar { background:rgba(34,197,94,0.2); }
+        .pillar-title { font-size:1.25em;font-weight:800;margin:0;display:flex;align-items:center;justify-content:space-between; }
+        .pillar-desc { font-size:0.9em;color:var(--text-sub);margin:0;line-height:1.5;font-weight:500; }
+        .pillar-arrow { color:var(--text-sub);transition:0.3s; }
+        .pillar-card:hover .pillar-arrow { color:var(--primary);transform:translateX(4px); }
+
+        /* FEATURED EXAMS */
+        .featured-exams-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:32px; }
+        .exam-card { display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:var(--bg-card);border:1px solid var(--border);border-radius:16px;text-decoration:none;color:var(--text-main);transition:all 0.3s;box-shadow:0 4px 10px rgba(0,0,0,0.03); }
+        .exam-card:hover { background:var(--bg-card-hover);border-color:var(--border-hover);transform:translateY(-4px);box-shadow:0 12px 25px rgba(37,99,235,0.12); }
+        .exam-info { display:flex;flex-direction:column;gap:6px; }
+        .exam-number { font-size:1.2em;font-weight:800;display:flex;align-items:center;gap:8px;flex-wrap:wrap; }
+        .badge-hot { background:#fff7ed;color:#ea580c;font-size:0.65em;padding:4px 10px;border-radius:99px;font-weight:800;border:1px solid #ffedd5; }
+        .badge-new { background:#eff6ff;color:#2563eb;font-size:0.65em;padding:4px 10px;border-radius:99px;font-weight:800;border:1px solid #dbeafe; }
+        body.dark-mode .badge-hot { background:rgba(234,88,12,0.2);border-color:rgba(234,88,12,0.3);color:#fdba74; }
+        body.dark-mode .badge-new { background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.3);color:#93c5fd; }
+        .exam-desc { font-size:0.88em;color:var(--text-sub);font-weight:600; }
+
+        /* ===== DAILY TOPIK WIDGET ===== */
+        .daily-topik-widget {
+            background:var(--bg-card);border:1px solid var(--border);border-radius:20px;
+            overflow:hidden;margin-bottom:32px;box-shadow:0 6px 20px rgba(0,0,0,0.04);
         }
-
-        /* TABS CHUYỂN ĐỀ TRONG BANNER */
-        .hero-tabs {
-            display: flex;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 6px;
-            width: fit-content;
-            margin-top: 20px;
-            gap: 5px;
+        .dtw-header {
+            background:linear-gradient(135deg,#1e40af,#4f46e5);
+            padding:16px 22px;color:white;
+            display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
         }
-
-        .hero-tab {
-            padding: 10px 30px;
-            border-radius: 8px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 700;
-            font-size: 1.05em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            background: transparent;
-        }
-
-        .hero-tab.active {
-            background: #fff;
-            color: #1e40af;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .hero-tab:not(.active):hover {
-            background: rgba(255, 255, 255, 0.25);
-            color: #fff;
-        }
-
-        /* ===== SECTION LABEL ===== */
-        .section-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
-            padding-bottom: 10px;
-        }
-
-        .section-title {
-            font-size: 1.1em;
-            font-weight: 800;
-            margin: 0;
-            color: var(--text-main);
-        }
-
-        /* ===== EXAM GRID 2 CỘT ===== */
-        .exam-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 14px;
-        }
-
-        /* ===== CAROUSEL MOBILE ===== */
-        .carousel-viewport {
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-            touch-action: pan-y pinch-zoom;
-            margin-bottom: 20px;
-        }
-
-        .carousel-track {
-            display: flex;
-            transition: transform 0.3s ease-out;
-            will-change: transform;
-        }
-
-        .carousel-page {
-            width: 100%;
-            flex-shrink: 0;
-            /* grid inside */
-        }
-
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 25px;
-        }
-
-        .carousel-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.15);
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .carousel-dot.active {
-            background: var(--primary);
-            transform: scale(1.3);
-        }
-
-        /* ===== CÔNG TẮC BẬT TẮT ===== */
-        .switch {
-            position: relative;
-            display: inline-block;
-            width: 44px;
-            height: 24px;
-            margin-top: 2px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.15);
-            transition: .4s;
-            border-radius: 24px;
-        }
-
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        input:checked+.slider {
-            background-color: var(--primary);
-        }
-
-        input:checked+.slider:before {
-            transform: translateX(20px);
-        }
-
-        /* ===== THẺ ĐỀ THI KÍNH MỜ ===== */
-        .exam-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 20px;
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            text-decoration: none;
-            color: var(--text-main);
-            transition: all 0.3s ease;
-            gap: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            min-height: 85px;
-            box-sizing: border-box;
-        }
-
-        .exam-card:hover {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(255, 255, 255, 1);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.12);
-        }
-
-        .exam-card-left {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .exam-number {
-            font-size: 1.15em;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-
-        .exam-badge {
-            display: inline-block;
-            font-size: 0.7em;
-            font-weight: 700;
-            padding: 3px 9px;
-            border-radius: 99px;
-            width: fit-content;
-        }
-
-        .badge-done {
-            background: #f0fdf4;
-            color: #16a34a;
-        }
-
-        .badge-hot {
-            background: #fff7ed;
-            color: #c2410c;
-        }
-
-        .badge-new {
-            background: #eff6ff;
-            color: #1d4ed8;
-        }
-
-        .exam-arrow {
-            color: #94a3b8;
-            transition: 0.2s;
-            flex-shrink: 0;
-        }
-
-        .exam-card:hover .exam-arrow {
-            color: var(--primary);
-            transform: translateX(3px);
-        }
-
-        .hero-tag {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.18);
-            color: #dbeafe;
-            font-size: 0.9em;
-            font-weight: 700;
-            padding: 5px 14px;
-            border-radius: 99px;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-        }
-
-        /* ===== FOOTER KÍNH MỜ LƠ LỬNG ===== */
-        .global-footer {
-            max-width: 900px;
-            margin: 10px auto 30px auto;
-            background: rgba(255, 255, 255, 0.35);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 20px;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-        }
-
-        .footer-link {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--text-main);
-            font-weight: 700;
-            font-size: 1.05em;
-            transition: transform 0.2s ease, color 0.2s;
-        }
-
-        .footer-link:hover {
-            transform: translateY(-2px);
-            color: #1877f2;
-        }
-
-        .footer-fb-icon {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
-            transition: 0.2s;
-        }
-
-        /* ĐIỀU CHỈNH KÍCH THƯỚC TRÊN MOBILE */
-        @media (max-width: 600px) {
-            .global-nav { position: sticky; top: 20px; z-index: 1000; background: rgba(255,255,255,0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.6); border-radius: 24px; box-shadow: 0 8px 32px 0 rgba(31,38,135,0.07); font-family: "Pretendard", "Inter", sans-serif; width: 100%; max-width: 900px; margin: 20px auto 30px auto; box-sizing: border-box; }
-
-            .wrapper {
-                margin: 0 15px 20px 15px;
-                padding: 20px 16px;
-                border-radius: 16px;
-            }
-
-            .global-footer {
-                margin: 10px 15px 25px 15px;
-                border-radius: 16px;
-            }
-
-            .hero-section {
-                padding: 24px 20px;
-            }
-
-            .hero-title {
-                font-size: 1.8em;
-            }
-
-            .hero-tabs {
-                width: 100%;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .hero-tab {
-                padding: 10px 0;
-                font-size: 1em;
-            }
-
-            .exam-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .exam-card {
-                padding: 12px 10px;
-                gap: 5px;
-            }
-
-            .exam-card-left {
-                gap: 4px;
-            }
-
-            .exam-number {
-                font-size: 1.2em;
-            }
-
-            .exam-badge {
-                font-size: 0.6em;
-                padding: 2px 6px;
-            }
-
-            .exam-arrow {
-                width: 16px;
-                height: 16px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-desktop-links {
-                display: none !important;
-            }
-        }
-    
-
+        .dtw-header-left { display:flex;align-items:center;gap:10px; }
+        .dtw-header-title { font-size:1.1em;font-weight:800; }
+        .dtw-header-sub { font-size:0.8em;opacity:0.85;margin-top:2px; }
+        .dtw-toggle-row { display:flex;gap:8px; }
+        .dtw-toggle { padding:6px 14px;border-radius:99px;border:1.5px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.15);color:white;font-size:0.8em;font-weight:700;cursor:pointer;transition:0.2s; }
+        .dtw-toggle.active { background:white;color:#1e40af;border-color:white; }
+        .dtw-body { padding:20px 22px; }
+        .dtw-loading { text-align:center;padding:28px;color:var(--text-sub); }
+        .dtw-spinner { width:28px;height:28px;border:3px solid rgba(37,99,235,0.15);border-top:3px solid #2563eb;border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 10px; }
+        @keyframes spin { to { transform:rotate(360deg); } }
+        .dtw-source { display:inline-block;font-size:0.75em;font-weight:700;padding:3px 10px;border-radius:99px;background:#eff6ff;color:#2563eb;border:1px solid #dbeafe;margin-bottom:12px; }
+        body.dark-mode .dtw-source { background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.3);color:#93c5fd; }
         
-</style>
+        .dtw-footer { display:flex;align-items:center;justify-content:flex-end;padding-top:8px; }
+        .dtw-more-link { display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;padding:10px 20px;border-radius:12px;font-size:0.9em;font-weight:800;text-decoration:none;transition:0.2s; }
+        .dtw-more-link:hover { transform:translateY(-2px);box-shadow:0 6px 15px rgba(37,99,235,0.35); }
+
+        /* ===== DAILY QUOTE WIDGET ===== */
+        .quote-widget {
+            background:var(--bg-card);border:1px solid var(--border);border-radius:20px;
+            overflow:hidden;margin-bottom:32px;box-shadow:0 6px 20px rgba(0,0,0,0.04);
+        }
+        .qw-calendar-top {
+            background:linear-gradient(135deg,#7c3aed,#4f46e5);
+            padding:14px 22px;color:white;
+            display:flex;align-items:center;justify-content:space-between;gap:10px;
+        }
+        .qw-month-label { font-size:1.1em;font-weight:800;opacity:0.9; }
+        .qw-weekday { font-size:0.9em;font-weight:600;opacity:0.8;margin-top:2px; }
+        .qw-clock { font-size:1.5em;font-weight:900;letter-spacing:2px;font-variant-numeric:tabular-nums; }
+        .qw-main { display:flex;align-items:center;gap:16px;padding:18px 22px 0; }
+        .qw-day-num { font-size:4.5em;font-weight:900;line-height:1;letter-spacing:-3px;color:#7c3aed;flex-shrink:0; }
+        body.dark-mode .qw-day-num { color:#a78bfa; }
+        .qw-date-label { font-size:1.25em;font-weight:800;color:var(--text-main); }
+        .qw-divider { height:1px;background:rgba(0,0,0,0.07);margin:0 22px; }
+        body.dark-mode .qw-divider { background:rgba(255,255,255,0.07); }
+        .qw-quote-body { padding:16px 22px 20px; }
+        .qw-label { display:inline-block;font-size:0.75em;font-weight:800;padding:3px 10px;border-radius:99px;background:linear-gradient(135deg,#7c3aed,#4f46e5);color:white;margin-bottom:12px; }
+        .qw-kr { font-size:1.15em;font-weight:700;line-height:1.7;color:var(--text-main);padding-left:14px;border-left:3px solid #7c3aed;margin-bottom:10px; }
+        .qw-vn { font-size:0.9em;color:var(--text-sub);font-weight:500;line-height:1.6;font-style:italic;padding-left:14px; }
+        .qw-author { text-align:right;font-size:0.85em;font-weight:700;color:#7c3aed;margin-top:10px; }
+        body.dark-mode .qw-author { color:#a78bfa; }
+
+        /* ===== FLASHCARD WIDGET ===== */
+        .flashcard-widget {
+            background:var(--bg-card);border:1px solid var(--border);border-radius:20px;
+            overflow:hidden;margin-bottom:32px;box-shadow:0 6px 20px rgba(0,0,0,0.04);
+        }
+        .fw-header {
+            background:linear-gradient(135deg,#059669,#10b981);
+            padding:16px 22px;color:white;
+            display:flex;align-items:center;justify-content:space-between;gap:12px;
+        }
+        .fw-header-title { font-size:1.1em;font-weight:800; }
+        .fw-header-sub { font-size:0.8em;opacity:0.85;margin-top:2px; }
+        .fw-body { padding:20px 22px; }
+        .fw-carousel { position:relative;overflow:hidden;border-radius:16px;touch-action:pan-y; }
+        .fw-track { display:flex;transition:transform 0.35s cubic-bezier(0.4,0,0.2,1); }
+        .fw-card {
+            flex-shrink:0;width:100%;
+            perspective:1000px;
+        }
+        .fw-card-inner {
+            position:relative;width:100%;min-height:200px;
+            transform-style:preserve-3d;
+            transition:transform 0.5s ease;
+            cursor:pointer;
+        }
+        .fw-card-inner.flipped { transform:rotateY(180deg); }
+        .fw-front, .fw-back {
+            position:absolute;inset:0;
+            backface-visibility:hidden;-webkit-backface-visibility:hidden;
+            border-radius:16px;
+            display:flex;flex-direction:column;align-items:center;justify-content:center;
+            padding:24px 20px;text-align:center;
+            min-height:200px;
+            border:2px solid var(--border);
+        }
+        .fw-front { background:linear-gradient(135deg,#ecfdf5,#d1fae5);border-color:rgba(16,185,129,0.3); }
+        body.dark-mode .fw-front { background:rgba(16,185,129,0.1);border-color:rgba(16,185,129,0.2); }
+        .fw-back { background:linear-gradient(135deg,#eff6ff,#dbeafe);border-color:rgba(37,99,235,0.3);transform:rotateY(180deg); }
+        body.dark-mode .fw-back { background:rgba(37,99,235,0.1);border-color:rgba(37,99,235,0.2); }
+        .fw-hint { font-size:0.75em;color:#6b7280;margin-bottom:12px;font-weight:600; }
+        .fw-word { font-size:2em;font-weight:900;color:#1f2937;line-height:1.2; }
+        body.dark-mode .fw-word { color:#f8fafc; }
+        .fw-meaning { font-size:1.3em;font-weight:800;color:#1e40af;margin-bottom:10px; }
+        body.dark-mode .fw-meaning { color:#93c5fd; }
+        .fw-example-kr { font-size:0.88em;color:#374151;line-height:1.6;margin-bottom:6px; }
+        .fw-example-vn { font-size:0.82em;color:#6b7280;font-style:italic;line-height:1.5; }
+        body.dark-mode .fw-example-kr { color:#e2e8f0; }
+        .fw-nav { display:flex;align-items:center;justify-content:center;gap:14px;margin-top:14px; }
+        .fw-nav-btn { background:var(--bg-card);border:1px solid var(--border);border-radius:10px;padding:8px 16px;font-size:0.9em;font-weight:700;cursor:pointer;color:var(--text-main);transition:0.2s; }
+        .fw-nav-btn:hover { background:var(--bg-card-hover);transform:translateY(-1px); }
+        .fw-dots { display:flex;gap:6px;align-items:center; }
+        .fw-dot { width:7px;height:7px;border-radius:50%;background:rgba(0,0,0,0.15);transition:0.3s;cursor:pointer; }
+        body.dark-mode .fw-dot { background:rgba(255,255,255,0.2); }
+        .fw-dot.active { background:#10b981;transform:scale(1.4); }
+
+        /* UTILS GRID */
+        .utils-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:14px; }
+        .util-card { background:var(--bg-card);border:1px solid var(--border);padding:16px;border-radius:16px;text-align:center;text-decoration:none;color:var(--text-main);transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:1em; }
+        .util-card:hover { background:var(--bg-card-hover);border-color:var(--border-hover);transform:translateY(-3px);color:var(--primary); }
+        .util-icon { font-size:1.7em; }
+
+        /* FOOTER */
+        .global-footer { max-width:950px;margin:20px auto 30px;background:rgba(255,255,255,0.25);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.4);border-radius:20px;padding:18px 20px;display:flex;justify-content:center;align-items:center;box-shadow:0 10px 25px rgba(0,0,0,0.05); }
+        body.dark-mode .global-footer { background:rgba(15,23,42,0.4);border-color:rgba(255,255,255,0.1); }
+        .footer-link { display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text-main);font-weight:700;font-size:1.05em;transition:0.2s; }
+        .footer-link:hover { transform:translateY(-2px);color:#1877f2; }
+        .footer-fb-icon { width:24px;height:24px;fill:currentColor; }
+
+        @media(max-width:1399px) { .global-footer { max-width:950px; } }
+        /* RESPONSIVE */
+        @media(max-width:768px) {
+            .wrapper { padding:18px 12px;margin:0 4px;width:auto;border-radius:20px; }
+            .global-footer { margin:15px 4px 25px;border-radius:18px; }
+            .hero-title { font-size:2em; }
+            .hero-section { padding:32px 22px; }
+            .pillars-grid { gap:12px; }
+            .pillar-desc { display:none; }
+            .pillar-card { padding:18px; }
+            .pillar-title { font-size:1.1em; }
+            .featured-exams-grid { grid-template-columns:1fr;gap:10px; }
+            .utils-grid { grid-template-columns:repeat(2,1fr);gap:8px; }
+            .util-card { flex-direction:column;text-align:center;padding:14px 10px;font-size:0.88em; }
+            .dtw-options { grid-template-columns:1fr; }
+            .qw-day-num { font-size:3.5em; }
+        }
+        @media(max-width:500px) {
+            .pillars-grid { grid-template-columns:repeat(2,1fr); }
+            .hero-title { font-size:1.75em; }
+        }
+    </style>
+
     <script src="assets/js/block.js"></script>
     <script src="assets/js/theme-picker.js"></script>
     <script src="assets/js/navbar.js"></script>
+    <script src="assets/js/chatbox.js"></script>
+<!-- Nhúng Siêu Widget Học Tiếng Hàn 2027 -->
+<script src="assets/js/korean-chat-widget.js"></script>
 </head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <body>
 
-
-    <div id="authModal">
-        <div class="auth-box">
-            <button class="auth-close"
-                onclick="document.getElementById('authModal').style.display='none'">&times;</button>
-            <h2 style="color:#0f172a;margin-top:0;font-size:1.6em;font-weight:800;">Bắt đầu học</h2>
-            <p style="color:#64748b;font-size:0.95em;margin-bottom:28px;">Đăng nhập để lưu tiến độ và từ vựng của bạn.
-            </p>
-            <button id="googleAuthBtn">
-                <svg width="22" height="22" viewBox="0 0 48 48">
-                    <path fill="#FFC107"
-                        d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
-                    <path fill="#FF3D00"
-                        d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z" />
-                    <path fill="#4CAF50"
-                        d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z" />
-                    <path fill="#1976D2"
-                        d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z" />
-                </svg>
-                Tiếp tục với Google
-            </button>
-        </div>
-    </div>
-
-    <div class="wrapper">
-
-        <div class="hero-section">
-            <div class="hero-tag">Đọc hiểu</div>
-            <h1 class="hero-title" id="heroTitle">Luyện thi theo bộ đề</h1>
-            <div class="hero-tabs">
-                <button class="hero-tab" id="tabTopik1" onclick="switchTopikLevel(1)">TOPIK I</button>
-                <button class="hero-tab active" id="tabTopik2" onclick="switchTopikLevel(2)">TOPIK II</button>
-            </div>
-        </div>
-
-
-        <div class="section-header"
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 2px solid rgba(255, 255, 255, 0.3); padding-bottom: 10px;">
-            <h3 class="section-title" id="modeTitle">📚 Chọn bộ đề</h3>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="modeLabel" style="font-weight: 700; font-size: 0.9em; color: var(--text-sub);">Dạng câu</span>
-                <label class="switch">
-                    <input type="checkbox" id="modeToggle" onchange="toggleMode()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <div class="carousel-viewport" id="carouselViewport">
-            <div class="carousel-track" id="examCarouselTrack">
-                <!-- JS Will Render -->
-            </div>
-        </div>
-        <div class="carousel-dots" id="carouselDots">
-            <!-- JS Will Render -->
-        </div>
-
-
-    </div>
-
-    <footer class="global-footer">
-        <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer"
-            class="footer-link">
-            <span>📚 Vui Học Tiếng Hàn</span>
-            <svg class="footer-fb-icon" viewBox="0 0 24 24">
-                <path
-                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+<div id="authModal">
+    <div class="auth-box">
+        <button class="auth-close" onclick="document.getElementById('authModal').style.display='none'">&times;</button>
+        <h2 style="margin-top:0;font-size:1.6em;font-weight:800;">Bắt đầu học</h2>
+        <p style="color:var(--text-sub);font-size:0.95em;margin-bottom:28px;">Đăng nhập để lưu tiến độ và từ vựng của bạn.</p>
+        <button id="googleAuthBtn">
+            <svg width="22" height="22" viewBox="0 0 48 48">
+                <path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/>
+                <path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/>
+                <path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/>
+                <path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/>
             </svg>
+            Tiếp tục với Google
+        </button>
+    </div>
+</div>
+
+<!-- DESKTOP DECORATIONS -->
+<div class="desktop-decorations">
+    <svg class="floating-img img-left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M20 80 Q 50 90 80 80 L 80 20 Q 50 30 20 20 Z" fill="#60a5fa" opacity="0.8"/>
+        <path d="M50 85 L 50 25" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+        <path d="M30 40 L 45 45 M 30 55 L 45 60 M 55 45 L 70 40 M 55 60 L 70 55" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/>
+        <circle cx="35" cy="70" r="3" fill="#ffffff"/><circle cx="65" cy="70" r="3" fill="#ffffff"/>
+        <path d="M45 75 Q 50 80 55 75" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+    </svg>
+    <svg class="floating-img img-right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="40" cy="40" r="25" fill="#fef08a" stroke="#ca8a04" stroke-width="6"/>
+        <circle cx="40" cy="40" r="18" fill="#ffffff" opacity="0.6"/>
+        <line x1="58" y1="58" x2="85" y2="85" stroke="#ca8a04" stroke-width="12" stroke-linecap="round"/>
+        <line x1="62" y1="62" x2="80" y2="80" stroke="#fcd34d" stroke-width="6" stroke-linecap="round"/>
+    </svg>
+    <svg class="floating-img img-top-right" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 10 L 60 40 L 90 40 L 65 60 L 75 90 L 50 70 L 25 90 L 35 60 L 10 40 L 40 40 Z" fill="#fcd34d" opacity="0.9"/>
+        <circle cx="42" cy="50" r="4" fill="#854d0e"/><circle cx="58" cy="50" r="4" fill="#854d0e"/>
+        <path d="M46 62 Q 50 68 54 62" stroke="#854d0e" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </svg>
+    <svg class="floating-img img-bottom-left" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="20,80 15,95 30,90" fill="#fca5a5"/>
+        <polygon points="20,80 70,30 80,40 30,90" fill="#fcd34d"/>
+        <polygon points="70,30 80,20 90,30 80,40" fill="#cbd5e1"/>
+        <polygon points="80,20 85,15 95,25 90,30" fill="#ef4444"/>
+    </svg>
+</div>
+
+<div class="wrapper">
+
+    <!-- HERO -->
+    <div class="hero-section" style="padding: 0; background: transparent; box-shadow: none; border: none; margin-bottom: 35px; text-align: center;">
+        <img src="assets/img/hero-banner.png" alt="Chinh phục Tiếng Hàn - Dễ dàng hơn bao giờ hết" style="width: 100%; height: auto; border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.12); display: block;">
+    </div>
+
+    <!-- 4 PILLARS -->
+    <div class="section-header">
+        <h2 class="section-title"><span>🎯</span> Khám phá Kỹ năng</h2>
+    </div>
+    <div class="pillars-grid">
+        <a href="reading/home.html" class="pillar-card">
+            <div class="pillar-icon-wrapper c-read">📖</div>
+            <h3 class="pillar-title">Luyện Đọc <svg class="pillar-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></h3>
+            <p class="pillar-desc">Kho đề thi thử phong phú với giải thích chi tiết và dịch thuật ngữ cảnh 1 chạm.</p>
         </a>
-    </footer>
+        <a href="listening/home.html" class="pillar-card">
+            <div class="pillar-icon-wrapper c-listen">🎧</div>
+            <h3 class="pillar-title">Luyện Nghe <svg class="pillar-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></h3>
+            <p class="pillar-desc">Tích hợp trình phát Audio thông minh. Luyện nghe theo chủ đề và kịch bản TOPIK chuẩn.</p>
+        </a>
+        <a href="writing/home.html" class="pillar-card">
+            <div class="pillar-icon-wrapper c-write">✍️</div>
+            <h3 class="pillar-title">Luyện Viết <svg class="pillar-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></h3>
+            <p class="pillar-desc">Thực hành viết câu 51-54. Hệ thống tự động kiểm tra từ khoá và tính điểm trực tiếp.</p>
+        </a>
+        <a href="grammar/home.html" class="pillar-card">
+            <div class="pillar-icon-wrapper c-grammar">🧩</div>
+            <h3 class="pillar-title">Ngữ Pháp <svg class="pillar-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></h3>
+            <p class="pillar-desc">Hệ thống ngữ pháp trọng tâm TOPIK I & II dễ hiểu kèm ví dụ thực tế.</p>
+        </a>
+    </div>
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <!-- DAILY QUOTE WIDGET -->
+    <div class="section-header">
+        <h2 class="section-title"><span>🗓️</span> Danh ngôn hôm nay</h2>
+    </div>
+    <div class="quote-widget">
+        <div class="qw-calendar-top">
+            <div>
+                <div class="qw-month-label" id="qwMonthLabel">Tháng --</div>
+                <div class="qw-weekday" id="qwWeekday">---</div>
+            </div>
+            <div class="qw-clock" id="qwClock">00:00:00</div>
+        </div>
+        <div class="qw-main">
+            <div class="qw-day-num" id="qwDayNum">--</div>
+            <div>
+                <div class="qw-date-label" id="qwDateLabel">Đang tải...</div>
+            </div>
+        </div>
+        <div class="qw-divider"></div>
+        <div class="qw-quote-body">
+            <div class="qw-label">💬 Danh ngôn tiếng Hàn</div>
+            <div class="qw-kr" id="qwKr">Đang tải...</div>
+            <div class="qw-vn" id="qwVn"></div>
+            <div class="qw-author" id="qwAuthor"></div>
+        </div>
+    </div>
 
+    <!-- DAILY TOPIK WIDGET -->
+    <div class="section-header">
+        <h2 class="section-title"><span>📝</span> Mỗi ngày 5 câu TOPIK</h2>
+  
+    </div>
+    <div class="daily-topik-widget">
+        <div class="dtw-header">
+            <div class="dtw-header-left">
+                <div>
+                    <div class="dtw-header-title">Câu hỏi hôm nay</div>
+                    <div class="dtw-header-sub">1 câu ngẫu nhiên từ bộ đề thật</div>
+                </div>
+            </div>
+            <div class="dtw-toggle-row">
+                <button class="dtw-toggle" id="dtwBtnT1" onclick="dtwSetLevel(1)">TOPIK I</button>
+                <button class="dtw-toggle active" id="dtwBtnT2" onclick="dtwSetLevel(2)">TOPIK II</button>
+            </div>
+        </div>
+        <div class="dtw-body">
+            <div id="dtwLoading" class="dtw-loading">
+                <div class="dtw-spinner"></div>
+                <div>Đang tải câu hỏi...</div>
+            </div>
+            <div id="dtwContent" style="display:none;"></div>
+            <div class="dtw-footer">
+                <a href="topikdaily.html" class="dtw-more-link">Xem thêm →</a>
+            </div>
+        </div>
+    </div>
 
-    <script>
-        // DATA
-        const EXAM_DATA = [35, 36, 37, 41, 47, 52, 60, 64, 83, 91, 96, 102];
+    <!-- DAILY VOCAB FLASHCARD -->
+    <div class="section-header">
+        <h2 class="section-title"><span>🃏</span> Mỗi ngày 10 từ vựng</h2>
+        <a href="vocab.html" class="section-more-link">Sổ từ vựng →</a>
+    </div>
+    <div class="flashcard-widget">
+        <div class="fw-header">
+            <div>
+                <div class="fw-header-title">Flashcard từ vựng hôm nay</div>
+                <div class="fw-header-sub">Nhấn vào thẻ để lật và xem nghĩa</div>
+            </div>
+        </div>
+        <div class="fw-body">
+            <div class="fw-carousel" id="fwCarousel">
+                <div class="fw-track" id="fwTrack"></div>
+            </div>
+            <div class="fw-nav">
+                <button class="fw-nav-btn" onclick="fwPrev()">◀ Trước</button>
+                <div class="fw-dots" id="fwDots"></div>
+                <button class="fw-nav-btn" onclick="fwNext()">Tiếp ▶</button>
+            </div>
+        </div>
+    </div>
 
-        const TYPE_DATA_T1 = [
-            { range: '31_33', label: 'Câu 31 - 33', desc: 'Tìm chủ đề' },
-            { range: '34_39', label: 'Câu 34 - 39', desc: 'Điền vào chỗ trống' },
-            { range: '40_42', label: 'Câu 40 - 42', desc: 'Đọc hiểu hình ảnh' },
-            { range: '43_45', label: 'Câu 43 - 45', desc: 'Chọn nội dung giống với bài đọc' },
-            { range: '46_48', label: 'Câu 46 - 48', desc: 'Tìm ý chính' },
-            { range: '49_50', label: 'Câu 49 - 50', desc: 'Điền vào chỗ trống & Chọn nội dung đúng' },
-            { range: '51_52', label: 'Câu 51 - 52', desc: 'Chọn nội dung đúng' },
-            { range: '53_54', label: 'Câu 53 - 54', desc: 'Các thông báo hoặc thư từ ngắn' },
-            { range: '55_56', label: 'Câu 55 - 56', desc: 'Đoạn văn kể chuyện' },
-            { range: '57_58', label: 'Câu 57 - 58', desc: 'Sắp xếp thứ tự' },
-            { range: '59_60', label: 'Câu 59 - 60', desc: 'Điền từ & Nội dung đúng' },
-            { range: '61_62', label: 'Câu 61 - 62', desc: 'Điền từ & Nội dung đúng' },
-            { range: '63_64', label: 'Câu 63 - 64', desc: 'Mục đích & Nội dung đúng' },
-            { range: '65_66', label: 'Câu 65 - 66', desc: 'Điền từ & Nội dung đúng' },
-            { range: '67_68', label: 'Câu 67 - 68', desc: 'Điền từ & Nội dung đúng' },
-            { range: '69_70', label: 'Câu 69 - 70', desc: 'Ý chính & Nội dung đúng' }
-        ];
+    <!-- FEATURED EXAMS — random mỗi ngày -->
+    <div class="section-header">
+        <h2 class="section-title"><span>🔥</span> Đề thi TOPIK Nổi Bật</h2>
+        <a href="reading/home.html" class="section-more-link">Tất cả đề →</a>
+    </div>
+    <div class="featured-exams-grid" id="featuredExamsGrid">
+        <div class="exam-card"><div class="exam-info"><span>Đang tải...</span></div></div>
+    </div>
 
-        const TYPE_DATA_T2 = [
-            { range: '1_2', label: 'Câu 1 - 2', desc: 'Chọn ngữ pháp đúng' },
-            { range: '3_4', label: 'Câu 3 - 4', desc: 'Chọn từ đồng nghĩa' },
-            { range: '5_8', label: 'Câu 5 - 8', desc: 'Đọc hiểu biển báo' },
-            { range: '9_12', label: 'Câu 9 - 12', desc: 'Hiểu biểu đồ & văn bản ngắn' },
-            { range: '13_15', label: 'Câu 13 - 15', desc: 'Sắp xếp thứ tự câu' },
-            { range: '16_18', label: 'Câu 16 - 18', desc: 'Điền từ vào chỗ trống' },
-            { range: '19_20', label: 'Câu 19 - 20', desc: 'Điền liên từ & Nội dung đúng' },
-            { range: '21_22', label: 'Câu 21 - 22', desc: 'Điền thành ngữ & Ý chính' },
-            { range: '23_24', label: 'Câu 23 - 24', desc: 'Gạch chân & Tâm trạng' },
-            { range: '25_27', label: 'Câu 25 - 27', desc: 'Đọc hiểu báo chí' },
-            { range: '28_31', label: 'Câu 28 - 31', desc: 'Điền vào chỗ trống' },
-            { range: '32_34', label: 'Câu 32 - 34', desc: 'Đọc hiểu nội dung giống' },
-            { range: '35_38', label: 'Câu 35 - 38', desc: 'Tìm chủ đề' },
-            { range: '39_41', label: 'Câu 39 - 41', desc: 'Chèn câu vào vị trí' },
-            { range: '42_43', label: 'Câu 42 - 43', desc: 'Tâm trạng & Nội dung đúng' },
-            { range: '44_45', label: 'Câu 44 - 45', desc: 'Chủ đề & Chèn câu' },
-            { range: '46_47', label: 'Câu 46 - 47', desc: 'Mục đích & Nội dung đúng' },
-            { range: '48_50', label: 'Câu 48 - 50', desc: 'Nội dung đúng & Thái độ' }
-        ];
+    <!-- UTILS -->
+    <div class="section-header">
+        <h2 class="section-title"><span>🛠️</span> Công cụ Tiện ích</h2>
+    </div>
+    <div class="utils-grid">
+        <a href="dict.html" class="util-card"><span class="util-icon">📚</span> Từ điển</a>
+        <a href="vocab.html" class="util-card"><span class="util-icon">📇</span> Sổ Từ Vựng</a>
+        <a href="forum.html" class="util-card"><span class="util-icon">💬</span> Hỏi Đáp</a>
+        <a href="dailynews.html" class="util-card"><span class="util-icon">📰</span> Đọc Báo</a>
+        <a href="hanhan.html" class="util-card"><span class="util-icon">🧠</span> Hán Hàn</a>
+        <a href="video/home.html" class="util-card"><span class="util-icon">🎬</span> Học qua Video</a>
+    </div>
 
-        let state = {
-            level: 2, // 1: TOPIK I, 2: TOPIK II
-            mode: 'exam' // 'exam' or 'type'
-        };
+</div>
 
-        function switchTopikLevel(lvl) {
-            state.level = lvl;
-            sessionStorage.setItem('topikLevel', lvl);
-            document.getElementById('tabTopik1').classList.toggle('active', lvl === 1);
-            document.getElementById('tabTopik2').classList.toggle('active', lvl === 2);
-            renderGrid();
-        }
+<footer class="global-footer">
+    <a href="https://www.facebook.com/groups/vuihoctienghan.online" target="_blank" rel="noopener noreferrer" class="footer-link">
+        <span>📚 Vui Học Tiếng Hàn</span>
+        <svg class="footer-fb-icon" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+    </a>
+</footer>
 
-        function toggleMode() {
-            const isTypeMode = document.getElementById('modeToggle').checked;
-            state.mode = isTypeMode ? 'type' : 'exam';
-            sessionStorage.setItem('topikMode', state.mode);
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 
-            document.getElementById('heroTitle').innerText = isTypeMode ? 'Luyện theo dạng câu' : 'Luyện thi theo bộ đề';
-            document.getElementById('modeTitle').innerText = isTypeMode ? '📚 Chọn dạng câu' : '📚 Chọn bộ đề';
+<script src="assets/js/vocab-daily.js"></script>
+<script>
+// ==================== DAILY QUOTE WIDGET ====================
+const QUOTES_MINI = [
+    {kr:"가는 말이 고와야 오는 말이 곱다.",vn:"Lời nói chẳng mất tiền mua, lựa lời mà nói cho vừa lòng nhau.",author:"Tục ngữ"},
+    {kr:"시작이 반이다.",vn:"Bắt đầu là đã đi được nửa chặng đường.",author:"Tục ngữ"},
+    {kr:"꿈을 향해 나아가는 것, 그것이 용기다.",vn:"Tiến về phía ước mơ — đó chính là can đảm.",author:""},
+    {kr:"배움에는 끝이 없다.",vn:"Học tập là hành trình không có điểm kết.",author:""},
+    {kr:"천 리 길도 한 걸음부터.",vn:"Vạn lý trường chinh bắt đầu từ một bước chân.",author:"Tục ngữ"},
+    {kr:"포기하지 않는 한 실패는 없다.",vn:"Chừng nào chưa bỏ cuộc, thất bại chưa tới.",author:""},
+    {kr:"오늘의 노력이 내일의 나를 만든다.",vn:"Nỗ lực hôm nay tạo nên bản thân ngày mai.",author:""},
+    {kr:"실패는 성공의 어머니다.",vn:"Thất bại là mẹ thành công.",author:"Tục ngữ"},
+    {kr:"불가능이란 없다, 오직 도전만이 있을 뿐.",vn:"Không có gì là không thể, chỉ có thách thức đang chờ.",author:""},
+    {kr:"지금 이 순간이 인생에서 가장 젊은 때다.",vn:"Khoảnh khắc này là lúc bạn trẻ nhất trong cuộc đời.",author:""},
+    {kr:"지식은 힘이다.",vn:"Tri thức là sức mạnh.",author:"Francis Bacon"},
+    {kr:"꾸준함이 재능을 이긴다.",vn:"Sự kiên trì sẽ đánh bại tài năng.",author:""},
+    {kr:"기회는 준비된 자에게 온다.",vn:"Cơ hội đến với người đã chuẩn bị sẵn.",author:"Louis Pasteur"},
+    {kr:"멈추지 않는다면 느려도 괜찮다.",vn:"Dù chậm cũng được, miễn là đừng dừng lại.",author:"Khổng Tử"},
+    {kr:"배움은 평생의 동반자다.",vn:"Học hỏi là người bạn đồng hành suốt đời.",author:""},
+    {kr:"오늘 할 수 있는 일을 내일로 미루지 마라.",vn:"Đừng để việc có thể làm hôm nay sang ngày mai.",author:""},
+    {kr:"언어를 배우는 것은 새로운 세계를 여는 것이다.",vn:"Học ngôn ngữ mới là mở ra một thế giới mới.",author:""},
+    {kr:"한국어를 배우는 것은 한국의 마음을 여는 열쇠다.",vn:"Học tiếng Hàn là chiếc chìa khóa mở ra trái tim của Hàn Quốc.",author:""},
+    {kr:"매 순간을 소중히 여겨라.",vn:"Hãy trân trọng từng khoảnh khắc.",author:""},
+    {kr:"한국어 공부, 포기하지 마세요. 반드시 빛나는 날이 옵니다.",vn:"Học tiếng Hàn, đừng bỏ cuộc. Nhất định sẽ có ngày tỏa sáng.",author:"Vui Học Tiếng Hàn"}
+];
 
-            renderGrid();
-        }
+function initQuoteWidget() {
+    const now = new Date();
+    const weekdays = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+    const months = ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'];
 
-        let currentPage = 0;
-        let totalPages = 0;
-        let startX = 0;
-        let isDragging = false;
-        let trackElement = document.getElementById('examCarouselTrack');
+    document.getElementById('qwDayNum').textContent = now.getDate();
+    document.getElementById('qwMonthLabel').textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+    document.getElementById('qwWeekday').textContent = weekdays[now.getDay()];
+    document.getElementById('qwDateLabel').textContent = `${weekdays[now.getDay()]}, ngày ${now.getDate()} ${months[now.getMonth()]}`;
 
-        function generateCard(item) {
-            let href = '';
-            let label = '';
-            let subLabel = '';
+    const q = QUOTES_MINI[window.getDayOfYear(now) % QUOTES_MINI.length];
+    document.getElementById('qwKr').textContent = q.kr;
+    document.getElementById('qwVn').textContent = q.vn;
+    document.getElementById('qwAuthor').textContent = q.author ? `— ${q.author}` : '';
 
-            const isTopik1 = state.level === 1;
-            const folder = isTopik1 ? 'topik_i' : 'topik_ii';
+    function updateClock() {
+        const t = new Date();
+        const h = String(t.getHours()).padStart(2,'0');
+        const m = String(t.getMinutes()).padStart(2,'0');
+        const s = String(t.getSeconds()).padStart(2,'0');
+        document.getElementById('qwClock').textContent = `${h}:${m}:${s}`;
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+}
 
-            if (state.mode === 'exam') {
-                href = `reading/${folder}/topik${item}.html`;
-                label = `Đề đọc ${item}`;
-                subLabel = `<span class="exam-badge badge-done">Hoàn thiện</span>`;
-            } else {
-                href = `reading/${folder}/type_${item.range}.html`;
-                label = item.label;
-                subLabel = `<span style="font-size: 0.75em; color: var(--text-sub);">${item.desc}</span>`;
-            }
+// ==================== DAILY TOPIK WIDGET ====================
+let dtwLevel = 2;
+const DTW_T2_EXAMS = [35,36,37,41,47,52,60,64,83,91,96,102];
+const DTW_T1_EXAMS = [35,36,37,41,47,52];
+const DTW_T2_QS = [1,2,3,4,5,6,7,8];
+const DTW_T1_QS = [30,31,32,33,34,35,36,37];
 
-            return `
-                <a href="${href}" class="exam-card">
-                    <div class="exam-card-left">
-                        <span class="exam-number">${label}</span>
-                        ${subLabel}
-                    </div>
-                    <svg class="exam-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" 
-                        width="20" height="20" style="flex-shrink: 0;">
-                        <path d="M9 18l6-6-6-6" />
-                    </svg>
-                </a>
-            `;
-        }
+function dtwSetLevel(lvl) {
+    dtwLevel = lvl;
+    document.getElementById('dtwBtnT1').classList.toggle('active', lvl===1);
+    document.getElementById('dtwBtnT2').classList.toggle('active', lvl===2);
+    dtwLoadQuestion();
+}
 
-        function renderGrid() {
-            let data = [];
-            if (state.mode === 'exam') {
-                data = EXAM_DATA;
-            } else {
-                data = state.level === 1 ? TYPE_DATA_T1 : TYPE_DATA_T2;
-            }
+async function dtwLoadQuestion() {
+    document.getElementById('dtwLoading').style.display = 'block';
+    document.getElementById('dtwContent').style.display = 'none';
 
-            const itemsPerPage = 6;
-            totalPages = Math.ceil(data.length / itemsPerPage);
+    const exams = dtwLevel === 2 ? DTW_T2_EXAMS : DTW_T1_EXAMS;
+    const qs = dtwLevel === 2 ? DTW_T2_QS : DTW_T1_QS;
 
-            // Xử lý Destop (chỉ hiện Grid thuần túy) vs Mobile (Carousel)
-            let isMobile = window.innerWidth <= 768; // Có thể điều chỉnh breakpoint nếu cần
+    // Try a few random combos
+    for (let attempt = 0; attempt < 8; attempt++) {
+        const exam = exams[Math.floor(Math.random() * exams.length)];
+        const q = qs[Math.floor(Math.random() * qs.length)];
+        const folder = dtwLevel === 2 ? 'reading/topik_ii' : 'reading/topik_i';
+        try {
+            const res = await fetch(`${folder}/topik${exam}.html`);
+            if (!res.ok) continue;
+            const html = await res.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const qBlock = doc.getElementById(`q${q}`);
+            if (!qBlock) continue;
 
-            const track = document.getElementById('examCarouselTrack');
-            const dotsContainer = document.getElementById('carouselDots');
-            track.innerHTML = '';
-            dotsContainer.innerHTML = '';
+            // Keep explanation area hidden initially
+            qBlock.querySelectorAll('.action-area').forEach(el => el.style.display = 'none');
 
-            if (isMobile) {
-                // RENDER CAROUSEL KIỂU VÒNG LẶP VUỐT
-                for (let i = 0; i < totalPages; i++) {
-                    const start = i * itemsPerPage;
-                    const chunk = data.slice(start, start + itemsPerPage);
-                    let pageHtml = `<div class="carousel-page"><div class="exam-grid">`;
-                    chunk.forEach(item => { pageHtml += generateCard(item); });
-                    pageHtml += `</div></div>`;
-                    track.innerHTML += pageHtml;
+            // Override option handlers
+            qBlock.querySelectorAll('.option').forEach((opt, oi) => {
+                const isCorrect = opt.getAttribute('onclick')?.includes('true');
+                opt.removeAttribute('onclick');
+                opt.setAttribute('data-correct', isCorrect ? '1' : '0');
+                opt.setAttribute('onclick', `dtwAnswer(this, ${isCorrect})`);
+            });
 
-                    // Add Dot
-                    dotsContainer.innerHTML += `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToPage(${i})"></div>`;
-                }
+            // Fix q-number
+            const qNum = qBlock.querySelector('.q-number');
+            if (qNum) qNum.style.fontWeight = '900';
 
-                // Infinite Clone (Clone last page to front, first page to end)
-                if (totalPages > 1) {
-                    const firstClone = track.firstElementChild.cloneNode(true);
-                    const lastClone = track.lastElementChild.cloneNode(true);
-                    track.appendChild(firstClone);
-                    track.insertBefore(lastClone, track.firstElementChild);
+            const sourceHtml = `<div class="dtw-source">📄 Đề ${exam} - Câu ${q}</div>`;
+            const feedbackHtml = `<div class="dtw-feedback" id="dtwFeedback"></div>`;
 
-                    // Initially show real first page
-                    track.style.transition = 'none';
-                    track.style.transform = `translateX(-100%)`; // hide the clone
-                }
+            document.getElementById('dtwContent').innerHTML = sourceHtml + qBlock.outerHTML + feedbackHtml;
+            document.getElementById('dtwLoading').style.display = 'none';
+            document.getElementById('dtwContent').style.display = 'block';
+            return;
+        } catch(e) { continue; }
+    }
 
-                dotsContainer.style.display = 'flex';
-                currentPage = 0;
-            } else {
-                // RENDER GRID CHUNG TRÊN DESKTOP KHÔNG CÓ CAROUSEL TRANG
-                let pageHtml = `<div class="carousel-page" style="width:100%;"><div class="exam-grid">`;
-                data.forEach(item => { pageHtml += generateCard(item); });
-                pageHtml += `</div></div>`;
+    document.getElementById('dtwLoading').innerHTML = '<div style="padding:20px;color:var(--text-sub);text-align:center;">Không thể tải. Vui lòng thử lại.</div>';
+}
 
-                track.innerHTML = pageHtml;
-                track.style.transform = 'none';
-                track.style.transition = 'none';
-                dotsContainer.style.display = 'none';
-            }
-        }
+function dtwAnswer(el, isCorrect) {
+    document.querySelectorAll('.dtw-option').forEach(o => {
+        o.classList.add('disabled');
+        if (o.getAttribute('onclick')?.includes('true')) o.classList.add('correct');
+    });
+    const fb = document.getElementById('dtwFeedback');
+    if (isCorrect) {
+        el.classList.add('correct');
+        fb.textContent = '✅ Chính xác! Bạn làm đúng rồi.';
+        fb.className = 'dtw-feedback ok';
+    } else {
+        el.classList.add('wrong');
+        fb.textContent = '❌ Sai rồi! Đáp án đúng đã được tô xanh.';
+        fb.className = 'dtw-feedback bad';
+    }
+}
 
-        // SWIPE CAROUSEL LOGIC
-        trackElement.addEventListener('touchstart', swipeStart);
-        trackElement.addEventListener('touchmove', swipeMove);
-        trackElement.addEventListener('touchend', swipeEnd);
+// ==================== FLASHCARD VOCAB WIDGET ====================
+let fwCards = [];
+let fwIdx = 0;
 
-        function updateDots(index) {
-            const dots = document.querySelectorAll('.carousel-dot');
-            dots.forEach(d => d.classList.remove('active'));
-            if (dots[index]) dots[index].classList.add('active');
-        }
+function initFlashcards() {
+    fwCards = window.getDailyVocab();
+    const track = document.getElementById('fwTrack');
+    const dotsContainer = document.getElementById('fwDots');
 
-        function goToPage(index, withTransition = true) {
-            currentPage = index;
-            if (withTransition) trackElement.style.transition = 'transform 0.3s ease-out';
-            else trackElement.style.transition = 'none';
-            // +1 because of the clone at the beginning
-            const offset = (index + 1) * 100;
-            trackElement.style.transform = `translateX(-${offset}%)`;
-            updateDots(index);
-        }
+    track.innerHTML = fwCards.map((card, i) => `
+        <div class="fw-card">
+            <div class="fw-card-inner" onclick="fwFlip(this)">
+                <div class="fw-front">
+                    <div class="fw-hint">Nhấn để xem nghĩa</div>
+                    <div class="fw-word">${card.word}</div>
+                </div>
+                <div class="fw-back">
+                    <div class="fw-meaning">${card.meaning}</div>
+                    <div class="fw-example-kr">${card.ex_kr}</div>
+                    <div class="fw-example-vn">${card.ex_vn}</div>
+                </div>
+            </div>
+        </div>
+    `).join('');
 
-        function swipeStart(e) {
-            if (window.innerWidth > 768 || totalPages <= 1) return;
-            startX = e.touches[0].clientX;
-            isDragging = true;
-            trackElement.style.transition = 'none';
-        }
+    dotsContainer.innerHTML = fwCards.map((_,i) =>
+        `<div class="fw-dot ${i===0?'active':''}" onclick="fwGoTo(${i})"></div>`
+    ).join('');
 
-        function swipeMove(e) {
-            if (!isDragging) return;
-            const currentX = e.touches[0].clientX;
-            const diff = startX - currentX;
-            // +1 for clone index
-            const baseOffset = (currentPage + 1) * trackElement.clientWidth;
-            trackElement.style.transform = `translateX(-${baseOffset + diff}px)`;
-        }
+    fwGoTo(0);
+}
 
-        function swipeEnd(e) {
-            if (!isDragging) return;
-            isDragging = false;
-            const currentX = e.changedTouches[0].clientX;
-            const diff = startX - currentX;
+function fwFlip(inner) {
+    inner.classList.toggle('flipped');
+}
 
-            // Nếu vuốt quá 50px thì chuyển trang
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    // Vuốt qua trái (next)
-                    currentPage++;
+function fwGoTo(idx) {
+    fwIdx = idx;
+    const track = document.getElementById('fwTrack');
+    track.style.transform = `translateX(-${idx * 100}%)`;
+    document.querySelectorAll('.fw-dot').forEach((d,i) => d.classList.toggle('active', i===idx));
+    // Reset flip state
+    document.querySelectorAll('.fw-card-inner').forEach((c,i) => {
+        if (i !== idx) c.classList.remove('flipped');
+    });
+}
+function fwPrev() { fwGoTo((fwIdx - 1 + fwCards.length) % fwCards.length); }
+function fwNext() { fwGoTo((fwIdx + 1) % fwCards.length); }
+
+// Touch swipe for flashcards
+let fwTouchStartX = 0;
+document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.getElementById('fwCarousel');
+    carousel.addEventListener('touchstart', e => { fwTouchStartX = e.touches[0].clientX; });
+    carousel.addEventListener('touchend', e => {
+        const diff = fwTouchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) diff > 0 ? fwNext() : fwPrev();
+    });
+});
+
+// ==================== AUTH ====================
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        if (typeof firebase !== 'undefined' && firebase.auth) {
+            firebase.auth().onAuthStateChanged(user => {
+                const btn = document.getElementById('navAvatarBtn');
+                if (!btn) return;
+                if (user) {
+                    btn.style.color = '#2563eb';
+                    btn.style.background = '#eff6ff';
+                    btn.style.borderRadius = '8px';
+                    btn.title = 'Tài khoản (' + (user.displayName || user.email) + ')';
+                    btn.onclick = () => { window.location.href = 'mypage.html'; };
                 } else {
-                    // Vuốt qua phải (prev)
-                    currentPage--;
+                    btn.title = 'Chưa đăng nhập — Nhấn để đăng nhập';
+                    btn.onclick = () => {
+                        const modal = document.getElementById('authModal');
+                        if (modal) modal.style.display = 'flex';
+                    };
                 }
-            }
-
-            // Chuyển tới vị trí mục tiêu
-            trackElement.style.transition = 'transform 0.3s ease-out';
-            trackElement.style.transform = `translateX(-${(currentPage + 1) * 100}%)`;
-
-            // Handle infinite Jump
-            if (currentPage >= totalPages) {
-                updateDots(0);
-                setTimeout(() => {
-                    currentPage = 0;
-                    goToPage(0, false);
-                }, 300);
-            } else if (currentPage < 0) {
-                updateDots(totalPages - 1);
-                setTimeout(() => {
-                    currentPage = totalPages - 1;
-                    goToPage(totalPages - 1, false);
-                }, 300);
-            } else {
-                updateDots(currentPage);
-            }
+            });
         }
+    }, 300);
+});
 
-        // Render init and Pagseshow logic for Back Navigation caching
-        window.addEventListener('pageshow', () => {
-            const savedMode = sessionStorage.getItem('topikMode');
-            const savedLevel = sessionStorage.getItem('topikLevel');
+// ==================== FEATURED EXAMS — random mỗi ngày ====================
+const EXAM_POOL = [
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik96.html",exam:"Kỳ 96",tag:"HOT",tagClass:"badge-hot",desc:"Bộ đề chính thức mới nhất"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik102.html",exam:"Kỳ 102",tag:"NEW",tagClass:"badge-new",desc:"Xu hướng ra đề mới"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik91.html",exam:"Kỳ 91",tag:"",tagClass:"",desc:"Đề thi chính thức"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik83.html",exam:"Kỳ 83",tag:"",tagClass:"",desc:"Đề thi chính thức"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik64.html",exam:"Kỳ 64",tag:"",tagClass:"",desc:"Đề thi chính thức"},
+    {label:"TOPIK II Nghe",href:"listening/topik_ii/topik102.html",exam:"Kỳ 102",tag:"NEW",tagClass:"badge-new",desc:"Luyện nghe TOPIK II"},
+    {label:"TOPIK II Nghe",href:"listening/topik_ii/topik91.html",exam:"Kỳ 91",tag:"",tagClass:"",desc:"Luyện nghe TOPIK II"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik96.html",exam:"Kỳ 96",tag:"HOT",tagClass:"badge-hot",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik102.html",exam:"Kỳ 102",tag:"NEW",tagClass:"badge-new",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik83.html",exam:"Kỳ 83",tag:"",tagClass:"",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik60.html",exam:"Kỳ 60",tag:"",tagClass:"",desc:"Đề thi chính thức"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik52.html",exam:"Kỳ 52",tag:"",tagClass:"",desc:"Đề thi chính thức"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik47.html",exam:"Kỳ 47",tag:"",tagClass:"",desc:"Đề thi chính thức"},
+    {label:"TOPIK I Đọc",href:"reading/topik_i/topik96.html",exam:"Kỳ 96",tag:"",tagClass:"",desc:"Luyện đọc TOPIK I"},
+    {label:"TOPIK I Đọc",href:"reading/topik_i/topik102.html",exam:"Kỳ 102",tag:"NEW",tagClass:"badge-new",desc:"Luyện đọc TOPIK I"},
+    {label:"TOPIK I Đọc",href:"reading/topik_i/topik83.html",exam:"Kỳ 83",tag:"",tagClass:"",desc:"Luyện đọc TOPIK I"},
+    {label:"TOPIK I Đọc",href:"reading/topik_i/topik64.html",exam:"Kỳ 64",tag:"",tagClass:"",desc:"Luyện đọc TOPIK I"},
+    {label:"TOPIK II Nghe",href:"listening/topik_ii/topik36.html",exam:"Kỳ 36",tag:"",tagClass:"",desc:"Luyện nghe TOPIK II"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik64.html",exam:"Kỳ 64",tag:"",tagClass:"",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik41.html",exam:"Kỳ 41",tag:"",tagClass:"",desc:"Đề thi chính thức"},
+    {label:"TOPIK II Đọc",href:"reading/topik_ii/topik37.html",exam:"Kỳ 37",tag:"",tagClass:"",desc:"Đề thi chính thức"},
+    {label:"TOPIK I Đọc",href:"reading/topik_i/topik60.html",exam:"Kỳ 60",tag:"",tagClass:"",desc:"Luyện đọc TOPIK I"},
+    {label:"TOPIK I Đọc",href:"reading/topik_i/topik52.html",exam:"Kỳ 52",tag:"",tagClass:"",desc:"Luyện đọc TOPIK I"},
+    {label:"TOPIK I Đọc",href:"reading/topik_i/topik47.html",exam:"Kỳ 47",tag:"",tagClass:"",desc:"Luyện đọc TOPIK I"},
+    {label:"TOPIK II Nghe",href:"listening/topik_ii/topik35.html",exam:"Kỳ 35",tag:"",tagClass:"",desc:"Luyện nghe TOPIK II"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik60.html",exam:"Kỳ 60",tag:"",tagClass:"",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik52.html",exam:"Kỳ 52",tag:"",tagClass:"",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik47.html",exam:"Kỳ 47",tag:"",tagClass:"",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik41.html",exam:"Kỳ 41",tag:"",tagClass:"",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik37.html",exam:"Kỳ 37",tag:"",tagClass:"",desc:"Luyện viết câu 51-54"},
+    {label:"TOPIK II Viết",href:"writing/topik_ii/topik36.html",exam:"Kỳ 36",tag:"",tagClass:"",desc:"Luyện viết câu 51-54"},
+];
 
-            if (savedLevel) {
-                state.level = parseInt(savedLevel);
-                document.getElementById('tabTopik1').classList.toggle('active', state.level === 1);
-                document.getElementById('tabTopik2').classList.toggle('active', state.level === 2);
-            }
+const SKILL_ICON = {
+    'Đọc': '📖', 'Nghe': '🎧', 'Viết': '✍️'
+};
 
-            const toggleEl = document.getElementById('modeToggle');
-            if (savedMode) {
-                state.mode = savedMode;
-                if (toggleEl) toggleEl.checked = (savedMode === 'type');
-            } else if (toggleEl) {
-                // Fallback detect browser autofill
-                state.mode = toggleEl.checked ? 'type' : 'exam';
-            }
+function getDailyPick(arr, count, seedOffset) {
+    const day = window.getDayOfYear(new Date());
+    const rng = window.seededRandom(day * 7919 + (seedOffset || 0));
+    const shuffled = [...arr];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, count);
+}
 
-            const isTypeMode = (state.mode === 'type');
-            document.getElementById('heroTitle').innerText = isTypeMode ? 'Luyện theo dạng câu' : 'Luyện thi theo bộ đề';
-            document.getElementById('modeTitle').innerText = isTypeMode ? '📚 Chọn dạng câu' : '📚 Chọn bộ đề';
+function initFeaturedExams() {
+    const picks = getDailyPick(EXAM_POOL, 4);
+    const grid = document.getElementById('featuredExamsGrid');
+    grid.innerHTML = picks.map(e => {
+        const icon = SKILL_ICON[e.label.split(' ').pop()] || '';
+        return `<a href="${e.href}" class="exam-card">
+            <div class="exam-info">
+                <span class="exam-number">${icon} ${e.label} - ${e.exam} ${e.tag ? `<span class="${e.tagClass}">${e.tag}</span>` : ''}</span>
+                <span class="exam-desc">${e.desc}</span>
+            </div>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+        </a>`;
+    }).join('');
+}
 
-            renderGrid();
-        });
+// Init all widgets
+window.addEventListener('load', () => {
+    initQuoteWidget();
+    dtwLoadQuestion();
+    initFlashcards();
+    initFeaturedExams();
+});
+</script>
 
-        // Xử lý khi xoay màn hình Desktop <-> Mobile
-        window.addEventListener('resize', () => {
-            renderGrid();
-        });
-
-    </script>
-
-
-    <script>
-        // Auth state watcher: đổi màu icon avatar + xử lý click
-        document.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                if (typeof firebase !== 'undefined' && firebase.auth) {
-                    firebase.auth().onAuthStateChanged(user => {
-                        const btn = document.getElementById('navAvatarBtn');
-                        if (!btn) return;
-                        if (user) {
-                            btn.style.color = '#2563eb';
-                            btn.style.background = '#eff6ff';
-                            btn.style.borderRadius = '8px';
-                            btn.title = 'Tài khoản (' + (user.displayName || user.email) + ')';
-                            btn.onclick = () => { window.location.href = 'mypage.html'; };
-                        } else {
-                            btn.style.color = '#0f172a';
-                            btn.style.background = '';
-                            btn.title = 'Chưa đăng nhập — Nhấn để đăng nhập';
-                            btn.onclick = () => {
-                                const modal = document.getElementById('authModal');
-                                if (modal) modal.style.display = 'flex';
-                            };
-                        }
-                    });
-                }
-            }, 300);
-        });
-    </script>
-    <script src="auth.js"></script>
-    <script src="assets/js/theme.js"></script>
-
-    <script src="assets/js/menu.js"></script>
+<script src="auth.js"></script>
+<script src="assets/js/theme.js"></script>
 </body>
-
 </html>

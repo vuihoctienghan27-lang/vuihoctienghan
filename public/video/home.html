@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Học qua Video - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="../assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/video.css">
+    <style>
+        .hero-section {
+            position: relative; flex-shrink: 0;
+            background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 50%, #ec4899 100%);
+            border-radius: 22px; padding: 32px 36px; color: #fff; margin-bottom: 24px;
+            box-shadow: 0 18px 40px rgba(139,92,246,.18);
+            display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 190px;
+        }
+        .hero-bg { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; pointer-events: none; }
+        .hero-bg::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1px);
+            background-size: 22px 22px; opacity: .45;
+        }
+        .hero-blob { position: absolute; border-radius: 50%; filter: blur(64px); }
+        .hero-blob.b1 { width: 230px; height: 230px; background: rgba(255,255,255,.2); top: -70px; right: -50px; animation: blobFloat 8s ease-in-out infinite; }
+        .hero-blob.b2 { width: 170px; height: 170px; background: rgba(255,255,255,.13); bottom: -70px; left: -40px; animation: blobFloat 11s ease-in-out infinite reverse; }
+        @keyframes blobFloat { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-12px) scale(1.08); } }
+        .hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,.16); color: #fff;
+            font-size: .8em; font-weight: 800; padding: 6px 14px; border-radius: 99px;
+            letter-spacing: .6px; text-transform: uppercase;
+            backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.24); margin-bottom: 14px;
+        }
+        .hero-title {
+            font-size: 2.3em; font-weight: 900; margin: 0; line-height: 1.12; letter-spacing: -.6px;
+            background: linear-gradient(120deg, #fff 35%, rgba(255,255,255,.5));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { margin: 9px 0 0; font-size: .95em; color: rgba(255,255,255,.88); font-weight: 500; }
+        .hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+        .hero-icon {
+            width: 110px; height: 110px; border-radius: 50%;
+            background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,255,255,.34);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 22px 44px rgba(0,0,0,.22), inset 0 0 34px rgba(255,255,255,.12);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            animation: heroFloat 4s ease-in-out infinite;
+        }
+        @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+        .hero-admin-btn {
+            margin-top: 14px; background: rgba(255,255,255,.2); color: #fff;
+            border: 1px solid rgba(255,255,255,.35); padding: 9px 18px; border-radius: 12px;
+            font-weight: 800; cursor: pointer; font-size: .9em;
+            backdrop-filter: blur(8px); transition: background .2s;
+        }
+        .hero-admin-btn:hover { background: rgba(255,255,255,.32); }
+        @media (max-width: 768px) {
+            .hero-section { padding: 26px 22px; flex-direction: column; align-items: flex-start; min-height: auto; }
+            .hero-right { position: absolute; top: 18px; right: 14px; }
+            .hero-icon { width: 60px; height: 60px; }
+            .hero-icon svg { width: 30px !important; height: 30px !important; }
+            .hero-title { padding-right: 64px; }
+            .hero-title { white-space: nowrap; font-size: 1.05em; }
+            .hero-sub { font-size: .86em; }
+        }
+    </style>
+    <script src="../assets/js/theme-picker.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+    <script src="../assets/js/video-lessons.js"></script>
+    
+    <!-- Firebase & Auth -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../auth.js"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<div class="video-wrapper" style="margin-top:80px;margin-bottom:40px;">
+
+    <!-- Hero -->
+    <div class="hero-section">
+        <div class="hero-bg"><div class="hero-blob b1"></div><div class="hero-blob b2"></div></div>
+        <div class="hero-left">
+            <div class="hero-tag">🎬 Học qua video</div>
+            <h1 class="hero-title">Học Tiếng Hàn Qua Video</h1>
+            <p class="hero-sub">Xem video có phụ đề Hàn - Việt, luyện nghe chép chính tả & shadowing</p>
+            <button class="hero-admin-btn" id="admin-actions" style="display:none;" onclick="openAddVideoModal()">+ Thêm video</button>
+        </div>
+        <div class="hero-right">
+            <div class="hero-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="52" height="52" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lesson Grid -->
+    <div class="video-lesson-grid" id="lesson-grid">
+        <!-- Rendered by script below -->
+    </div>
+
+    <!-- How to use -->
+    <div style="margin-top:32px;background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:20px 24px;">
+        <h2 style="font-size:1.1em;font-weight:800;color:#1e293b;margin:0 0 12px;">📖 Cách sử dụng</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-size:.9em;color:#475569;line-height:1.6;">
+            <div><b>👆 Click câu thoại</b><br>Tua đến đoạn video tương ứng</div>
+            <div><b>🔍 Click từ tiếng Hàn</b><br>Tra từ điển 49.000+ từ KRDict</div>
+            <div><b>✏️ Chế độ Nghe chép</b><br>Gõ lại những gì bạn nghe được</div>
+            <div><b>🗣️ Chế độ Shadowing</b><br>Nghe và nhại lại từng câu</div>
+        </div>
+        <div style="margin-top:12px;font-size:.82em;color:#94a3b8;">
+            ⌨️ Phím tắt: <b>Space</b> Play/Pause · <b>← →</b> Tua ±5s · <b>↑ ↓</b> Tua ±2s
+        </div>
+    </div>
+
+</div>
+<script>
+(function() {
+    var grid = document.getElementById('lesson-grid');
+    var adminActions = document.getElementById('admin-actions');
+    var adminEmails = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+    var currentLessons = [];
+
+    // Check Auth State
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user && adminEmails.includes(user.email)) {
+            adminActions.style.display = 'flex';
+            window._isVideoAdmin = true;
+        } else {
+            adminActions.style.display = 'none';
+            window._isVideoAdmin = false;
+        }
+        // Re-render cards to show/hide admin buttons
+        if (currentLessons.length) renderLessons();
+    });
+
+    // Fetch lessons from Firestore (with local fallback)
+    function loadLessons() {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:.6;">Đang tải dữ liệu...</div>';
+        firebase.firestore().collection('video_lessons').orderBy('createdAt', 'desc').get().then(function(snap) {
+            currentLessons = [];
+            snap.forEach(function(doc) {
+                var d = doc.data();
+                d.id = doc.id;
+                currentLessons.push(d);
+            });
+            // Merge local lessons not already in Firestore
+            var localLessons = window.VideoLessons || [];
+            localLessons.forEach(function(L) {
+                if (!currentLessons.some(function(f) { return f.id === L.id; })) {
+                    currentLessons.push(L);
+                }
+            });
+            renderLessons();
+        }).catch(function(err) {
+            console.warn('[video-home] Firestore fetch failed, using local data:', err.message);
+            // Fallback to local data
+            currentLessons = (window.VideoLessons || []).slice();
+            renderLessons();
+        });
+    }
+
+    function renderLessons() {
+        var isAdmin = window._isVideoAdmin === true;
+        if (!currentLessons.length) {
+            grid.innerHTML = '<div class="video-lesson-card" style="grid-column:1/-1;text-align:center;padding:40px;opacity:.6;">Chưa có bài học nào.</div>';
+            return;
+        }
+        var h = '';
+        currentLessons.forEach(function(L) {
+            var thumb = L.videoId ? 'https://img.youtube.com/vi/' + L.videoId + '/hqdefault.jpg' : '';
+            h += '<div class="video-lesson-card-wrap">';
+            h += '<a href="lesson.html?id=' + encodeURIComponent(L.id) + '" class="video-lesson-card">';
+            h += '<div class="card-thumb"' + (thumb ? ' style="background-image:url(\'' + thumb + '\');background-size:cover;background-position:center;"' : '') + '>';
+            if (!thumb) h += '🎬';
+            h += '<div class="card-play-icon">▶</div></div>';
+            h += '<div class="card-body">';
+            h += '<div class="card-title">' + escH(L.title) + '</div>';
+            h += '<div class="card-meta"><span>💬 ' + (L.lineCount || (L.subtitles ? L.subtitles.length : 0)) + ' câu thoại</span><span>⏱ ' + (L.duration || '--:--') + '</span></div>';
+            h += '</div></a>';
+            if (isAdmin) {
+                h += '<div class="card-admin-actions">';
+                h += '<button class="card-admin-btn edit" onclick="event.preventDefault();event.stopPropagation();openEditVideoModal(\'' + L.id + '\')" title="Sửa">✏️</button>';
+                h += '<button class="card-admin-btn delete" onclick="event.preventDefault();event.stopPropagation();deleteVideoLesson(\'' + L.id + '\',\'' + escH(L.title).replace(/'/g,"\\'") + '\')" title="Xóa">🗑️</button>';
+                h += '</div>';
+            }
+            h += '</div>';
+        });
+        grid.innerHTML = h;
+    }
+
+    function escH(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
+
+    var editingId = null; // track which lesson is being edited
+
+    // Admin Add Video Logic
+    window.openAddVideoModal = function() {
+        editingId = null;
+        showVideoForm({});
+    };
+
+    window.openEditVideoModal = function(id) {
+        var lesson = currentLessons.find(function(l) { return l.id === id; });
+        if (!lesson) return;
+        editingId = id;
+        // Build SRT-like text from existing subtitles for the textarea
+        var srtText = '';
+        if (lesson.subtitles) {
+            lesson.subtitles.forEach(function(sub) {
+                var h = Math.floor(sub.start / 3600);
+                var m = Math.floor((sub.start % 3600) / 60);
+                var s = Math.floor(sub.start % 60);
+                var ms = Math.round((sub.start % 1) * 1000);
+                var he = Math.floor(sub.end / 3600);
+                var me = Math.floor((sub.end % 3600) / 60);
+                var se = Math.floor(sub.end % 60);
+                var mse = Math.round((sub.end % 1) * 1000);
+                var t = String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')+','+String(ms).padStart(3,'0');
+                var te = String(he).padStart(2,'0')+':'+String(me).padStart(2,'0')+':'+String(se).padStart(2,'0')+','+String(mse).padStart(3,'0');
+                srtText += t + ' --> ' + te + '\n';
+                srtText += sub.ko;
+                if (sub.vi) srtText += ' / ' + sub.vi;
+                srtText += '\n\n';
+            });
+        }
+        showVideoForm({
+            videoId: lesson.videoId,
+            title: lesson.title,
+            subtitle: lesson.subtitle || '',
+            duration: lesson.duration || '',
+            srt: srtText.trim()
+        });
+    };
+
+    function showVideoForm(prefill) {
+        var html = `
+            <div style="text-align:left; font-size:.9em;">
+                <label>YouTube ID (VD: dQw4w9WgXcQ)</label>
+                <input id="av-ytid" class="swal2-input" placeholder="YouTube Video ID" value="` + escH(prefill.videoId || '') + `" style="margin-top:4px; margin-bottom:12px;">
+
+                <label>Tiêu đề bài học</label>
+                <input id="av-title" class="swal2-input" placeholder="VD: Bài 1: Chào hỏi" value="` + escH(prefill.title || '') + `" style="margin-top:4px; margin-bottom:12px;">
+
+                <label>Chủ đề / Mô tả phụ</label>
+                <input id="av-subtitle" class="swal2-input" placeholder="VD: Giao tiếp cơ bản" value="` + escH(prefill.subtitle || '') + `" style="margin-top:4px; margin-bottom:12px;">
+
+                <label>Thời lượng (MM:SS)</label>
+                <input id="av-duration" class="swal2-input" placeholder="VD: 04:20" value="` + escH(prefill.duration || '') + `" style="margin-top:4px; margin-bottom:12px;">
+
+                <label>Paste nội dung SRT/VTT (Thời gian + Hàn/Việt cách nhau bởi dấu /)</label>
+                <textarea id="av-srt" class="swal2-textarea" placeholder="Paste SRT text vào đây..." style="margin-top:4px; min-height:150px;">` + escH(prefill.srt || '') + `</textarea>
+            </div>
+        `;
+        Swal.fire({
+            title: editingId ? 'Sửa Bài Học Video' : 'Thêm Bài Học Video',
+            html: html,
+            width: '600px',
+            showCancelButton: true,
+            confirmButtonText: editingId ? '💾 Cập nhật' : 'Phân tích & Lưu',
+            cancelButtonText: 'Hủy',
+            preConfirm: function() {
+                var yt = document.getElementById('av-ytid').value.trim();
+                var tit = document.getElementById('av-title').value.trim();
+                var sub = document.getElementById('av-subtitle').value.trim();
+                var dur = document.getElementById('av-duration').value.trim();
+                var srt = document.getElementById('av-srt').value.trim();
+                if (!yt || !tit || !srt) {
+                    Swal.showValidationMessage('Vui lòng nhập đủ ID Youtube, Tiêu đề và SRT!');
+                    return false;
+                }
+                var parsedSubs = parseSrt(srt);
+                if (parsedSubs.length === 0) {
+                    Swal.showValidationMessage('Không tìm thấy phụ đề hợp lệ trong đoạn text SRT.');
+                    return false;
+                }
+                return { videoId: yt, title: tit, subtitle: sub, duration: dur, subtitles: parsedSubs };
+            }
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                saveVideoLesson(result.value);
+            }
+        });
+    }
+
+    function parseSrt(text) {
+        var blocks = text.replace(/\r\n/g, '\n').split(/\n\s*\n/);
+        var rawBlocks = [];
+        var timeRegex = /(\d{2}):(\d{2}):(\d{2})(?:[,.](\d{3}))?\s*-->\s*(\d{2}):(\d{2}):(\d{2})(?:[,.](\d{3}))?/;
+        var hangulRegex = /[\uAC00-\uD7AF\u1100-\u11FF\u3130-\u318F]/;
+
+        blocks.forEach(function(block) {
+            var lines = block.split('\n').map(function(l) { return l.trim(); }).filter(function(l) { return l.length > 0; });
+            if (lines.length < 2) return;
+
+            var timeLineIdx = -1;
+            var tStart = 0, tEnd = 0;
+            for (var i = 0; i < lines.length; i++) {
+                var match = timeRegex.exec(lines[i]);
+                if (match) {
+                    timeLineIdx = i;
+                    tStart = parseInt(match[1])*3600 + parseInt(match[2])*60 + parseInt(match[3]) + (match[4] ? parseInt(match[4])/1000 : 0);
+                    tEnd = parseInt(match[5])*3600 + parseInt(match[6])*60 + parseInt(match[7]) + (match[8] ? parseInt(match[8])/1000 : 0);
+                    break;
+                }
+            }
+            if (timeLineIdx === -1) return;
+
+            var textLines = lines.slice(timeLineIdx + 1).filter(function(l) { return l.length > 0; });
+            if (textLines.length === 0) return;
+
+            // Process each text line individually: split ko/vi by '/'
+            // Multiple lines within one timestamp = long sentence split → divide time evenly
+            var totalDuration = tEnd - tStart;
+            var segDuration = totalDuration / textLines.length;
+
+            textLines.forEach(function(line, li) {
+                var cleanLine = line.replace(/<[^>]+>/g, '').trim();
+                if (!cleanLine) return;
+
+                var ko = '', vi = '';
+
+                // Try split by '/'
+                var slashIdx = cleanLine.indexOf('/');
+                if (slashIdx === -1) slashIdx = cleanLine.indexOf('／');
+                if (slashIdx > 0) {
+                    ko = cleanLine.substring(0, slashIdx).trim();
+                    vi = cleanLine.substring(slashIdx + 1).trim();
+                } else if (slashIdx === 0) {
+                    // Starts with / → everything after is vi
+                    vi = cleanLine.substring(1).trim();
+                } else {
+                    // No slash → Hangul detection
+                    if (hangulRegex.test(cleanLine)) {
+                        ko = cleanLine;
+                    } else {
+                        vi = cleanLine;
+                    }
+                }
+
+                if (ko || vi) {
+                    var segStart = Math.round((tStart + li * segDuration) * 1000) / 1000;
+                    var segEnd = Math.round((tStart + (li + 1) * segDuration) * 1000) / 1000;
+                    rawBlocks.push({ start: segStart, end: segEnd, ko: ko, vi: vi });
+                }
+            });
+        });
+
+        // Post-process: merge consecutive blocks with identical timestamps
+        // (separate SRT blocks that share the same time range)
+        var result = [];
+        var i = 0;
+        while (i < rawBlocks.length) {
+            var j = i + 1;
+            while (j < rawBlocks.length &&
+                   rawBlocks[j].start === rawBlocks[i].start &&
+                   rawBlocks[j].end === rawBlocks[i].end) {
+                j++;
+            }
+            var group = rawBlocks.slice(i, j);
+            if (group.length === 1) {
+                result.push(group[0]);
+            } else {
+                var groupDuration = group[0].end - group[0].start;
+                var partDuration = groupDuration / group.length;
+                for (var g = 0; g < group.length; g++) {
+                    result.push({
+                        start: Math.round((group[0].start + g * partDuration) * 1000) / 1000,
+                        end: Math.round((group[0].start + (g + 1) * partDuration) * 1000) / 1000,
+                        ko: group[g].ko,
+                        vi: group[g].vi
+                    });
+                }
+            }
+            i = j;
+        }
+        return result;
+    }
+
+    function saveVideoLesson(data) {
+        Swal.fire({title: 'Đang lưu...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); }});
+
+        var docData = {
+            videoId: data.videoId,
+            title: data.title,
+            subtitle: data.subtitle,
+            duration: data.duration,
+            lineCount: data.subtitles.length,
+            subtitles: data.subtitles,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        var promise;
+        if (editingId) {
+            // Update existing
+            promise = firebase.firestore().collection('video_lessons').doc(editingId).update(docData);
+        } else {
+            // Create new
+            var id = 'bai-' + Date.now();
+            docData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            promise = firebase.firestore().collection('video_lessons').doc(id).set(docData);
+        }
+
+        promise.then(function() {
+            Swal.fire('Thành công!', editingId ? 'Đã cập nhật bài học.' : 'Đã thêm bài học.', 'success');
+            editingId = null;
+            loadLessons();
+        }).catch(function(err) {
+            console.error(err);
+            Swal.fire('Lỗi', 'Không thể lưu bài học.', 'error');
+        });
+    }
+
+    // Delete
+    window.deleteVideoLesson = function(id, title) {
+        Swal.fire({
+            title: 'Xóa bài học?',
+            html: 'Bạn có chắc muốn xóa <b>' + title + '</b>?<br><small>Thao tác này không thể hoàn tác.</small>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '🗑️ Xóa',
+            confirmButtonColor: '#ef4444',
+            cancelButtonText: 'Hủy'
+        }).then(function(result) {
+            if (!result.isConfirmed) return;
+            Swal.fire({title: 'Đang xóa...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); }});
+            firebase.firestore().collection('video_lessons').doc(id).delete().then(function() {
+                Swal.fire('Đã xóa!', '', 'success');
+                loadLessons();
+            }).catch(function(err) {
+                console.error(err);
+                Swal.fire('Lỗi', 'Không thể xóa bài học.', 'error');
+            });
+        });
+    };
+
+    // Auto load on init if Firebase is ready
+    if (typeof firebase !== 'undefined') {
+        loadLessons();
+    } else {
+        window.addEventListener('load', loadLessons);
+    }
+})();
+</script>
+<script src="../assets/js/theme.js"></script>
+</body>
+</html>

@@ -38,6 +38,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const path = window.location.pathname;
     if (path.includes('mypage.html') || path.includes('forum.html') || path.endsWith('index.html') || path === '/' || path.endsWith('.com/')) return;
     if (path.includes('type_')) return; // Không hiển thị màn hình chọn chế độ cho trang luyện theo dạng câu
+    // Chế độ xem lại lịch sử: không hiện khung chọn chế độ + examControls (vẫn chạy auth-check để gọi applyReview)
+    const reviewMode = !!new URLSearchParams(window.location.search).get('review');
 
     let isTopikI = path.includes('/topik_i/');
     let isTopikII = path.includes('/topik_ii/');
@@ -72,11 +74,13 @@ document.addEventListener("DOMContentLoaded", function() {
         </div>
     </div>
     `;
-    const container = document.querySelector('.container');
-    if (container) {
-        container.insertAdjacentHTML('beforebegin', startScreenHTML);
-    } else {
-        document.body.insertAdjacentHTML('afterbegin', startScreenHTML);
+    if (!reviewMode) {
+        const container = document.querySelector('.container');
+        if (container) {
+            container.insertAdjacentHTML('beforebegin', startScreenHTML);
+        } else {
+            document.body.insertAdjacentHTML('afterbegin', startScreenHTML);
+        }
     }
 
     // === AUTH GUARD: Chỉ cho phép làm bài khi đã đăng nhập ===
@@ -117,9 +121,23 @@ document.addEventListener("DOMContentLoaded", function() {
             clearInterval(_authCheck);
             firebase.auth().onAuthStateChanged(user => {
                 if (user) {
-                    showExamModeButtons();
+                    // Deep-link xem lại lịch sử làm đề: topikXX.html?review=<attemptId>
+                    const reviewId = new URLSearchParams(window.location.search).get('review');
+                    if (reviewId) {
+                        // Không hiện màn hình chọn chế độ — vào thẳng trạng thái xem lại
+                        const ss = document.getElementById('startScreen');
+                        if (ss) ss.style.display = 'none';
+                        setTimeout(() => { applyReview(reviewId); }, 300);
+                    } else {
+                        showExamModeButtons();
+                    }
                 } else {
-                    showLoginRequired();
+                    // Xem lại lịch sử bắt buộc đăng nhập — chưa đăng nhập thì về trang chủ
+                    if (new URLSearchParams(window.location.search).get('review')) {
+                        window.location.href = '/index.html';
+                    } else {
+                        showLoginRequired();
+                    }
                 }
             });
         }
@@ -133,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
     // Tự động tạo examControls (timer + nút nộp bài) nếu chưa tồn tại trong HTML
-    if (!document.getElementById('examControls')) {
+    if (!reviewMode && !document.getElementById('examControls')) {
         const timerStr = (timeLimit < 10 ? '0' + timeLimit : timeLimit) + ':00';
         const examControlsHTML = `
         <div id="examControls">
@@ -173,6 +191,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 let isExamMode = false, isExamSubmitted = false, timeLeft = 70 * 60, examTimer = null;
 let globalExamSeconds = 0, globalExamInterval = null;
+let _savedVocabPref = null;
 
 // ===== ĐĂNG NHẬP GOOGLE TỪ TRANG ĐỀ THI =====
 window.doExamGoogleLogin = function() {
@@ -207,35 +226,38 @@ window.selectMode = (mode) => {
     if (startScreen) startScreen.style.display = 'none';
     window.learningActive = true;
 
-    // MỞ KHÓA AUDIO khi đã chọn chế độ (cho phép tương tác với player)
-    if (typeof window.unlockAudioAfterExam === 'function') {
-        window.unlockAudioAfterExam();
-    }
-
     if (mode === 'exam') {
         isExamMode = true;
-        window.isExamModeActive = true; // Publish globally
+        window.isExamModeActive = true;
+        // Giữ nguyên lockAudioForExam đã chạy: player bị khóa, speaker icons bị khóa
         const ec = document.getElementById('examControls');
-        if (ec) ec.style.display = 'block';
+        if (ec) {
+            ec.style.display = 'block';
+            const timerEl = document.getElementById('timerDisplay');
+            if (timerEl) timerEl.style.display = '';
+            const submitBtn = ec.querySelector('.btn-submit');
+            if (submitBtn) { submitBtn.innerHTML = '📝 NỘP BÀI'; submitBtn.setAttribute('onclick', 'submitExam()'); }
+        }
 
         // Chế độ THI THỬ nghe: phát TOÀN BỘ file audio từ đầu, không dùng timestamp
         if (window.location.pathname.includes('/listening/') && typeof window.startExamFullAudio === 'function') {
             setTimeout(() => window.startExamFullAudio(), 1500);
         }
-        // Ẩn navigator trong chế độ thi
-        if (typeof window.hideNavigator === 'function') {
-            window.hideNavigator();
+        // Hiện navigator trong chế độ thi (nút danh sách câu hỏi + mở sẵn trên desktop)
+        if (typeof window.showPracticeNavigator === 'function') {
+            window.showPracticeNavigator();
         }
         
         // Khóa công tắc từ vựng trong chế độ thi
+        _savedVocabPref = localStorage.getItem('vocabEnabled');
         const vocabBtn = document.getElementById('globalVocabBtn');
         if (vocabBtn) {
             vocabBtn.disabled = true;
             vocabBtn.style.opacity = '0.45';
             vocabBtn.style.cursor = 'not-allowed';
             vocabBtn.title = 'Tắt từ vựng trong chế độ thi';
-            if (typeof window.setVocabLevel === 'function') window.setVocabLevel(0);
         }
+        document.body.classList.add('vocab-disabled');
         // Legacy fallback cho trang cũ dùng checkbox
         const tog = document.getElementById('globalVocabToggle');
         if (tog) { tog.checked = false; tog.disabled = true; tog.parentElement.style.opacity = '0.5'; tog.parentElement.style.pointerEvents = 'none'; if (typeof window.toggleGlobalVocab === 'function') window.toggleGlobalVocab(); }
@@ -244,6 +266,20 @@ window.selectMode = (mode) => {
         isExamMode = false;
         window.isExamModeActive = false; // Publish globally
 
+        // Hiện nút LƯU KẾT QUẢ (ẩn đồng hồ đếm ngược)
+        const ec = document.getElementById('examControls');
+        if (ec) {
+            ec.style.display = 'block';
+            const timerEl = document.getElementById('timerDisplay');
+            if (timerEl) timerEl.style.display = 'none';
+            const submitBtn = ec.querySelector('.btn-submit');
+            if (submitBtn) { submitBtn.innerHTML = '💾 LƯU KẾT QUẢ'; submitBtn.setAttribute('onclick', 'submitPractice()'); }
+        }
+
+        // Mở khóa toàn bộ audio controls cho chế độ luyện tập
+        if (typeof window.unlockAudioAfterExam === 'function') {
+            window.unlockAudioAfterExam();
+        }
         // Chế độ LUYỆN TẬP: bắt đầu phát file audio tổng
         if (typeof window.startPracticeAudio === 'function') {
             window.startPracticeAudio();
@@ -267,17 +303,15 @@ window.selectMode = (mode) => {
 
 function saveExamTime() {
     if (typeof firebase === 'undefined' || !firebase.auth().currentUser) return;
-    const uid = firebase.auth().currentUser.uid;
-    const today = new Date().toISOString().split('T')[0];
+
+    // Thời gian học (totalStudyMinutes / dailyStudyData) do activity-tracker.js đếm
+    // (chạy song song trên mọi trang đề thi) — không cộng lại ở đây để tránh đếm x2.
 
     let sessionMins = parseInt(sessionStorage.getItem('studySessionMins') || '0');
     sessionMins++;
     sessionStorage.setItem('studySessionMins', sessionMins);
 
-    let updates = {
-        totalStudyMinutes: firebase.firestore.FieldValue.increment(1),
-        dailyStudyData: { [today]: firebase.firestore.FieldValue.increment(1) }
-    };
+    let updates = {};
 
     if (sessionMins === 60) {
         updates.bonusEXP = firebase.firestore.FieldValue.increment(10);
@@ -291,7 +325,95 @@ function saveExamTime() {
             });
         }
     }
-    firebase.firestore().collection("users").doc(uid).set(updates, { merge: true });
+    if (Object.keys(updates).length > 0) {
+        firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).set(updates, { merge: true });
+    }
+}
+
+function saveExamResult(score, correctCount, answeredCount, totalQuestions, answeredQuestions, correctQuestions, answers) {
+    if (typeof firebase === 'undefined' || !firebase.auth().currentUser) {
+        console.warn('[Exam] Không lưu kết quả: chưa đăng nhập hoặc Firebase chưa sẵn sàng.');
+        return;
+    }
+    const uid = firebase.auth().currentUser.uid;
+    const db = firebase.firestore();
+    const userRef = db.collection('users').doc(uid);
+
+    const path = window.location.pathname;
+    let skill = 'reading';
+    if (path.includes('/listening/')) skill = 'listening';
+    else if (path.includes('/writing/')) skill = 'writing';
+
+    let level = 'topik_ii';
+    if (path.includes('/topik_i/')) level = 'topik_i';
+
+    const numMatch = path.match(/topik(\d+)\.html/);
+    const examId = `${skill}/${level}/topik${numMatch ? numMatch[1] : 'XX'}`;
+    // Key an toàn cho field path (bỏ / và .)
+    const examKey = examId.replace(/[^a-zA-Z0-9_]/g, '_');
+
+    const headerEl = document.querySelector('.header');
+    const examName = headerEl ? headerEl.innerText.trim() : examId;
+
+    const totalSecs = window.examTimeLimit ? window.examTimeLimit * 60 : 0;
+    const durationSeconds = Math.max(0, totalSecs - timeLeft);
+
+    const attemptData = {
+        examId: examId,
+        examName: examName,
+        skill: skill,
+        level: level,
+        mode: isExamMode ? 'exam' : 'practice',
+        score: score,
+        correctCount: correctCount,
+        answeredCount: answeredCount,
+        totalQuestions: totalQuestions,
+        durationSeconds: durationSeconds,
+        answered: answeredQuestions || [],
+        correct: correctQuestions || [],
+        answers: answers || [],
+        submittedAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    const pAttempt = userRef.collection('examAttempts').add(attemptData);
+
+    // Gộp theo đề: mỗi đề chỉ tính 1 lần, mỗi câu đã làm chỉ tính 1 lần (union, không cộng lũy tiến)
+    const pStats = userRef.set({}, { merge: true }).then(() =>
+        userRef.get().then(snap => {
+            const d = snap.data() || {};
+            const exams = (d.stats && d.stats.exams) || {};
+            const cur = exams[examKey] || {};
+
+            const answeredSet = new Set([...(cur.answered || []), ...(answeredQuestions || [])]);
+            const correctSet = new Set([...(cur.correct || []), ...(correctQuestions || [])]);
+            const best = Math.max(cur.best || 0, score);
+
+            return userRef.update({
+                [`stats.exams.${examKey}.id`]: examId,
+                [`stats.exams.${examKey}.name`]: examName,
+                [`stats.exams.${examKey}.answered`]: Array.from(answeredSet),
+                [`stats.exams.${examKey}.correct`]: Array.from(correctSet),
+                [`stats.exams.${examKey}.best`]: best
+            });
+        })
+    );
+
+    Promise.allSettled([pAttempt, pStats]).then(results => {
+        const errors = results.filter(r => r.status === 'rejected').map(r => r.reason);
+        if (errors.length) {
+            console.error('[Exam] Lỗi lưu kết quả:', errors);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Chưa lưu được kết quả',
+                    text: 'Lỗi: ' + (errors[0]?.message || errors[0]?.code || 'không rõ') + '. Kiểm tra Firestore rules và đăng nhập.',
+                    confirmButtonColor: '#2563eb'
+                });
+            }
+        } else {
+            console.log('[Exam] Đã lưu kết quả thành công.', attemptData);
+        }
+    });
 }
 
 function startTimer() {
@@ -324,22 +446,22 @@ window.lastScrollPositionBeforeExplain = window.lastScrollPositionBeforeExplain 
 
 window.toggleExplain = (btn) => {
     const content = btn.nextElementSibling;
-    if (content) {
-        if (content.style.display === 'block') {
-            content.style.display = 'none';
-            window.scrollTo({ top: window.lastScrollPositionBeforeExplain, behavior: 'instant' });
-        } else {
-            window.lastScrollPositionBeforeExplain = window.scrollY;
-            content.style.display = 'block';
-            if (!content.querySelector('.btn-close-explain-injected')) {
-                const closeBtn = document.createElement('div');
-                closeBtn.className = 'btn-close-explain-injected';
-                closeBtn.innerHTML = '❌ Đóng';
-                closeBtn.style = 'text-align: center; color: #ef4444; font-weight: bold; cursor: pointer; margin-top: 15px; padding: 10px; background: #fee2e2; border-radius: 8px; font-size: 1.1em;';
-                content.appendChild(closeBtn);
-            }
-        }
+    if (!content) return;
+    if (typeof Swal === 'undefined') {
+        content.style.display = (content.style.display === 'block') ? 'none' : 'block';
+        return;
     }
+    const html = content.innerHTML;
+    Swal.fire({
+        title: '📖 Giải thích chi tiết',
+        html: `<div class="explain-popup-body" style="text-align:left;max-height:70vh;overflow-y:auto;line-height:1.7;padding-right:4px;">${html}</div>`,
+        width: 'min(920px, 95vw)',
+        showConfirmButton: false,
+        showCloseButton: true,
+        background: 'var(--bg-card)',
+        color: 'var(--primary-text)',
+        customClass: { popup: 'explain-popup' }
+    });
 };
 
 document.addEventListener('click', function(e) {
@@ -365,11 +487,18 @@ document.addEventListener('click', function(e) {
 
 window.toggleGlobalVocab = () => {
     const tog = document.getElementById('globalVocabToggle');
-    if (tog && tog.checked) {
-        document.body.classList.remove('vocab-disabled');
+    if (tog) {
+        // Legacy checkbox mode
+        if (tog.checked) {
+            document.body.classList.remove('vocab-disabled');
+        } else {
+            document.body.classList.add('vocab-disabled');
+        }
     } else {
-        document.body.classList.add('vocab-disabled');
+        // Icon button mode - simple toggle
+        document.body.classList.toggle('vocab-disabled');
     }
+    localStorage.setItem('vocabEnabled', !document.body.classList.contains('vocab-disabled'));
 };
 
 // ===== HÀM TÍNH ĐIỂM THEO LOẠI CÂU HỎI TOPIK =====
@@ -444,7 +573,29 @@ window.submitExam = () => {
     }
 };
 
+window.submitPractice = () => {
+    if (isExamSubmitted) return;
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: "Lưu kết quả luyện tập?",
+            text: "Số câu đã làm và điểm của bạn sẽ được ghi nhận.",
+            icon: "question",
+            showCancelButton: true,
+            confirmButtonColor: "#2563eb",
+            cancelButtonColor: "#ef4444",
+            confirmButtonText: "Lưu kết quả",
+            cancelButtonText: "Hủy"
+        }).then((result) => {
+            if (result.isConfirmed) processSubmitExam();
+        });
+    } else {
+        if (confirm('Lưu kết quả luyện tập?')) processSubmitExam();
+    }
+};
+
 function processSubmitExam() {
+    // Chống nộp bài 2 lần (bấm nút + đồng hồ hết giờ cùng lúc, double-click...)
+    if (isExamSubmitted) return;
     clearInterval(examTimer);
     isExamSubmitted = true;
     window.learningActive = false;
@@ -452,7 +603,10 @@ function processSubmitExam() {
     const ec = document.getElementById('examControls');
     if (ec) ec.style.display = 'none';
 
-    let correctCount = 0, totalScore = 0, gridHTML = '';
+    let correctCount = 0, totalScore = 0, answeredCount = 0, gridHTML = '';
+    const answeredQuestions = [];
+    const correctQuestions = [];
+    const answerDetails = [];
     const blocks = document.querySelectorAll('.question-block');
 
     blocks.forEach((block, index) => {
@@ -460,6 +614,9 @@ function processSubmitExam() {
         if (!optCont) return;
         const selOpt = optCont.querySelector('.option.selected');
         const corOpt = optCont.querySelector('[data-is-correct="true"]') || optCont.querySelector('[onclick*="true"]');
+        // CHỤP LẠI đáp án người dùng ĐÃ CHỌN ngay tại đây (trước khi thêm class hiển thị .correct/.wrong
+        // cho đáp án đúng — tránh nhầm câu chưa làm thành câu đã chọn)
+        const userChoice = selOpt || optCont.querySelector('.option.correct') || optCont.querySelector('.option.wrong');
         let isCor = false;
 
         const qNum = block.querySelector('.q-number');
@@ -467,26 +624,59 @@ function processSubmitExam() {
         const questionPoints = getQuestionScore(qText);
 
         if (selOpt) {
+            answeredCount++;
+            answeredQuestions.push(String(qText));
             if (selOpt.dataset.isCorrect === 'true' || (selOpt.getAttribute('onclick') || '').includes('true')) {
                 selOpt.classList.add('correct');
                 correctCount++;
+                correctQuestions.push(String(qText));
                 totalScore += questionPoints; // 2 hoặc 3 điểm tùy câu
                 isCor = true;
             } else {
                 selOpt.classList.add('wrong');
                 if (corOpt) corOpt.classList.add('correct');
             }
+        } else if (!isExamMode) {
+            // Practice mode: đáp án đã tick được đánh .correct / .wrong ngay khi chọn
+            const practiceCorrect = optCont.querySelector('.option.correct');
+            const practiceWrong = optCont.querySelector('.option.wrong');
+            if (practiceCorrect || practiceWrong) {
+                answeredCount++;
+                answeredQuestions.push(String(qText));
+                if (practiceCorrect) {
+                    correctCount++;
+                    correctQuestions.push(String(qText));
+                    totalScore += questionPoints;
+                    isCor = true;
+                } else if (corOpt) {
+                    corOpt.classList.add('correct');
+                }
+            } else if (corOpt) {
+                corOpt.classList.add('correct');
+            }
         } else if (corOpt) {
             corOpt.classList.add('correct');
+        }
+
+        // Lưu chi tiết đáp án người dùng đã chọn — CHỈ cho câu thực sự đã trả lời
+        if (userChoice && answeredQuestions.includes(String(qText))) {
+            const answerIndex = Array.from(optCont.querySelectorAll('.option')).indexOf(userChoice);
+            answerDetails.push({ q: String(qText), answerIndex: answerIndex, correct: isCor });
         }
 
         const actArea = block.querySelector('.action-area');
         if (actArea) actArea.style.display = 'block';
 
-        gridHTML += `<div class="q-status-item ${isCor ? 'q-correct' : 'q-wrong'}">${qText}</div>`;
+        // Xanh = đúng, đỏ = sai, xám = chưa làm
+        const stateCls = isCor ? 'q-correct' : (answeredQuestions.includes(String(qText)) ? 'q-wrong' : 'q-skipped');
+        gridHTML += `<div class="q-status-item ${stateCls}">${qText}</div>`;
     });
 
     const score = totalScore;
+    // Không lưu lịch sử nếu chưa trả lời câu nào (tránh auto-submit khi hết giờ tạo dữ liệu rác)
+    if (answeredCount > 0) {
+        saveExamResult(score, correctCount, answeredCount, blocks.length, answeredQuestions, correctQuestions, answerDetails);
+    }
     const ccEl = document.getElementById('correctCountText');
     const tcEl = document.getElementById('totalCountText');
     const fsEl = document.getElementById('finalScoreText');
@@ -520,8 +710,13 @@ function processSubmitExam() {
         vocabBtn.disabled = false;
         vocabBtn.style.opacity = '1';
         vocabBtn.style.cursor = 'pointer';
-        vocabBtn.title = 'Bật/Tắt tra từ vựng';
-        if (typeof window.setVocabLevel === 'function') window.setVocabLevel(2); // Bật lại mức 2
+        vocabBtn.title = 'Bật/Tắt tra từ điển';
+    }
+    // Restore user vocab preference
+    if (_savedVocabPref === 'false') {
+        document.body.classList.add('vocab-disabled');
+    } else {
+        document.body.classList.remove('vocab-disabled');
     }
     const tg = document.getElementById('globalVocabToggle');
     if (tg) { tg.disabled = false; tg.parentElement.style.opacity = '1'; tg.parentElement.style.pointerEvents = 'auto'; tg.checked = true; if (typeof window.toggleGlobalVocab === 'function') window.toggleGlobalVocab(); }
@@ -538,6 +733,92 @@ function processSubmitExam() {
         window.unlockAudioAfterExam();
     }
 }
+
+// ===== XEM LẠI LỊCH SỬ LÀM ĐỀ (trạng thái như vừa nộp bài) =====
+window.applyReview = async function (attemptId) {
+    if (typeof firebase === 'undefined' || !firebase.auth().currentUser) return;
+    const uid = firebase.auth().currentUser.uid;
+    const db = firebase.firestore();
+
+    // Ẩn màn hình chọn chế độ NGAY (không chờ tải dữ liệu) để không bị lóe
+    const startScreen = document.getElementById('startScreen');
+    if (startScreen) startScreen.style.display = 'none';
+    document.body.classList.add('app-started');
+    isExamSubmitted = true;
+    window.learningActive = false;
+    const ec = document.getElementById('examControls');
+    if (ec) ec.style.display = 'none';
+
+    const docSnap = await db.collection('users').doc(uid).collection('examAttempts').doc(attemptId).get();
+    if (!docSnap.exists) {
+        if (typeof Swal !== 'undefined') Swal.fire({ icon: 'error', title: 'Không tìm thấy', text: 'Không tìm thấy lịch sử làm đề này.', confirmButtonColor: '#2563eb' });
+        return;
+    }
+    const a = docSnap.data();
+
+    const correctSet = new Set((a.correct || []).map(String));
+    const answersMap = {};
+    (a.answers || []).forEach(x => { answersMap[String(x.q)] = x; });
+    // Bài làm cũ (trước khi có tính năng) không lưu chi tiết từng câu
+    const hasDetail = Array.isArray(a.correct) && a.correct.length > 0;
+
+    let gridHTML = '';
+    document.querySelectorAll('.question-block').forEach(block => {
+        const optCont = block.querySelector('.options');
+        const qNum = block.querySelector('.q-number');
+        const qText = qNum ? qNum.innerText.replace('.', '').trim() : '';
+        const opts = optCont ? Array.from(optCont.querySelectorAll('.option')) : [];
+        const corOpt = opts.find(o => o.dataset.isCorrect === 'true' || (o.getAttribute('onclick') || '').includes('true'));
+        const isCor = hasDetail && correctSet.has(qText);
+
+        const ans = answersMap[qText];
+        if (ans && opts[ans.answerIndex]) {
+            // Đã trả lời → hiện đúng/sai + đáp án + giải thích
+            if (ans.correct) {
+                opts[ans.answerIndex].classList.add('correct', 'selected');
+            } else {
+                opts[ans.answerIndex].classList.add('wrong', 'selected');
+                if (corOpt) corOpt.classList.add('correct');
+            }
+            const actArea = block.querySelector('.action-area');
+            if (actArea) actArea.style.display = 'block';
+        }
+        // Chưa trả lời → giữ nguyên trạng thái, KHÔNG hiện đáp án/giải thích
+        // (tô xám, giữ bí mật để người dùng có thể làm lại đề sau này)
+
+        if (hasDetail) {
+            const answered = !!answersMap[qText];
+            const stateCls = isCor ? 'q-correct' : (answered ? 'q-wrong' : 'q-skipped');
+            gridHTML += `<div class="q-status-item ${stateCls}">${qText}</div>`;
+        }
+    });
+
+    // Đổ kết quả vào modal
+    const ccEl = document.getElementById('correctCountText');
+    const tcEl = document.getElementById('totalCountText');
+    const fsEl = document.getElementById('finalScoreText');
+    const qsEl = document.getElementById('questionStatusGrid');
+    if (ccEl) ccEl.innerText = a.correctCount || correctSet.size;
+    if (tcEl) tcEl.innerText = a.totalQuestions || document.querySelectorAll('.question-block').length;
+    if (fsEl) fsEl.innerText = a.score || 0;
+    if (qsEl) qsEl.innerHTML = hasDetail
+        ? gridHTML
+        : '<div style="color:#94a3b8; font-size:0.9em; padding:10px;">⚠️ Bài làm cũ chưa lưu chi tiết từng câu nên không hiển thị ôn lại được.</div>';
+
+    const rm = document.getElementById('examResultModal');
+    if (rm) rm.style.display = 'flex';
+
+    // Khôi phục nút "Câu hỏi" (navigator) với màu xanh/đỏ/xám theo từng câu + tự mở bảng
+    if (typeof window.showExamNavigator === 'function') {
+        window.showExamNavigator();
+    }
+
+    // Mở khóa audio (trang listening) để xem lại từng câu
+    if (typeof window.unlockAudioAfterExam === 'function') {
+        window.unlockAudioAfterExam();
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 window.closeResultAndReview = () => {
     document.getElementById('examResultModal').style.display = 'none';

@@ -9,6 +9,7 @@ let currentFolderName = null;       // current Thư mục being browsed
 let currentStudyList = [];
 let activeStatusFilter = null;
 let sortableInstance = null;
+let _dailyVocabFromLessons = false;
 
 function defaultFolder() { return 'Đã lưu'; }
 
@@ -51,6 +52,7 @@ async function migrateOldData() {
 
 // ==================== TAB SWITCHER ====================
 function switchVocabTab(tab) {
+    _dailyVocabFromLessons = false;
     document.getElementById('tabAllBtn').classList.remove('active');
     document.getElementById('tabFoldersBtn').classList.remove('active');
     document.getElementById('viewAllVocab').style.display = 'none';
@@ -167,6 +169,8 @@ function getAllLessons() {
     allVocabData.forEach(w => {
         const ln = w.listName || '';
         if (!ln || w.word === '__folder_marker__') return;
+        // Ẩn các bài học Daily Vocab (chỉ hiển thị bên trong thư mục Daily Vocab)
+        if (ln.startsWith('Daily Vocab/')) return;
         if (!map.has(ln)) map.set(ln, { count: 0, folder: ln.includes('/') ? ln.split('/')[0] : defaultFolder() });
         map.get(ln).count++;
     });
@@ -179,6 +183,14 @@ function renderLessonsGrid() {
     document.getElementById('totalVocabCountGlobal').innerText = lessons.length;
 
     let html = '';
+    // Thư mục Daily Vocab (gói gọn — ấn vào mới mở danh sách các ngày)
+    html += `<div class="list-card" style="position:relative;">
+        <div style="flex:1;cursor:pointer;" onclick="openDailyVocabFromLessons()">
+            <div class="list-title">🗓️ Daily Vocab</div>
+            <div class="list-count">Từ vựng mỗi ngày — ấn để mở</div>
+        </div>
+    </div>`;
+
     if (lessons.length === 0) {
         html += `<p style="color:#6b7280;font-style:italic;padding:20px;">Chưa có Bài học nào.</p>`;
     } else {
@@ -620,11 +632,19 @@ async function bulkImportWords() {
         const maxOrder = currentStudyList.length;
         pairs.forEach((p, i) => {
             const safeId = (currentListView || '').replace(/[/\s]/g, '_') + '_' + p.word;
-            const ex = getExampleForWord(p.word);
+            var sense = _findBestSense(p.word, p.meaning);
+            var ex_kr = '', definition = '';
+            if (sense) {
+                definition = sense.d || '';
+                if (sense.x && sense.x.length)
+                    ex_kr = typeof sense.x[0] === 'string' ? sense.x[0] : (sense.x[0].ko || '');
+            }
+            if (!ex_kr) { var legacy = getExampleForWord(p.word); ex_kr = legacy.ex_kr || ''; }
             batch.set(vocabRef.doc(safeId), {
                 word: p.word, meaning: p.meaning, listName: currentListView,
                 status: 0, order: maxOrder + i,
-                ...ex,
+                ex_kr: ex_kr, ex_vn: '',
+                definition: definition,
                 savedAt: firebase.firestore.FieldValue.serverTimestamp()
             });
         });
@@ -659,6 +679,16 @@ function openDailyVocab() {
     grid.innerHTML = html;
 }
 
+// Mở Daily Vocab từ tab "Bài học" (gói gọn trong 1 thư mục)
+function openDailyVocabFromLessons() {
+    _dailyVocabFromLessons = true;
+    document.getElementById('viewAllVocab').style.display = 'none';
+    document.getElementById('viewFolders').style.display = 'block';
+    document.getElementById('vocabSetsView').style.display = 'none';
+    document.getElementById('vocabDetailView').style.display = 'block';
+    openDailyVocab();
+}
+
 function openSubFolder(subPath, dailyOffset) {
     currentListView = subPath;
     document.getElementById('currentListName').innerText = '📖 ' + subPath;
@@ -685,6 +715,13 @@ function openSubFolder(subPath, dailyOffset) {
 
 // ==================== BACK NAVIGATION ====================
 function backToSets() {
+    // Mở Daily Vocab từ tab "Bài học" → nút Quay Lại đưa về tab Bài học
+    if (_dailyVocabFromLessons && !currentListView && currentFolderName === 'Daily Vocab') {
+        _dailyVocabFromLessons = false;
+        currentFolderName = null;
+        backToLessons();
+        return;
+    }
     // If we came from Bài học tab (no currentFolderName)
     if (currentListView && !currentFolderName) {
         backToLessons();
@@ -728,7 +765,7 @@ function renderVocabGridDetail() {
         const safeMean = (w.meaning||'').replace(/'/g,"\\'");
         html += `<div class="v-card" id="card-${w.id}" data-id="${w.id}">
             ${svgDots}
-            <div class="v-status-dot ${colors[w.status||0]}" style="flex-shrink:0;margin:0 10px 0 0;"></div>
+            <div class="v-status-dot ${colors[w.status||0]}" style="flex-shrink:0;margin:0 10px 0 0;cursor:pointer;" onclick="event.stopPropagation();cycleWordStatus('${w.id}',${w.status||0})" title="Chu kỳ: Mới → Đang học → Đang ôn → Thành thạo"></div>
             <div style="flex:1;cursor:pointer;" onclick="openWordFlashcard('${w.id}')"><div class="v-word">${w.word}</div><div class="v-mean">${w.meaning}</div></div>
             <div class="v-actions">
                 <button class="btn-icon-flat" style="color:#64748b;" onclick="toggleMenu('${w.id}',event)">${svgOpts}</button>
@@ -813,6 +850,45 @@ function openMoveModal(id) {
 }
 
 // ==================== ADD WORD ====================
+
+// ── KRDict lookup helpers ──
+var _fullDictMap=null;
+function _buildFullDictMap(){
+    if(_fullDictMap||!window.AutoVocabDictFull||!Array.isArray(window.AutoVocabDictFull))return;
+    _fullDictMap=new Map();
+    window.AutoVocabDictFull.forEach(function(e){_fullDictMap.set(e.w,e);});
+}
+function _findInFullDict(word){
+    if(!_fullDictMap)_buildFullDictMap();
+    return _fullDictMap?_fullDictMap.get(word):null;
+}
+window.addEventListener('fulldictready',_buildFullDictMap);
+if(window.AutoVocabDictFull)_buildFullDictMap();
+
+// ── Find best matching sense (hand-edited + KRDict) ──
+function _findBestSense(word, meaning){
+    // 0. Hand-edited dict
+    if(window.AutoVocabDict){
+        var hf=window.AutoVocabDict.find(function(e){return e.base===word;});
+        if(hf){
+            if(!meaning)return {m:hf.meaning,d:'',x:hf.examples||[],_source:'hand'};
+            if(hf.meaning===meaning)return {m:hf.meaning,d:'',x:hf.examples||[],_source:'hand'};
+            if(hf.meaning&&meaning&&(hf.meaning.indexOf(meaning)!==-1||meaning.indexOf(hf.meaning)!==-1))
+                return {m:hf.meaning,d:'',x:hf.examples||[],_source:'hand'};
+        }
+    }
+    // 1. KRDict
+    var full=_findInFullDict(word);
+    if(!full)return null;
+    var senses=full.s||[{m:full.m,d:full.d,x:full.x}];
+    if(!meaning)return senses[0];
+    for(var i=0;i<senses.length;i++){if(senses[i].m===meaning)return senses[i];}
+    for(var i=0;i<senses.length;i++){
+        if(senses[i].m&&(senses[i].m.indexOf(meaning)!==-1||meaning.indexOf(senses[i].m)!==-1))return senses[i];
+    }
+    return senses[0];
+}
+
 let suggestTimeout;
 async function fetchSuggestion() {
     clearTimeout(suggestTimeout);
@@ -822,6 +898,30 @@ async function fetchSuggestion() {
     let sl='ko', tl='vi';
     if (!/[\u3131-\uD79D]/.test(word)) { sl='vi'; tl='ko'; }
     suggestTimeout = setTimeout(async () => {
+        if(sl==='ko'){
+            var html='';
+            // 1. Hand-edited dict
+            if(window.AutoVocabDict){
+                var hf=window.AutoVocabDict.find(function(e){return e.base===word;});
+                if(hf){
+                    html+='<div class="suggest-item" onclick="selectSuggestHand(\''+hf.meaning.replace(/'/g,"\\'")+'\',\''+word.replace(/'/g,"\\'")+'\')" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;"><span>✏️ '+hf.meaning+'</span><span style="font-size:0.7em;color:#10b981;white-space:nowrap;">Thủ công</span></div>';
+                }
+            }
+            // 2. KRDict
+            var full=_findInFullDict(word);
+            if(full){
+                var senses=full.s||[{m:full.m,d:full.d}];
+                var seen={};if(hf)seen[hf.meaning]=true;
+                for(var i=0;i<senses.length;i++){
+                    var m=senses[i].m||'';
+                    if(!m||seen[m])continue;
+                    seen[m]=true;
+                    html+='<div class="suggest-item" onclick="selectSuggest(\''+m.replace(/'/g,"\\'")+'\',\'ko\',\''+word.replace(/'/g,"\\'")+'\','+i+')" style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;"><span>📚 '+m+'</span><span style="font-size:0.7em;color:#94a3b8;white-space:nowrap;">NGHĨA '+(i+1)+'</span></div>';
+                }
+            }
+            if(html){suggestBox.innerHTML=html;suggestBox.style.display='block';return;}
+        }
+        // Fallback to Google Translate
         try {
             const res = await fetch(`https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(word)}`);
             const data = await res.json();
@@ -833,35 +933,134 @@ async function fetchSuggestion() {
         } catch(e) {}
     }, 500);
 }
-function selectSuggest(text, sl) {
+function selectSuggest(text, sl, krdictWord, senseIdx) {
     if (sl==='vi') { document.getElementById('newVnMean').value = document.getElementById('newKrWord').value; document.getElementById('newKrWord').value = text; }
-    else { document.getElementById('newVnMean').value = text; }
+    else {
+        document.getElementById('newVnMean').value = text;
+        // Store KRDict sense if available
+        if(krdictWord&&senseIdx!==undefined){
+            var full=_findInFullDict(krdictWord);
+            if(full){
+                var senses=full.s||[{m:full.m,d:full.d,x:full.x}];
+                var sense=senses[senseIdx];
+                window._pendingVocabEnrichment={
+                    source:'krdict',
+                    definition:sense.d||full.d||'',
+                    exKr:sense.x&&sense.x.length?(typeof sense.x[0]==='string'?sense.x[0]:(sense.x[0].ko||'')):'',
+                    pos:full.t||''
+                };
+                document.getElementById('suggestBox').style.display = 'none';
+                return;
+            }
+        }
+    }
+    window._pendingVocabEnrichment=null;
+    document.getElementById('suggestBox').style.display = 'none';
+}
+function selectSuggestHand(text, word){
+    document.getElementById('newVnMean').value = text;
+    if(window.AutoVocabDict){
+        var hf=window.AutoVocabDict.find(function(e){return e.base===word;});
+        if(hf){
+            window._pendingVocabEnrichment={
+                source:'hand',
+                definition:'',
+                exKr:hf.examples&&hf.examples.length?hf.examples[0]:'',
+                pos:''
+            };
+        }
+    }
     document.getElementById('suggestBox').style.display = 'none';
 }
 document.addEventListener('click', (e) => { if (!e.target.closest('#suggestBox') && e.target.id !== 'newKrWord') { let b = document.getElementById('suggestBox'); if (b) b.style.display = 'none'; } });
+
+async function _translateKoVi(text){
+    if(!text)return'';
+    try{
+        var resp=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=vi&dt=t&q='+encodeURIComponent(text));
+        var data=await resp.json();
+        return data[0]&&data[0].map(function(s){return s[0];}).filter(Boolean).join('')||'';
+    }catch(_){return'';}
+}
 
 async function addWordToList() {
     let kr = document.getElementById('newKrWord').value.trim(), vn = document.getElementById('newVnMean').value.trim();
     if (!kr || !vn) return Swal.fire("Nhắc nhở", "Vui lòng nhập đủ từ và nghĩa!", "info");
     let maxOrder = currentStudyList.length > 0 ? Math.max(...currentStudyList.map(v => v.order||0)) + 1 : 0;
     const safeId = (currentListView||'').replace(/[/\s]/g,'_') + '_' + kr;
+    // Show loading
+    var btn=document.querySelector('#addWordSection button');
+    if(btn){btn.disabled=true;btn.textContent='Đang thêm...';}
     try {
-        const ex = getExampleForWord(kr);
+        var enrichment = await enrichWordData(kr, vn);
         await firebase.firestore().collection("users").doc(window.currentUserUid).collection("vocabulary").doc(safeId).set({
             word: kr, meaning: vn, listName: currentListView, status: 0, order: maxOrder,
-            ...ex,
+            ex_kr: enrichment.ex_kr || '', ex_vn: enrichment.ex_vn || '',
+            definition: enrichment.definition || '',
             savedAt: firebase.firestore.FieldValue.serverTimestamp()
         });
+        window._pendingVocabEnrichment=null;
         document.getElementById('newKrWord').value = ''; document.getElementById('newVnMean').value = '';
         document.getElementById('newKrWord').focus(); document.getElementById('suggestBox').style.display = 'none';
     } catch(err) { Swal.fire("Lỗi", err.message, "error"); }
+    if(btn){btn.disabled=false;btn.textContent='Thêm từ';}
+}
+
+// ── Enrich word data (used by both single add and bulk import) ──
+async function enrichWordData(word, meaning){
+    var result={ex_kr:'',ex_vn:'',definition:''};
+    // 0. Use stored sense from suggestion click
+    if(window._pendingVocabEnrichment){
+        var se=window._pendingVocabEnrichment;
+        result.definition=se.definition||'';
+        result.ex_kr=se.exKr||'';
+        if(result.ex_kr)result.ex_vn=await _translateKoVi(result.ex_kr);
+        return result;
+    }
+    // 1. VOCAB_DATA
+    if(window.VOCAB_DATA){
+        var m=window.VOCAB_DATA.find(function(v){return v.word===word;});
+        if(m&&m.ex_kr){result.ex_kr=m.ex_kr;result.ex_vn=m.ex_vn||'';return result;}
+    }
+    // 2. Hand-edited dict
+    if(window.AutoVocabDict){
+        var f=window.AutoVocabDict.find(function(e){return e.base===word;});
+        if(f&&f.examples&&f.examples.length){result.ex_kr=f.examples[0];result.ex_vn=await _translateKoVi(result.ex_kr);return result;}
+    }
+    // 3. KRDict full dict — match by meaning
+    var sense=_findBestSense(word,meaning);
+    if(sense){
+        if(sense.d)result.definition=sense.d;
+        if(sense.x&&sense.x.length){
+            result.ex_kr=typeof sense.x[0]==='string'?sense.x[0]:(sense.x[0].ko||'');
+            if(result.ex_kr)result.ex_vn=await _translateKoVi(result.ex_kr);
+        }
+    }
+    return result;
 }
 
 // ==================== GAME MODALS ====================
 function getExampleForWord(word) {
-    if (!window.VOCAB_DATA) return {};
-    const m = window.VOCAB_DATA.find(v => v.word === word);
-    return m && m.ex_kr ? { ex_kr: m.ex_kr, ex_vn: m.ex_vn } : {};
+    // 1. VOCAB_DATA (hardcoded 200 words with ex_kr+ex_vn)
+    if (window.VOCAB_DATA) {
+        const m = window.VOCAB_DATA.find(v => v.word === word);
+        if (m && m.ex_kr) return { ex_kr: m.ex_kr, ex_vn: m.ex_vn };
+    }
+    // 2. Hand-edited dictionary
+    if (window.AutoVocabDict) {
+        var f = window.AutoVocabDict.find(function(e){return e.base===word;});
+        if (f && f.examples && f.examples.length) return { ex_kr: f.examples[0], ex_vn: '' };
+    }
+    // 3. KRDict full dictionary
+    var full = _findInFullDict(word);
+    if (full) {
+        var example = '';
+        if (full.x && full.x.length) example = typeof full.x[0]==='string' ? full.x[0] : (full.x[0].ko||'');
+        else if (full.s && full.s[0] && full.s[0].x && full.s[0].x.length)
+            example = typeof full.s[0].x[0]==='string' ? full.s[0].x[0] : (full.s[0].x[0].ko||'');
+        if (example) return { ex_kr: example, ex_vn: '' };
+    }
+    return {};
 }
 
 const gameModalsHTML = `
@@ -887,20 +1086,10 @@ const gameModalsHTML = `
                 </div>
             </div>
             <div id="gameMatch" style="display:none;flex-direction:column;flex:1;min-height:0;"><div style="display:flex;flex-wrap:wrap;justify-content:center;align-content:flex-start;gap:15px;overflow-y:auto;padding:5px;min-height:300px;" id="matchGrid"></div></div>
-            <div id="gameType" style="display:none;">
-                <div style="display:flex;justify-content:center;gap:10px;margin-bottom:20px;">
-                    <button class="btn-edit" id="btnT1" onclick="setupType('kr2vn',this)">Hàn → Việt</button>
-                    <button class="btn-edit" id="btnT2" onclick="setupType('vn2kr',this)">Việt → Hàn</button>
-                    <button class="btn-edit" id="btnT3" onclick="setupType('mix',this)">Ngẫu nhiên</button>
-                </div>
-                <div style="text-align:center;color:var(--text-sub);font-weight:600;margin-bottom:15px;" id="typeCount">1/10</div>
-                <div style="text-align:center;display:flex;flex-direction:column;align-items:center;">
-                    <div style="font-size:2.2em;font-weight:900;margin-bottom:20px;" id="typeWord">Word</div>
-                    <input type="text" id="typeInput" style="width:100%;max-width:300px;padding:15px;font-size:1.2em;text-align:center;border:2px solid var(--border);border-radius:10px;outline:none;margin-bottom:15px;" placeholder="Nhập đáp án..." onkeydown="if(event.key==='Enter')checkType()">
-                    <div style="height:25px;font-weight:700;margin-bottom:15px;" id="typeRes"></div>
-                    <button style="background:#111827;color:#fff;border:none;padding:15px 30px;border-radius:10px;font-weight:bold;width:100%;max-width:300px;cursor:pointer;" onclick="checkType()">Kiểm tra đáp án</button>
-                </div>
-            </div>
+            <div id="gameBansung" style="display:none;flex-direction:column;flex:1;min-height:0;"></div>
+            <div id="gameMugonghwa" style="display:none;flex-direction:column;flex:1;min-height:0;"></div>
+            <div id="gameFroggame" style="display:none;flex-direction:column;flex:1;min-height:0;"></div>
+            <div id="gameStarship" style="display:none;flex-direction:column;flex:1;min-height:0;"></div>
             <div id="gameDictationWrapper" style="display:none;"></div>
             <div id="gameSpeakingWrapper" style="display:none;"></div>
         </div>
@@ -924,7 +1113,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==================== GAME ENGINE ====================
-function speakVocab(text) { if (!window.speechSynthesis) return; window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=0.85; window.speechSynthesis.speak(u); }
+function speakVocab(text) { if(window.readKorean){ window.readKorean(text, 0.95); return; } if (!window.speechSynthesis) return; window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=0.85; window.speechSynthesis.speak(u); }
 window.lastRequestedGameType = '';
 
 function startStudy(type) {
@@ -940,19 +1129,28 @@ function startStudy(type) {
     }
     if (currentData.length === 0) return Swal.fire("Thông báo", "Danh sách này đang trống!", "warning");
     document.getElementById('studyModal').style.display = 'flex';
-    document.getElementById('gameModalBox').classList.remove('large-modal');
+    document.getElementById('gameModalBox').classList.remove('large-modal','bansung-modal');
+    document.getElementById('gameModalBox').style.height=''; document.getElementById('gameModalBox').style.maxHeight='';
     if (type === 'match') document.getElementById('gameModalBox').classList.add('large-modal');
-    ['gameFlashcard','gameMatch','gameType','gameDictationWrapper','gameSpeakingWrapper'].forEach(id => { let el=document.getElementById(id); if(el) el.style.display='none'; });
+    if (type === 'bansung' || type === 'mugonghwa' || type === 'froggame' || type === 'starship') document.getElementById('gameModalBox').classList.add('large-modal','bansung-modal');
+    ['gameFlashcard','gameMatch','gameDictationWrapper','gameSpeakingWrapper','gameBansung','gameMugonghwa','gameFroggame','gameStarship'].forEach(id => { let el=document.getElementById(id); if(el) el.style.display='none'; });
     document.getElementById('matchResult').style.display = 'none';
     if (type==='flashcard') { document.getElementById('gameFlashcard').style.display='block';document.getElementById('studyTitle').innerText="Ôn tập Flashcard";initFc(currentData); }
     else if (type==='match') { document.getElementById('gameMatch').style.display='flex'; document.getElementById('studyTitle').innerText="Ghép thẻ từ vựng"; initMatch(currentData); }
-    else if (type==='type') { document.getElementById('gameType').style.display='block'; document.getElementById('studyTitle').innerText="Nhập từ"; document.querySelectorAll('#gameType .btn-edit').forEach(b=>b.style.cssText=''); document.getElementById('btnT1').style.cssText='background:#1f2937;color:#fff;'; setupType('kr2vn',document.getElementById('btnT1'),currentData); }
+    else if (type==='bansung') { document.getElementById('gameBansung').style.display='flex'; document.getElementById('studyTitle').innerText="Bắn từ vựng 🎯"; if(typeof initBansung==='function') initBansung(currentData); }
+    else if (type==='mugonghwa') { document.getElementById('gameMugonghwa').style.display='flex'; document.getElementById('studyTitle').innerText="Hoa Dâm Bụt 🌺"; if(typeof initMugonghwa==='function') initMugonghwa(currentData); }
+    else if (type==='froggame') { document.getElementById('gameFroggame').style.display='flex'; document.getElementById('studyTitle').innerText="Ếch Săn Từ Vựng 🐸"; if(typeof initFroggame==='function') initFroggame(currentData); }
+    else if (type==='starship') { document.getElementById('gameStarship').style.display='flex'; document.getElementById('studyTitle').innerText="Phi Thuyền Vũ Trụ 🚀"; if(typeof initStarship==='function') initStarship(currentData); }
     else if (type==='dictation') { document.getElementById('gameDictationWrapper').style.display='block'; document.getElementById('studyTitle').innerText="Nghe Viết 🎧"; if(typeof initDictation==='function') initDictation(currentData); }
     else if (type==='speaking') { document.getElementById('gameSpeakingWrapper').style.display='block'; document.getElementById('studyTitle').innerText="Luyện Nói 🎤"; if(typeof initSpeaking==='function') initSpeaking(currentData); }
 }
 window.closeStudy = function() {
     const m = document.getElementById('studyModal'); if(m) m.style.display='none';
     const r = document.getElementById('matchResult'); if(r) r.style.display='none';
+    if (typeof window.__bansungStop==='function') { try{ window.__bansungStop(); window.__bansungStop=null; }catch(e){} }
+    if (typeof window.__mghStop==='function') { try{ window.__mghStop(); window.__mghStop=null; }catch(e){} }
+    if (typeof window.__frogStop==='function') { try{ window.__frogStop(); window.__frogStop=null; }catch(e){} }
+    if (typeof window.__shpStop==='function') { try{ window.__shpStop(); window.__shpStop=null; }catch(e){} }
     if (typeof fcTimer1!=='undefined') clearTimeout(fcTimer1);
     if (typeof fcTimer2!=='undefined') clearTimeout(fcTimer2);
     if (typeof fcAuto!=='undefined') fcAuto=false;
@@ -973,40 +1171,47 @@ function fcAssess(st){
     if(fcI<fcGameList.length-1){setTimeout(()=>fcMove(1),300);}
 }
 
-// ── Single-word flashcard from grid click ──
+// ── Cycle word status: 0→1→2→3→0 ──
+function cycleWordStatus(id, current) {
+    const next = (current + 1) % 4;
+    updateWordStatus(id, next);
+}
+
+// ── Update word status in Firestore ──
+function updateWordStatus(id, status) {
+    const uid = window.currentUserUid;
+    if (!uid || typeof firebase === 'undefined') return;
+    firebase.firestore().collection("users").doc(uid).collection("vocabulary").doc(id).update({ status: status }).catch(() => {});
+}
+
+// ── Flashcard from grid click: open at correct position with full list ──
 window.openWordFlashcard = function(id) {
-    // Find word from all lists
-    let w = null;
-    if (currentStudyList) w = currentStudyList.find(x => x.id === id);
-    if (!w && window._allVocabData) w = window._allVocabData.find(x => x.id === id);
-    if (!w) return;
+    let list = activeStatusFilter !== null
+        ? currentStudyList.filter(w => w.status === activeStatusFilter)
+        : currentStudyList;
+    if (!list || list.length === 0) return;
+
+    let targetIdx = list.findIndex(x => x.id === id);
+    if (targetIdx === -1) targetIdx = 0;
 
     document.getElementById('studyModal').style.display = 'flex';
     document.getElementById('gameModalBox').classList.remove('large-modal');
-    ['gameFlashcard','gameMatch','gameType','gameDictationWrapper','gameSpeakingWrapper'].forEach(id => { let el=document.getElementById(id); if(el) el.style.display='none'; });
+    ['gameFlashcard','gameMatch','gameDictationWrapper','gameSpeakingWrapper'].forEach(id => { let el=document.getElementById(id); if(el) el.style.display='none'; });
     document.getElementById('gameFlashcard').style.display = 'block';
-    document.getElementById('studyTitle').innerText = w.word;
-    document.getElementById('fcCount').style.display = 'none';
-    // Hide nav & controls for single word, keep assess
-    document.querySelectorAll('#gameFlashcard .fc-nav-btn').forEach(b => b.style.display = 'none');
-    document.querySelector('#gameFlashcard .fc-controls-flat').style.display = 'none';
+    document.getElementById('studyTitle').innerText = 'Ôn tập Flashcard';
+    document.getElementById('fcCount').style.display = '';
+    document.querySelectorAll('#gameFlashcard .fc-nav-btn').forEach(b => b.style.display = '');
+    var fc = document.querySelector('#gameFlashcard .fc-controls-flat');
+    if (fc) fc.style.display = '';
 
-    initFc([w]);
-    // Auto-flip after a moment
-    setTimeout(() => { if(fcFront) fcFlip(); }, 400);
-    // Restore UI on close
-    const restore = () => {
-        document.getElementById('fcCount').style.display = '';
-        document.querySelectorAll('#gameFlashcard .fc-nav-btn').forEach(b => b.style.display = '');
-        const fc = document.querySelector('#gameFlashcard .fc-controls-flat');
-        if (fc) fc.style.display = '';
-    };
-    const origClose = window.closeStudy;
-    window.closeStudy = function() {
-        restore();
-        window.closeStudy = origClose;
-        origClose();
-    };
+    // Init flashcard with full list, jumping to clicked word
+    fcAuto = false;
+    clearTimeout(fcTimer1);
+    clearTimeout(fcTimer2);
+    fcGameList = [...list];
+    fcI = targetIdx;
+    fcMuted = false;
+    drawFc();
 };
 function fcTogglePlay(){fcAuto=!fcAuto;let b=document.getElementById('btnFcPlay');if(fcAuto){b.style.color='#3b82f6';runAutoFc();}else{b.style.color='';clearTimeout(fcTimer1);clearTimeout(fcTimer2);}}
 function fcToggleAudio(){fcMuted=!fcMuted;let b=document.getElementById('btnFcAudio');b.style.color=fcMuted?'#ef4444':'';}

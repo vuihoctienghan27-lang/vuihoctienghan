@@ -1,9 +1,12 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOPIK II 읽기 - 제35회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     
 
     <link rel="stylesheet" href="../../assets/css/writing.css">
@@ -18,9 +21,9 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/writing.js"></script>
+<script src="../../assets/js/writing.js"></script>
     <script src="../../assets/js/grading-engine.js"></script>
+    <script src="../../assets/js/gemini-grader.js"></script>
 <div class="header-badge-container">
     <div class="topik-header-badge">TOPIK Ⅱ 쓰기 제35회</div>
 </div>
@@ -347,13 +350,10 @@
             <details><summary>10. 물론 ~하는 것이 ~방해하지는 않아야 할 것이다.</summary><div class="details-content"><b>Cấu trúc đạo đức:</b> Tất nhiên, việc... tuyệt đối không được phép cản trở...</div></details>
         </div>
     </div>
-
-    <script src="exam-logic.js"></script>
-
-    <script>
+<script>
         // CÂU 51A — Điền ㉠ (dọn dẹp/tặng đồ trước khi về nước)
         function grade51A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-a').value.trim(),
                 {
                     exactAnswers: [
@@ -361,6 +361,7 @@
                         '제 물건들을 무료로 드리려고 합니다.',
                         '제 물건을 정리하고 있습니다.'
                     ],
+                    context: ['물건', '짐'],
                     stems: ['정리하', '처분하'],
                     altStems: ['주', '드리', '나누'],
                     altRequire: ['물건', '짐', '것'],
@@ -371,14 +372,12 @@
                     ]
                 },
                 "Cần ý 'dọn dẹp' hoặc 'tặng đồ'."
-            );
-            document.getElementById('score-51-a').innerHTML = result.display;
-            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+            , 'score-51-a', 'btn-exp-51-a');
         }
 
         // CÂU 51B — Điền ㉡ (yêu cầu liên lạc trước thứ Sáu)
         function grade51B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-b').value.trim(),
                 {
                     exactAnswers: [
@@ -386,6 +385,7 @@
                         '그러니까 금요일 전까지 저에게 연락해 주십시오.',
                         '관심이 있으신 분은 금요일까지 제게 전화해 주십시오.'
                     ],
+                    context: ['금요일'],
                     stems: ['연락', '전화'],
                     altStems: ['금요일'],
                     altRequire: ['연락', '전화'],
@@ -396,20 +396,19 @@
                     ]
                 },
                 "Cần từ vựng 'liên lạc/điện thoại' + 'thứ Sáu' và yêu cầu lịch sự."
-            );
-            document.getElementById('score-51-b').innerHTML = result.display;
-            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+            , 'score-51-b', 'btn-exp-51-b');
         }
 
         // CÂU 52A — Điền ㉠ (mảnh ghép không đúng vị trí → không hoàn thành)
         function grade52A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-a').value.trim(),
                 {
                     exactAnswers: [
                         '퍼즐 조각이 제 자리에 놓이지 않으면 그림은 완성되지 않는다.',
                         '하나라도 제 위치에 놓이지 않으면 그림을 완성할 수 없다.'
                     ],
+                    context: ['제', '퍼즐'],
                     stems: ['자리', '위치', '조각'],
                     grammar: [
                         { pattern: /지\s*않[가-힣]*/, label: 'phủ định' },
@@ -418,14 +417,12 @@
                     ]
                 },
                 "Cần ý 'mảnh ghép/vị trí' + phủ định (không đặt đúng chỗ)."
-            );
-            document.getElementById('score-52-a').innerHTML = result.display;
-            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+            , 'score-52-a', 'btn-exp-52-a');
         }
 
         // CÂU 52B — Điền ㉡ (xã hội vận hành khi cá nhân đúng vị trí)
         function grade52B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-b').value.trim(),
                 {
                     exactAnswers: [
@@ -433,6 +430,7 @@
                         '건강한 사회가 만들어질 수 있다.',
                         '사회라는 그림이 완성될 수 있기 때문이다.'
                     ],
+                    context: ['하나'],
                     stems: ['사회', '세상'],
                     grammar: [
                         { pattern: /돌아가[가-힣]*/, label: 'vận hành' },
@@ -442,9 +440,7 @@
                     ]
                 },
                 "Cần từ 'xã hội/thế giới' + kết quả khi cá nhân đúng vị trí."
-            );
-            document.getElementById('score-52-b').innerHTML = result.display;
-            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+            , 'score-52-b', 'btn-exp-52-b');
         }
 
         // --- KHỞI TẠO SÁCH TƯƠNG TÁC CÂU 53 ---
@@ -460,6 +456,5 @@
             initBook(bookData_35);
         });
     </script>
-    <script src="../../assets/js/study-timer.js"></script>
 </body>
 </html>

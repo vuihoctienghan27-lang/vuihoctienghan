@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vui Học Tiếng Hàn - Nền Tảng Luyện Thi TOPIK</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     <meta name="description"
         content="Hệ thống luyện thi TOPIK thông minh với Flashcard từ vựng, minigame và chế độ thi thử chuẩn xác.">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
@@ -36,15 +40,6 @@
         input,
         select {
             font-family: 'Pretendard', 'Inter', sans-serif !important;
-        }
-
-        /* Mobile: navbar width = body width, no desktop links */
-        @media (max-width: 768px) {
-            .global-nav, .wrapper {
-                margin-left: 15px !important;
-                margin-right: 15px !important;
-                width: auto !important;
-            }
         }
 
         #authModal {
@@ -107,63 +102,74 @@
         }
 
         /* ===== WRAPPER KÍNH MỜ ===== */
-        .wrapper { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 30px 40px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box; }
+        .wrapper { max-width: 900px; margin: 0 auto; background: rgba(255, 255, 255, 0.35); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 15px 20px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); width: 100%; box-sizing: border-box; }
 
         /* ===== HERO SECTION (BANNER) ===== */
         .hero-section {
-            background: var(--random-bg-gradient, linear-gradient(135deg, #1e40af 0%, #3b82f6 100%));
-            border-radius: 16px;
-            padding: 32px 36px;
-            color: white;
-            margin-bottom: 28px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-        }
-
-
-        .hero-title {
-            font-size: 2.2em;
-            font-weight: 800;
-            margin: 0;
-            line-height: 1.2;
-            letter-spacing: -0.5px;
-        }
-
-        /* TABS CHUYỂN ĐỀ TRONG BANNER */
-        .hero-tabs {
-            display: flex;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            padding: 6px;
-            width: fit-content;
-            margin-top: 20px;
-            gap: 5px;
-        }
-
-        .hero-tab {
-            padding: 10px 30px;
-            border-radius: 8px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 700;
-            font-size: 1.05em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-            background: transparent;
-        }
-
-        .hero-tab.active {
-            background: #fff;
-            color: #1e40af;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .hero-tab:not(.active):hover {
-            background: rgba(255, 255, 255, 0.25);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #7c3aed 100%);
+            border-radius: 22px;
+            padding: 34px 38px;
             color: #fff;
+            margin-bottom: 28px;
+            box-shadow: 0 18px 40px rgba(37, 99, 235, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            min-height: 205px;
         }
+        .hero-section::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px);
+            background-size: 22px 22px;
+            opacity: .45; pointer-events: none;
+        }
+        .hero-blob { position: absolute; border-radius: 50%; filter: blur(64px); pointer-events: none; }
+        .hero-blob.b1 { width: 230px; height: 230px; background: rgba(255,255,255,.22); top: -70px; right: -50px; animation: blobFloat 8s ease-in-out infinite; }
+        .hero-blob.b2 { width: 170px; height: 170px; background: rgba(255,255,255,.14); bottom: -70px; left: -40px; animation: blobFloat 11s ease-in-out infinite reverse; }
+        @keyframes blobFloat { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-12px) scale(1.08); } }
+
+        .hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,.16); color: #fff;
+            font-size: .8em; font-weight: 800; padding: 6px 14px; border-radius: 99px;
+            letter-spacing: .6px; text-transform: uppercase;
+            backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.24);
+            margin-bottom: 14px;
+        }
+        .hero-title {
+            font-size: 2.5em; font-weight: 900; margin: 0; line-height: 1.12; letter-spacing: -.6px;
+            background: linear-gradient(120deg, #fff 35%, rgba(255,255,255,.5));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { margin: 9px 0 0; font-size: .95em; color: rgba(255,255,255,.85); font-weight: 500; }
+        .hero-tabs {
+            display: flex; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18);
+            border-radius: 13px; padding: 5px; width: fit-content; margin-top: 20px; gap: 5px;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+        }
+        .hero-tab {
+            padding: 10px 30px; border-radius: 10px; color: rgba(255,255,255,.85);
+            font-weight: 800; font-size: 1em; cursor: pointer; transition: all .25s ease;
+            border: none; background: transparent;
+        }
+        .hero-tab.active { background: #fff; color: #1e40af; box-shadow: 0 6px 16px rgba(0,0,0,.15); }
+        .hero-tab:not(.active):hover { background: rgba(255,255,255,.18); color: #fff; }
+
+        .hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+        .hero-icon {
+            width: 116px; height: 116px; border-radius: 50%;
+            background: rgba(255,255,255,.16);
+            border: 1.5px solid rgba(255,255,255,.34);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 22px 44px rgba(0,0,0,.22), inset 0 0 34px rgba(255,255,255,.12);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            animation: heroFloat 4s ease-in-out infinite;
+        }
+        @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 
         /* ===== SECTION LABEL ===== */
         .section-header {
@@ -187,48 +193,6 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 14px;
-        }
-
-        /* ===== CAROUSEL MOBILE ===== */
-        .carousel-viewport {
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-            touch-action: pan-y pinch-zoom;
-            margin-bottom: 20px;
-        }
-
-        .carousel-track {
-            display: flex;
-            transition: transform 0.3s ease-out;
-            will-change: transform;
-        }
-
-        .carousel-page {
-            width: 100%;
-            flex-shrink: 0;
-            /* grid inside */
-        }
-
-        .carousel-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-bottom: 25px;
-        }
-
-        .carousel-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.15);
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .carousel-dot.active {
-            background: var(--primary);
-            transform: scale(1.3);
         }
 
         /* ===== CÔNG TẮC BẬT TẮT ===== */
@@ -279,91 +243,99 @@
             transform: translateX(20px);
         }
 
-        /* ===== THẺ ĐỀ THI KÍNH MỜ ===== */
+        /* ===== SECTION TOOLBAR (sắp xếp) ===== */
+        .section-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .section-toolbar select {
+            padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px;
+            font-size: 0.85em; background: rgba(255,255,255,0.85); color: var(--text-main);
+            outline: none; cursor: pointer;
+        }
+        .toolbar-switch { display: flex; align-items: center; gap: 8px; }
+
+        /* ===== DẢI THỐNG KÊ ===== */
+        .stat-strip {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            background: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 16px; overflow: hidden; margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .stat {
+            padding: 16px 10px 14px; text-align: center;
+            border-right: 1px solid rgba(226,232,240,0.9);
+        }
+        .stat:last-child { border-right: none; }
+        .stat b {
+            display: block; font-size: 1.7em; font-weight: 800;
+            color: var(--primary); line-height: 1.05; font-variant-numeric: tabular-nums;
+        }
+        .stat span {
+            display: block; font-size: 0.7em; color: var(--text-sub);
+            font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; margin-top: 6px;
+        }
+        .stat em {
+            display: block; font-style: normal; font-size: 0.66em;
+            color: #2563eb; font-weight: 700; margin-top: 3px; opacity: 0; transition: opacity 0.2s;
+        }
+        .stat-click { cursor: pointer; transition: background 0.2s; }
+        .stat-click:hover { background: rgba(239,246,255,0.9); }
+        .stat-click:hover em { opacity: 1; }
+
+        /* ===== THẺ ĐỀ HIỆN ĐẠI ===== */
         .exam-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px 20px;
-            background: rgba(255, 255, 255, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            text-decoration: none;
-            color: var(--text-main);
-            transition: all 0.3s ease;
-            gap: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
-            min-height: 85px;
-            box-sizing: border-box;
+            border-radius: 16px; text-decoration: none; color: var(--text-main);
+            transition: all 0.25s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.03); min-height: 84px;
         }
-
         .exam-card:hover {
-            background: rgba(255, 255, 255, 0.95);
-            border-color: rgba(255, 255, 255, 1);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.12);
+            transform: translateY(-3px); border-color: #fff;
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.15);
         }
-
-        .exam-card-left {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .exam-cover {
+            width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 900; font-size: 1.25em;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.18);
         }
+        .exam-cover.cover-type { font-size: 1.5em; }
+        .exam-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .exam-title { font-weight: 800; font-size: 1.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .exam-sub { font-size: 0.76em; color: var(--text-sub); font-weight: 600; }
+        .exam-progress { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+        .exam-progress .pbar { flex: 1; height: 6px; background: rgba(0,0,0,0.08); border-radius: 99px; overflow: hidden; }
+        .exam-progress .pbar i { display: block; height: 100%; background: linear-gradient(90deg, #2563eb, #06b6d4); border-radius: 99px; }
+        .exam-progress span { font-size: 0.72em; color: var(--text-sub); font-weight: 700; white-space: nowrap; }
+        .exam-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+        .exam-badge { font-size: 0.68em; font-weight: 800; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+        .badge-todo { background: #f1f5f9; color: #64748b; }
+        .badge-done { background: #eff6ff; color: #1d4ed8; }
+        .badge-high { background: #fef3c7; color: #b45309; }
+        .exam-arrow { color: #94a3b8; transition: 0.2s; flex-shrink: 0; }
+        .exam-card:hover .exam-arrow { color: var(--primary); transform: translateX(3px); }
+        .exam-card.coming-soon { opacity: 0.6; cursor: not-allowed; }
+        .exam-card.coming-soon:hover { transform: none; box-shadow: none; }
 
-        .exam-number {
-            font-size: 1.15em;
-            font-weight: 800;
-            letter-spacing: -0.3px;
-        }
-
-        .exam-badge {
-            display: inline-block;
-            font-size: 0.7em;
-            font-weight: 700;
-            padding: 3px 9px;
-            border-radius: 99px;
-            width: fit-content;
-        }
-
-        .badge-done {
-            background: #f0fdf4;
-            color: #16a34a;
-        }
-
-        .badge-hot {
-            background: #fff7ed;
-            color: #c2410c;
-        }
-
-        .badge-new {
-            background: #eff6ff;
-            color: #1d4ed8;
-        }
-
-        .exam-arrow {
-            color: #94a3b8;
-            transition: 0.2s;
-            flex-shrink: 0;
-        }
-
-        .exam-card:hover .exam-arrow {
-            color: var(--primary);
-            transform: translateX(3px);
-        }
-
-        .hero-tag {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.18);
-            color: #dbeafe;
-            font-size: 0.9em;
-            font-weight: 700;
-            padding: 5px 14px;
-            border-radius: 99px;
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
+        @media (max-width: 600px) {
+            .stat-strip { grid-template-columns: repeat(2, 1fr); }
+            .stat { border-right: none; border-bottom: 1px solid rgba(226,232,240,0.9); }
+            .stat:nth-child(2n) { border-left: 1px solid rgba(226,232,240,0.9); }
+            .stat:nth-last-child(-n+2) { border-bottom: none; }
+            .exam-grid { grid-template-columns: 1fr; }
+            .exam-cover { width: 52px; height: 52px; font-size: 1.15em; border-radius: 14px; }
+            .exam-card { padding: 14px 16px; gap: 14px; min-height: 96px; }
+            .exam-title { font-size: 1.08em; }
+            .hero-section { padding: 26px 22px; flex-direction: column; align-items: flex-start; min-height: 0; }
+            .hero-right { position: absolute; top: 18px; right: 14px; }
+            .hero-icon { width: 60px; height: 60px; }
+            .hero-icon svg { width: 30px !important; height: 30px !important; }
+            .hero-title { padding-right: 64px; }
+            .hero-title { white-space: nowrap; font-size: 1.35em; }
+            .hero-sub { font-size: .86em; }
+            .hero-tabs { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+            .hero-tab { padding: 11px 0; font-size: .98em; }
         }
 
         /* ===== FOOTER KÍNH MỜ LƠ LỬNG ===== */
@@ -405,81 +377,15 @@
             transition: 0.2s;
         }
 
-        /* ĐIỀU CHỈNH KÍCH THƯỚC TRÊN MOBILE */
-        @media (max-width: 600px) {
-            .global-nav { position: sticky; top: 20px; z-index: 1000; background: rgba(255,255,255,0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.6); border-radius: 24px; box-shadow: 0 8px 32px 0 rgba(31,38,135,0.07); font-family: "Pretendard", "Inter", sans-serif; width: 100%; max-width: 900px; margin: 20px auto 30px auto; box-sizing: border-box; }
 
-            .wrapper {
-                margin: 0 15px 20px 15px;
-                padding: 20px 16px;
-                border-radius: 16px;
-            }
 
-            .global-footer {
-                margin: 10px 15px 25px 15px;
-                border-radius: 16px;
-            }
 
-            .hero-section {
-                padding: 24px 20px;
-            }
-
-            .hero-title {
-                font-size: 1.8em;
-            }
-
-            .hero-tabs {
-                width: 100%;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .hero-tab {
-                padding: 10px 0;
-                font-size: 1em;
-            }
-
-            .exam-grid {
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-            }
-
-            .exam-card {
-                padding: 12px 10px;
-                gap: 5px;
-            }
-
-            .exam-card-left {
-                gap: 4px;
-            }
-
-            .exam-number {
-                font-size: 1.2em;
-            }
-
-            .exam-badge {
-                font-size: 0.6em;
-                padding: 2px 6px;
-            }
-
-            .exam-arrow {
-                width: 16px;
-                height: 16px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .nav-desktop-links {
-                display: none !important;
-            }
-        }
-    
-
-        
 </style>
-    <script src="assets/js/block.js"></script>
-    <script src="assets/js/theme-picker.js"></script>
-    <script src="assets/js/navbar.js"></script>
+    <script src="../assets/js/block.js"></script>
+    <script src="../assets/js/theme-picker.js"></script>
+    <script src="../assets/js/navbar.js"></script>
+    <script src="../assets/js/home-progress.js"></script>
+    <script src="../assets/js/hero-rain.js"></script>
 </head>
 
 <body>
@@ -511,11 +417,22 @@
     <div class="wrapper">
 
         <div class="hero-section">
-            <div class="hero-tag">Đọc hiểu</div>
-            <h1 class="hero-title" id="heroTitle">Luyện thi theo bộ đề</h1>
-            <div class="hero-tabs">
-                <button class="hero-tab" id="tabTopik1" onclick="switchTopikLevel(1)">TOPIK I</button>
-                <button class="hero-tab active" id="tabTopik2" onclick="switchTopikLevel(2)">TOPIK II</button>
+            <canvas class="hero-rain-canvas"></canvas>
+            <div class="hero-blob b1"></div>
+            <div class="hero-blob b2"></div>
+            <div class="hero-left">
+                <div class="hero-tag">📖 KỸ NĂNG ĐỌC</div>
+                <h1 class="hero-title" id="heroTitle">Luyện theo bộ đề</h1>
+                <p class="hero-sub">Ôn luyện kỹ năng đọc hiểu TOPIK.</p>
+                <div class="hero-tabs">
+                    <button class="hero-tab" id="tabTopik1" onclick="switchTopikLevel(1)">TOPIK I</button>
+                    <button class="hero-tab active" id="tabTopik2" onclick="switchTopikLevel(2)">TOPIK II</button>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="54" height="54" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
             </div>
         </div>
 
@@ -523,23 +440,38 @@
         <div class="section-header"
             style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 2px solid rgba(255, 255, 255, 0.3); padding-bottom: 10px;">
             <h3 class="section-title" id="modeTitle">📚 Chọn bộ đề</h3>
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span id="modeLabel" style="font-weight: 700; font-size: 0.9em; color: var(--text-sub);">Dạng câu</span>
-                <label class="switch">
-                    <input type="checkbox" id="modeToggle" onchange="toggleMode()">
-                    <span class="slider"></span>
-                </label>
+            <div class="section-toolbar">
+                <div class="toolbar-switch">
+                    <span id="modeLabel" style="font-weight: 800; font-size: 0.9em; color: #2563eb;">Dạng câu</span>
+                    <label class="switch">
+                        <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
 
-        <div class="carousel-viewport" id="carouselViewport">
-            <div class="carousel-track" id="examCarouselTrack">
-                <!-- JS Will Render -->
+        <div class="stat-strip" id="statStrip">
+            <div class="stat stat-click" onclick="openHomeExamHistory()" title="Xem lịch sử làm đề">
+                <b id="stExams">0</b>
+                <span>Đề đã làm</span>
+                <em>Xem lịch sử ›</em>
+            </div>
+            <div class="stat">
+                <b id="stCorrect">0</b>
+                <span>Câu đúng</span>
+            </div>
+            <div class="stat">
+                <b id="stAvg">0</b>
+                <span>Điểm trung bình</span>
+            </div>
+            <div class="stat">
+                <b id="stStreak">0</b>
+                <span>Ngày streak</span>
             </div>
         </div>
-        <div class="carousel-dots" id="carouselDots">
-            <!-- JS Will Render -->
-        </div>
+
+        <div class="exam-grid" id="cardGrid"></div>
 
 
     </div>
@@ -622,48 +554,53 @@
             state.mode = isTypeMode ? 'type' : 'exam';
             sessionStorage.setItem('topikMode', state.mode);
 
-            document.getElementById('heroTitle').innerText = isTypeMode ? 'Luyện theo dạng câu' : 'Luyện thi theo bộ đề';
+            document.getElementById('heroTitle').innerText = isTypeMode ? 'Luyện theo dạng câu' : 'Luyện theo bộ đề';
             document.getElementById('modeTitle').innerText = isTypeMode ? '📚 Chọn dạng câu' : '📚 Chọn bộ đề';
 
             renderGrid();
         }
 
-        let currentPage = 0;
-        let totalPages = 0;
-        let startX = 0;
-        let isDragging = false;
-        let trackElement = document.getElementById('examCarouselTrack');
-
-        function generateCard(item) {
-            let href = '';
-            let label = '';
-            let subLabel = '';
-
+        function generateCard(item, index) {
             const isTopik1 = state.level === 1;
             const folder = isTopik1 ? 'topik_i' : 'topik_ii';
 
             if (state.mode === 'exam') {
-                href = `reading/${folder}/topik${item}.html`;
-                label = `Đề đọc ${item}`;
-                subLabel = `<span class="exam-badge badge-done">Hoàn thiện</span>`;
-            } else {
-                href = `reading/${folder}/type_${item.range}.html`;
-                label = item.label;
-                subLabel = `<span style="font-size: 0.75em; color: var(--text-sub);">${item.desc}</span>`;
+                const total = isTopik1 ? 40 : 50;
+                const exam = window.HomeProgress.getExam(window.HomeProgress.keyFor('reading', folder, item));
+                return window.HomeProgress.buildExamCard({
+                    href: `${folder}/topik${item}.html`,
+                    title: `Đề đọc ${item}`,
+                    sub: isTopik1 ? 'TOPIK I · ' + total + ' câu' : 'TOPIK II · ' + total + ' câu',
+                    coverNum: item,
+                    exam: exam,
+                    total: total,
+                    index: index
+                });
             }
+            return window.HomeProgress.buildTypeCard({
+                href: `${folder}/type_${item.range}.html`,
+                title: item.label,
+                sub: item.desc,
+                coverText: '✏️',
+                index: index
+            });
+        }
 
-            return `
-                <a href="${href}" class="exam-card">
-                    <div class="exam-card-left">
-                        <span class="exam-number">${label}</span>
-                        ${subLabel}
-                    </div>
-                    <svg class="exam-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" 
-                        width="20" height="20" style="flex-shrink: 0;">
-                        <path d="M9 18l6-6-6-6" />
-                    </svg>
-                </a>
-            `;
+        function updateStats() {
+            if (!window.HomeProgress) return;
+            const t = window.HomeProgress.totals('reading');
+            const ex = document.getElementById('stExams');
+            if (ex) ex.innerText = t.exams;
+            const co = document.getElementById('stCorrect');
+            if (co) co.innerText = t.correct;
+            const av = document.getElementById('stAvg');
+            if (av) av.innerText = t.avg;
+            const st = document.getElementById('stStreak');
+            if (st) st.innerText = t.streak;
+        }
+
+        function openHomeExamHistory() {
+            if (window.HomeProgress) window.HomeProgress.openHistory('reading');
         }
 
         function renderGrid() {
@@ -674,132 +611,24 @@
                 data = state.level === 1 ? TYPE_DATA_T1 : TYPE_DATA_T2;
             }
 
-            const itemsPerPage = 6;
-            totalPages = Math.ceil(data.length / itemsPerPage);
+            const grid = document.getElementById('cardGrid');
+            if (!grid) return;
 
-            // Xử lý Destop (chỉ hiện Grid thuần túy) vs Mobile (Carousel)
-            let isMobile = window.innerWidth <= 768; // Có thể điều chỉnh breakpoint nếu cần
-
-            const track = document.getElementById('examCarouselTrack');
-            const dotsContainer = document.getElementById('carouselDots');
-            track.innerHTML = '';
-            dotsContainer.innerHTML = '';
-
-            if (isMobile) {
-                // RENDER CAROUSEL KIỂU VÒNG LẶP VUỐT
-                for (let i = 0; i < totalPages; i++) {
-                    const start = i * itemsPerPage;
-                    const chunk = data.slice(start, start + itemsPerPage);
-                    let pageHtml = `<div class="carousel-page"><div class="exam-grid">`;
-                    chunk.forEach(item => { pageHtml += generateCard(item); });
-                    pageHtml += `</div></div>`;
-                    track.innerHTML += pageHtml;
-
-                    // Add Dot
-                    dotsContainer.innerHTML += `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToPage(${i})"></div>`;
-                }
-
-                // Infinite Clone (Clone last page to front, first page to end)
-                if (totalPages > 1) {
-                    const firstClone = track.firstElementChild.cloneNode(true);
-                    const lastClone = track.lastElementChild.cloneNode(true);
-                    track.appendChild(firstClone);
-                    track.insertBefore(lastClone, track.firstElementChild);
-
-                    // Initially show real first page
-                    track.style.transition = 'none';
-                    track.style.transform = `translateX(-100%)`; // hide the clone
-                }
-
-                dotsContainer.style.display = 'flex';
-                currentPage = 0;
-            } else {
-                // RENDER GRID CHUNG TRÊN DESKTOP KHÔNG CÓ CAROUSEL TRANG
-                let pageHtml = `<div class="carousel-page" style="width:100%;"><div class="exam-grid">`;
-                data.forEach(item => { pageHtml += generateCard(item); });
-                pageHtml += `</div></div>`;
-
-                track.innerHTML = pageHtml;
-                track.style.transform = 'none';
-                track.style.transition = 'none';
-                dotsContainer.style.display = 'none';
-            }
-        }
-
-        // SWIPE CAROUSEL LOGIC
-        trackElement.addEventListener('touchstart', swipeStart);
-        trackElement.addEventListener('touchmove', swipeMove);
-        trackElement.addEventListener('touchend', swipeEnd);
-
-        function updateDots(index) {
-            const dots = document.querySelectorAll('.carousel-dot');
-            dots.forEach(d => d.classList.remove('active'));
-            if (dots[index]) dots[index].classList.add('active');
-        }
-
-        function goToPage(index, withTransition = true) {
-            currentPage = index;
-            if (withTransition) trackElement.style.transition = 'transform 0.3s ease-out';
-            else trackElement.style.transition = 'none';
-            // +1 because of the clone at the beginning
-            const offset = (index + 1) * 100;
-            trackElement.style.transform = `translateX(-${offset}%)`;
-            updateDots(index);
-        }
-
-        function swipeStart(e) {
-            if (window.innerWidth > 768 || totalPages <= 1) return;
-            startX = e.touches[0].clientX;
-            isDragging = true;
-            trackElement.style.transition = 'none';
-        }
-
-        function swipeMove(e) {
-            if (!isDragging) return;
-            const currentX = e.touches[0].clientX;
-            const diff = startX - currentX;
-            // +1 for clone index
-            const baseOffset = (currentPage + 1) * trackElement.clientWidth;
-            trackElement.style.transform = `translateX(-${baseOffset + diff}px)`;
-        }
-
-        function swipeEnd(e) {
-            if (!isDragging) return;
-            isDragging = false;
-            const currentX = e.changedTouches[0].clientX;
-            const diff = startX - currentX;
-
-            // Nếu vuốt quá 50px thì chuyển trang
-            if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    // Vuốt qua trái (next)
-                    currentPage++;
-                } else {
-                    // Vuốt qua phải (prev)
-                    currentPage--;
-                }
+            if (data.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub); font-weight:700;">Không có đề phù hợp</div>';
+                return;
             }
 
-            // Chuyển tới vị trí mục tiêu
-            trackElement.style.transition = 'transform 0.3s ease-out';
-            trackElement.style.transform = `translateX(-${(currentPage + 1) * 100}%)`;
+            // Danh sách chung trên 1 mặt phẳng (không carousel, không phân trang)
+            grid.innerHTML = data.map((item, idx) => generateCard(item, idx)).join('');
+        }
 
-            // Handle infinite Jump
-            if (currentPage >= totalPages) {
-                updateDots(0);
-                setTimeout(() => {
-                    currentPage = 0;
-                    goToPage(0, false);
-                }, 300);
-            } else if (currentPage < 0) {
-                updateDots(totalPages - 1);
-                setTimeout(() => {
-                    currentPage = totalPages - 1;
-                    goToPage(totalPages - 1, false);
-                }, 300);
-            } else {
-                updateDots(currentPage);
-            }
+        // Nạp tiến độ cá nhân → render lại + cập nhật thống kê
+        if (window.HomeProgress) {
+            window.HomeProgress.load('reading', function () {
+                renderGrid();
+                updateStats();
+            });
         }
 
         // Render init and Pagseshow logic for Back Navigation caching
@@ -823,7 +652,7 @@
             }
 
             const isTypeMode = (state.mode === 'type');
-            document.getElementById('heroTitle').innerText = isTypeMode ? 'Luyện theo dạng câu' : 'Luyện thi theo bộ đề';
+            document.getElementById('heroTitle').innerText = isTypeMode ? 'Luyện theo dạng câu' : 'Luyện theo bộ đề';
             document.getElementById('modeTitle').innerText = isTypeMode ? '📚 Chọn dạng câu' : '📚 Chọn bộ đề';
 
             renderGrid();
@@ -850,7 +679,7 @@
                             btn.style.background = '#eff6ff';
                             btn.style.borderRadius = '8px';
                             btn.title = 'Tài khoản (' + (user.displayName || user.email) + ')';
-                            btn.onclick = () => { window.location.href = 'mypage.html'; };
+                            btn.onclick = () => { window.location.href = '../mypage.html'; };
                         } else {
                             btn.style.color = '#0f172a';
                             btn.style.background = '';
@@ -865,10 +694,10 @@
             }, 300);
         });
     </script>
-    <script src="auth.js"></script>
-    <script src="assets/js/theme.js"></script>
+    <script src="../auth.js"></script>
+    <script src="../assets/js/theme.js"></script>
 
-    <script src="assets/js/menu.js"></script>
+    <script src="../assets/js/menu.js"></script>
 </body>
 
 </html>

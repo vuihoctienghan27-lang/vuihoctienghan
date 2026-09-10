@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOPIK II 읽기 - 제60회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     
 
     <link rel="stylesheet" href="../../assets/css/writing.css">
@@ -18,9 +21,9 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/writing.js"></script>
+<script src="../../assets/js/writing.js"></script>
     <script src="../../assets/js/grading-engine.js"></script>
+    <script src="../../assets/js/gemini-grader.js"></script>
 
 
 <style>
@@ -442,19 +445,19 @@
         <details><summary>10. 이는 A보다 B가 ~에 더 큰 영향을 미치게 되는 이유이기도 하다.</summary><div class="details-content">Đây cũng chính là lý do khiến B có ảnh hưởng lớn đến [Chủ đề] hơn là A.</div></details>
     </div>
 </div>
-
-<script src="exam-logic.js"></script>
-
 <script>
     // CÂU 51A — Cấu trúc trích dẫn gián tiếp
     function grade51A() {
-        var result = gradeByConfig(
+        window.gradeWriting(
             document.getElementById('ans-51-a').value.trim(),
             {
                 exactAnswers: [
-                    '그 서류가 필요하다고 들었습니다.',
-                    '서류가 있어야 한다고 합니다.'
-                ],
+                        '필요하다고 합니다.',
+                        '있어야 한다고 합니다.',
+                        '필요하다고 들었습니다.',
+                        '있어야 한다고 들었습니다.'
+                    ],
+                context: ['물건'],
                 stems: ['필요하', '있어야 하', '있어'],
                 grammar: [
                     { pattern: /다고\s*합[가-힣]*/, label: 'trích dẫn' },
@@ -462,20 +465,21 @@
                 ]
             },
             "Cần từ vựng mang nghĩa 'cần / phải có' + trích dẫn gián tiếp."
-        );
-        document.getElementById('score-51-a').innerHTML = result.display;
-        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        , 'score-51-a', 'btn-exp-51-a');
     }
 
     // CÂU 51B — Hỏi cách thức
     function grade51B() {
-        var result = gradeByConfig(
+        window.gradeWriting(
             document.getElementById('ans-51-b').value.trim(),
             {
                 exactAnswers: [
-                    '어떻게 해야 합니까?',
-                    '무엇을 준비해야 됩니까?'
-                ],
+                        '어떻게 해야 합니까.',
+                        '어떻게 해야 됩니까.',
+                        '어떻게 신청해야 합니까.',
+                        '무엇을 준비해야 합니까.'
+                    ],
+                context: ['어떻게'],
                 stems: ['어떻게 하', '어떻게 해', '해야', '무엇을 하', '무엇을 준비해야'],
                 grammar: [
                     { pattern: /야\s*합[가-힣]*/, label: 'bắt buộc' },
@@ -484,20 +488,21 @@
                 ]
             },
             "Cần từ để hỏi 'như thế nào / làm gì / đi đâu'."
-        );
-        document.getElementById('score-51-b').innerHTML = result.display;
-        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        , 'score-51-b', 'btn-exp-51-b');
     }
 
     // CÂU 52A — Phủ định một phần: không chỉ mở nhạc
     function grade52A() {
-        var result = gradeByConfig(
+        window.gradeWriting(
             document.getElementById('ans-52-a').value.trim(),
             {
                 exactAnswers: [
-                    '음악을 들려주는 것은 아니다.',
-                    '음악만 사용하는 것은 아니다.'
-                ],
+                        '들려주는 것은 아니다.',
+                        '사용하는 것은 아니다.',
+                        '틀어주는 것은 아니다.',
+                        '들려주지는 않는다.'
+                    ],
+                context: ['음악'],
                 stems: ['들려주', '사용하', '틀어주'],
                 grammar: [
                     { pattern: /는\s*것[가-힣]*\s*아니[가-힣]*/, label: 'không phải là' },
@@ -505,20 +510,21 @@
                 ]
             },
             "Cần động từ 'mở cho nghe/sử dụng' và cấu trúc phủ định một phần."
-        );
-        document.getElementById('score-52-a').innerHTML = result.display;
-        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        , 'score-52-a', 'btn-exp-52-a');
     }
 
     // CÂU 52B — Cấu trúc sai khiến
     function grade52B() {
-        var result = gradeByConfig(
+        window.gradeWriting(
             document.getElementById('ans-52-b').value.trim(),
             {
                 exactAnswers: [
-                    '새로운 경험을 하게 한다.',
-                    '다양한 감정을 느끼게 만든다.'
-                ],
+                        '느끼도록 한다.',
+                        '느끼게 한다.',
+                        '가지게 한다.',
+                        '경험하게 한다.'
+                    ],
+                context: ['안정감'],
                 stems: ['느끼', '경험하', '가지'],
                 grammar: [
                     { pattern: /게\s*한[가-힣]*/, label: 'sai khiến' },
@@ -527,9 +533,7 @@
                 ]
             },
             "Cần động từ 'cảm nhận/trải nghiệm' + sai khiến."
-        );
-        document.getElementById('score-52-b').innerHTML = result.display;
-        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        , 'score-52-b', 'btn-exp-52-b');
     }
 
     // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 60 ---

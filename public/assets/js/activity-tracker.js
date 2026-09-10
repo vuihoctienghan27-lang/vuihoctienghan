@@ -18,7 +18,6 @@
     let lastActivity    = Date.now();
     let ticker          = null;
     let localTodayMins  = 0;  // Đã học bao nhiêu phút hôm nay (đọc từ Firestore)
-    let localBlocksDone = 0;  // Số block 10-phút đã tính EXP
     let hourBonusGiven  = 0;  // Số giờ đã thưởng bonus hôm nay
     let initDone        = false;
 
@@ -56,7 +55,6 @@
             if (snap.exists) {
                 const data = snap.data();
                 localTodayMins  = (data.dailyStudyData?.[today]) || 0;
-                localBlocksDone = Math.floor(localTodayMins / 10);
                 hourBonusGiven  = (data.hourBonusData?.[today]) || 0;
             }
         } catch(e) { console.log('[Tracker] Init error:', e); }
@@ -70,12 +68,8 @@
         const today = localDate();
         localTodayMins++;
 
-        // EXP cho mỗi 10 phút
-        const newBlocks = Math.floor(localTodayMins / 10);
-        const blockExp = (newBlocks - localBlocksDone) * 5;
-        localBlocksDone = newBlocks;
-
-        // Bonus giờ
+        // EXP nền (5 EXP / 10 phút) được tính ở phần hiển thị từ totalStudyMinutes,
+        // nên ở đây CHỈ cộng thêm bonus giờ vào bonusEXP (tránh đếm EXP 2 lần).
         const newHours = Math.floor(localTodayMins / 60);
         let hourExp = 0;
         if (newHours > hourBonusGiven) {
@@ -91,13 +85,8 @@
                 [`dailyStudyData.${today}`]: firebase.firestore.FieldValue.increment(1),
                 totalStudyMinutes: firebase.firestore.FieldValue.increment(1),
             };
-            if (blockExp > 0) {
-                updates.bonusEXP = firebase.firestore.FieldValue.increment(blockExp);
-            }
             if (hourExp > 0) {
-                updates.bonusEXP = firebase.firestore.FieldValue.increment(
-                    (blockExp || 0) + hourExp
-                );
+                updates.bonusEXP = firebase.firestore.FieldValue.increment(hourExp);
                 updates[`hourBonusData.${today}`] = newHours;
                 setTimeout(() => {
                     if (typeof Swal !== 'undefined') {

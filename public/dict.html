@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="assets/css/base.css">
     <script src="assets/js/theme-picker.js"></script>
     <script src="assets/js/navbar.js"></script>
+    <script src="assets/js/hero-rain.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
@@ -24,16 +25,52 @@
     <style>
         :root{--text-main:#1e293b;--text-sub:#64748b;--primary:#3b82f6;--bg-color:#f1f5f9;--bg-card:#fff;--border:#e2e8f0}
         body.dark-mode{--bg-card:#1e293b;--border:#334155;--text-main:#f1f5f9;--text-sub:#94a3b8}
+        body{margin:0;padding:0}
         .wrapper{max-width:900px;margin:0 auto;background:rgba(255,255,255,.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.5);border-radius:24px;padding:15px 20px;box-shadow:0 15px 35px rgba(0,0,0,.05);width:100%;box-sizing:border-box}
         body.dark-mode .wrapper{background:rgba(15,23,42,.65);border-color:rgba(255,255,255,.1)}
 
         /* Hero */
-        .dict-hero-wrap{position:relative;border-radius:20px;overflow:hidden;margin-bottom:20px;box-shadow:0 8px 32px rgba(99,102,241,.15)}
-        .dict-hero{position:relative;z-index:1;background:linear-gradient(135deg,#1e1b4b 0%,#312e81 25%,#4c1d95 50%,#831843 100%);padding:40px 28px 36px;text-align:center}
-        .dict-hero-icon{display:inline-block;width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,.15);font-size:1.5em;line-height:48px;backdrop-filter:blur(6px);margin-bottom:10px;animation:dhFloat 3s ease-in-out infinite}
-        @keyframes dhFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-        .dict-hero h1{font-size:1.8em;font-weight:900;letter-spacing:-.5px;color:#fff;margin:0 0 6px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
-        .dict-hero p{color:rgba(255,255,255,.75);font-size:.92em;margin:0;font-weight:500}
+        .hero-section {
+            position: relative;
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 45%, #7c3aed 100%);
+            border-radius: 22px; padding: 34px 38px; color: #fff; margin-bottom: 20px;
+            box-shadow: 0 18px 40px rgba(99,102,241,.18);
+            display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 195px;
+        }
+        .hero-bg { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; pointer-events: none; }
+        .hero-bg::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1px);
+            background-size: 22px 22px; opacity: .45;
+        }
+        .hero-blob { position: absolute; border-radius: 50%; filter: blur(64px); }
+        .hero-blob.b1 { width: 230px; height: 230px; background: rgba(255,255,255,.2); top: -70px; right: -50px; animation: blobFloat 8s ease-in-out infinite; }
+        .hero-blob.b2 { width: 170px; height: 170px; background: rgba(255,255,255,.13); bottom: -70px; left: -40px; animation: blobFloat 11s ease-in-out infinite reverse; }
+        @keyframes blobFloat { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-12px) scale(1.08); } }
+        .hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,.16); color: #fff;
+            font-size: .8em; font-weight: 800; padding: 6px 14px; border-radius: 99px;
+            letter-spacing: .6px; text-transform: uppercase;
+            backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.24); margin-bottom: 14px;
+        }
+        .hero-title {
+            font-size: 2.3em; font-weight: 900; margin: 0; line-height: 1.12; letter-spacing: -.6px;
+            background: linear-gradient(120deg, #fff 35%, rgba(255,255,255,.5));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { margin: 9px 0 0; font-size: .95em; color: rgba(255,255,255,.88); font-weight: 500; }
+        .hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+        .hero-icon {
+            width: 110px; height: 110px; border-radius: 50%;
+            background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,255,255,.34);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 22px 44px rgba(0,0,0,.22), inset 0 0 34px rgba(255,255,255,.12);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            animation: heroFloat 4s ease-in-out infinite;
+        }
+        @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 
         /* Search */
         .dict-search-wrap{padding:0 0 20px}
@@ -101,16 +138,21 @@
 
         @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
         @media(max-width:600px){
-            .wrapper{padding:10px 8px;border-radius:16px;width:100%;box-sizing:border-box}
-            .dict-hero{padding:28px 16px}
-            .dict-hero h1{font-size:1.4em}
-            .dict-search-input{padding:10px 14px;font-size:.95em}
-            .dict-search-btn{padding:10px 16px;font-size:.9em}
-            .result-card{padding:14px 16px}
-            .fw-widget .fw-hdr{padding:12px 16px}
-            .fw-body{padding:14px 16px}
-            .fw-front,.fw-back{padding:16px 14px;min-height:170px}
-            .fw-word{font-size:1.6em}
+            .wrapper{margin:0 6px;padding:10px 12px;border-radius:16px;width:auto;box-sizing:border-box;overflow-x:hidden}
+            .hero-section{padding:26px 22px;flex-direction:column;align-items:flex-start;min-height:0}
+            .hero-right{position:absolute;top:18px;right:14px}
+            .hero-icon{width:60px;height:60px}
+            .hero-icon svg{width:30px !important;height:30px !important}
+            .hero-title{padding-right:64px}
+            .hero-title{white-space:nowrap;font-size:1.05em}
+            .hero-sub{font-size:.86em}
+            .dict-search-input{padding:10px 12px;font-size:.9em}
+            .dict-search-btn{padding:10px 12px;font-size:.85em}
+            .result-card{padding:12px 12px}
+            .fw-widget .fw-hdr{padding:12px 12px}
+            .fw-body{padding:12px 12px}
+            .fw-front,.fw-back{padding:14px 10px;min-height:150px}
+            .fw-word{font-size:1.5em}
         }
     </style>
 </head>
@@ -118,11 +160,17 @@
 <div class="wrapper">
 
     <!-- Hero -->
-    <div class="dict-hero-wrap">
-        <div class="dict-hero">
-            <div class="dict-hero-icon">📚</div>
-            <h1>Từ Điển TOPIK Thông Minh</h1>
-            <p>Tra cứu 49.000+ từ vựng Hàn-Việt với đầy đủ nghĩa, giải thích & ví dụ</p>
+    <div class="hero-section">
+        <div class="hero-bg"><canvas class="hero-rain-canvas"></canvas><div class="hero-blob b1"></div><div class="hero-blob b2"></div></div>
+        <div class="hero-left">
+            <div class="hero-tag">🔎 Tra cứu</div>
+            <h1 class="hero-title">Từ Điển Thông Minh</h1>
+            <p class="hero-sub">Tra cứu với đầy đủ nghĩa, giải thích & ví dụ</p>
+        </div>
+        <div class="hero-right">
+            <div class="hero-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="52" height="52" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            </div>
         </div>
     </div>
 
@@ -163,12 +211,40 @@
 var localMap=null;
 function buildIndex(){
     localMap=new Map();
-    if(window.AutoVocabDict) window.AutoVocabDict.forEach(function(e){
-        localMap.set(e.base.toLowerCase(),e);
-        if(e.variants) e.variants.forEach(function(v){if(!localMap.has(v.toLowerCase()))localMap.set(v.toLowerCase(),e);});
-    });
+
+    // Build quick lookup for KRDict entries
+    var fullLookup=new Map();
     if(window.AutoVocabDictFull) window.AutoVocabDictFull.forEach(function(e){
-        if(!localMap.has(e.w.toLowerCase()))localMap.set(e.w.toLowerCase(),e);
+        fullLookup.set(e.w.toLowerCase(),e);
+    });
+
+    // Add hand-edited entries, enriched with KRDict data if available
+    if(window.AutoVocabDict) window.AutoVocabDict.forEach(function(e){
+        var key=e.base.toLowerCase();
+        var full=fullLookup.get(key);
+        var entry;
+        if(full){
+            entry={
+                base:e.base,
+                meaning:e.meaning,
+                level:e.level,
+                variants:e.variants,
+                examples:e.examples,
+                _krPos:full.t||'',
+                _krDef:full.k||'',
+                _krSenses:full.s||(full.m?[{m:full.m,d:full.d,x:full.x}]:[])
+            };
+        }else{
+            entry=e;
+        }
+        localMap.set(key,entry);
+        if(e.variants) e.variants.forEach(function(v){if(!localMap.has(v.toLowerCase()))localMap.set(v.toLowerCase(),entry);});
+    });
+
+    // Add remaining KRDict entries (not already in hand-edited)
+    if(window.AutoVocabDictFull) window.AutoVocabDictFull.forEach(function(e){
+        var key=e.w.toLowerCase();
+        if(!localMap.has(key))localMap.set(key,e);
     });
 }
 buildIndex();
@@ -188,8 +264,22 @@ if(window.AutoVocabDictFull) buildViIndex();
 
 // ── Render result (like hover-lookup panel) ──
 function renderResult(entry){
-    var data=entry.base?{w:entry.base,m:entry.meaning,t:entry.pos||'',x:(entry.examples||[]).map(function(e){return typeof e==='string'?e:e.ko||'';})}:entry;
-    var senses=data.s||[{m:data.m,d:data.d,x:data.x}];
+    var data, senses;
+    if(entry.base){
+        // Hand-edited entry (possibly enriched with KRDict)
+        data={
+            w:entry.base,
+            m:entry.meaning,
+            t:entry._krPos||entry.pos||'',
+            x:(entry.examples||[]).map(function(e){return typeof e==='string'?e:e.ko||'';})
+        };
+        senses=[{m:entry.meaning,x:entry.examples||[]}];
+        if(entry._krSenses&&entry._krSenses.length)senses=senses.concat(entry._krSenses);
+    }else{
+        // Pure KRDict entry
+        data=entry;
+        senses=data.s||[{m:data.m,d:data.d,x:data.x}];
+    }
     var h='<div class="r-header">';
     h+='<span class="r-word">'+data.w+'</span>';
     if(data.t) h+='<span class="r-pos">'+data.t+'</span>';
@@ -200,14 +290,15 @@ function renderResult(entry){
         var saved=window.savedVocabSet&&(window.savedVocabSet.has(sk)||window.savedVocabSet.has(data.w));
         h+='<div class="r-sense"><div style="display:flex;justify-content:space-between;align-items:flex-start;">';
         h+='<div style="flex:1;"><div class="r-label">NGHĨA '+(i+1)+'</div><div class="r-mean">'+sp.m+'</div>';
-        if(sp.d) h+='<div class="r-def">'+sp.d+'</div></div>';
-        h+='<button class="r-save-btn" data-word="'+data.w.replace(/"/g,'&quot;')+'" data-mean="'+sp.m.replace(/"/g,'&quot;')+'" data-key="'+sk+'" style="color:'+(saved?'#f59e0b':'#cbd5e1')+'" title="'+(saved?'Bỏ lưu':'Lưu vào sổ từ')+'" onclick="event.stopPropagation();window._dictSave(this)">'+(saved?'★':'☆')+'</button>';
+        if(sp.d) h+='<div class="r-def">'+sp.d+'</div>';
+        h+='</div><button class="r-save-btn" data-word="'+data.w.replace(/"/g,'&quot;')+'" data-mean="'+sp.m.replace(/"/g,'&quot;')+'" data-key="'+sk+'" style="color:'+(saved?'#f59e0b':'#cbd5e1')+'" title="'+(saved?'Bỏ lưu':'Lưu vào sổ từ')+'" onclick="event.stopPropagation();window._dictSave(this)">'+(saved?'★':'☆')+'</button>';
         h+='</div>';
         if(sp.x&&sp.x.length) sp.x.forEach(function(ex){var t=typeof ex==='string'?ex:(ex.ko||'');if(t)h+='<div class="r-ex">'+t+'</div>';});
         h+='</div>';
     });
-    if(data.k) h+='<div class="r-kdef"><b>한국어 정의</b><br>'+data.k+'</div>';
-    h+='<div style="font-size:.6em;color:#cbd5e1;margin-top:10px;text-align:right;">📚 KRDict</div>';
+    if(entry._krDef) h+='<div class="r-kdef"><b>한국어 정의</b><br>'+entry._krDef+'</div>';
+    else if(data.k) h+='<div class="r-kdef"><b>한국어 정의</b><br>'+data.k+'</div>';
+    h+='<div style="font-size:.6em;color:#cbd5e1;margin-top:10px;text-align:right;">📚 '+(entry._krDef?'TOPIK + KRDict':'KRDict')+'</div>';
     document.getElementById('resultCard').innerHTML=h;
     document.getElementById('resultCard').style.display='block';
 }
@@ -217,13 +308,17 @@ function speak(w){if(!w||!window.speechSynthesis)return;window.speechSynthesis.c
 function isKorean(ch){var c=ch.charCodeAt(0);return(c>=0xAC00&&c<=0xD7AF)||(c>=0x1100&&c<=0x11FF)||(c>=0x3130&&c<=0x318F);}
 function simpleUnfold(word){
     var set=[word];
+    var noSpace=word.replace(/\s+/g,'');
+    if(noSpace!==word)set.push(noSpace);
     var P='에서부터,으로부터,에게서는,한테서는,에게서,한테서,으로서,으로써,에서는,부터는,까지는,에게는,한테는,으로는,께서는,에서,에게,한테,으로,부터,까지,처럼,같이,만큼,밖에,조차,마저,대로,보다,께서,더러,보고,라고,이라는,이야,는,은,가,이,를,을,에,의,와,과,도,만,나,랑,야,들,께,요,이나,든지,라도,나마'.split(',');
     for(var i=0;i<P.length;i++){var p=P[i];if(word.endsWith(p)&&word.length>p.length)set.push(word.slice(0,-p.length));}
-    var V='습니다,ㅂ니다,습니까,ㅂ니까,았습니다,었습니다,였습니다,았어요,었어요,였어요,았다,었다,였다,겠습니다,겠어요,겠다,지만,으면서,면서,으며,며,으니까,니까,으므로,므로,느라고,더니,다가,자마자,으려고,려고,으러,러,도록,으면,면,거든,아요,어요,여요,네요,데요,군요,잖아요,지요,죠,더라고요,더군요,는가,은가,ㄴ가,니,냐,나요,네,데,군,지,고,구나,잖아,자,다,아,어,여,는,은,ㄴ,을,ㄹ,던,았,었,였,시,셔,실,신,셨,음,ㅁ,기,게'.split(',');
-    for(var i=0;i<V.length;i++){var v=V[i];if(word.endsWith(v)&&word.length>v.length){var stem=word.slice(0,-v.length);set.push(stem+'다');set.push(stem);}}
-    var I={했:'하',됐:'되',켰:'키',갔:'가',왔:'오',봤:'보',줬:'주',샀:'사',섰:'서',컸:'크',났:'나',썼:'쓰',들었:'듣',물었:'묻',걸었:'걷',들어:'듣',물어:'묻',걸어:'걷',불렀:'부르',몰랐:'모르',흘렀:'흐르',올랐:'오르',빨랐:'빠르',길렀:'기르',불러:'부르',몰라:'모르',더워:'덥',추워:'춥',매워:'맵',쉬워:'쉽',고마워:'고맙',어려워:'어렵',무서워:'무섭',더웠:'덥',추웠:'춥',매웠:'맵',쉬웠:'쉽',고마웠:'고맙',어려웠:'어렵',누웠:'눕',누워:'눕',예뻐:'예쁘',아파:'아프',바빠:'바쁘'};
+    var V='습니다,ㅂ니다,습니까,ㅂ니까,았습니다,었습니다,였습니다,았어요,었어요,였어요,았다,었다,였다,겠습니다,겠어요,겠다,지만,으면서,면서,으며,며,으니까,니까,으므로,므로,느라고,더니,다가,자마자,으려고,려고,으러,러,도록,으면,면,거든,아요,어요,여요,해요,네요,데요,군요,잖아요,지요,죠,더라고요,더군요,는가,은가,ㄴ가,니,냐,나요,네,데,군,지,고,구나,잖아,자,다,아,어,여,해,는,은,ㄴ,을,ㄹ,던,았,었,였,시,셔,실,신,셨,음,ㅁ,기,게,기도,기에는,기에,기를,기가,기로,기까지,기보다,기만,기위해,기위해서,기때문에'.split(',');
+    // Run V stripping on all current candidates (including P-stripped)
+    var arrV=set.slice();
+    for(var si=0;si<arrV.length;si++){var w=arrV[si];for(var i=0;i<V.length;i++){var v=V[i];if(w.endsWith(v)&&w.length>v.length){var stem=w.slice(0,-v.length);set.push(stem+'다');set.push(stem);}}}
+    var I={했:'하',해:'하',줘:'주',봐:'보',놔:'놓',둬:'두',됐:'되',켰:'키',갔:'가',왔:'오',줬:'주',샀:'사',섰:'서',컸:'크',났:'나',썼:'쓰',렸:'리',겼:'기',혔:'히',폈:'피',졌:'지',쳤:'치',볐:'비',셨:'시',들었:'듣',물었:'묻',걸었:'걷',들어:'듣',물어:'묻',걸어:'걷',불렀:'부르',몰랐:'모르',흘렀:'흐르',올랐:'오르',빨랐:'빠르',길렀:'기르',불러:'부르',몰라:'모르',더워:'덥',추워:'춥',매워:'맵',쉬워:'쉽',고마워:'고맙',어려워:'어렵',무서워:'무섭',더웠:'덥',추웠:'춥',매웠:'맵',쉬웠:'쉽',고마웠:'고맙',어려웠:'어렵',누웠:'눕',누워:'눕',예뻐:'예쁘',아파:'아프',바빠:'바쁘',랐:'라',놀랐:'놀라',건넜:'건너',일어났:'일어나'};
     var arr=set.slice();
-    for(var i=0;i<arr.length;i++){var c=arr[i];for(var k in I){if(c.indexOf(k)===0){set.push(I[k]+'다');set.push(I[k]);}}}
+    for(var i=0;i<arr.length;i++){var c=arr[i];for(var k in I){var idx=c.indexOf(k);if(idx!==-1){var prefix=c.substring(0,idx);set.push(prefix+I[k]+'다');set.push(prefix+I[k]);}}}
     return set;
 }
 
@@ -260,12 +355,11 @@ function doSearch(){
         return;
     }
 
-    // Hàn → Việt (existing)
-    var entry=localMap.get(q.toLowerCase());
-    if(!entry){
-        var cands=simpleUnfold(q.toLowerCase());
-        for(var i=0;i<cands.length;i++){entry=localMap.get(cands[i]);if(entry)break;}
-    }
+    // Hàn → Việt — unfold first (prefer verb base over short conjugations)
+    var entry=null;
+    var cands=simpleUnfold(q.toLowerCase());
+    for(var i=0;i<cands.length;i++){var u=cands[i];if(u!==q.toLowerCase()){entry=localMap.get(u);if(entry)break;}}
+    if(!entry)entry=localMap.get(q.toLowerCase());
     if(entry){renderResult(entry);autoTranslateEx();return;}
     // API fallback
     Swal.fire({title:'Đang tra...',html:'Tìm "'+q+'" qua API...',allowOutsideClick:true,didOpen:async function(){

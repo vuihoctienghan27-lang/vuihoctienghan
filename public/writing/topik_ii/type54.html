@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luyện Dạng Câu 54 | TOPIK II Viết - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -39,19 +42,6 @@
         }
 
         /* ===== NAVBAR KÍNH MỜ ===== */
-        .global-nav {
-            position: sticky;
-            top: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            border-radius: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-            max-width: 900px;
-            margin: 20px auto 30px auto;
-        }
 
         .nav-top-row {
             display: flex;
@@ -115,10 +105,10 @@
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.5);
             border-radius: 24px;
-            padding: 30px 40px;
+            padding: 15px 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
             margin-bottom: 30px;
-        }
+         width: 100%; box-sizing: border-box;}
 
         /* ===== HERO SECTION (BANNER) ===== */
         .hero-section {
@@ -214,15 +204,13 @@
         }
 
         @media (max-width: 600px) {
-            .global-nav, .wrapper, .global-footer { margin-left: 5px; margin-right: 5px; border-radius: 16px; }
-            .wrapper { padding: 20px 16px; }
             .hero-section { padding: 24px 20px; margin-bottom: 20px; }
             .hero-title { font-size: 1.6em; }
         }
 
         /* ===== DARK MODE DÀNH CHO WRITING ===== */
         body.dark-mode { color: #e2e8f0 !important; }
-        body.dark-mode .wrapper { background: rgba(15,23,42,0.75) !important; border-color: rgba(255,255,255,0.1) !important; }
+        body.dark-mode .wrapper { background: rgba(15,23,42,0.75) !important; border-color: rgba(255,255,255,0.1) !important;  width: 100%; box-sizing: border-box;}
         body.dark-mode .section-title { color: #c4b5fd !important; border-bottom-color: rgba(255,255,255,0.1) !important; }
         body.dark-mode .badge { background: rgba(139,92,246,0.2) !important; color: #c4b5fd !important; border-color: rgba(139,92,246,0.3) !important; }
         body.dark-mode .writing-box { background: rgba(30,41,59,0.7) !important; border-color: rgba(255,255,255,0.1) !important; color: #e2e8f0 !important; }
@@ -240,8 +228,7 @@
 
     <script src="../../assets/js/theme-picker.js"></script>
     <script src="../../assets/js/navbar.js"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/type-navigator.js"></script>
+<script src="../../assets/js/type-navigator.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="../../assets/js/writing.js"></script>
 </head>
@@ -313,6 +300,8 @@
                             wrapper.classList.add('question-block');
 
                             let uid = `q54_${examName.replace(/\s/g, '')}_${idx}`;
+                            let cssClass = 'exam-' + examFile.replace('.html','').replace('topik','de');
+                            wrapper.classList.add(cssClass);
                             wrapper.id = uid;
                             wrapper.insertAdjacentHTML('afterbegin', `<div class="q-number" style="display:none;">54</div>`);
 
@@ -328,11 +317,12 @@
 
                             let badge = `<div class="exam-source-badge" style="background:#6d28d9;color:white;border-color:#6d28d9;">📚 Trích từ: ${examName.toUpperCase()}</div>`;
                             
-                            // Trích xuất style nội tuyến của đề bài
+                            // Trích xuất style nội tuyến của đề bài, scoped vào wrapper
                             let styleHTML = '';
                             doc.querySelectorAll('style').forEach(st => {
                                 let stText = st.textContent || '';
                                 if (!stText.includes('global-nav') && !stText.includes('hero-section')) {
+                                    stText = '.' + cssClass + ' ' + stText.replace(/\}/g, '} .' + cssClass + ' ');
                                     styleHTML += `<style>${stText}</style>`;
                                 }
                             });
@@ -372,7 +362,6 @@
 
         document.addEventListener('DOMContentLoaded', fetchQuestionsByType);
     </script>
-    <script src="../../assets/js/study-timer.js"></script>
 </body>
 
 </html>

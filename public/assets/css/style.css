@@ -24,7 +24,7 @@ body.dark-mode {
 }
 
 body { font-family: 'Pretendard', sans-serif; background-color: var(--bg-body); color: var(--primary-text); transition: background-color 0.3s, color 0.3s; }
-.container { background-color: var(--bg-card); border-color: var(--border-color); max-width: 860px; margin: 0 auto; padding: 20px; box-sizing: border-box; }
+.container { background-color: var(--bg-card); border-color: var(--border-color); max-width: 900px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box; width: 100%; border-radius: 24px; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05); }
 .option { background-color: var(--bg-card); border-color: var(--border-color); color: var(--primary-text); }
 .modal-content { background-color: var(--bg-card); color: var(--primary-text); }
 .shared-text, .opt-trans { background-color: var(--btn-hover); border-color: var(--border-color); color: var(--primary-text); }
@@ -39,26 +39,11 @@ body, .shared-text, .question-text, .option, .trans-content { word-break: keep-a
 .vocab-word { 
     display: inline; position: relative; cursor: help; text-decoration: none !important; 
     transition: color 0.2s ease, background 0.2s ease;
-    padding: 0 2px; margin: 0; border-radius: 4px;
+    padding: 0 2px; margin: 0 -2px; border-radius: 4px;
 }
 body:not(.vocab-disabled) .vocab-word { color: var(--vocab-highlight); }
 body:not(.vocab-disabled) .vocab-word:hover { background-color: #fee2e2; }
 body.vocab-disabled .vocab-word { color: inherit !important; cursor: auto !important; pointer-events: none !important; background: transparent !important; }
-
-/* Popup thông minh (Căn chỉnh lại khoảng cách, font chữ đẹp hơn) */
-#smart-vocab-tooltip {
-    position: absolute; display: none; background: #ffffff; border: 1px solid #e2e8f0;
-    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.15); padding: 16px 20px; border-radius: 12px;
-    z-index: 9999; min-width: 220px; max-width: 300px; color: #0f172a; pointer-events: auto;
-}
-#smart-vocab-tooltip::before {
-    content: ''; position: absolute; top: -6px; left: 24px; width: 12px; height: 12px;
-    background: #ffffff; border-top: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; transform: rotate(45deg);
-}
-.tooltip-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 10px;}
-.tooltip-base { font-size: 1.3em; font-weight: 800; color: var(--vocab-highlight); letter-spacing: 0.5px;}
-.save-vocab-btn { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; padding: 6px 10px; transition: 0.2s; font-size: 1.1em; display: inline-flex; align-items: center; justify-content: center;}
-.save-vocab-btn:hover { background: #e2e8f0; transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
 
 /* ==========================================================================
    OPTIONS & THÀNH PHẦN PHỤ
@@ -99,9 +84,9 @@ body.vocab-disabled .vocab-word { color: inherit !important; cursor: auto !impor
 input:checked + .slider { background-color: #48bb78; }
 input:checked + .slider:before { transform: translateX(16px); }
 
-#examControls { display: none; position: fixed; bottom: 20px; right: 20px; background: rgba(255, 255, 255, 0.95); padding: 15px 20px; border-radius: 12px; border: 1px solid #cbd5e0; z-index: 999; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); backdrop-filter: blur(5px);}
+#examControls { display: none; position: fixed; bottom: 20px; left: 8px; background: rgba(255, 255, 255, 0.95); padding: 9px 11px; border-radius: 12px; border: 1px solid #cbd5e0; z-index: 999; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); backdrop-filter: blur(5px);}
 .timer-display { font-size: 1.5em; font-weight: bold; color: #e53e3e; font-family: monospace; margin-bottom: 8px; line-height: 1;}
-.btn-submit { background: #e53e3e; color: white; border: none; padding: 10px 20px; font-size: 0.95em; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s;}
+.btn-submit { background: #e53e3e; color: white; border: none; padding: 7px 12px; font-size: 0.8em; font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; white-space: nowrap;}
 
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.85); z-index: 9999; justify-content: center; align-items: center; }
 .modal-content { background: #fff; width: 95%; max-width: 800px; border-radius: 16px; padding: 35px; position: relative; display: flex; flex-direction: column; overflow-y: auto; max-height: 90vh; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);}
@@ -110,7 +95,7 @@ input:checked + .slider:before { transform: translateX(16px); }
 
 #questionStatusGrid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px; margin-bottom: 25px; }
 .q-status-item { padding: 8px 0; text-align: center; border-radius: 6px; font-weight: bold; color: white; font-size: 0.9em; }
-.q-status-item.q-correct { background-color: #48bb78; } .q-status-item.q-wrong { background-color: #e53e3e; } 
+.q-status-item.q-correct { background-color: #48bb78; } .q-status-item.q-wrong { background-color: #e53e3e; } .q-status-item.q-skipped { background-color: #94a3b8; }
 
 /* ==========================================================================
    FLASHCARD & MATCH GAME STYLES (CÂN CHỈNH LẠI TỶ LỆ CHUẨN UI/UX)

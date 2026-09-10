@@ -309,6 +309,8 @@
         isExamFinishedNav = false;
         renderGrid(false);
         setToggleVisible(true);
+        // Mở sẵn danh sách câu hỏi trên desktop (máy tính)
+        if (window.innerWidth >= 768) openPanel();
     };
 
     window.showExamNavigator = function () {

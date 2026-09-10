@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOPIK II 읽기 - 제35회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     
     <link rel="stylesheet" href="../../assets/css/base.css">
     <link rel="stylesheet" href="../../assets/css/exam-layout.css">
-    <link rel="stylesheet" href="../../assets/css/vocab-tooltip.css">
     <link rel="stylesheet" href="../../assets/css/exam-controls.css">
     <link rel="stylesheet" href="../../assets/css/games.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -19,7 +21,6 @@
     <script src="../../assets/js/theme.js"></script>
     <script src="../../assets/js/theme-picker.js"></script>
     <script src="../../assets/js/navbar.js"></script>
-    <script src="../../assets/js/vocab-tooltip.js"></script>
     <script src="../../assets/js/exam.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -32,7 +33,7 @@
 
         <div class="header-wrapper"><div class="header">TOPIK Ⅱ 읽기 (제35회)</div></div>
 
-        <div class="instruction">※ [1 ~ 2] ( )에 들어갈 가장 알맞은 것을 고르십시오.</div>
+        <div class="instruction">※ [1 ~ 2] ( )에 들어갈 가장 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.</div>
 
         <div class="question-block" id="q1">
             <div class="question-text">
@@ -173,7 +174,7 @@
             </div>
         </div>
 
-        <div class="instruction">※ [3 ~ 4] 다음 밑줄 친 부분과 의미가 비슷한 것을 고르십시오.</div>
+        <div class="instruction">※ [3 ~ 4] 다음 <span class="vocab-word" data-base="밑줄" data-meaning="gạch chân">밑줄</span> 친 부분과 <span class="vocab-word" data-base="의미" data-meaning="ý nghĩa">의미</span>가 비슷한 것을 고르십시오.</div>
 
         <div class="question-block" id="q3">
             <div class="question-text">
@@ -324,10 +325,10 @@
                 세상을 보는 눈!
             </div>
             <div class="options options-grid">
-                <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> 신문</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 사전</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 시계</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 연필</div>
+                <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="신문" data-meaning="báo chí">신문</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="사전" data-meaning="từ điển">사전</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="시계" data-meaning="đồng hồ">시계</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="연필" data-meaning="bút chì">연필</span></div>
             </div>
             <div class="action-area">
                 <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -367,10 +368,10 @@
                 <span class="vocab-word" data-base="상담" data-meaning="tư vấn">상담</span>부터 <span class="vocab-word" data-base="수술" data-meaning="phẫu thuật">수술</span>까지 친절하게 도와 드리겠습니다.
             </div>
             <div class="options options-grid">
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 학원</div>
-                <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 병원</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 박물관</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 대사관</div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="학원" data-meaning="học viện">학원</span></div>
+                <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> <span class="vocab-word" data-base="병원" data-meaning="bệnh viện">병원</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="박물관" data-meaning="bảo tàng">박물관</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="대사관" data-meaning="đại sứ quán">대사관</span></div>
             </div>
             <div class="action-area">
                 <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -411,10 +412,10 @@
                 숲이 <span class="vocab-word" data-base="없어지다" data-meaning="biến mất, mất đi">없어지면</span> 이 모든 것이 없어집니다.
             </div>
             <div class="options options-grid">
-                <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> 환경 보호</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 공원 소개</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 날씨 정보</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 여행 계획</div>
+                <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="환경" data-meaning="môi trường">환경</span> <span class="vocab-word" data-base="보호" data-meaning="bảo vệ">보호</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="공원" data-meaning="công viên">공원</span> <span class="vocab-word" data-base="소개" data-meaning="giới thiệu">소개</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="날씨" data-meaning="thời tiết">날씨</span> <span class="vocab-word" data-base="정보" data-meaning="thông tin">정보</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="여행" data-meaning="du lịch">여행</span> <span class="vocab-word" data-base="계획" data-meaning="kế hoạch">계획</span></div>
             </div>
             <div class="action-area">
                 <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -454,10 +455,10 @@
                 <span class="vocab-word" data-base="상담원" data-meaning="nhân viên tư vấn">상담원</span>과 <span class="vocab-word" data-base="통화" data-meaning="cuộc gọi">통화</span>를 원하시면 080-987-6543으로 전화해 주십시오.
             </div>
             <div class="options options-grid">
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 상품 안내</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 모집 안내</div>
-                <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 문의 방법</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 사용 방법</div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="상품" data-meaning="sản phẩm">상품</span> <span class="vocab-word" data-base="안내" data-meaning="hướng dẫn">안내</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="모집" data-meaning="tuyển dụng">모집</span> <span class="vocab-word" data-base="안내" data-meaning="hướng dẫn">안내</span></div>
+                <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> <span class="vocab-word" data-base="문의" data-meaning="thắc mắc">문의</span> <span class="vocab-word" data-base="방법" data-meaning="phương pháp">방법</span></div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="사용" data-meaning="sử dụng">사용</span> <span class="vocab-word" data-base="방법" data-meaning="phương pháp">방법</span></div>
             </div>
             <div class="action-area">
                 <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -490,7 +491,7 @@
             </div>
         </div>
 
-        <div class="instruction">※ [9 ~ 12] 다음 글 또는 도표의 내용과 같은 것을 고르십시오.</div>
+        <div class="instruction">※ [9 ~ 12] 다음 글 또는 <span class="vocab-word" data-base="도표" data-meaning="biểu đồ">도표</span>의 내용과 같은 것을 고르십시오.</div>
 
         <div class="question-block" id="q9">
             <div class="question-text"><span class="q-number">9.</span></div>
@@ -528,10 +529,10 @@
             </div>
             
             <div class="options">
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 주말에는 단체 할인을 받을 수 있다.</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 이 행사는 이번에 처음 열리는 행사이다.</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 특별권을 사면 놀이 시설 이용료가 할인된다.</div>
-                <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 지하철을 타고 가면 입장권을 싸게 살 수 있다.</div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="주말" data-meaning="cuối tuần">주말</span>에는 <span class="vocab-word" data-base="단체" data-meaning="đoàn thể">단체</span> <span class="vocab-word" data-base="할인" data-meaning="giảm giá">할인</span>을 받을 수 있다.</div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 이 <span class="vocab-word" data-base="행사" data-meaning="sự kiện">행사</span>는 이번에 처음 열리는 <span class="vocab-word" data-base="행사" data-meaning="sự kiện">행사</span>이다.</div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="특별권" data-meaning="vé đặc biệt">특별권</span>을 사면 <span class="vocab-word" data-base="놀이 시설" data-meaning="khu vui chơi">놀이 시설</span> <span class="vocab-word" data-base="이용료" data-meaning="phí sử dụng">이용료</span>가 할인된다.</div>
+                <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> <span class="vocab-word" data-base="지하철" data-meaning="tàu điện ngầm">지하철</span>을 타고 가면 <span class="vocab-word" data-base="입장권" data-meaning="vé vào cửa">입장권</span>을 싸게 살 수 있다.</div>
             </div>
             <div class="action-area">
                 <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -591,8 +592,8 @@
 
             <div class="options">
                 <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="주인" data-meaning="chủ nhân">주인</span> 없는 동물을 <span class="vocab-word" data-base="데려오다" data-meaning="mang về">데려와</span> <span class="vocab-word" data-base="키우다" data-meaning="nuôi">키우는</span> 사람이 가장 적다.</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 인터넷에서 산 사람이 가게에서 산 사람보다 더 많다.</div>
-                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 가게에서 산 사람보다 아는 사람한테서 <span class="vocab-word" data-base="받다" data-meaning="nhận">받은</span> 사람이 더 적다.</div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="인터넷" data-meaning="internet">인터넷</span>에서 산 사람이 <span class="vocab-word" data-base="가게" data-meaning="cửa hàng">가게</span>에서 산 사람보다 더 많다.</div>
+                <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="가게" data-meaning="cửa hàng">가게</span>에서 산 사람보다 아는 사람한테서 <span class="vocab-word" data-base="받다" data-meaning="nhận">받은</span> 사람이 더 적다.</div>
                 <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 아는 사람한테서 동물을 <span class="vocab-word" data-base="데리고 오다" data-meaning="đưa về">데리고 온</span> 사람은 <span class="vocab-word" data-base="전체" data-meaning="toàn thể">전체</span>의 반이 넘는다.</div>
             </div>
             <div class="action-area">
@@ -640,10 +641,10 @@
             <span class="vocab-word" data-base="최근" data-meaning="gần đây">최근</span> 70~80년대를 <span class="vocab-word" data-base="경험하다" data-meaning="trải nghiệm">경험해</span> 볼 수 있는 <span class="vocab-word" data-base="문화 공간" data-meaning="không gian văn hóa">문화 공간</span>이 <span class="vocab-word" data-base="생기다" data-meaning="xuất hiện, được tạo ra">생겼다</span>. 서울시에서 새로 <span class="vocab-word" data-base="문을 열다" data-meaning="mở cửa">문을 연</span> '추억극장'이 바로 그곳이다. <span class="vocab-word" data-base="입장료" data-meaning="phí vào cửa">입장료</span> 2,000원만 내면 <span class="vocab-word" data-base="남녀노소" data-meaning="nam nữ già trẻ">남녀노소</span> 누구나 그때 <span class="vocab-word" data-base="유행하다" data-meaning="thịnh hành">유행했던</span> 영화를 <span class="vocab-word" data-base="관람하다" data-meaning="thưởng thức, xem">관람할</span> 수 있으며 커피와 차, 과자 등 <span class="vocab-word" data-base="간단하다" data-meaning="đơn giản">간단한</span> <span class="vocab-word" data-base="간식" data-meaning="đồ ăn vặt">간식</span>도 먹을 수 있다. <span class="vocab-word" data-base="극장" data-meaning="rạp hát">극장</span> <span class="vocab-word" data-base="내부" data-meaning="bên trong">내부</span>에는 <span class="vocab-word" data-base="추억" data-meaning="ký ức, kỷ niệm">추억</span>의 영화 <span class="vocab-word" data-base="포스터" data-meaning="áp phích">포스터</span>, 영화표 등이 <span class="vocab-word" data-base="전시되다" data-meaning="được trưng bày">전시되어</span> 있다.
         </div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 이곳에서 옛날 영화 포스터를 살 수 있다.</div>
-            <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 얼마 전 추억의 문화 공간이 새로 만들어졌다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 추억극장은 입장료가 없기 때문에 인기가 많다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 추억극장에서는 최근에 나온 영화도 볼 수 있다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 이곳에서 옛날 <span class="vocab-word" data-base="영화" data-meaning="phim ảnh">영화</span> <span class="vocab-word" data-base="포스터" data-meaning="áp phích">포스터</span>를 살 수 있다.</div>
+            <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 얼마 전 <span class="vocab-word" data-base="추억" data-meaning="ký ức">추억</span>의 <span class="vocab-word" data-base="문화" data-meaning="văn hóa">문화</span> <span class="vocab-word" data-base="공간" data-meaning="không gian">공간</span>이 새로 만들어졌다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="추억" data-meaning="ký ức">추억</span>극장은 <span class="vocab-word" data-base="입장료" data-meaning="phí vào cửa">입장료</span>가 없기 때문에 <span class="vocab-word" data-base="인기" data-meaning="sự nổi tiếng">인기</span>가 많다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="추억" data-meaning="ký ức">추억</span>극장에서는 <span class="vocab-word" data-base="최근" data-meaning="gần đây">최근</span>에 나온 <span class="vocab-word" data-base="영화" data-meaning="phim ảnh">영화</span>도 볼 수 있다.</div>
         </div>
         <div class="action-area">
             <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -683,8 +684,8 @@
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 가면을 쓰면 <span class="vocab-word" data-base="성격" data-meaning="tính cách">성격</span>을 <span class="vocab-word" data-base="바꾸다" data-meaning="thay đổi">바꿀</span> 수 있다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 가면을 쓰면 현실을 더 잘 볼 수 있다.</div>
-            <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 가면으로 원하던 모습을 표현할 수 있다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="가면" data-meaning="mặt nạ">가면</span>을 쓰면 <span class="vocab-word" data-base="현실" data-meaning="hiện thực">현실</span>을 더 잘 볼 수 있다.</div>
+            <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> <span class="vocab-word" data-base="가면" data-meaning="mặt nạ">가면</span>으로 원하던 <span class="vocab-word" data-base="모습" data-meaning="hình dáng">모습</span>을 표현할 수 있다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 힘을 <span class="vocab-word" data-base="자랑하다" data-meaning="khoe khoang">자랑하기</span> 위해서 호랑이 가면을 쓴다.</div>
         </div>
         <div class="action-area">
@@ -718,7 +719,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [13 ~ 15] 다음을 순서대로 맞게 배열한 것을 고르십시오.</div>
+    <div class="instruction">※ [13 ~ 15] 다음을 <span class="vocab-word" data-base="순서" data-meaning="thứ tự">순서</span>대로 맞게 배열한 것을 고르십시오.</div>
 
     <div class="question-block" id="q13">
         <div class="question-text"><span class="q-number">13.</span></div>
@@ -840,7 +841,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [16 ~ 18] 다음을 읽고 ( )에 들어갈 내용으로 가장 알맞은 것을 고르십시오.</div>
+    <div class="instruction">※ [16 ~ 18] 다음을 읽고 ( )에 들어갈 내용으로 가장 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.</div>
 
     <div class="question-block" id="q16">
         <div class="question-text"><span class="q-number">16.</span></div>
@@ -848,8 +849,8 @@
             사람들은 <span class="vocab-word" data-base="다양하다" data-meaning="đa dạng">다양한</span> <span class="vocab-word" data-base="상황" data-meaning="tình huống">상황</span>에서 <span class="vocab-word" data-base="스트레스" data-meaning="căng thẳng">스트레스</span>를 받는다. <span class="vocab-word" data-base="특히" data-meaning="đặc biệt">특히</span> <span class="vocab-word" data-base="업무" data-meaning="công việc">업무</span>가 많고 <span class="vocab-word" data-base="복잡하다" data-meaning="phức tạp">복잡한</span> <span class="vocab-word" data-base="인간관계" data-meaning="quan hệ con người">인간관계</span>로 <span class="vocab-word" data-base="얽히다" data-meaning="bị vướng vào, ràng buộc">얽힌</span> 회사에서 스트레스를 많이 받는다. 그런데 <span class="vocab-word" data-base="기혼" data-meaning="đã kết hôn">기혼</span> <span class="vocab-word" data-base="직장 여성" data-meaning="phụ nữ đi làm">직장 여성</span>의 경우 ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) 스트레스를 <span class="vocab-word" data-base="더" data-meaning="hơn">더</span> 받는 것으로 <span class="vocab-word" data-base="나타나다" data-meaning="xuất hiện, cho thấy">나타났다</span>. 그 <span class="vocab-word" data-base="이유" data-meaning="lý do">이유</span>는 여성이 <span class="vocab-word" data-base="느끼다" data-meaning="cảm thấy">느끼는</span> <span class="vocab-word" data-base="가사" data-meaning="việc nhà">가사</span>와 <span class="vocab-word" data-base="육아" data-meaning="việc nuôi dạy con">육아</span>에 대한 <span class="vocab-word" data-base="부담" data-meaning="gánh nặng">부담</span>이 <span class="vocab-word" data-base="여전히" data-meaning="vẫn còn">여전히</span> 크기 때문이다.
         </div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 회사에서 <span class="vocab-word" data-base="승진하다" data-meaning="thăng chức">승진했을</span> 때</div>
-            <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 회사에서보다 집에 있을 때</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="회사" data-meaning="công ty">회사</span>에서 <span class="vocab-word" data-base="승진하다" data-meaning="thăng chức">승진했을</span> 때</div>
+            <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> <span class="vocab-word" data-base="회사" data-meaning="công ty">회사</span>에서보다 <span class="vocab-word" data-base="집" data-meaning="nhà">집</span>에 있을 때</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 복잡한 업무가 <span class="vocab-word" data-base="주어지다" data-meaning="được giao">주어졌을</span> 때</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 인간관계에 <span class="vocab-word" data-base="어려움" data-meaning="sự khó khăn">어려움</span>을 느낄 때</div>
         </div>
@@ -890,8 +891,8 @@
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 환하게 <span class="vocab-word" data-base="웃다" data-meaning="cười">웃는</span> 사람의 눈 모양과 <span class="vocab-word" data-base="비슷하다" data-meaning="giống">비슷하다</span></div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 보름달처럼 밝은 빛을 가지고 있지 않다</div>
-            <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 오래 지나지 않아 크고 환한 보름달이 된다</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="보름달" data-meaning="trăng rằm">보름달</span>처럼 <span class="vocab-word" data-base="밝다" data-meaning="sáng">밝은</span> <span class="vocab-word" data-base="빛" data-meaning="ánh sáng">빛</span>을 가지고 있지 않다</div>
+            <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 오래 지나지 않아 크고 <span class="vocab-word" data-base="환하다" data-meaning="sáng sủa">환한</span> <span class="vocab-word" data-base="보름달" data-meaning="trăng rằm">보름달</span>이 된다</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 어두운 면과 밝은 면을 모두 <span class="vocab-word" data-base="포함하다" data-meaning="bao gồm">포함하고</span> 있다</div>
         </div>
         <div class="action-area">
@@ -966,14 +967,14 @@
         </div>
     </div>
 
-    <div class="instruction">※ [19 ~ 20] 다음을 읽고 물음에 답하십시오.</div>
+    <div class="instruction">※ [19 ~ 20] 다음을 읽고 <span class="vocab-word" data-base="물음" data-meaning="câu hỏi">물음</span>에 답하십시오.</div>
 
     <div class="shared-text">
         <span class="vocab-word" data-base="과일" data-meaning="trái cây">과일</span>을 <span class="vocab-word" data-base="빨리" data-meaning="nhanh">빨리</span> <span class="vocab-word" data-base="익히다" data-meaning="làm chín">익히기</span> 위해 <span class="vocab-word" data-base="화학 물질" data-meaning="hóa chất">화학 물질</span>이 <span class="vocab-word" data-base="사용되다" data-meaning="được sử dụng">사용되기도</span> 한다. 그러나 화학 물질로 익힌 과일은 <span class="vocab-word" data-base="겉" data-meaning="bề ngoài">겉</span>은 <span class="vocab-word" data-base="익다" data-meaning="chín">익었지만</span> <span class="vocab-word" data-base="속" data-meaning="bên trong">속</span>이 잘 익지 않은 경우가 많다. 그래서 화학 물질로 익힌 과일은 <span class="vocab-word" data-base="대개" data-meaning="đại khái, đa phần">대개</span> <span class="vocab-word" data-base="자연적" data-meaning="mang tính tự nhiên">자연적으로</span> <span class="vocab-word" data-base="숙성되다" data-meaning="được ủ chín, chín">숙성된</span> 과일에 <span class="vocab-word" data-base="비해" data-meaning="so với">비해</span> <span class="vocab-word" data-base="맛" data-meaning="vị">맛</span>과 <span class="vocab-word" data-base="향" data-meaning="hương thơm">향</span>이 <span class="vocab-word" data-base="떨어지다" data-meaning="giảm sút, kém hơn">떨어진다</span>. ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) 화학 물질이 과일 <span class="vocab-word" data-base="껍질" data-meaning="vỏ">껍질</span>에 <span class="vocab-word" data-base="남다" data-meaning="còn lại, sót lại">남게</span> 될 수도 있다. 이런 과일을 <span class="vocab-word" data-base="지속적" data-meaning="mang tính liên tục">지속적으로</span> 먹으면 <span class="vocab-word" data-base="건강" data-meaning="sức khỏe">건강</span>에 문제가 생기게 된다.
     </div>
 
     <div class="question-block" id="q19">
-        <div class="question-text"><span class="q-number">19.</span> ( )에 들어갈 알맞은 것을 고르십시오.</div>
+        <div class="question-text"><span class="q-number">19.</span> ( )에 들어갈 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.</div>
         <div class="options options-grid">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="또는" data-meaning="hoặc là">또는</span></div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> <span class="vocab-word" data-base="또한" data-meaning="ngoài ra, hơn thế nữa">또한</span></div>
@@ -1008,9 +1009,9 @@
     <div class="question-block" id="q20">
         <div class="question-text"><span class="q-number">20.</span> 이 글의 내용과 같은 것을 고르십시오.</div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 과일을 껍질까지 먹으면 건강에 좋다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 과일 향을 좋게 만드는 화학 물질이 있다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 화학 물질을 사용하면 과일이 속까지 잘 익는다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="과일" data-meaning="trái cây">과일</span>을 <span class="vocab-word" data-base="껍질" data-meaning="vỏ">껍질</span>까지 먹으면 <span class="vocab-word" data-base="건강" data-meaning="sức khỏe">건강</span>에 좋다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="과일" data-meaning="trái cây">과일</span> <span class="vocab-word" data-base="향" data-meaning="hương thơm">향</span>을 좋게 만드는 <span class="vocab-word" data-base="화학" data-meaning="hóa học">화학</span> <span class="vocab-word" data-base="물질" data-meaning="vật chất">물질</span>이 있다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="화학" data-meaning="hóa học">화학</span> <span class="vocab-word" data-base="물질" data-meaning="vật chất">물질</span>을 사용하면 <span class="vocab-word" data-base="과일" data-meaning="trái cây">과일</span>이 <span class="vocab-word" data-base="속" data-meaning="bên trong">속</span>까지 잘 익는다.</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 자연 숙성 과일이 <span class="vocab-word" data-base="인공" data-meaning="nhân tạo">인공</span> 숙성 과일보다 맛이 더 <span class="vocab-word" data-base="낫다" data-meaning="tốt hơn">낫다</span>.</div>
         </div>
         <div class="action-area">
@@ -1042,14 +1043,14 @@
         </div>
     </div>
 
-    <div class="instruction">※ [21 ~ 22] 다음을 읽고 물음에 답하십시오.</div>
+    <div class="instruction">※ [21 ~ 22] 다음을 읽고 <span class="vocab-word" data-base="물음" data-meaning="câu hỏi">물음</span>에 답하십시오.</div>
 
     <div class="shared-text">
         사람들은 <span class="vocab-word" data-base="보통" data-meaning="thông thường">보통</span> <span class="vocab-word" data-base="선택" data-meaning="sự lựa chọn">선택</span>을 할 때 여러 가지 중에서 <span class="vocab-word" data-base="고르다" data-meaning="chọn">고르면</span> 더 좋은 선택을 할 수 있을 것이라고 생각한다. 그래서 선택이 필요할 때 <span class="vocab-word" data-base="정보" data-meaning="thông tin">정보</span>를 많이 <span class="vocab-word" data-base="수집하다" data-meaning="thu thập">수집하려고</span> <span class="vocab-word" data-base="노력하다" data-meaning="nỗ lực">노력한다</span>. 그러나 선택의 수가 <span class="vocab-word" data-base="늘어나다" data-meaning="tăng lên">늘어나면</span> <span class="vocab-word" data-base="고민" data-meaning="sự đắn đo, phiền muộn">고민</span>의 <span class="vocab-word" data-base="양" data-meaning="lượng">양</span>도 함께 <span class="vocab-word" data-base="증가하다" data-meaning="gia tăng">증가한다</span>. ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) <span class="vocab-word" data-base="결정" data-meaning="sự quyết định">결정</span>을 내리지 못하는 <span class="vocab-word" data-base="상황" data-meaning="tình huống">상황</span>이 되는 것이다. <span class="vocab-word" data-base="후회" data-meaning="sự hối hận">후회</span> 없는 선택을 위한 노력이 <span class="vocab-word" data-base="오히려" data-meaning="trái lại">오히려</span> 선택을 <span class="vocab-word" data-base="방해하다" data-meaning="cản trở">방해하는</span> <span class="vocab-word" data-base="결과" data-meaning="kết quả">결과</span>를 <span class="vocab-word" data-base="불러오다" data-meaning="mang lại, gây ra">불러오게</span> 된다.
     </div>
 
     <div class="question-block" id="q21">
-        <div class="question-text"><span class="q-number">21.</span> ( )에 들어갈 알맞은 것을 고르십시오.</div>
+        <div class="question-text"><span class="q-number">21.</span> ( )에 들어갈 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.</div>
         <div class="options options-grid">
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="골치가 아프다" data-meaning="đau đầu">골치만 아프고</span></div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="콧대가 높다" data-meaning="kiêu ngạo, hếch mũi">콧대만 높아지고</span></div>
@@ -1082,12 +1083,12 @@
     </div>
 
     <div class="question-block" id="q22">
-        <div class="question-text"><span class="q-number">22.</span> 이 글의 중심 생각을 고르십시오.</div>
+        <div class="question-text"><span class="q-number">22.</span> 이 글의 <span class="vocab-word" data-base="중심" data-meaning="trung tâm">중심</span> 생각을 고르십시오.</div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 고민할수록 더 좋은 선택을 할 수 있다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="고민" data-meaning="đắn đo">고민</span>할수록 더 좋은 <span class="vocab-word" data-base="선택" data-meaning="sự lựa chọn">선택</span>을 할 수 있다.</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 선택의 <span class="vocab-word" data-base="폭" data-meaning="bề rộng, phạm vi">폭</span>이 <span class="vocab-word" data-base="넓어지다" data-meaning="rộng ra">넓어지면</span> 결정이 더 어려워진다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 선택을 할 때는 먼저 <span class="vocab-word" data-base="방해 요인" data-meaning="yếu tố cản trở">방해 요인</span>을 <span class="vocab-word" data-base="없애다" data-meaning="loại bỏ">없애야</span> 한다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 후회 없는 선택을 하려면 <span class="vocab-word" data-base="풍부하다" data-meaning="phong phú">풍부한</span> 정보가 필요하다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="선택" data-meaning="sự lựa chọn">선택</span>을 할 때는 먼저 <span class="vocab-word" data-base="방해 요인" data-meaning="yếu tố cản trở">방해 요인</span>을 <span class="vocab-word" data-base="없애다" data-meaning="loại bỏ">없애야</span> 한다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> <span class="vocab-word" data-base="후회" data-meaning="hối hận">후회</span> 없는 <span class="vocab-word" data-base="선택" data-meaning="sự lựa chọn">선택</span>을 하려면 <span class="vocab-word" data-base="풍부하다" data-meaning="phong phú">풍부한</span> <span class="vocab-word" data-base="정보" data-meaning="thông tin">정보</span>가 필요하다.</div>
         </div>
         <div class="action-area">
             <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -1117,14 +1118,14 @@
         </div>
     </div>
 
-    <div class="instruction">※ [23 ~ 24] 다음을 읽고 물음에 답하십시오.</div>
+    <div class="instruction">※ [23 ~ 24] 다음을 읽고 <span class="vocab-word" data-base="물음" data-meaning="câu hỏi">물음</span>에 답하십시오.</div>
 
     <div class="shared-text">
         내가 <span class="vocab-word" data-base="운영하다" data-meaning="vận hành, điều hành">운영하는</span> 회사의 <span class="vocab-word" data-base="사정" data-meaning="tình hình, hoàn cảnh">사정</span>이 <span class="vocab-word" data-base="점점" data-meaning="dần dần">점점</span> 더 어려워졌다. <span class="vocab-word" data-base="공장" data-meaning="nhà máy">공장</span>에 <span class="vocab-word" data-base="불이 나다" data-meaning="phát hỏa, cháy">불이 나서</span> <span class="vocab-word" data-base="피해" data-meaning="thiệt hại">피해</span>를 <span class="vocab-word" data-base="입다" data-meaning="chịu, bị">입은</span> 데다가 <span class="vocab-word" data-base="매출" data-meaning="doanh thu">매출</span>까지 <span class="vocab-word" data-base="크게" data-meaning="một cách to lớn">크게</span> <span class="vocab-word" data-base="감소하다" data-meaning="giảm sút">감소한</span> 것이다. <span class="vocab-word" data-base="어쩔 수 없이" data-meaning="không còn cách nào khác">어쩔 수 없이</span> <span class="vocab-word" data-base="직원" data-meaning="nhân viên">직원</span> 수를 <span class="vocab-word" data-base="줄이다" data-meaning="cắt giảm">줄여야</span> 했다. <u>나는 직원들을 <span class="vocab-word" data-base="한자리" data-meaning="một chỗ, một nơi">한자리</span>에 <span class="vocab-word" data-base="부르다" data-meaning="gọi">불러</span> <span class="vocab-word" data-base="모으다" data-meaning="tập hợp">모아</span> 놓고도 <span class="vocab-word" data-base="한참" data-meaning="một lúc lâu">한참</span>을 아무 말도 할 수 없었다.</u> 눈을 <span class="vocab-word" data-base="지그시" data-meaning="nhẹ nhàng, nhắm nghiền">지그시</span> 감고 <span class="vocab-word" data-base="겨우" data-meaning="khó nhọc, mới">겨우</span> <span class="vocab-word" data-base="입을 떼다" data-meaning="mở lời">입을 떼려는</span> 순간 "<span class="vocab-word" data-base="사장님" data-meaning="giám đốc">사장님</span>!" 한 직원이 나를 불렀다. 그 직원은 <span class="vocab-word" data-base="흰" data-meaning="màu trắng">흰</span> <span class="vocab-word" data-base="봉투" data-meaning="phong bì">봉투</span>를 내 앞으로 <span class="vocab-word" data-base="내밀다" data-meaning="chìa ra">내밀면서</span> 말했다. "그동안 어려운 회사 <span class="vocab-word" data-base="살림" data-meaning="kinh tế, việc nhà">살림</span> 때문에 <span class="vocab-word" data-base="고생" data-meaning="sự vất vả">고생</span> 많으셨습니다. 어려워진 회사에 도움이 될까 싶어서 저희들이 <span class="vocab-word" data-base="월급" data-meaning="tiền lương">월급</span>의 10퍼센트씩을 모았습니다. 적은 돈이지만 회사 운영에 도움이 되었으면 합니다." 순간 나는 마치 <span class="vocab-word" data-base="천하" data-meaning="thiên hạ">천하</span>를 <span class="vocab-word" data-base="얻다" data-meaning="giành được, đạt được">얻은</span> 듯 <span class="vocab-word" data-base="마음" data-meaning="tấm lòng, tâm trí">마음</span>이 <span class="vocab-word" data-base="든든하다" data-meaning="vững tâm, an lòng">든든해졌다</span>.
     </div>
 
     <div class="question-block" id="q23">
-        <div class="question-text"><span class="q-number">23.</span> 밑줄 친 부분에 나타난 나의 심정으로 알맞은 것을 고르십시오.</div>
+        <div class="question-text"><span class="q-number">23.</span> <span class="vocab-word" data-base="밑줄" data-meaning="gạch chân">밑줄</span> 친 부분에 나타난 나의 <span class="vocab-word" data-base="심정" data-meaning="tâm trạng">심정</span>으로 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.</div>
         <div class="options options-grid">
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="곤란하다" data-meaning="khó xử">곤란하다</span></div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="섭섭하다" data-meaning="buồn tủi, tiếc nuối">섭섭하다</span></div>
@@ -1164,10 +1165,10 @@
     <div class="question-block" id="q24">
         <div class="question-text"><span class="q-number">24.</span> 이 글의 내용과 같은 것을 고르십시오.</div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 화재가 <span class="vocab-word" data-base="발생하다" data-meaning="phát sinh">발생한</span> 후 회사의 사정이 좋아졌다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 나는 회사에서 일할 새로운 직원들을 뽑았다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="화재" data-meaning="hỏa hoạn">화재</span>가 <span class="vocab-word" data-base="발생하다" data-meaning="phát sinh">발생한</span> 후 회사의 <span class="vocab-word" data-base="사정" data-meaning="tình hình">사정</span>이 좋아졌다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 나는 <span class="vocab-word" data-base="회사" data-meaning="công ty">회사</span>에서 일할 새로운 <span class="vocab-word" data-base="직원" data-meaning="nhân viên">직원</span>들을 뽑았다.</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 직원들이 월급의 <span class="vocab-word" data-base="일부" data-meaning="một phần">일부</span>를 <span class="vocab-word" data-base="걷다" data-meaning="thu thập, gom">걷어</span> 회사를 도왔다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 흰 봉투 안에는 직원들이 쓴 <span class="vocab-word" data-base="편지" data-meaning="bức thư">편지</span>가 들어 있었다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 흰 <span class="vocab-word" data-base="봉투" data-meaning="phong bì">봉투</span> 안에는 <span class="vocab-word" data-base="직원" data-meaning="nhân viên">직원</span>들이 쓴 <span class="vocab-word" data-base="편지" data-meaning="bức thư">편지</span>가 들어 있었다.</div>
         </div>
         <div class="action-area">
             <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -1198,7 +1199,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [25 ~ 27] 다음은 신문 기사의 제목입니다. 가장 잘 설명한 것을 고르십시오.</div>
+    <div class="instruction">※ [25 ~ 27] 다음은 <span class="vocab-word" data-base="신문" data-meaning="báo chí">신문</span> <span class="vocab-word" data-base="기사" data-meaning="bài báo">기사</span>의 <span class="vocab-word" data-base="제목" data-meaning="tiêu đề">제목</span>입니다. 가장 잘 설명한 것을 고르십시오.</div>
 
     <div class="question-block" id="q25">
         <div class="question-text"><span class="q-number">25.</span></div>
@@ -1207,7 +1208,7 @@
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 허리 건강을 <span class="vocab-word" data-base="지키다" data-meaning="bảo vệ">지키려면</span> <span class="vocab-word" data-base="가볍다" data-meaning="nhẹ">가벼운</span> 가방을 메어야 한다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 허리 건강을 위해서는 가방을 메지 않는 것이 좋다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="허리" data-meaning="eo lưng">허리</span> <span class="vocab-word" data-base="건강" data-meaning="sức khỏe">건강</span>을 위해서는 <span class="vocab-word" data-base="가방" data-meaning="túi xách">가방</span>을 메지 않는 것이 좋다.</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 가방을 <span class="vocab-word" data-base="계속" data-meaning="liên tục">계속</span> <span class="vocab-word" data-base="같은" data-meaning="cùng, giống">같은</span> <span class="vocab-word" data-base="방향" data-meaning="hướng">방향</span>으로 메면 허리 건강에 좋지 않다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 가방을 <span class="vocab-word" data-base="오랫동안" data-meaning="trong thời gian dài">오랫동안</span> 메는 것은 허리 건강에 <span class="vocab-word" data-base="해가 되다" data-meaning="trở thành mối hại">해가 될</span> 수 있다.</div>
         </div>
@@ -1323,7 +1324,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [28 ~ 31] 다음을 읽고 ( )에 들어갈 내용으로 가장 알맞은 것을 고르십시오.</div>
+    <div class="instruction">※ [28 ~ 31] 다음을 읽고 ( )에 들어갈 내용으로 가장 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.</div>
 
     <div class="question-block" id="q28">
         <div class="question-text"><span class="q-number">28.</span></div>
@@ -1331,9 +1332,9 @@
             새를 <span class="vocab-word" data-base="상자" data-meaning="chiếc hộp">상자</span> 안에 <span class="vocab-word" data-base="넣다" data-meaning="cho vào">넣으면</span> <span class="vocab-word" data-base="자꾸" data-meaning="cứ, thường xuyên">자꾸</span> <span class="vocab-word" data-base="밖" data-meaning="bên ngoài">밖</span>으로 나오려고 한다. 그러나 <span class="vocab-word" data-base="반대" data-meaning="ngược lại">반대로</span> <span class="vocab-word" data-base="자유롭다" data-meaning="tự do">자유로운</span> <span class="vocab-word" data-base="공간" data-meaning="không gian">공간</span>에서는 <span class="vocab-word" data-base="안정" data-meaning="sự ổn định">안정</span>을 찾고 <span class="vocab-word" data-base="도망치다" data-meaning="chạy trốn">도망치려고</span> <span class="vocab-word" data-base="애쓰다" data-meaning="cố gắng">애쓰지</span> 않는다. 아이도 이와 <span class="vocab-word" data-base="마찬가지" data-meaning="sự giống nhau">마찬가지</span>다. <span class="vocab-word" data-base="부모" data-meaning="cha mẹ">부모</span>들이 ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )하면 아이는 이를 <span class="vocab-word" data-base="구속" data-meaning="sự giam cầm, trói buộc">구속</span>이라 생각하고 <span class="vocab-word" data-base="반발심" data-meaning="tâm lý phản kháng">반발심</span>을 <span class="vocab-word" data-base="가지다" data-meaning="mang, sở hữu">가진다</span>. 그러나 일어나는 시간, <span class="vocab-word" data-base="방과 후" data-meaning="sau giờ học">방과 후</span> 할일 등 <span class="vocab-word" data-base="생활" data-meaning="sinh hoạt">생활</span> <span class="vocab-word" data-base="규칙" data-meaning="quy tắc">규칙</span>을 아이와 <span class="vocab-word" data-base="의논하다" data-meaning="thảo luận">의논하여</span> <span class="vocab-word" data-base="정하다" data-meaning="quyết định, định ra">정하게</span> 되면 부모가 <span class="vocab-word" data-base="시키다" data-meaning="bắt ép, sai khiến">시키지</span> 않아도 <span class="vocab-word" data-base="스스로" data-meaning="tự bản thân">스스로</span> <span class="vocab-word" data-base="책임감" data-meaning="tinh thần trách nhiệm">책임감</span>을 가지고 잘 <span class="vocab-word" data-base="지키다" data-meaning="tuân thủ, giữ gìn">지키려고</span> 노력한다.
         </div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 방과 후에 공부를 시키려고</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="방과 후" data-meaning="sau giờ học">방과 후</span>에 <span class="vocab-word" data-base="공부" data-meaning="học tập">공부</span>를 시키려고</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 친구와의 관계에 <span class="vocab-word" data-base="관여하다" data-meaning="can thiệp">관여하려고</span></div>
-            <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 규칙을 정하고 그대로 따르게</div>
+            <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> <span class="vocab-word" data-base="규칙" data-meaning="quy tắc">규칙</span>을 정하고 그대로 따르게</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 집에서 동물을 <span class="vocab-word" data-base="키우다" data-meaning="nuôi">키우지</span> 못하게</div>
         </div>
         <div class="action-area">
@@ -1368,7 +1369,7 @@
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 재미있는 내용으로 <span class="vocab-word" data-base="흥미" data-meaning="sự hứng thú">관심</span>을 끄는</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 현대의 사람들을 등장인물로 하는</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="현대" data-meaning="hiện đại">현대</span>의 사람들을 <span class="vocab-word" data-base="등장인물" data-meaning="nhân vật">등장인물</span>로 하는</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="유행하다" data-meaning="thịnh hành">유행했던</span> <span class="vocab-word" data-base="기존" data-meaning="có sẵn, vốn có">기존</span>의 소설을 <span class="vocab-word" data-base="각색하다" data-meaning="chuyển thể, biên soạn lại">각색해서</span> 만든</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 짧은 시간 동안 <span class="vocab-word" data-base="부담" data-meaning="sự gánh nặng, áp lực">부담</span> 없이 <span class="vocab-word" data-base="즐기다" data-meaning="thưởng thức">즐길</span> 수 있는</div>
         </div>
@@ -1440,7 +1441,7 @@
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> 산업화로 인해 하늘이 <span class="vocab-word" data-base="오염되다" data-meaning="bị ô nhiễm">오염되었다는</span></div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 대기 상태에 대한 연구가 이루어졌다는</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="대기" data-meaning="không khí">대기</span> <span class="vocab-word" data-base="상태" data-meaning="trạng thái">상태</span>에 대한 <span class="vocab-word" data-base="연구" data-meaning="nghiên cứu">연구</span>가 이루어졌다는</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="화가" data-meaning="họa sĩ">화가</span>들이 그림에 <span class="vocab-word" data-base="다양하다" data-meaning="đa dạng">다양한</span> 색을 사용했다는</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 풍경화를 그리는 화가들이 <span class="vocab-word" data-base="활발히" data-meaning="một cách sôi nổi">활발히</span> <span class="vocab-word" data-base="활동하다" data-meaning="hoạt động">활동했다는</span></div>
         </div>
@@ -1478,7 +1479,7 @@
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 기내가 건조해서 사람들의 <span class="vocab-word" data-base="입맛" data-meaning="khẩu vị">입맛</span>이 <span class="vocab-word" data-base="예민해지다" data-meaning="trở nên nhạy cảm">예민해진다</span>.</div>
-            <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 기내식은 좀 더 짜게 만들어야 맛을 낼 수 있다.</div>
+            <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> <span class="vocab-word" data-base="기내식" data-meaning="suất ăn trên máy bay">기내식</span>은 좀 더 짜게 만들어야 <span class="vocab-word" data-base="맛" data-meaning="vị">맛</span>을 낼 수 있다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 음식 <span class="vocab-word" data-base="온도" data-meaning="nhiệt độ">온도</span>를 <span class="vocab-word" data-base="유지하다" data-meaning="duy trì">유지하기</span> 위해 기내식을 포장해 놓는다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 음식에 있는 수분을 <span class="vocab-word" data-base="줄이다" data-meaning="làm giảm">줄여</span> 기내식이 <span class="vocab-word" data-base="상하다" data-meaning="ôi thiu, hỏng">상하는</span> 것을 <span class="vocab-word" data-base="방지하다" data-meaning="phòng chống">방지한다</span>.</div>
         </div>
@@ -1522,7 +1523,7 @@
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="예전" data-meaning="trước đây">예전</span>에 비해 도시에 사는 벌의 수가 <span class="vocab-word" data-base="줄다" data-meaning="giảm bớt">줄었다</span>.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 벌을 <span class="vocab-word" data-base="쫓다" data-meaning="đuổi đi">쫓기</span> 위해 도시의 식물에 <span class="vocab-word" data-base="약" data-meaning="thuốc">약</span>을 <span class="vocab-word" data-base="뿌리다" data-meaning="phun, rắc">뿌리고</span> 있다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 도시의 벌 피해 <span class="vocab-word" data-base="방지법" data-meaning="phương pháp phòng chống">방지법</span>에 대한 연구가 <span class="vocab-word" data-base="진행" data-meaning="tiến hành">진행</span> 중이다.</div>
-            <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 도시의 공원이 벌이 살 수 있는 좋은 환경을 제공한다.</div>
+            <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> <span class="vocab-word" data-base="도시" data-meaning="thành phố">도시</span>의 <span class="vocab-word" data-base="공원" data-meaning="công viên">공원</span>이 <span class="vocab-word" data-base="벌" data-meaning="con ong">벌</span>이 살 수 있는 좋은 <span class="vocab-word" data-base="환경" data-meaning="môi trường">환경</span>을 제공한다.</div>
         </div>
         <div class="action-area">
             <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
@@ -1597,7 +1598,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [35 ~ 38] 다음 글의 주제로 가장 알맞은 것을 고르십시오.</div>
+    <div class="instruction">※ [35 ~ 38] 다음 글의 <span class="vocab-word" data-base="주제" data-meaning="chủ đề">주제</span>로 가장 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.</div>
 
     <div class="question-block" id="q35">
         <div class="question-text"><span class="q-number">35.</span></div>
@@ -1647,7 +1648,7 @@
             <span class="vocab-word" data-base="패션" data-meaning="thời trang">패션</span>도 <span class="vocab-word" data-base="비즈니스" data-meaning="kinh doanh, thương mại">비즈니스</span>의 <span class="vocab-word" data-base="일부" data-meaning="một phần">일부</span>이다. 비즈니스를 <span class="vocab-word" data-base="목적" data-meaning="mục đích">목적</span>으로 <span class="vocab-word" data-base="누군가" data-meaning="ai đó">누군가</span>를 만나야 한다면 비즈니스 <span class="vocab-word" data-base="상황" data-meaning="tình huống">상황</span>에 따라 입고 나갈 옷의 <span class="vocab-word" data-base="색상" data-meaning="màu sắc">색상</span>, <span class="vocab-word" data-base="디자인" data-meaning="thiết kế">디자인</span>, <span class="vocab-word" data-base="소재" data-meaning="chất liệu">소재</span> 등을 <span class="vocab-word" data-base="고려하다" data-meaning="xem xét">고려하여</span> <span class="vocab-word" data-base="전략적" data-meaning="mang tính chiến lược">전략적으로</span> <span class="vocab-word" data-base="이미지" data-meaning="hình ảnh">이미지</span>를 <span class="vocab-word" data-base="연출하다" data-meaning="thể hiện, dàn dựng">연출하는</span> 것이 중요하다. 강한 <span class="vocab-word" data-base="의지" data-meaning="ý chí">의지</span>를 <span class="vocab-word" data-base="표명하다" data-meaning="bày tỏ, thể hiện">표명해야</span> 한다면 <span class="vocab-word" data-base="빳빳하다" data-meaning="cứng nhắc">빳빳한</span> 소재의 <span class="vocab-word" data-base="무채색" data-meaning="màu vô sắc (đen trắng xám)">무채색</span> 옷을 선택하는 것이 <span class="vocab-word" data-base="바람직하다" data-meaning="tốt, lý tưởng">바람직하다</span>. <span class="vocab-word" data-base="반면에" data-meaning="trái lại">반면에</span> 상대 회사와 <span class="vocab-word" data-base="협상" data-meaning="sự đàm phán">협상</span>을 해야 한다면 <span class="vocab-word" data-base="광택" data-meaning="sự bóng bẩy">광택</span>이 있는 <span class="vocab-word" data-base="부드럽다" data-meaning="mềm mại">부드러운</span> 소재의 <span class="vocab-word" data-base="복장" data-meaning="trang phục">복장</span>을 통해 <span class="vocab-word" data-base="편안하다" data-meaning="thoải mái">편안한</span> <span class="vocab-word" data-base="분위기" data-meaning="bầu không khí">분위기</span>를 연출하는 것이 좋다. 상대 회사를 <span class="vocab-word" data-base="상징하다" data-meaning="tượng trưng">상징하는</span> 색상의 셔츠나 넥타이로 <span class="vocab-word" data-base="친근감" data-meaning="cảm giác thân thiện">친근감</span>을 표현할 수도 있다.
         </div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 회사의 이미지를 비즈니스 패션을 통해 연출하라.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> <span class="vocab-word" data-base="회사" data-meaning="công ty">회사</span>의 <span class="vocab-word" data-base="이미지" data-meaning="hình ảnh">이미지</span>를 <span class="vocab-word" data-base="비즈니스" data-meaning="kinh doanh">비즈니스</span> <span class="vocab-word" data-base="패션" data-meaning="thời trang">패션</span>을 통해 연출하라.</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 비즈니스 상황에 <span class="vocab-word" data-base="부합하다" data-meaning="phù hợp">부합하는</span> 패션 전략을 <span class="vocab-word" data-base="활용하다" data-meaning="tận dụng, ứng dụng">활용하라</span>.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 회사를 상징하는 색상으로 편안한 분위기를 <span class="vocab-word" data-base="조성하다" data-meaning="tạo nên">조성하라</span>.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 부드러운 이미지 연출을 위한 비즈니스 전략을 <span class="vocab-word" data-base="세우다" data-meaning="lập ra, dựng lên">세워라</span>.</div>
@@ -1731,7 +1732,7 @@
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 로봇의 등장으로 인간의 지식 노동 시간이 <span class="vocab-word" data-base="감소하다" data-meaning="giảm bớt">감소하게</span> 될 것이다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 로봇의 등장으로 인간은 육체노동의 시간을 줄일 수 있을 것이다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> <span class="vocab-word" data-base="로봇" data-meaning="robot">로봇</span>의 <span class="vocab-word" data-base="등장" data-meaning="sự xuất hiện">등장</span>으로 <span class="vocab-word" data-base="인간" data-meaning="con người">인간</span>은 육체노동의 시간을 줄일 수 있을 것이다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 로봇의 등장으로 인간의 <span class="vocab-word" data-base="노동력" data-meaning="sức lao động">노동력</span> <span class="vocab-word" data-base="시장" data-meaning="thị trường">시장</span> <span class="vocab-word" data-base="규모" data-meaning="quy mô">규모</span>가 점점 <span class="vocab-word" data-base="축소되다" data-meaning="bị thu hẹp">축소될</span> 것이다.</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 로봇의 등장으로 인간은 <span class="vocab-word" data-base="질적" data-meaning="mang tính chất lượng">질적인</span> 업무에 집중할 수 있게 될 것이다.</div>
         </div>
@@ -1766,7 +1767,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [39 ~ 41] 다음 글에서 &lt;보기&gt;의 문장이 들어가기에 가장 알맞은 곳을 고르십시오.</div>
+    <div class="instruction">※ [39 ~ 41] 다음 글에서 &lt;보기&gt;의 <span class="vocab-word" data-base="문장" data-meaning="câu văn">문장</span>이 들어가기에 가장 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 곳을 고르십시오.</div>
 
     <div class="question-block" id="q39">
         <div class="question-text"><span class="q-number">39.</span></div>
@@ -1872,7 +1873,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [42 ~ 43] 다음을 읽고 물음에 답하십시오.</div>
+    <div class="instruction">※ [42 ~ 43] 다음을 읽고 <span class="vocab-word" data-base="물음" data-meaning="câu hỏi">물음</span>에 답하십시오.</div>
 
     <div class="shared-text">
         <span class="vocab-word" data-base="초등학교" data-meaning="trường tiểu học">초등학교</span> 3학년쯤으로 보이는 남자 아이가 가장 높은 <span class="vocab-word" data-base="다이빙대" data-meaning="cầu nhảy (xuống hồ bơi)">다이빙대</span>에 올라갔다. <span class="vocab-word" data-base="성인" data-meaning="người lớn">성인</span>도 <span class="vocab-word" data-base="호기" data-meaning="sự hiếu kỳ, tò mò">호기</span>로 올라갔다가 그냥 내려오곤 하는 곳이었다. <span class="vocab-word" data-base="소년" data-meaning="thiếu niên, cậu bé">소년</span>은 무서워서 <span class="vocab-word" data-base="뛰어내리다" data-meaning="nhảy xuống">뛰어내리지도</span>, <span class="vocab-word" data-base="뒤돌다" data-meaning="quay lưng lại">뒤돌아</span> 내려가지도 못하고 다이빙대 끝과 <span class="vocab-word" data-base="계단" data-meaning="cầu thang">계단</span> 사이를 <span class="vocab-word" data-base="한참" data-meaning="một lúc lâu">한참</span> 왔다 갔다 했다. <span class="vocab-word" data-base="그러자" data-meaning="ngay sau đó">그러자</span> 부모로 보이는 사람이 내려오라는 <span class="vocab-word" data-base="손짓" data-meaning="cử chỉ tay">손짓</span>을 했다. 아이는 계속 <span class="vocab-word" data-base="망설이다" data-meaning="lưỡng lự, do dự">망설였다</span>. <span class="vocab-word" data-base="수영장" data-meaning="hồ bơi">수영장</span>의 모든 사람이 이 모습을 <span class="vocab-word" data-base="지켜보다" data-meaning="dõi theo">지켜보고</span> 있었다. 그때였다. <span class="vocab-word" data-base="스피커" data-meaning="loa phát thanh">스피커</span>에서 수영장 <span class="vocab-word" data-base="관리자" data-meaning="người quản lý">관리자</span>로 <span class="vocab-word" data-base="추정되다" data-meaning="được cho là, suy đoán">추정되는</span> 사람의 목소리가 나오기 시작했다. 나는 <span class="vocab-word" data-base="당연히" data-meaning="đương nhiên">당연히</span> 아이의 부모에게 '어서 아이를 데리고 내려오라.'고 말할 줄 알았다. <u>그런데 그는 전혀 다른 말을 했다. "넌 할 수 있어! 내가 도와줄게. 이제 셋을 셀 거야. 겁내지 말고 뛰어내리면 돼!"</u> 그리고 큰 소리로 숫자를 세기 시작했다. 수영장에 있던 모든 사람도 스피커 소리를 따라 큰 소리로 숫자를 따라 셌다. (중략) 아이는 다이빙대 끝을 <span class="vocab-word" data-base="박차다" data-meaning="đạp mạnh">박차고</span> <span class="vocab-word" data-base="허공" data-meaning="khoảng không">허공</span>에 손을 <span class="vocab-word" data-base="휘저으다" data-meaning="quơ tay múa chân">휘저으며</span> 뛰어내렸다. 아이가 물로 떨어지는 몇 초 동안, 모든 것은 <span class="vocab-word" data-base="잠시" data-meaning="một lúc, tạm thời">잠시</span> 숨을 멈추었다. 바람도 공기도 나뭇잎의 흔들림까지. <span class="vocab-word" data-base="이윽고" data-meaning="rồi cuối cùng thì">이윽고</span> '풍덩' 하는 소리와 함께 세상은 다시 깨어났다. 박수 소리가 수영장을 울렸다. 나도 손뿐 아니라 마음 깊은 곳에서 박수를 보냈다.
@@ -1880,7 +1881,7 @@
 
     <div class="question-block" id="q42">
         <div class="question-text">
-            <span class="q-number">42.</span> 밑줄 친 부분에 나타난 사람들의 태도로 알맞은 것을 고르십시오.
+            <span class="q-number">42.</span> <span class="vocab-word" data-base="밑줄" data-meaning="gạch chân">밑줄</span> 친 부분에 나타난 사람들의 <span class="vocab-word" data-base="태도" data-meaning="thái độ">태도</span>로 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.
         </div>
         <div class="options options-grid">
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="격려하다" data-meaning="cổ vũ, khích lệ">격려하고</span> 있다</div>
@@ -1918,8 +1919,8 @@
             <span class="q-number">43.</span> 이 글의 내용과 같은 것을 고르십시오.
         </div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 아이가 올라간 다이빙대는 어린이 <span class="vocab-word" data-base="전용" data-meaning="sự chuyên dụng, chỉ dành cho">전용</span>으로 만들어졌다.</div>
-            <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 아이가 뛰어내려 물속으로 들어가자 사람들이 박수를 쳤다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 아이가 올라간 다이빙대는 <span class="vocab-word" data-base="어린이" data-meaning="trẻ em">어린이</span> <span class="vocab-word" data-base="전용" data-meaning="sự chuyên dụng, chỉ dành cho">전용</span>으로 만들어졌다.</div>
+            <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 아이가 뛰어내려 물속으로 들어가자 사람들이 <span class="vocab-word" data-base="박수" data-meaning="vỗ tay">박수</span>를 쳤다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="방송" data-meaning="sự phát thanh">방송</span>을 통해 아이의 부모가 아이에게 내려오라고 소리쳤다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 아이의 부모는 관리자에게 아이를 데려와 달라고 <span class="vocab-word" data-base="부탁하다" data-meaning="nhờ vả">부탁했다</span>.</div>
         </div>
@@ -1952,7 +1953,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [44 ~ 45] 다음을 읽고 물음에 답하십시오.</div>
+    <div class="instruction">※ [44 ~ 45] 다음을 읽고 <span class="vocab-word" data-base="물음" data-meaning="câu hỏi">물음</span>에 답하십시오.</div>
 
     <div class="shared-text">
         <span class="vocab-word" data-base="환경부" data-meaning="Bộ Môi trường">환경부</span>는 '온실가스 <span class="vocab-word" data-base="배출권" data-meaning="quyền xả thải">배출권</span> <span class="vocab-word" data-base="거래제" data-meaning="chế độ giao dịch">거래제</span>'의 <span class="vocab-word" data-base="시행" data-meaning="sự thi hành">시행</span>을 앞두고 향후 3년간 온실가스 <span class="vocab-word" data-base="총량" data-meaning="tổng lượng">총량</span>을 정해 업종별로 <span class="vocab-word" data-base="할당하다" data-meaning="phân bổ, chỉ tiêu">할당한다는</span> 계획을 발표했다. 이 제도는 <span class="vocab-word" data-base="지구온난화" data-meaning="sự nóng lên toàn cầu">지구온난화</span>의 원인인 온실가스를 줄이기 위한 것으로 업체별로 <span class="vocab-word" data-base="일정하다" data-meaning="nhất định">일정한</span> 배출량을 정해 놓고 <span class="vocab-word" data-base="기준" data-meaning="tiêu chuẩn">기준</span>보다 많거나 <span class="vocab-word" data-base="모자라다" data-meaning="thiếu, không đủ">모자라는</span> 경우 배출권을 사고팔 수 있게 하는 제도이다. 그런데 기업의 성장률을 고려하지 않고 할당량을 정하는 방식에 대해 문제가 있다는 <span class="vocab-word" data-base="지적" data-meaning="sự chỉ trích, vạch trần">지적</span>이 있다. ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) 기업은 배출권을 <span class="vocab-word" data-base="구입하다" data-meaning="mua">구입해야</span> 하는데 <span class="vocab-word" data-base="경영 악화" data-meaning="kinh doanh sa sút">경영 악화</span>로 공장을 <span class="vocab-word" data-base="가동하다" data-meaning="vận hành, chạy máy">가동하지</span> 않는 기업은 <span class="vocab-word" data-base="도리어" data-meaning="trái lại">도리어</span> 배출권 판매 <span class="vocab-word" data-base="이익" data-meaning="lợi ích">이익</span>을 <span class="vocab-word" data-base="취하다" data-meaning="lấy, đoạt">취할</span> 수 있기 때문이다. 새 제도의 <span class="vocab-word" data-base="정착" data-meaning="sự định cư, đi vào ổn định">정착</span>을 위해 모두가 <span class="vocab-word" data-base="납득하다" data-meaning="chấp nhận, thấu hiểu">납득할</span> 수 있는 <span class="vocab-word" data-base="합리적" data-meaning="mang tính hợp lý">합리적인</span> 시행 <span class="vocab-word" data-base="방안" data-meaning="phương án">방안</span>이 <span class="vocab-word" data-base="마련되다" data-meaning="được chuẩn bị">마련되어야</span> 할 것이다.
@@ -1960,7 +1961,7 @@
 
     <div class="question-block" id="q44">
         <div class="question-text">
-            <span class="q-number">44.</span> 이 글의 주제로 알맞은 것을 고르십시오.
+            <span class="q-number">44.</span> 이 글의 <span class="vocab-word" data-base="주제" data-meaning="chủ đề">주제</span>로 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 기업이 동의하지 않는 제도의 시행은 <span class="vocab-word" data-base="지양하다" data-meaning="tránh, từ bỏ">지양해야</span> 한다.</div>
@@ -2001,7 +2002,7 @@
 
     <div class="question-block" id="q45">
         <div class="question-text">
-            <span class="q-number">45.</span> ( )에 들어갈 내용으로 알맞은 것을 고르십시오.
+            <span class="q-number">45.</span> ( )에 들어갈 내용으로 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 배출량이 할당된 양에 못 <span class="vocab-word" data-base="미치다" data-meaning="chạm tới, đạt tới">미친</span></div>
@@ -2032,10 +2033,10 @@
         </div>
     </div>
 
-    <div class="instruction">※ [46 ~ 47] 다음을 읽고 물음에 답하십시오.</div>
+    <div class="instruction">※ [46 ~ 47] 다음을 읽고 <span class="vocab-word" data-base="물음" data-meaning="câu hỏi">물음</span>에 답하십시오.</div>
 
     <div class="question-block" id="q46">
-        <div class="question-text"><span class="q-number">46.</span> 다음 문장이 들어가기에 가장 알맞은 곳을 고르십시오.</div>
+        <div class="question-text"><span class="q-number">46.</span> 다음 <span class="vocab-word" data-base="문장" data-meaning="câu văn">문장</span>이 들어가기에 가장 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 곳을 고르십시오.</div>
         <div class="shared-text">
             <span class="vocab-word" data-base="만년" data-meaning="vạn năm, muôn năm">만년</span> 2위를 <span class="vocab-word" data-base="면하다" data-meaning="tránh khỏi, thoát khỏi">면하지</span> 못하던 포털 사이트 '둠'과 모바일 서비스 시장의 <span class="vocab-word" data-base="떠오르다" data-meaning="nổi lên">떠오르는</span> <span class="vocab-word" data-base="샛별" data-meaning="ngôi sao mới">샛별</span> '코코'가 <span class="vocab-word" data-base="합병" data-meaning="sự sáp nhập">합병</span>을 <span class="vocab-word" data-base="결정하다" data-meaning="quyết định">결정하면서</span> IT 업계의 <span class="vocab-word" data-base="지각 변동" data-meaning="sự biến động địa chấn">지각 변동</span>이 <span class="vocab-word" data-base="예고되다" data-meaning="được báo trước">예고된다</span>. 이를 두고 <span class="vocab-word" data-base="재계" data-meaning="giới tài chính, kinh tế">재계</span>의 <span class="vocab-word" data-base="예측" data-meaning="sự dự đoán">예측</span>은 <span class="vocab-word" data-base="양분되다" data-meaning="bị chia làm hai">양분된다</span>. <strong>( ㉠ )</strong> 그 하나는 둠의 콘텐츠와 코코의 서비스 <span class="vocab-word" data-base="경쟁력" data-meaning="năng lực cạnh tranh">경쟁력</span>이 <span class="vocab-word" data-base="결합하다" data-meaning="kết hợp">결합했을</span> 때 최상의 <span class="vocab-word" data-base="시너지 효과" data-meaning="hiệu ứng hiệp đồng, tương hỗ">시너지 효과</span>를 <span class="vocab-word" data-base="발휘하다" data-meaning="phát huy">발휘할</span> 것이라고 보는 입장이다. <strong>( ㉡ )</strong> 다른 하나는 현재보다 그 <span class="vocab-word" data-base="역량" data-meaning="năng lực, khả năng">역량</span>이 줄어들 것이라고 보는 입장이다. <strong>( ㉢ )</strong> <span class="vocab-word" data-base="공동 작업" data-meaning="làm việc chung, hợp tác">공동 작업</span>에서는 그렇지 않을 수 있기 때문이다. <strong>( ㉣ )</strong> 여기에 코코의 경우 <span class="vocab-word" data-base="소규모" data-meaning="quy mô nhỏ">소규모</span> 기업으로 시장 상황에 <span class="vocab-word" data-base="발 빠르게" data-meaning="một cách nhanh nhạy">발 빠르게</span> <span class="vocab-word" data-base="대처하다" data-meaning="đối phó, xử lý">대처한다는</span> 게 <span class="vocab-word" data-base="강점" data-meaning="điểm mạnh">강점</span>이었는데, 몸집이 커지면 그것이 어렵게 될 것이라는 점도 이유로 들었다.
         </div>
@@ -2073,7 +2074,7 @@
             <span class="q-number">47.</span> 이 글의 내용과 같은 것을 고르십시오.
         </div>
         <div class="options">
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 양 기업의 합병은 코코의 경영 부진에 의한 것이다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 양 <span class="vocab-word" data-base="기업" data-meaning="doanh nghiệp">기업</span>의 <span class="vocab-word" data-base="합병" data-meaning="sáp nhập">합병</span>은 코코의 <span class="vocab-word" data-base="경영" data-meaning="quản lý">경영</span> <span class="vocab-word" data-base="부진" data-meaning="trì trệ">부진</span>에 의한 것이다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 양 기업의 규모는 <span class="vocab-word" data-base="동종" data-meaning="cùng loại">동종</span> 업계에서 <span class="vocab-word" data-base="우열" data-meaning="sự ưu việt và yếu kém (hơn thua)">우열</span>을 <span class="vocab-word" data-base="가리다" data-meaning="phân định">가리기</span> 어렵다.</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">③</span> 코코는 그동안 <span class="vocab-word" data-base="신속하다" data-meaning="thần tốc, nhanh chóng">신속한</span> 업무 처리로 재계의 <span class="vocab-word" data-base="인정" data-meaning="sự công nhận">인정</span>을 받아 왔다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 둠과 코코의 합병에 대한 예측들은 <span class="vocab-word" data-base="긍정적" data-meaning="mang tính tích cực">긍정적</span>이라는 <span class="vocab-word" data-base="공통점" data-meaning="điểm chung">공통점</span>이 있다.</div>
@@ -2107,7 +2108,7 @@
         </div>
     </div>
 
-    <div class="instruction">※ [48 ~ 50] 다음을 읽고 물음에 답하십시오.</div>
+    <div class="instruction">※ [48 ~ 50] 다음을 읽고 <span class="vocab-word" data-base="물음" data-meaning="câu hỏi">물음</span>에 답하십시오.</div>
 
     <div class="shared-text">
         인터넷 공간에서의 개인 정보 <span class="vocab-word" data-base="삭제" data-meaning="sự xóa bỏ">삭제</span>에 관한 <span class="vocab-word" data-base="법안" data-meaning="dự luật">법안</span> <span class="vocab-word" data-base="제정" data-meaning="sự ban hành (luật)">제정</span>이 뜨거운 <span class="vocab-word" data-base="쟁점" data-meaning="vấn đề tranh luận">쟁점</span>으로 <span class="vocab-word" data-base="부각되다" data-meaning="được làm nổi bật">부각되고</span> 있다. 유럽에서는 이러한 법안이 <span class="vocab-word" data-base="통과되다" data-meaning="được thông qua">통과되었고</span> 미국에서도 <span class="vocab-word" data-base="제한적" data-meaning="mang tính hạn chế">제한적으로</span> <span class="vocab-word" data-base="적용하다" data-meaning="áp dụng">적용하기로</span> 결정되었다. 우리 사회에서도 그간 피해 사례가 잘 알려져 있기 때문인지 <span class="vocab-word" data-base="찬성" data-meaning="sự tán thành">찬성</span> 쪽으로 <span class="vocab-word" data-base="공감대" data-meaning="sự đồng cảm chung">공감대</span>가 <span class="vocab-word" data-base="형성되다" data-meaning="được hình thành">형성되어</span> 있는 듯하다. 그러나 이는 <span class="vocab-word" data-base="이면" data-meaning="mặt trái, mặt khuất">이면</span>에 <span class="vocab-word" data-base="잠재하다" data-meaning="tiềm tàng">잠재한</span> 부정적 측면을 고려하지 않은 <span class="vocab-word" data-base="성급하다" data-meaning="vội vã, vội vàng">성급한</span> <span class="vocab-word" data-base="동조" data-meaning="sự đồng thuận">동조</span>이다. 이 법안이 <span class="vocab-word" data-base="실행" data-meaning="sự thực hành, thi hành">실행</span>되었을 때 나타날 수 있는 <span class="vocab-word" data-base="부작용" data-meaning="tác dụng phụ">부작용</span>을 생각해 보라. 삭제된 정보가 <span class="vocab-word" data-base="흉악범" data-meaning="tội phạm hung ác">흉악범</span>에 관한 것이라면, <span class="vocab-word" data-base="특정" data-meaning="đặc định, cụ thể">특정</span> 기업의 <span class="vocab-word" data-base="부조리" data-meaning="sự phi lý, điều khuất tất">부조리</span>나 <span class="vocab-word" data-base="공직자" data-meaning="công chức, quan chức">공직자</span>의 <span class="vocab-word" data-base="비리" data-meaning="hành vi tham nhũng, sai trái">비리</span>를 <span class="vocab-word" data-base="고발하다" data-meaning="tố cáo, vạch trần">고발한</span> 기사라면 어쩔 것인가. <u>법 시행의 결과가 개인뿐만 아니라 사회, 국가의 불행으로 이어지지 않는다고 누가 <span class="vocab-word" data-base="자신하다" data-meaning="tự tin khẳng định">자신할</span> 수 있겠는가?</u> <span class="vocab-word" data-base="예컨대" data-meaning="ví dụ như">예컨대</span> 누군가가 <span class="vocab-word" data-base="후속" data-meaning="tiếp nối, đằng sau">후속</span> 범죄의 대상이 될 수도 있고 과거의 행적을 <span class="vocab-word" data-base="조작하다" data-meaning="thao túng, ngụy tạo">조작한</span> <span class="vocab-word" data-base="후보자" data-meaning="ứng cử viên">후보자</span>가 선거에서 당선될 수도 있다. 개인의 권리를 <span class="vocab-word" data-base="존중하다" data-meaning="tôn trọng">존중하려는</span> 의도가 ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ) 장치가 되어서는 안 될 것이다.
@@ -2115,12 +2116,12 @@
 
     <div class="question-block" id="q48">
         <div class="question-text">
-            <span class="q-number">48.</span> 필자가 이 글을 쓴 목적을 고르십시오.
+            <span class="q-number">48.</span> <span class="vocab-word" data-base="필자" data-meaning="tác giả">필자</span>가 이 글을 쓴 <span class="vocab-word" data-base="목적" data-meaning="mục đích">목적</span>을 고르십시오.
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 법 제정의 <span class="vocab-word" data-base="공론화" data-meaning="việc đưa ra bàn luận công khai">공론화</span>를 <span class="vocab-word" data-base="촉구하다" data-meaning="thúc giục">촉구하기</span> 위해</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">②</span> 법 제정의 <span class="vocab-word" data-base="반대" data-meaning="sự phản đối">반대</span> <span class="vocab-word" data-base="근거" data-meaning="căn cứ">근거</span>를 <span class="vocab-word" data-base="제시하다" data-meaning="đưa ra, đề xuất">제시하기</span> 위해</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 법 시행의 피해 사례를 알려 주기 위해</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> <span class="vocab-word" data-base="법" data-meaning="pháp luật">법</span> <span class="vocab-word" data-base="시행" data-meaning="thi hành">시행</span>의 <span class="vocab-word" data-base="피해" data-meaning="thiệt hại">피해</span> 사례를 알려 주기 위해</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">④</span> 법 시행의 적절한 시기를 <span class="vocab-word" data-base="제안하다" data-meaning="đề xuất">제안하기</span> 위해</div>
         </div>
         <div class="action-area">
@@ -2150,7 +2151,7 @@
 
     <div class="question-block" id="q49">
         <div class="question-text">
-            <span class="q-number">49.</span> ( )에 들어갈 내용으로 알맞은 것을 고르십시오.
+            <span class="q-number">49.</span> ( )에 들어갈 내용으로 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">①</span> <span class="vocab-word" data-base="공공" data-meaning="công cộng">공공</span>의 피해를 <span class="vocab-word" data-base="유발하다" data-meaning="gây ra, mồi nhử">유발하는</span></div>
@@ -2183,11 +2184,11 @@
 
     <div class="question-block" id="q50">
         <div class="question-text">
-            <span class="q-number">50.</span> 밑줄 친 부분에 나타난 필자의 태도로 알맞은 것을 고르십시오.
+            <span class="q-number">50.</span> <span class="vocab-word" data-base="밑줄" data-meaning="gạch chân">밑줄</span> 친 부분에 나타난 <span class="vocab-word" data-base="필자" data-meaning="tác giả">필자</span>의 <span class="vocab-word" data-base="태도" data-meaning="thái độ">태도</span>로 <span class="vocab-word" data-base="알맞다" data-meaning="phù hợp">알맞은</span> 것을 고르십시오.
         </div>
         <div class="options">
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">①</span> 이 법으로 피해를 입은 사람들을 <span class="vocab-word" data-base="동정하다" data-meaning="đồng tình, thương hại">동정하고</span> 있다.</div>
-            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 이 법의 제정 단계에서의 문제점을 지적하고 있다.</div>
+            <div class="option" onclick="checkAnswer(this, false)"><span class="num">②</span> 이 <span class="vocab-word" data-base="법" data-meaning="pháp luật">법</span>의 <span class="vocab-word" data-base="제정" data-meaning="ban hành">제정</span> 단계에서의 <span class="vocab-word" data-base="문제" data-meaning="vấn đề">문제</span>점을 지적하고 있다.</div>
             <div class="option" onclick="checkAnswer(this, false)"><span class="num">③</span> 이 법이 <span class="vocab-word" data-base="실패하다" data-meaning="thất bại">실패했던</span> <span class="vocab-word" data-base="해외 사례" data-meaning="ví dụ ở nước ngoài">해외 사례</span>에 대해 <span class="vocab-word" data-base="비판하다" data-meaning="phê phán">비판하고</span> 있다.</div>
             <div class="option" onclick="checkAnswer(this, true)"><span class="num">④</span> 이 법의 시행이 가져올 부작용에 대해 <span class="vocab-word" data-base="염려하다" data-meaning="lo ngại, lo âu">염려하고</span> 있다.</div>
         </div>

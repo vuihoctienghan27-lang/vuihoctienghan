@@ -1,10 +1,13 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOPIK II 쓰기 - 제102회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
 
 
     <link rel="stylesheet" href="../../assets/css/writing.css">
@@ -19,9 +22,9 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/writing.js"></script>
+<script src="../../assets/js/writing.js"></script>
     <script src="../../assets/js/grading-engine.js"></script>
+    <script src="../../assets/js/gemini-grader.js"></script>
 
 
 <div class="header-badge-container">
@@ -615,13 +618,7 @@
         </div>
         ```
 
-        **Tại sao bản này lại hoàn hảo?**
-        1. **Biểu đồ cột CSS tinh khiết:** Không sử dụng họa tiết SVG tọa độ cứng ngắc nữa, các cột tự động co giãn theo
-        màn hình điện thoại mà vẫn rõ ràng tỷ lệ `340` và `650`.
-        2. **Khối Xếp hạng siêu trực quan:** Nhìn hệt như thiết kế của các ứng dụng học tập hiện đại. Chữ màu xanh
-        (`highlight-text`) giúp người học lập tức chú ý vào sự hoán đổi vị trí của độ tuổi `40대~50대`.
-        3. Khung bo viền 16px, background xám nhạt đan xen background trắng mang lại chiều sâu (Depth) rất "tương thích"
-        với phong cách Kính mờ tổng thể của website!
+
 
         <div class="tab-container">
             <button class="tab-btn active" onclick="openTab('t53-guide', this, '.t53-content')">Hướng dẫn</button>
@@ -883,19 +880,16 @@
             </details>
         </div>
     </div>
-
-    <script src="exam-logic.js"></script>
-
-    <script>
+<script>
         // CÂU 51A — Ý nghĩa 'dọn dẹp/chuyển đồ'
         function grade51A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-a').value.trim(),
                 {
                     exactAnswers: [
-                        '집을 정리해야 합니다.',
-                        '짐을 치워야겠습니다.'
+                        '정리해야 합니다.'
                     ],
+                    context: ['기숙사', '짐'],
                     stems: ['정리하', '정리해야', '치우', '치워', '빼'],
                     grammar: [
                         { pattern: /야\s*하[가-힣]*/, label: 'phải' },
@@ -903,40 +897,36 @@
                     ]
                 },
                 "Cần ý 'dọn dẹp/chuyển đồ đi'."
-            );
-            document.getElementById('score-51-a').innerHTML = result.display;
-            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+            , 'score-51-a', 'btn-exp-51-a');
         }
 
         // CÂU 51B — Điều kiện thời gian
         function grade51B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-b').value.trim(),
                 {
                     exactAnswers: [
-                        '방학이 시작되기 전에 정리하려고 합니다.',
-                        '기숙사에서 나오기 전에 처리하겠습니다.'
+                        '시작되기 전에.'
                     ],
+                    context: ['언제', '입주'],
                     stems: ['시작되', '오', '방학하'],
                     grammar: [
                         { pattern: /기\s*전[가-힣]*/, label: 'trước khi' }
                     ]
                 },
                 "Cần từ vựng 'bắt đầu/đến' + thời gian."
-            );
-            document.getElementById('score-51-b').innerHTML = result.display;
-            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+            , 'score-51-b', 'btn-exp-51-b');
         }
 
         // CÂU 52A — Phủ định việc chịu ảnh hưởng thời tiết
         function grade52A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-a').value.trim(),
                 {
                     exactAnswers: [
-                        '날씨의 영향을 받지 않는다.',
-                        '기후 변화에 영향을 받지 않는다.'
+                        '받지 않아서.'
                     ],
+                    context: ['도움'],
                     stems: ['받'],
                     grammar: [
                         { pattern: /지\s*않[가-힣]*/, label: 'phủ định' },
@@ -944,20 +934,19 @@
                     ]
                 },
                 "Cần cụm từ 'Không chịu (ảnh hưởng)'."
-            );
-            document.getElementById('score-52-a').innerHTML = result.display;
-            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+            , 'score-52-a', 'btn-exp-52-a');
         }
 
         // CÂU 52B — Cấu trúc mục đích: bay/vận hành
         function grade52B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-b').value.trim(),
                 {
                     exactAnswers: [
-                        '비행기를 운행하기 위해 필요하다.',
-                        '비행기가 날기 위해 필수적이다.'
+                        '비행을 하기 위해서는.',
+                        '날기 위해서는.'
                     ],
+                    context: ['수', '새', '이동'],
                     stems: ['비행', '날', '운행'],
                     grammar: [
                         { pattern: /기\s*위해[가-힣]*/, label: 'để' },
@@ -965,9 +954,7 @@
                     ]
                 },
                 "Cần từ 'bay/vận hành' + mục đích."
-            );
-            document.getElementById('score-52-b').innerHTML = result.display;
-            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+            , 'score-52-b', 'btn-exp-52-b');
         }
 
         // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 102 ---
@@ -982,7 +969,6 @@
             initBook(bookData_102);
         });
     </script>
-    <script src="../../assets/js/study-timer.js"></script>
 </body>
 
 </html>

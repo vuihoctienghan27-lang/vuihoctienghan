@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>한글 화차 — Bắn Từ Vựng Tiếng Hàn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500;700;800;900&family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --bg-deep:#0a0f24;
+    --bg-mid:#141d42;
+    --bg-low:#1f2c5c;
+    --accent-gold:#f4b942;
+    --accent-gold-dim:#8a6a1f;
+    --accent-cyan:#4fd1c5;
+    --accent-coral:#ff5d73;
+    --text-light:#f5f3ea;
+    --text-dim:#9aa3c9;
+    --panel:rgba(245,243,234,0.06);
+    --panel-border:rgba(244,185,66,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;position:fixed;width:100%;}
+  body{
+    font-family:'Be Vietnam Pro', sans-serif;
+    background:var(--bg-deep);
+    color:var(--text-light);
+    overflow:hidden;
+  }
+  #game{
+    position:relative;
+    width:100%;
+    height:100vh; /* fallback; overridden in px by JS to track the visible viewport */
+    background:
+      radial-gradient(ellipse at 50% 0%, var(--bg-low) 0%, var(--bg-mid) 45%, var(--bg-deep) 100%);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+  #stars{
+    position:absolute; inset:0; pointer-events:none;
+  }
+  /* Compact mode: kicks in when the visible viewport is very short
+     (e.g. mobile keyboard open on a small phone) to keep the
+     falling-word area usable */
+  #game.compact #hud{ padding:6px 6px 2px 48px; gap:4px; flex-wrap:nowrap; }
+  #game.compact .hud-item{ padding:3px 8px; font-size:10px; }
+  #game.compact .hud-item b{ font-size:12px; }
+  #game.compact #cannon-wrap{ height:44px; }
+  #game.compact #cannon-wrap svg{ width:100px; height:50px; }
+  #game.compact #input-bar{ padding:6px 10px 8px; }
+  #game.compact #typing-input{ padding:8px 16px; font-size:15px; }
+  #game.compact .word{ padding:5px 11px 4px; }
+  #game.compact .word .ko{ font-size:16px; }
+  #game.compact .word .vi{ font-size:9px; }
+  #game.compact .word .vi-main{ font-size:14px; }
+  .star{
+    position:absolute; width:2px; height:2px; background:var(--text-light);
+    border-radius:50%; opacity:0.5; animation:twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle{ 0%,100%{opacity:.15;} 50%{opacity:.8;} }
+
+  /* HUD */
+  #hud{
+    position:relative; z-index:5;
+    display:flex; justify-content:center; gap:6px;
+    padding:12px 10px 6px 60px;
+    flex-wrap:nowrap;
+  }
+  /* Nút quay về trang Trò chơi */
+  #back-btn{
+    position:fixed; top:12px; left:12px; z-index:100;
+    display:flex; align-items:center; gap:6px;
+    background:rgba(6,9,24,0.72);
+    border:1px solid var(--panel-border);
+    color:var(--text-dim);
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-size:13px; font-weight:700;
+    padding:8px 14px; border-radius:24px;
+    cursor:pointer; text-decoration:none;
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    transition:all .15s;
+  }
+  #back-btn:hover{ color:var(--text-light); border-color:var(--accent-cyan); }
+  #back-btn svg{ width:14px; height:14px; }
+  .btn-ghost{
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-weight:700; font-size:15px;
+    color:var(--text-dim);
+    background:transparent;
+    border:2px solid var(--panel-border);
+    padding:11px 28px;
+    border-radius:30px;
+    cursor:pointer;
+    margin-top:14px;
+    transition:all .15s;
+  }
+  .btn-ghost:hover{ color:var(--text-light); border-color:var(--accent-cyan); }
+  .hud-item{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:8px;
+    padding:6px 14px;
+    font-family:'Space Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.5px;
+    color:var(--text-dim);
+    display:flex; align-items:center; gap:8px;
+  }
+  .hud-item b{
+    font-size:16px;
+    color:var(--accent-gold);
+    font-weight:700;
+  }
+  .hud-item.lives b{ color:var(--accent-coral); letter-spacing:1px; font-size:14px; }
+  #sound-btn{ cursor:pointer; border:none; background:transparent; }
+
+  /* Playfield */
+  #playfield{
+    position:relative;
+    flex:1;
+    margin:6px 0 0;
+    overflow:hidden;
+  }
+  .word{
+    position:absolute;
+    transform:translateX(-50%);
+    background:linear-gradient(180deg, rgba(31,44,92,0.85), rgba(10,15,36,0.9));
+    border:1.5px solid var(--accent-cyan);
+    border-radius:12px;
+    padding:8px 16px 7px;
+    text-align:center;
+    box-shadow:0 0 14px rgba(79,209,197,0.25);
+    transition:border-color .15s, box-shadow .15s;
+    white-space:nowrap;
+    will-change:top;
+  }
+  .word.matched{
+    border-color:var(--accent-gold);
+    box-shadow:0 0 20px rgba(244,185,66,0.55);
+  }
+  .word .ko{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:800;
+    font-size:23px;
+    letter-spacing:0.3px;
+    color:var(--text-light);
+    line-height:1.25;
+  }
+  .word .vi{
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-size:11px;
+    color:var(--text-dim);
+    margin-top:2px;
+  }
+  .word .typed-part{ color:var(--accent-gold); }
+
+  .particle{
+    position:absolute;
+    width:5px; height:5px;
+    background:var(--accent-gold);
+    border-radius:1px;
+    pointer-events:none;
+  }
+
+  .impact-flash{
+    position:absolute;
+    width:60px; height:60px;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:radial-gradient(circle, rgba(255,93,115,0.6), transparent 70%);
+    pointer-events:none;
+    animation:impact-fade .4s ease-out forwards;
+  }
+  @keyframes impact-fade{ from{opacity:1; transform:translate(-50%,-50%) scale(0.4);} to{opacity:0; transform:translate(-50%,-50%) scale(1.6);} }
+
+  /* Cannon (Hwacha-inspired multi-barrel turret) */
+  #cannon-wrap{
+    position:relative;
+    height:78px;
+    display:flex; justify-content:center;
+    z-index:4;
+    pointer-events:none;
+  }
+  #cannon-wrap svg{ overflow:visible; }
+
+  #projectile-layer{ position:absolute; inset:0; pointer-events:none; z-index:6; }
+  .projectile{
+    position:absolute;
+    width:6px; height:16px;
+    background:linear-gradient(180deg, var(--accent-gold), #fff2c9);
+    border-radius:3px;
+    box-shadow:0 0 8px var(--accent-gold);
+    pointer-events:none;
+  }
+
+  /* Input bar */
+  #input-bar{
+    position:relative; z-index:7;
+    display:flex; justify-content:center;
+    padding:10px 12px 16px;
+  }
+  #typing-input{
+    width:min(420px, 92%);
+    background:rgba(245,243,234,0.08);
+    border:2px solid var(--panel-border);
+    border-radius:30px;
+    padding:12px 20px;
+    font-size:18px;
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:700;
+    color:var(--text-light);
+    text-align:center;
+    outline:none;
+    -webkit-appearance:none;
+    appearance:none;
+    transition:border-color .15s, box-shadow .15s;
+  }
+  #typing-input::-webkit-search-cancel-button,
+  #typing-input::-webkit-search-decoration{
+    -webkit-appearance:none;
+    appearance:none;
+  }
+  #typing-input::placeholder{
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-size:13px;
+    color:var(--text-dim);
+  }
+  #typing-input:focus{
+    border-color:var(--accent-cyan);
+    box-shadow:0 0 16px rgba(79,209,197,0.35);
+  }
+  #typing-input.shake{
+    animation:shake .3s;
+    border-color:var(--accent-coral);
+    box-shadow:0 0 16px rgba(255,93,115,0.45);
+  }
+  @keyframes shake{
+    0%,100%{transform:translateX(0);}
+    20%{transform:translateX(-8px);}
+    40%{transform:translateX(8px);}
+    60%{transform:translateX(-6px);}
+    80%{transform:translateX(6px);}
+  }
+
+  #flash-overlay{
+    position:absolute; inset:0; background:var(--accent-coral);
+    opacity:0; pointer-events:none; z-index:8;
+  }
+  #flash-overlay.hit{ animation:flash-hit .35s ease-out; }
+  @keyframes flash-hit{ 0%{opacity:0.35;} 100%{opacity:0;} }
+
+  /* Overlays */
+  .overlay{
+    position:absolute; inset:0; z-index:10;
+    background:rgba(6,9,24,0.92);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; padding:24px;
+  }
+  .overlay.hidden{ display:none; }
+  .overlay h1{
+    font-family:'Noto Sans KR', sans-serif;
+    font-weight:900;
+    font-size:clamp(28px,6vw,46px);
+    margin:0 0 6px;
+    color:var(--accent-gold);
+    letter-spacing:1px;
+  }
+  .overlay h1 small{
+    display:block;
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-size:14px;
+    color:var(--text-dim);
+    font-weight:500;
+    letter-spacing:0.5px;
+    margin-top:6px;
+  }
+  .overlay p{
+    max-width:420px;
+    color:var(--text-dim);
+    font-size:14px;
+    line-height:1.6;
+    margin:12px 0 22px;
+  }
+  .overlay .final-score{
+    font-family:'Space Mono', monospace;
+    font-size:40px;
+    color:var(--accent-cyan);
+    margin:6px 0 2px;
+  }
+  .overlay .final-label{
+    font-size:12px; letter-spacing:2px; color:var(--text-dim); text-transform:uppercase;
+  }
+  #difficulty-select{
+    display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap; justify-content:center;
+  }
+  .diff-btn{
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color:var(--text-dim);
+    background:var(--panel);
+    border:2px solid var(--panel-border);
+    padding:9px 18px;
+    border-radius:24px;
+    cursor:pointer;
+    transition:all .15s;
+  }
+  .diff-btn:hover{ color:var(--text-light); border-color:var(--accent-cyan); }
+  .diff-btn.active{
+    color:var(--bg-deep);
+    background:var(--accent-cyan);
+    border-color:var(--accent-cyan);
+    box-shadow:0 0 14px rgba(79,209,197,0.4);
+  }
+  .selector-label{
+    font-size:11px;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    margin:2px 0 8px;
+  }
+  #mode-select{
+    display:flex; gap:10px; margin-bottom:22px; flex-wrap:wrap; justify-content:center;
+  }
+  .word .vi-main{
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-weight:800;
+    font-size:18px;
+    letter-spacing:0.2px;
+    color:var(--text-light);
+    line-height:1.25;
+  }
+  .btn{
+    font-family:'Be Vietnam Pro', sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:var(--bg-deep);
+    background:linear-gradient(180deg, var(--accent-gold), #d99a1f);
+    border:none;
+    padding:13px 34px;
+    border-radius:30px;
+    cursor:pointer;
+    box-shadow:0 4px 0 var(--accent-gold-dim), 0 8px 20px rgba(244,185,66,0.3);
+    transition:transform .1s;
+  }
+  .btn:active{ transform:translateY(3px); box-shadow:0 1px 0 var(--accent-gold-dim); }
+
+  .life-lost-word{
+    animation:sink-out .35s ease-in forwards;
+  }
+  @keyframes sink-out{ to{ opacity:0; transform:translateX(-50%) translateY(10px) scale(0.85);} }
+
+  /* Start screen: tabs + leaderboard */
+  #start-screen{ justify-content:flex-start; overflow-y:auto; padding:14px 16px 20px; }
+  #start-tabs{
+    position:sticky; top:0; z-index:6;
+    width:100%;
+    display:flex; justify-content:center; gap:8px;
+    padding:8px 0 12px;
+    background:rgba(6,9,24,0.92);
+    backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);
+    margin-bottom:8px;
+  }
+  #play-view.hidden, #lb-view.hidden{ display:none; }
+  #lb-view{ width:100%; max-width:440px; text-align:left; }
+  .lb-title-game{ font-weight:900; font-size:20px; color:var(--accent-gold); letter-spacing:1px; text-align:center; }
+  .lb-subtitle-game{ font-size:12px; color:var(--text-dim); font-weight:700; text-align:center; margin:2px 0 12px; }
+  .lb-row-game{
+    display:flex; align-items:center; gap:10px; padding:9px 12px;
+    background:rgba(245,243,234,0.05); border:1px solid rgba(244,185,66,0.18);
+    border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s;
+  }
+  .lb-row-game:hover{ border-color:var(--accent-cyan); }
+  .lb-row-game.me{ border-color:var(--accent-cyan); background:rgba(79,209,197,0.07); }
+  .lb-rk{ width:28px; text-align:center; font-weight:900; color:var(--accent-gold); flex-shrink:0; font-size:14px; }
+  .lb-av{ font-size:1.4em; width:38px; height:38px; display:flex; align-items:center; justify-content:center; background:rgba(245,243,234,0.08); border-radius:50%; flex-shrink:0; }
+  .lb-nm{ flex:1; min-width:0; }
+  .lb-name-game{ font-weight:800; font-size:14px; color:var(--text-light); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .lb-title-game-sub{ font-size:11px; color:var(--accent-gold); font-weight:700; }
+  .lb-exp{ font-weight:900; color:var(--accent-cyan); font-size:14px; flex-shrink:0; }
+  .lb-me-game{
+    display:flex; align-items:center; gap:10px; padding:10px 12px;
+    background:rgba(79,209,197,0.08); border:2px solid var(--accent-cyan);
+    border-radius:12px; margin-top:10px; cursor:pointer; transition:all .15s;
+  }
+  .lb-me-game:hover{ box-shadow:0 0 16px rgba(79,209,197,0.35); }
+  .lb-note-game{ margin-top:10px; color:var(--text-dim); font-size:13px; font-weight:600; text-align:center; }
+
+  @media (max-width:480px){
+    .word .ko{font-size:18px;}
+    .hud-item{font-size:11px; padding:5px 10px;}
+    .hud-item b{font-size:14px;}
+  }
+  @media (max-width:600px){
+    /* Nút back thu gọn thành icon trên điện thoại để không đè HUD */
+    #back-btn{ padding:7px 8px; }
+    #back-btn span{ display:none; }
+    /* Dồn HUD về 1 dòng */
+    #hud{ gap:4px; }
+    #hud .hud-item{ padding:3px 6px; font-size:10px; }
+    #hud .hud-item b{ font-size:12px; }
+    #hud .hud-item.lives b{ font-size:11px; letter-spacing:0; }
+    #sound-btn{ padding:3px 6px; font-size:13px; }
+  }
+</style>
+</head>
+<body>
+<button id="back-btn" aria-label="Quay lại">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+  <span>Trò chơi</span>
+</button>
+<div id="game">
+  <div id="stars"></div>
+  <div id="flash-overlay"></div>
+
+  <div id="hud">
+    <div class="hud-item">ĐIỂM <b id="score">0</b></div>
+    <div class="hud-item">CẤP <b id="level">1</b></div>
+    <div class="hud-item lives">MẠNG <b id="lives">♥♥♥♥♥</b></div>
+    <div class="hud-item">KỶ LỤC <b id="highscore">0</b></div>
+    <button class="hud-item" id="sound-btn" title="Bật/tắt âm thanh">🔊</button>
+  </div>
+
+  <div id="playfield"></div>
+  <div id="projectile-layer"></div>
+
+  <div id="cannon-wrap">
+    <svg width="150" height="78" viewBox="0 0 150 78">
+      <!-- wheels -->
+      <circle cx="35" cy="70" r="10" fill="#3a2c1a" stroke="var(--accent-gold-dim)" stroke-width="2"/>
+      <circle cx="115" cy="70" r="10" fill="#3a2c1a" stroke="var(--accent-gold-dim)" stroke-width="2"/>
+      <!-- cart base -->
+      <rect x="20" y="52" width="110" height="18" rx="3" fill="#2a1f10" stroke="var(--accent-gold-dim)" stroke-width="1.5"/>
+      <!-- multi barrel fan (hwacha-style) -->
+      <g stroke="var(--accent-gold)" stroke-width="4" stroke-linecap="round">
+        <line x1="75" y1="54" x2="30" y2="10"/>
+        <line x1="75" y1="54" x2="52" y2="6"/>
+        <line x1="75" y1="54" x2="75" y2="4"/>
+        <line x1="75" y1="54" x2="98" y2="6"/>
+        <line x1="75" y1="54" x2="120" y2="10"/>
+      </g>
+      <circle cx="75" cy="54" r="9" fill="#3a2c1a" stroke="var(--accent-gold)" stroke-width="2"/>
+    </svg>
+  </div>
+
+  <div id="input-bar">
+    <input id="typing-input" name="vocab-guess" type="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore data-form-type="other" placeholder="Gõ từ tiếng Hàn đang rơi rồi nhấn Enter">
+  </div>
+
+  <div id="start-screen" class="overlay">
+    <div id="start-tabs">
+      <button class="diff-btn mode-btn active" data-stab="play">🎮 Chơi</button>
+      <button class="diff-btn mode-btn" data-stab="lb">🏆 Bảng Xếp Hạng</button>
+    </div>
+
+    <div id="play-view">
+      <h1>한글 화차<small>Bắn Từ Vựng Tiếng Hàn</small></h1>
+      <p>Từ vựng sẽ rơi xuống từ bầu trời. Gõ đúng đáp án rồi nhấn <b>Enter</b> để khai hỏa và tiêu diệt nó trước khi chạm đất. Để lỡ 5 từ là thua cuộc! Không biết từ nào? <b>Nhấn vào từ</b> để bỏ qua (mất 1 mạng).</p>
+
+      <div class="selector-label">Cấp độ từ vựng</div>
+      <div id="difficulty-select">
+        <button class="diff-btn" data-diff="easy">DỄ · Từ cơ bản</button>
+        <button class="diff-btn active" data-diff="medium">TRUNG BÌNH · Từ thông dụng</button>
+        <button class="diff-btn" data-diff="hard">KHÓ · Từ nâng cao</button>
+      </div>
+
+      <div class="selector-label">Chế độ chơi</div>
+      <div id="mode-select">
+        <button class="diff-btn mode-btn active" data-mode="spell">CHÍNH TẢ · Hàn hiện, gõ Hàn</button>
+        <button class="diff-btn mode-btn" data-mode="kv">DỊCH NGHĨA · Hàn hiện, gõ Việt</button>
+        <button class="diff-btn mode-btn" data-mode="vk">DỊCH TỪ · Việt hiện, gõ Hàn</button>
+      </div>
+
+      <button class="btn" id="start-btn">BẮT ĐẦU</button>
+      <button class="btn-ghost" id="back-home-btn">← Về Trang Trò Chơi</button>
+    </div>
+
+    <div id="lb-view" class="hidden">
+      <div id="lbList"></div>
+    </div>
+  </div>
+
+  <div id="gameover-screen" class="overlay hidden">
+    <div class="final-label">KẾT THÚC</div>
+    <div class="final-score" id="final-score">0</div>
+    <p id="gameover-msg">Luyện thêm để phá kỷ lục nhé!</p>
+    <button class="btn" id="restart-btn">CHƠI LẠI</button>
+    <button class="btn-ghost" id="back-home-btn2">← Về Trang Trò Chơi</button>
+  </div>
+</div>
+
+<script>
+// Storage shim — lưu kỷ lục vào localStorage
+window.storage = {
+  get: function(k){ try { return Promise.resolve({ value: localStorage.getItem(k) }); } catch(e){ return Promise.resolve({ value: null }); } },
+  set: function(k, v){ try { localStorage.setItem(k, v); } catch(e){} return Promise.resolve(); }
+};
+</script>
+<script>
+// ===== ÂM THANH — Web Audio API (không cần file) =====
+window.AudioSys = (function(){
+  var ctx = null;
+  var musicOn = true;
+  var sfxOn = true;
+  var musicTimer = null;
+  var musicStep = 0;
+  var MELODY = [261.6, 329.6, 392.0, 523.3, 392.0, 329.6, 293.7, 349.2]; // arpeggio C
+
+  function ensureCtx(){
+    if(!ctx){
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if(AC) ctx = new AC();
+    }
+    if(ctx && ctx.state === 'suspended') ctx.resume();
+    return ctx;
+  }
+
+  function beep(freq, dur, type, vol, when){
+    if(!sfxOn) return;
+    var c = ensureCtx(); if(!c) return;
+    var t = c.currentTime + (when || 0);
+    var o = c.createOscillator();
+    var g = c.createGain();
+    o.type = type || 'square';
+    o.frequency.setValueAtTime(freq, t);
+    g.gain.setValueAtTime(vol || 0.12, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g); g.connect(c.destination);
+    o.start(t); o.stop(t + dur + 0.02);
+  }
+
+  function playShoot(){ beep(880, 0.08, 'square', 0.09); beep(440, 0.1, 'square', 0.07, 0.05); }
+  function playExplosion(){
+    for(var i=0;i<4;i++){ beep(200 + Math.random()*300, 0.12, 'sawtooth', 0.11, i*0.04); }
+    beep(90, 0.25, 'triangle', 0.15);
+  }
+  function playLoseLife(){ beep(220, 0.2, 'sawtooth', 0.11); beep(150, 0.3, 'sawtooth', 0.11, 0.12); }
+  function playLevelUp(){ beep(523, 0.1, 'square', 0.1); beep(659, 0.1, 'square', 0.1, 0.08); beep(784, 0.16, 'square', 0.11, 0.16); }
+  function playGameOver(){ beep(392, 0.16, 'sawtooth', 0.1); beep(311, 0.16, 'sawtooth', 0.1, 0.16); beep(233, 0.35, 'sawtooth', 0.11, 0.32); }
+  function playStart(){ beep(523, 0.1, 'square', 0.1); beep(659, 0.1, 'square', 0.1, 0.08); beep(784, 0.16, 'square', 0.12, 0.16); }
+
+  function startMusic(){
+    if(!musicOn) return;
+    ensureCtx(); if(!ctx) return;
+    stopMusic();
+    musicStep = 0;
+    scheduleMusic();
+  }
+  function scheduleMusic(){
+    if(!musicOn || !ctx) return;
+    var t = ctx.currentTime;
+    // nốt chính
+    var o = ctx.createOscillator(); var g = ctx.createGain();
+    o.type = 'triangle'; o.frequency.value = MELODY[musicStep % MELODY.length];
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(0.045, t + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.4);
+    o.connect(g); g.connect(ctx.destination); o.start(t); o.stop(t + 0.45);
+    // bass
+    var bo = ctx.createOscillator(); var bg = ctx.createGain();
+    bo.type = 'sine'; bo.frequency.value = MELODY[Math.floor(musicStep/2) % MELODY.length] / 2;
+    bg.gain.setValueAtTime(0.0001, t);
+    bg.gain.linearRampToValueAtTime(0.04, t + 0.02);
+    bg.gain.exponentialRampToValueAtTime(0.0001, t + 0.6);
+    bo.connect(bg); bg.connect(ctx.destination); bo.start(t); bo.stop(t + 0.65);
+    musicStep++;
+    musicTimer = setTimeout(scheduleMusic, 250);
+  }
+  function stopMusic(){ if(musicTimer){ clearTimeout(musicTimer); musicTimer = null; } }
+
+  function setMusicOn(on){ musicOn = !!on; if(musicOn) startMusic(); else stopMusic(); }
+  function setSfxOn(on){ sfxOn = !!on; }
+
+  return {
+    ensureCtx: ensureCtx,
+    playShoot: playShoot, playExplosion: playExplosion, playLoseLife: playLoseLife,
+    playLevelUp: playLevelUp, playGameOver: playGameOver, playStart: playStart,
+    startMusic: startMusic, stopMusic: stopMusic,
+    setMusicOn: setMusicOn, setSfxOn: setSfxOn,
+    isMusicOn: function(){ return musicOn; }, isSfxOn: function(){ return sfxOn; }
+  };
+})();
+</script>
+<script src="../assets/js/vocab-hwacha-levels.js"></script>
+<script>
+(function(){
+  // ---------------------------------------------------------------
+  // VOCAB DATA — chỉnh sửa / thêm bớt từ vựng TOPIK tại đây
+  const VOCAB_DATA = window.HWACHA_VOCAB;
+
+  // ---------------------------------------------------------------
+  // DOM refs
+  // ---------------------------------------------------------------
+  const gameEl = document.getElementById('game');
+  const playfield = document.getElementById('playfield');
+  const projLayer = document.getElementById('projectile-layer');
+  const cannonWrap = document.getElementById('cannon-wrap');
+  const input = document.getElementById('typing-input');
+  const scoreEl = document.getElementById('score');
+  const levelEl = document.getElementById('level');
+  const livesEl = document.getElementById('lives');
+  const highscoreEl = document.getElementById('highscore');
+  const startScreen = document.getElementById('start-screen');
+  const gameoverScreen = document.getElementById('gameover-screen');
+  const finalScoreEl = document.getElementById('final-score');
+  const gameoverMsg = document.getElementById('gameover-msg');
+  const flashOverlay = document.getElementById('flash-overlay');
+  const startBtn = document.getElementById('start-btn');
+  const restartBtn = document.getElementById('restart-btn');
+  const backBtn = document.getElementById('back-btn');
+  const backHomeBtn = document.getElementById('back-home-btn');
+  const backHomeBtn2 = document.getElementById('back-home-btn2');
+  const soundBtn = document.getElementById('sound-btn');
+
+  // Bật/tắt âm thanh
+  function toggleAudio(){
+    var on = !window.AudioSys.isMusicOn();
+    window.AudioSys.setMusicOn(on);
+    window.AudioSys.setSfxOn(on);
+    if(on) window.AudioSys.ensureCtx();
+    soundBtn.innerHTML = on ? '🔊' : '🔇';
+  }
+  if(soundBtn) soundBtn.addEventListener('click', toggleAudio);
+
+  // Trên điện thoại, bàn phím thu nhỏ vùng chơi → giảm tốc độ rơi để kịp gõ
+  const IS_MOBILE = window.innerWidth <= 768 || ('ontouchstart' in window);
+  const MOBILE_SPEED = 0.8;
+
+  // ---------------------------------------------------------------
+  // Fit game to the VISIBLE viewport (so an open mobile keyboard
+  // never covers the falling words — the whole game frame, including
+  // the cannon and input bar, shrinks to whatever height is still on screen)
+  // ---------------------------------------------------------------
+  function fitToVisibleViewport(){
+    const vh = (window.visualViewport ? window.visualViewport.height : window.innerHeight);
+    gameEl.style.height = vh + 'px';
+    gameEl.classList.toggle('compact', vh < 480);
+  }
+  fitToVisibleViewport();
+  window.addEventListener('resize', fitToVisibleViewport);
+  window.addEventListener('orientationchange', ()=>setTimeout(fitToVisibleViewport, 60));
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', fitToVisibleViewport);
+    window.visualViewport.addEventListener('scroll', fitToVisibleViewport);
+  }
+  // Some mobile browsers fire the viewport resize slightly after focus/blur —
+  // double-check shortly after the keyboard opens or closes.
+  document.addEventListener('focusin', ()=>setTimeout(fitToVisibleViewport, 150));
+  document.addEventListener('focusout', ()=>setTimeout(fitToVisibleViewport, 150));
+
+  // ---------------------------------------------------------------
+  // Starfield background
+  // ---------------------------------------------------------------
+  const starsWrap = document.getElementById('stars');
+  for(let i=0;i<50;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*70+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    starsWrap.appendChild(s);
+  }
+
+  // ---------------------------------------------------------------
+  // Persistent high score (personal, best-effort)
+  // ---------------------------------------------------------------
+  let highScore = 0;
+  async function loadHighScore(){
+    try{
+      const r = await window.storage.get('han-hwacha-highscore');
+      if(r && r.value) highScore = parseInt(r.value) || 0;
+    }catch(e){ /* no stored value yet */ }
+    highscoreEl.textContent = highScore;
+  }
+  async function saveHighScore(v){
+    try{ await window.storage.set('han-hwacha-highscore', String(v)); }catch(e){}
+  }
+  // Lưu điểm cao nhất lên Firestore để đưa vào bảng xếp hạng điểm game
+  function saveToLeaderboard(score){
+    if(typeof firebase === 'undefined' || !window.db) return;
+    const uid = window.currentUserUid;
+    if(!uid) return;
+    const userRef = window.db.collection('users').doc(uid);
+    userRef.get().then(doc => {
+      const cur = doc.exists ? (doc.data().gameBansungScore || 0) : 0;
+      if(score > cur){
+        userRef.set({ gameBansungScore: score }, { merge: true }).catch(() => {});
+      }
+    }).catch(() => {});
+  }
+  loadHighScore();
+
+  // ---------------------------------------------------------------
+  // Game state
+  // ---------------------------------------------------------------
+  let state = null;
+  let rafId = null;
+  let lastTime = 0;
+  let recentKo = [];
+  let selectedDifficulty = 'medium';
+  let selectedMode = 'spell'; // 'spell' | 'kv' (Hàn hiện, gõ Việt) | 'vk' (Việt hiện, gõ Hàn)
+
+  const DIFFICULTY_SETTINGS = {
+    easy:   { speedMult:0.8,  spawnMult:1.25 },
+    medium: { speedMult:1,    spawnMult:1 },
+    hard:   { speedMult:1.3,  spawnMult:0.8 }
+  };
+
+  const MODE_PLACEHOLDER = {
+    spell: 'Gõ đúng từ tiếng Hàn đang rơi rồi nhấn Enter',
+    kv:    'Gõ nghĩa tiếng Việt của từ đang rơi rồi nhấn Enter',
+    vk:    'Gõ từ tiếng Hàn tương ứng rồi nhấn Enter'
+  };
+
+  document.querySelectorAll('#difficulty-select .diff-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('#difficulty-select .diff-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedDifficulty = btn.dataset.diff;
+    });
+  });
+
+  document.querySelectorAll('#mode-select .diff-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('#mode-select .diff-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedMode = btn.dataset.mode;
+    });
+  });
+
+  function freshState(){
+    const d = DIFFICULTY_SETTINGS[selectedDifficulty];
+    return {
+      running:false,
+      score:0,
+      level:1,
+      lives:5,
+      words:[],        // {el, ko, vi, answer, isAnswerKorean, y, x, speed}
+      spawnTimer:1200,
+      spawnInterval:3200 * d.spawnMult,
+      fallSpeed:26 * d.speedMult * (IS_MOBILE ? MOBILE_SPEED : 1),
+      maxWords:2
+    };
+  }
+
+  function updateHud(){
+    scoreEl.textContent = state.score;
+    levelEl.textContent = state.level;
+    livesEl.textContent = '♥'.repeat(Math.max(state.lives,0)) + '♡'.repeat(Math.max(5-state.lives,0));
+  }
+
+  function pickVocab(){
+    const bank = VOCAB_DATA[selectedDifficulty] || VOCAB_DATA.medium;
+    let pool = bank.filter(v => !recentKo.includes(v.ko));
+    if(pool.length===0) pool = bank;
+    const item = pool[Math.floor(Math.random()*pool.length)];
+    recentKo.push(item.ko);
+    if(recentKo.length>6) recentKo.shift();
+    return item;
+  }
+
+  function spawnWord(){
+    if(state.words.length >= state.maxWords) return;
+    const vocab = pickVocab();
+    const el = document.createElement('div');
+    el.className='word';
+
+    let answer, isAnswerKorean;
+    if(selectedMode === 'kv'){
+      // Hiện tiếng Hàn, người chơi gõ nghĩa tiếng Việt
+      el.innerHTML = '<div class="ko">'+vocab.ko+'</div>';
+      answer = vocab.vi;
+      isAnswerKorean = false;
+    } else if(selectedMode === 'vk'){
+      // Hiện tiếng Việt, người chơi gõ từ tiếng Hàn
+      el.innerHTML = '<div class="vi-main">'+vocab.vi+'</div>';
+      answer = vocab.ko;
+      isAnswerKorean = true;
+    } else {
+      // Chính tả: hiện cả hai, người chơi gõ từ tiếng Hàn
+      el.innerHTML = '<div class="ko">'+vocab.ko+'</div><div class="vi">'+vocab.vi+'</div>';
+      answer = vocab.ko;
+      isAnswerKorean = true;
+    }
+    playfield.appendChild(el);
+
+    const fieldW = playfield.clientWidth;
+    const margin = 50;
+    const x = margin + Math.random()*(fieldW - margin*2);
+    el.style.left = x+'px';
+    el.style.top = '-40px';
+    el.style.cursor = 'pointer';
+
+    const wobj = {el, ko:vocab.ko, vi:vocab.vi, answer, isAnswerKorean, y:-40, x, speed: state.fallSpeed * (0.85 + Math.random()*0.3)};
+    state.words.push(wobj);
+    el.addEventListener('click', function(){
+      if(!state || !state.running) return;
+      const i = state.words.indexOf(wobj);
+      if(i>=0) state.words.splice(i,1);
+      loseLife(wobj);
+    });
+  }
+
+  function levelUp(){
+    state.level++;
+    window.AudioSys.playLevelUp();
+    state.fallSpeed = Math.min(state.fallSpeed + 3, 58);
+    state.spawnInterval = Math.max(state.spawnInterval - 220, 1800);
+    state.maxWords = Math.min(state.maxWords + (state.level%2===0?1:0), 5);
+  }
+
+  function loseLife(word){
+    state.lives--;
+    window.AudioSys.playLoseLife();
+    updateHud();
+    flashOverlay.classList.remove('hit'); void flashOverlay.offsetWidth; flashOverlay.classList.add('hit');
+    word.el.classList.add('life-lost-word');
+    setTimeout(()=>{ word.el.remove(); }, 350);
+    if(state.lives<=0){
+      endGame();
+    }
+  }
+
+  function spawnExplosion(x,y){
+    window.AudioSys.playExplosion();
+    for(let i=0;i<10;i++){
+      const p = document.createElement('div');
+      p.className='particle';
+      p.style.left = x+'px';
+      p.style.top = y+'px';
+      const ang = Math.random()*Math.PI*2;
+      const dist = 20+Math.random()*40;
+      const dx = Math.cos(ang)*dist;
+      const dy = Math.sin(ang)*dist;
+      playfield.appendChild(p);
+      p.animate([
+        {transform:'translate(0,0)', opacity:1},
+        {transform:'translate('+dx+'px,'+dy+'px)', opacity:0}
+      ], {duration:420, easing:'ease-out'}).onfinish = ()=>p.remove();
+    }
+    const flash = document.createElement('div');
+    flash.className='impact-flash';
+    flash.style.left=x+'px'; flash.style.top=y+'px';
+    flash.style.background = 'radial-gradient(circle, rgba(79,209,197,0.65), transparent 70%)';
+    playfield.appendChild(flash);
+    setTimeout(()=>flash.remove(), 420);
+  }
+
+  function fireAt(word){
+    window.AudioSys.playShoot();
+    const cannonRect = cannonWrap.getBoundingClientRect();
+    const gameRect = document.getElementById('game').getBoundingClientRect();
+    const startX = cannonRect.left + cannonRect.width/2 - gameRect.left;
+    const startY = cannonRect.top + 20 - gameRect.top;
+
+    const wordRect = word.el.getBoundingClientRect();
+    const fieldRect = playfield.getBoundingClientRect();
+    const targetX = wordRect.left + wordRect.width/2 - fieldRect.left;
+    const targetY = wordRect.top + wordRect.height/2 - fieldRect.top;
+
+    const proj = document.createElement('div');
+    proj.className='projectile';
+    proj.style.left = startX+'px';
+    proj.style.top = startY+'px';
+    projLayer.appendChild(proj);
+
+    const dx = (fieldRect.left - gameRect.left) + targetX - startX;
+    const dy = (fieldRect.top - gameRect.top) + targetY - startY;
+    const angle = Math.atan2(dy,dx)*180/Math.PI + 90;
+    proj.style.transform = 'rotate('+angle+'deg)';
+
+    proj.animate([
+      {transform:'translate(0,0) rotate('+angle+'deg)'},
+      {transform:'translate('+dx+'px,'+dy+'px) rotate('+angle+'deg)'}
+    ], {duration:260, easing:'ease-in'}).onfinish = ()=>{
+      proj.remove();
+      spawnExplosion(targetX, targetY);
+    };
+  }
+
+  function normalizeAnswer(str, isKorean){
+    const s = (str||'').trim();
+    return isKorean ? s : s.toLowerCase();
+  }
+
+  function tryShoot(){
+    const raw = input.value.trim();
+    if(!raw) return;
+    const idx = state.words.findIndex(w => normalizeAnswer(w.answer, w.isAnswerKorean) === normalizeAnswer(raw, w.isAnswerKorean));
+    if(idx >= 0){
+      const word = state.words[idx];
+      fireAt(word);
+      const gained = 10 * state.level + word.answer.length;
+      state.score += gained;
+      state.words.splice(idx,1);
+      setTimeout(()=>word.el.remove(), 80);
+      updateHud();
+      if(state.score >= state.level * 60){
+        levelUp();
+      }
+      input.value='';
+    } else {
+      input.classList.remove('shake'); void input.offsetWidth; input.classList.add('shake');
+      setTimeout(()=>input.classList.remove('shake'), 300);
+    }
+  }
+
+  input.addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      if(state && state.running) tryShoot();
+    }
+  });
+  // Highlight matching word live as user types
+  input.addEventListener('input', ()=>{
+    if(!state) return;
+    const raw = input.value.trim();
+    state.words.forEach(w=>{
+      const typed = normalizeAnswer(raw, w.isAnswerKorean);
+      const answer = normalizeAnswer(w.answer, w.isAnswerKorean);
+      if(typed && answer.startsWith(typed)){
+        w.el.classList.add('matched');
+      } else {
+        w.el.classList.remove('matched');
+      }
+    });
+  });
+
+  function loop(ts){
+    if(!state || !state.running) return;
+    const dt = Math.min((ts - lastTime)/1000, 0.05) || 0;
+    lastTime = ts;
+
+    state.spawnTimer += dt*1000;
+    if(state.spawnTimer >= state.spawnInterval){
+      state.spawnTimer = 0;
+      spawnWord();
+    }
+
+    const fieldH = playfield.clientHeight;
+    for(let i=state.words.length-1;i>=0;i--){
+      const w = state.words[i];
+      w.y += w.speed * dt;
+      w.el.style.top = w.y+'px';
+      if(w.y > fieldH - 20){
+        state.words.splice(i,1);
+        loseLife(w);
+      }
+    }
+
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function startGame(){
+    state = freshState();
+    window.AudioSys.ensureCtx();
+    window.AudioSys.playStart();
+    window.AudioSys.startMusic();
+    playfield.innerHTML='';
+    recentKo = [];
+    state.running = true;
+    updateHud();
+    startScreen.classList.add('hidden');
+    gameoverScreen.classList.add('hidden');
+    input.placeholder = MODE_PLACEHOLDER[selectedMode] || MODE_PLACEHOLDER.spell;
+    input.value='';
+    input.disabled=false;
+    input.focus();
+    lastTime = performance.now();
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function endGame(){
+    state.running = false;
+    cancelAnimationFrame(rafId);
+    window.AudioSys.playGameOver();
+    window.AudioSys.stopMusic();
+    input.disabled = true;
+    finalScoreEl.textContent = state.score;
+    if(state.score > highScore){
+      highScore = state.score;
+      highscoreEl.textContent = highScore;
+      saveHighScore(highScore);
+      saveToLeaderboard(highScore);
+      gameoverMsg.textContent = 'Kỷ lục mới! Xuất sắc lắm!';
+    } else {
+      gameoverMsg.textContent = 'Luyện thêm để phá kỷ lục '+highScore+' điểm nhé!';
+    }
+    setTimeout(()=>{ gameoverScreen.classList.remove('hidden'); }, 300);
+  }
+
+  startBtn.addEventListener('click', startGame);
+  restartBtn.addEventListener('click', startGame);
+
+  // Nút back (góc trên trái): đang chơi → về màn hình chính; ở màn hình chính → ra games home
+  backBtn.addEventListener('click', function(){
+    if(state && state.running){
+      cancelAnimationFrame(rafId);
+      state.running = false;
+      window.AudioSys.stopMusic();
+      input.disabled = true;
+      playfield.innerHTML = '';
+      gameoverScreen.classList.add('hidden');
+      startScreen.classList.remove('hidden');
+    } else {
+      const lbView = document.getElementById('lb-view');
+      const playView = document.getElementById('play-view');
+      const lbTab = document.querySelector('#start-tabs .diff-btn[data-stab="lb"]');
+      const playTab = document.querySelector('#start-tabs .diff-btn[data-stab="play"]');
+      if(lbView && !lbView.classList.contains('hidden')){
+        // Đang ở bảng xếp hạng → về giao diện chính của game
+        lbView.classList.add('hidden');
+        if(playView) playView.classList.remove('hidden');
+        if(lbTab) lbTab.classList.remove('active');
+        if(playTab) playTab.classList.add('active');
+      } else {
+        window.location.href = 'home.html';
+      }
+    }
+  });
+  if(backHomeBtn) backHomeBtn.addEventListener('click', function(){ window.location.href = 'home.html'; });
+  if(backHomeBtn2) backHomeBtn2.addEventListener('click', function(){ window.location.href = 'home.html'; });
+})();
+</script>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  // ── Firebase init (đồng bộ với toàn app) ──
+  (function(){
+    const firebaseConfig = { apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU", authDomain: "vuihoctienghan2027.firebaseapp.com", projectId: "vuihoctienghan2027", storageBucket: "vuihoctienghan2027.firebasestorage.app", messagingSenderId: "346757373399", appId: "1:346757373399:web:526625b339fc9a1a523f92", measurementId: "G-JHCHNDDY1S" };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    window.db = firebase.firestore();
+    window.currentUserUid = null;
+    firebase.auth().onAuthStateChanged(function(user){ window.currentUserUid = user ? user.uid : null; });
+  })();
+</script>
+<script>
+  // ── Bảng xếp hạng (top 10 + hạng của bạn), profile như mypage ──
+  (function(){
+    const STICKERS = ['🐶','🐱','🦊','🐻','🐼','🦄','🐯','🐰','🦁','🐨','🐸','🐙','🦋','🌸','⭐','🔥','💎','🌈','🎯','🚀'];
+    const lbAvatar = uid => STICKERS[Math.abs((uid.charCodeAt(0)*31 + uid.charCodeAt(uid.length-1)*7) % STICKERS.length)];
+
+    window.openLeaderboard = function(){
+      const playView = document.getElementById('play-view');
+      const lbView = document.getElementById('lb-view');
+      if (playView) playView.classList.add('hidden');
+      if (lbView) lbView.classList.remove('hidden');
+      const listEl = document.getElementById('lbList');
+      if (!listEl) return;
+      listEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-dim); font-weight:700;">Đang tải dữ liệu...</div>`;
+      if (typeof firebase === 'undefined' || !window.db) {
+        listEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-dim); font-weight:700;">Không thể tải bảng xếp hạng.</div>`;
+        return;
+      }
+      window.db.collection('users').get().then(snap => {
+        const users = [];
+        snap.forEach(doc => {
+          const d = doc.data();
+          d._uid = doc.id;
+          d._score = Math.max(0, d.gameBansungScore || 0);
+          users.push(d);
+        });
+        users.sort((a, b) => b._score - a._score);
+        renderGameLeaderboard(users);
+      }).catch(() => {
+        listEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--accent-coral); font-weight:700;">⚠️ Lỗi tải dữ liệu.</div>`;
+      });
+    };
+
+    window.showGameProfile = function(uid, name){
+      if (window.showGlobalUserProfile) window.showGlobalUserProfile(uid, name);
+    };
+
+    function renderGameLeaderboard(users){
+      const listEl = document.getElementById('lbList');
+      if (!listEl) return;
+      const currentUid = window.currentUserUid;
+      let myRank = -1, myUser = null;
+      users.forEach((u, i) => { if (u._uid === currentUid) { myRank = i; myUser = u; } });
+
+      const esc = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+      const medals = ['🥇','🥈','🥉'];
+      const scorers = users.filter(u => u._score > 0);
+      const end = Math.min(9, scorers.length - 1);
+      let html = `<div class="lb-title-game">🏆 BẢNG XẾP HẠNG</div>
+        <div class="lb-subtitle-game">Top 10 điểm cao nhất trong Bắn Từ Vựng</div>`;
+      if (scorers.length === 0) {
+        html += `<div class="lb-note-game">Chưa có ai lập thành tích. Chơi và ghi điểm nào! 🎯</div>`;
+      }
+      for (let i = 0; i <= end; i++) {
+        const u = scorers[i];
+        const isMe = u._uid === currentUid;
+        const badge = i < 3 ? medals[i] : (i + 1);
+        html += `<div class="lb-row-game ${isMe ? 'me' : ''}" onclick="showGameProfile('${u._uid}','${esc(u.fullName || 'Ẩn danh')}')">
+          <div class="lb-rk">${badge}</div>
+          <div class="lb-av">${lbAvatar(u._uid)}</div>
+          <div class="lb-nm"><div class="lb-name-game">${esc(u.fullName || 'Ẩn danh')}${isMe ? ' <span style="color:var(--accent-cyan);">(Bạn)</span>' : ''}</div><div class="lb-title-game-sub">Điểm cao nhất</div></div>
+          <div class="lb-exp">${u._score} điểm</div>
+        </div>`;
+      }
+      if (myUser) {
+        html += `<div class="lb-me-game" onclick="showGameProfile('${currentUid}','${esc(myUser.fullName || 'Bạn')}')">
+          <div class="lb-rk">#${myRank + 1}</div>
+          <div class="lb-av">${lbAvatar(currentUid)}</div>
+          <div class="lb-nm"><div class="lb-name-game">${esc(myUser.fullName || 'Bạn')} · Vị trí của bạn</div><div class="lb-title-game-sub">${myUser._score > 0 ? 'Điểm cao nhất: ' + myUser._score : 'Chưa có điểm — chơi để lập thành tích!'}</div></div>
+          <div class="lb-exp">${myUser._score > 0 ? myUser._score + ' điểm' : '—'}</div>
+        </div>`;
+      } else if (!currentUid) {
+        html += `<div class="lb-note-game">Đăng nhập để lưu điểm và xem hạng của bạn.</div>`;
+      }
+      listEl.innerHTML = html;
+    }
+
+    // Tab: Chơi / Bảng Xếp Hạng
+    document.querySelectorAll('#start-tabs .diff-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#start-tabs .diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const tab = btn.dataset.stab;
+        const playView = document.getElementById('play-view');
+        const lbView = document.getElementById('lb-view');
+        if (tab === 'lb') { window.openLeaderboard(); }
+        else { if (playView) playView.classList.remove('hidden'); if (lbView) lbView.classList.add('hidden'); }
+      });
+    });
+  })();
+</script>
+<script src="../assets/js/user-profile-popup.js"></script>
+</body>
+</html>

@@ -5,10 +5,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Luyện Thi Phần Nghe | TOPIK - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     <meta name="description" content="Luyện thi kỹ năng Nghe TOPIK I và TOPIK II theo bộ đề và theo dạng câu.">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
@@ -29,47 +33,74 @@
         * { box-sizing: border-box; }
         button, input, select { font-family: 'Pretendard', 'Inter', sans-serif !important; }
 
-        @media (max-width: 768px) {
-            .global-nav, .wrapper { margin-left: 15px !important; margin-right: 15px !important; width: auto !important; }
-            .nav-desktop-links { display: none !important; }
-        }
-
         .wrapper {
             max-width: 900px; margin: 0 auto;
             background: rgba(255,255,255,0.35);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255,255,255,0.5);
-            border-radius: 24px; padding: 30px 40px;
+            border-radius: 24px; padding: 15px 20px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.05); width: 100%;
-        }
+         box-sizing: border-box;}
 
         /* ===== HERO ===== */
         .hero-section {
-            background: var(--random-bg-gradient, linear-gradient(135deg, #1e40af 0%, #3b82f6 100%));
-            border-radius: 16px; padding: 32px 36px; color: white;
-            margin-bottom: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            display: flex; flex-direction: column; align-items: flex-start;
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, #be185d 0%, #f97316 50%, #f59e0b 100%);
+            border-radius: 22px; padding: 34px 38px; color: #fff;
+            margin-bottom: 28px; box-shadow: 0 18px 40px rgba(249,115,22,.18);
+            display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 205px;
         }
-        .hero-title { font-size: 2.2em; font-weight: 800; margin: 0; line-height: 1.2; letter-spacing: -0.5px; }
+        .hero-section::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,.14) 1px, transparent 1px);
+            background-size: 22px 22px; opacity: .45; pointer-events: none;
+        }
+        .hero-blob { position: absolute; border-radius: 50%; filter: blur(64px); pointer-events: none; }
+        .hero-blob.b1 { width: 230px; height: 230px; background: rgba(255,255,255,.22); top: -70px; right: -50px; animation: blobFloat 8s ease-in-out infinite; }
+        .hero-blob.b2 { width: 170px; height: 170px; background: rgba(255,255,255,.14); bottom: -70px; left: -40px; animation: blobFloat 11s ease-in-out infinite reverse; }
+        @keyframes blobFloat { 0%, 100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-12px) scale(1.08); } }
+
+        .hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
         .hero-tag {
-            display: inline-block; background: rgba(255,255,255,0.18); color: #dbeafe;
-            font-size: 0.9em; font-weight: 700; padding: 5px 14px; border-radius: 99px;
-            margin-bottom: 12px; letter-spacing: 0.5px; text-transform: uppercase;
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,.16); color: #fff;
+            font-size: .8em; font-weight: 800; padding: 6px 14px; border-radius: 99px;
+            letter-spacing: .6px; text-transform: uppercase;
+            backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.24);
+            margin-bottom: 14px;
         }
+        .hero-title {
+            font-size: 2.5em; font-weight: 900; margin: 0; line-height: 1.12; letter-spacing: -.6px;
+            background: linear-gradient(120deg, #fff 35%, rgba(255,255,255,.5));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { margin: 9px 0 0; font-size: .95em; color: rgba(255,255,255,.88); font-weight: 500; }
 
         /* HERO TABS */
         .hero-tabs {
-            display: flex; background: rgba(255,255,255,0.15);
-            border-radius: 12px; padding: 6px; width: fit-content;
-            margin-top: 20px; gap: 5px;
+            display: flex; background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.18);
+            border-radius: 13px; padding: 5px; width: fit-content; margin-top: 20px; gap: 5px;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
         }
         .hero-tab {
-            padding: 10px 30px; border-radius: 8px; color: rgba(255,255,255,0.8);
-            font-weight: 700; font-size: 1.05em; cursor: pointer; transition: all 0.3s ease;
+            padding: 10px 30px; border-radius: 10px; color: rgba(255,255,255,.88);
+            font-weight: 800; font-size: 1em; cursor: pointer; transition: all .25s ease;
             border: none; background: transparent;
         }
-        .hero-tab.active { background: #fff; color: #1e40af; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        .hero-tab:not(.active):hover { background: rgba(255,255,255,0.25); color: #fff; }
+        .hero-tab.active { background: #fff; color: #c2410c; box-shadow: 0 6px 16px rgba(0,0,0,.15); }
+        .hero-tab:not(.active):hover { background: rgba(255,255,255,.18); color: #fff; }
+
+        .hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+        .hero-icon {
+            width: 116px; height: 116px; border-radius: 50%;
+            background: rgba(255,255,255,.16);
+            border: 1.5px solid rgba(255,255,255,.34);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 22px 44px rgba(0,0,0,.22), inset 0 0 34px rgba(255,255,255,.12);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            animation: heroFloat 4s ease-in-out infinite;
+        }
+        @keyframes heroFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 
         /* SECTION HEADER + TOGGLE */
         .section-header {
@@ -96,34 +127,92 @@
         /* EXAM GRID */
         .exam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
+        /* SECTION TOOLBAR */
+        .section-toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .section-toolbar select {
+            padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px;
+            font-size: 0.85em; background: rgba(255,255,255,0.85); color: var(--text-main);
+            outline: none; cursor: pointer;
+        }
+        .toolbar-switch { display: flex; align-items: center; gap: 8px; }
+
+        /* DẢI THỐNG KÊ */
+        .stat-strip {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            background: rgba(255,255,255,0.6);
+            border: 1px solid rgba(255,255,255,0.8);
+            border-radius: 16px; overflow: hidden; margin-bottom: 18px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        }
+        .stat {
+            padding: 16px 10px 14px; text-align: center;
+            border-right: 1px solid rgba(226,232,240,0.9);
+        }
+        .stat:last-child { border-right: none; }
+        .stat b {
+            display: block; font-size: 1.7em; font-weight: 800;
+            color: var(--primary); line-height: 1.05; font-variant-numeric: tabular-nums;
+        }
+        .stat span {
+            display: block; font-size: 0.7em; color: var(--text-sub);
+            font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; margin-top: 6px;
+        }
+        .stat em {
+            display: block; font-style: normal; font-size: 0.66em;
+            color: #2563eb; font-weight: 700; margin-top: 3px; opacity: 0; transition: opacity 0.2s;
+        }
+        .stat-click { cursor: pointer; transition: background 0.2s; }
+        .stat-click:hover { background: rgba(239,246,255,0.9); }
+        .stat-click:hover em { opacity: 1; }
+
+        /* THẺ ĐỀ HIỆN ĐẠI */
         .exam-card {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 18px 20px;
-            background: rgba(255,255,255,0.75);
+            display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+            background: rgba(255,255,255,0.8);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255,255,255,0.9);
             border-radius: 16px; text-decoration: none; color: var(--text-main);
-            transition: all 0.3s ease; gap: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02); min-height: 85px;
+            transition: all 0.25s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.03); min-height: 84px;
         }
         .exam-card:hover {
-            background: rgba(255,255,255,0.95); border-color: rgba(255,255,255,1);
-            transform: translateY(-3px); box-shadow: 0 10px 25px rgba(37,99,235,0.12);
+            transform: translateY(-3px); border-color: #fff;
+            box-shadow: 0 12px 28px rgba(37,99,235,0.15);
         }
         .exam-card.coming-soon { opacity: 0.6; cursor: not-allowed; }
-        .exam-card.coming-soon:hover { transform: none; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-
-        .exam-card-left { display: flex; flex-direction: column; gap: 6px; }
-        .exam-number { font-size: 1.15em; font-weight: 800; letter-spacing: -0.3px; }
-        .exam-badge {
-            display: inline-block; font-size: 0.7em; font-weight: 700;
-            padding: 3px 9px; border-radius: 99px; width: fit-content;
+        .exam-card.coming-soon:hover { transform: none; box-shadow: none; }
+        .exam-cover {
+            width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-weight: 900; font-size: 1.25em;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.18);
         }
-        .badge-done { background: #f0fdf4; color: #16a34a; }
+        .exam-cover.cover-type { font-size: 1.5em; }
+        .exam-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+        .exam-title { font-weight: 800; font-size: 1.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .exam-sub { font-size: 0.76em; color: var(--text-sub); font-weight: 600; }
+        .exam-progress { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
+        .exam-progress .pbar { flex: 1; height: 6px; background: rgba(0,0,0,0.08); border-radius: 99px; overflow: hidden; }
+        .exam-progress .pbar i { display: block; height: 100%; background: linear-gradient(90deg, #2563eb, #06b6d4); border-radius: 99px; }
+        .exam-progress span { font-size: 0.72em; color: var(--text-sub); font-weight: 700; white-space: nowrap; }
+        .exam-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+        .exam-badge { font-size: 0.68em; font-weight: 800; padding: 3px 9px; border-radius: 99px; white-space: nowrap; }
+        .badge-todo { background: #f1f5f9; color: #64748b; }
+        .badge-done { background: #eff6ff; color: #1d4ed8; }
+        .badge-high { background: #fef3c7; color: #b45309; }
         .badge-soon { background: #f1f5f9; color: #94a3b8; }
-
         .exam-arrow { color: #94a3b8; transition: 0.2s; flex-shrink: 0; }
         .exam-card:hover:not(.coming-soon) .exam-arrow { color: var(--primary); transform: translateX(3px); }
+
+        @media (max-width: 600px) {
+            .stat-strip { grid-template-columns: repeat(2, 1fr); }
+            .stat { border-right: none; border-bottom: 1px solid rgba(226,232,240,0.9); }
+            .stat:nth-child(2n) { border-left: 1px solid rgba(226,232,240,0.9); }
+            .stat:nth-last-child(-n+2) { border-bottom: none; }
+            .exam-grid { grid-template-columns: 1fr; }
+            .exam-cover { width: 52px; height: 52px; font-size: 1.15em; border-radius: 14px; }
+            .exam-card { padding: 14px 16px; gap: 14px; min-height: 96px; }
+            .exam-title { font-size: 1.08em; }
+        }
 
         /* FOOTER */
         .global-footer {
@@ -142,42 +231,77 @@
         .footer-fb-icon { width: 22px; height: 22px; fill: currentColor; }
 
         @media (max-width: 600px) {
-            .wrapper { margin: 0 15px 20px 15px; padding: 20px 16px; border-radius: 16px; }
-            .global-footer { margin: 10px 15px 25px 15px; border-radius: 16px; }
-            .hero-section { padding: 24px 20px; }
-            .hero-title { font-size: 1.8em; }
+            .hero-section { padding: 26px 22px; flex-direction: column; align-items: flex-start; min-height: 0; }
+            .hero-right { position: absolute; top: 18px; right: 14px; }
+            .hero-icon { width: 60px; height: 60px; }
+            .hero-icon svg { width: 30px !important; height: 30px !important; }
+            .hero-title { padding-right: 64px; }
+            .hero-title { white-space: nowrap; font-size: 1.35em; }
+            .hero-sub { font-size: .86em; }
             .hero-tabs { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
-            .hero-tab { padding: 10px 0; font-size: 1em; }
-            .exam-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-            .exam-card { padding: 12px 10px; gap: 5px; min-height: 75px; }
-            .exam-number { font-size: 1.05em; }
+            .hero-tab { padding: 11px 0; font-size: .98em; }
         }
     </style>
 
     <script src="../assets/js/block.js"></script>
     <script src="../assets/js/theme-picker.js"></script>
     <script src="../assets/js/navbar.js"></script>
+    <script src="../assets/js/home-progress.js"></script>
+    <script src="../assets/js/hero-rain.js"></script>
 </head>
 
 <body>
     <div class="wrapper">
         <div class="hero-section">
-            <div class="hero-tag">🎧 Kỹ năng Nghe</div>
-            <h1 class="hero-title" id="heroTitle">Luyện thi theo bộ đề</h1>
-            <div class="hero-tabs">
-                <button class="hero-tab" id="tabTopik1" onclick="switchTopikLevel(1)">TOPIK I</button>
-                <button class="hero-tab active" id="tabTopik2" onclick="switchTopikLevel(2)">TOPIK II</button>
+            <canvas class="hero-rain-canvas"></canvas>
+            <div class="hero-blob b1"></div>
+            <div class="hero-blob b2"></div>
+            <div class="hero-left">
+                <div class="hero-tag">🎧 Kỹ năng Nghe</div>
+                <h1 class="hero-title" id="heroTitle">Luyện theo bộ đề</h1>
+                <p class="hero-sub">Rèn luyện phản xạ nghe tiếng Hàn.</p>
+                <div class="hero-tabs">
+                    <button class="hero-tab" id="tabTopik1" onclick="switchTopikLevel(1)">TOPIK I</button>
+                    <button class="hero-tab active" id="tabTopik2" onclick="switchTopikLevel(2)">TOPIK II</button>
+                </div>
+            </div>
+            <div class="hero-right">
+                <div class="hero-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="54" height="54" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+                </div>
             </div>
         </div>
 
         <div class="section-header">
             <h3 class="section-title" id="modeTitle">📚 Chọn bộ đề</h3>
-            <div style="display:flex; align-items:center; gap:8px;">
-                <span id="modeLabel" style="font-weight:700; font-size:0.9em; color:var(--text-sub);">Dạng câu</span>
-                <label class="switch">
-                    <input type="checkbox" id="modeToggle" onchange="toggleMode()">
-                    <span class="slider"></span>
-                </label>
+            <div class="section-toolbar">
+                <div class="toolbar-switch">
+                    <span id="modeLabel" style="font-weight:800; font-size:0.9em; color:#2563eb;">Dạng câu</span>
+                    <label class="switch">
+                        <input type="checkbox" id="modeToggle" onchange="toggleMode()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-strip" id="statStrip">
+            <div class="stat stat-click" onclick="openHomeExamHistory()" title="Xem lịch sử làm đề">
+                <b id="stExams">0</b>
+                <span>Đề đã làm</span>
+                <em>Xem lịch sử ›</em>
+            </div>
+            <div class="stat">
+                <b id="stCorrect">0</b>
+                <span>Câu đúng</span>
+            </div>
+            <div class="stat">
+                <b id="stAvg">0</b>
+                <span>Điểm trung bình</span>
+            </div>
+            <div class="stat">
+                <b id="stStreak">0</b>
+                <span>Ngày streak</span>
             </div>
         </div>
 
@@ -250,51 +374,87 @@
             const isType = document.getElementById('modeToggle').checked;
             state.mode = isType ? 'type' : 'exam';
             sessionStorage.setItem('listenMode', state.mode);
-            document.getElementById('heroTitle').textContent = isType ? 'Luyện theo dạng câu' : 'Luyện thi theo bộ đề';
+            document.getElementById('heroTitle').textContent = isType ? 'Luyện theo dạng câu' : 'Luyện theo bộ đề';
             document.getElementById('modeTitle').textContent = isType ? '📚 Chọn dạng câu' : '📚 Chọn bộ đề';
             renderGrid();
         }
 
         const arrowSVG = `<svg class="exam-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20" style="flex-shrink:0;"><path d="M9 18l6-6-6-6"/></svg>`;
 
+        function updateStats() {
+            if (!window.HomeProgress) return;
+            const t = window.HomeProgress.totals('listening');
+            const ex = document.getElementById('stExams');
+            if (ex) ex.innerText = t.exams;
+            const co = document.getElementById('stCorrect');
+            if (co) co.innerText = t.correct;
+            const av = document.getElementById('stAvg');
+            if (av) av.innerText = t.avg;
+            const st = document.getElementById('stStreak');
+            if (st) st.innerText = t.streak;
+        }
+
+        function openHomeExamHistory() {
+            if (window.HomeProgress) window.HomeProgress.openHistory('listening');
+        }
+
         function renderGrid() {
             const grid = document.getElementById('cardGrid');
             const isTopik1 = state.level === 1;
             const folder = isTopik1 ? 'topik_i' : 'topik_ii';
 
-            if (state.mode === 'exam') {
-                const data = isTopik1 ? EXAM_DATA_T1 : EXAM_DATA_T2;
-                if (data.length === 0) {
+            let data;
+            if (state.mode === 'exam') data = isTopik1 ? EXAM_DATA_T1 : EXAM_DATA_T2;
+            else data = isTopik1 ? TYPE_DATA_T1 : TYPE_DATA_T2;
+            const origLen = data.length;
+
+            if (data.length === 0) {
+                if (origLen === 0 && state.mode === 'exam') {
                     grid.innerHTML = `
                         <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub);">
                             <div style="font-size:2.5rem; margin-bottom:10px;">🚧</div>
                             <div style="font-weight:700; font-size:1.1rem;">Sắp ra mắt!</div>
                             <div style="font-size:0.9rem; margin-top:5px;">Các đề TOPIK I đang được chuẩn bị...</div>
                         </div>`;
-                    return;
+                } else {
+                    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub); font-weight:700;">Không tìm thấy đề phù hợp 🔍</div>`;
                 }
-                grid.innerHTML = data.map(num => `
-                    <a href="${folder}/topik${num}.html" class="exam-card">
-                        <div class="exam-card-left">
-                            <span class="exam-number">Đề nghe ${num}</span>
-                            <span class="exam-badge badge-done">Hoàn thiện</span>
-                        </div>
-                        ${arrowSVG}
-                    </a>
-                `).join('');
-            } else {
-                const data = isTopik1 ? TYPE_DATA_T1 : TYPE_DATA_T2;
-                grid.innerHTML = data.map(t => `
-                    <a href="${folder}/type_${t.range}.html" class="exam-card${isTopik1 ? ' coming-soon' : ''}">
-                        <div class="exam-card-left">
-                            <span class="exam-number">${t.label}</span>
-                            <span style="font-size:0.75em; color:var(--text-sub);">${t.desc}</span>
-                            ${isTopik1 ? '<span class="exam-badge badge-soon">Sắp ra mắt</span>' : ''}
-                        </div>
-                        ${isTopik1 ? '' : arrowSVG}
-                    </a>
-                `).join('');
+                return;
             }
+
+            if (state.mode === 'exam') {
+                const total = isTopik1 ? 30 : 50;
+                grid.innerHTML = data.map((num, idx) => {
+                    const exam = window.HomeProgress.getExam(window.HomeProgress.keyFor('listening', folder, num));
+                    return window.HomeProgress.buildExamCard({
+                        href: `${folder}/topik${num}.html`,
+                        title: `Đề nghe ${num}`,
+                        sub: isTopik1 ? 'TOPIK I · ' + total + ' câu' : 'TOPIK II · ' + total + ' câu',
+                        coverNum: num,
+                        exam: exam,
+                        total: total,
+                        index: idx
+                    });
+                }).join('');
+            } else {
+                grid.innerHTML = data.map((t, idx) => {
+                    return window.HomeProgress.buildTypeCard({
+                        href: `${folder}/type_${t.range}.html`,
+                        title: t.label,
+                        sub: t.desc,
+                        coverText: '🎧',
+                        index: idx,
+                        comingSoon: isTopik1
+                    });
+                }).join('');
+            }
+        }
+
+        if (window.HomeProgress) {
+            window.HomeProgress.load('listening', function () {
+                renderGrid();
+                updateStats();
+            });
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -318,6 +478,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="../auth.js"></script>
 </body>
 
 </html>

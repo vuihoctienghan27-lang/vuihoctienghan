@@ -35,7 +35,7 @@
         async _naverKoViSearch(word) {
             try {
                 const url = `${NAVER_KOVI}?query=${encodeURIComponent(word)}&range=entry&page=1&count=3&sort=relevant&scope=all`;
-                const data = await this._fetchJSON(url, 12000);
+                const data = await this._fetchJSON(url, 5000);
                 if (!data) return null;
 
                 const items = data?.searchResultMap?.searchResultListMap?.WORD?.items
@@ -95,13 +95,13 @@
             }
         },
 
-        // ─── Helper: fetch với timeout ───
-        _fetchWithTimeout(url, options = {}, ms = 8000) {
-            return Promise.race([
-                fetch(url, options),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
-            ]);
-        },
+    // ─── Helper: fetch với timeout ───
+    _fetchWithTimeout(url, options = {}, ms = 5000) {
+        return Promise.race([
+            fetch(url, options),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), ms))
+        ]);
+    },
 
         // ─── Bước 1: Tìm target_code ─── Bước 2: Gọi View API để lấy ví dụ ───
         async _krdictSearch(word, key) {
@@ -139,77 +139,87 @@
             return this._parseViewXML(viewXml);
         },
 
-        // ─── Fetch text: song song tất cả proxy, lấy cái nào thành công trước ───
-        async _fetchText(url, timeoutMs = 15000) {
-            const enc = encodeURIComponent(url);
+    // ─── Fetch text: thử lần lượt từng proxy, không race tất cả ───
+    async _fetchText(url, timeoutMs = 5000) {
+        const enc = encodeURIComponent(url);
 
-            // Hàm thử 1 URL, resolve với text nếu OK, reject nếu fail
-            const tryFetch = (fetchUrl, opts = {}) =>
-                this._fetchWithTimeout(fetchUrl, opts, timeoutMs)
-                    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-                    .then(t => { if (!t || !t.trim()) throw new Error('empty'); return t; });
+        const tryFetch = (fetchUrl, opts = {}) =>
+            this._fetchWithTimeout(fetchUrl, opts, timeoutMs)
+                .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                .then(t => { if (!t || !t.trim()) throw new Error('empty'); return t; });
 
-            const tryFetchJson = (fetchUrl) =>
-                this._fetchWithTimeout(fetchUrl, {}, timeoutMs)
-                    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-                    .then(j => { if (!j?.contents) throw new Error('no contents'); return j.contents; });
+        const tryFetchJson = (fetchUrl) =>
+            this._fetchWithTimeout(fetchUrl, {}, timeoutMs)
+                .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+                .then(j => { if (!j?.contents) throw new Error('no contents'); return j.contents; });
 
-            const candidates = [
-                tryFetch(url, { mode: 'cors' }),
-                tryFetch(`https://api.allorigins.win/raw?url=${enc}`),
-                tryFetchJson(`https://api.allorigins.win/get?url=${enc}`),
-                tryFetch(`https://corsproxy.io/?${enc}`)
-            ];
+        // Thử lần lượt, proxy nhanh hơn → kết thúc sớm, không tốn băng thông
+        const strategies = [
+            () => tryFetch(url, { mode: 'cors' }),
+            () => tryFetch(`https://api.allorigins.win/raw?url=${enc}`),
+            () => tryFetchJson(`https://api.allorigins.win/get?url=${enc}`),
+            () => tryFetch(`https://corsproxy.io/?${enc}`),
+            () => tryFetch(`https://api-proxy.bleck.us/raw?url=${enc}`),
+            () => tryFetch(`https://corsproxy.ripley.cloud/?url=${enc}`),
+        ];
 
+        for (const strat of strategies) {
             try {
-                const result = await Promise.any(candidates);
-                console.log('[Fetch] Text OK');
-                return result;
-            } catch (e) {
-                console.warn('[Fetch] Text Fail');
-                return null;
-            }
-        },
+                const result = await strat();
+                if (result) {
+                    console.log('[Fetch] Text OK');
+                    return result;
+                }
+            } catch (_) {}
+        }
+        console.warn('[Fetch] Text Fail');
+        return null;
+    },
 
-        // ─── Fetch JSON: giống _fetchText nhưng chỉ resolve khi response là JSON hợp lệ ───
-        // Proxy error pages (HTML DOCTYPE) sẽ bị reject — không lắm vào JSON.parse
-        async _fetchJSON(url, timeoutMs = 15000) {
-            const enc = encodeURIComponent(url);
+    // ─── Fetch JSON: thử lần lượt từng proxy ───
+    async _fetchJSON(url, timeoutMs = 5000) {
+        const enc = encodeURIComponent(url);
 
-            const tryJSON = (fetchUrl, opts = {}) =>
-                this._fetchWithTimeout(fetchUrl, opts, timeoutMs)
-                    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
-                    .then(t => {
-                        const s = (t || '').trim();
-                        if (!s.startsWith('{') && !s.startsWith('[')) throw new Error('not JSON');
-                        return JSON.parse(s);   // throw nếu JSON không hợp lệ
-                    });
+        const tryJSON = (fetchUrl, opts = {}) =>
+            this._fetchWithTimeout(fetchUrl, opts, timeoutMs)
+                .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.text(); })
+                .then(t => {
+                    const s = (t || '').trim();
+                    if (!s.startsWith('{') && !s.startsWith('[')) throw new Error('not JSON');
+                    return JSON.parse(s);
+                });
 
-            const tryJSONFromMeta = (fetchUrl) =>
-                this._fetchWithTimeout(fetchUrl, {}, timeoutMs)
-                    .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-                    .then(j => {
-                        const s = (j?.contents || '').trim();
-                        if (!s.startsWith('{') && !s.startsWith('[')) throw new Error('not JSON in contents');
-                        return JSON.parse(s);
-                    });
+        const tryJSONFromMeta = (fetchUrl) =>
+            this._fetchWithTimeout(fetchUrl, {}, timeoutMs)
+                .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+                .then(j => {
+                    const s = (j?.contents || '').trim();
+                    if (!s.startsWith('{') && !s.startsWith('[')) throw new Error('not JSON in contents');
+                    return JSON.parse(s);
+                });
 
-            const candidates = [
-                tryJSON(url, { mode: 'cors' }),
-                tryJSON(`https://api.allorigins.win/raw?url=${enc}`),
-                tryJSONFromMeta(`https://api.allorigins.win/get?url=${enc}`),
-                tryJSON(`https://corsproxy.io/?${enc}`)
-            ];
+        const strategies = [
+            () => tryJSON(url, { mode: 'cors' }),
+            () => tryJSON(`https://api.allorigins.win/raw?url=${enc}`),
+            () => tryJSONFromMeta(`https://api.allorigins.win/get?url=${enc}`),
+            () => tryJSON(`https://corsproxy.io/?${enc}`),
+            () => tryJSON(`https://api-proxy.bleck.us/raw?url=${enc}`),
+            () => tryJSONFromMeta(`https://api-proxy.bleck.us/get?url=${enc}`),
+            () => tryJSON(`https://corsproxy.ripley.cloud/?url=${enc}`),
+        ];
 
+        for (const strat of strategies) {
             try {
-                const result = await Promise.any(candidates);
-                console.log('[Fetch] JSON OK');
-                return result;
-            } catch (e) {
-                console.warn('[Fetch] JSON Fail');
-                return null;
-            }
-        },
+                const result = await strat();
+                if (result) {
+                    console.log('[Fetch] JSON OK');
+                    return result;
+                }
+            } catch (_) {}
+        }
+        console.warn('[Fetch] JSON Fail');
+        return null;
+    },
 
 
         // ─── Phân tích View API XML ───

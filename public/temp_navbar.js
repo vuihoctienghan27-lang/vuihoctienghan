@@ -39,14 +39,35 @@ document.addEventListener('DOMContentLoaded', () => {
         .nav-icon-btn:hover { background: rgba(255,255,255,0.5); }
         body.dark-mode .nav-icon-btn { color: #f9fafb; }
         
-        .nav-logo { font-size: 1.3em; font-weight: 800; color: #1f2937; text-decoration: none; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
-        body.dark-mode .nav-logo { color: #f9fafb; }
+        .nav-logo { text-decoration: none; display: flex; align-items: center; gap: 8px; white-space: nowrap; font-family: 'Pretendard', 'Inter', sans-serif; }
+        .nav-logo img { height: 38px; width: auto; display: block; flex-shrink: 0; }
+        .nav-logo-text .vh { color: #142657; }
+        .nav-logo-text .th { color: #f95052; }
+        .nav-logo-text { font-size: 1.15em; font-weight: 800; display: flex; align-items: center; gap: 2px; }
+        body.dark-mode .nav-logo-text .vh { color: #60a5fa; }
+        body.dark-mode .nav-logo-text .th { color: #fca5a5; }
         
         .nav-desktop-links { display: flex; gap: 30px; }
         .nav-link { text-decoration: none; color: #6b7280; font-weight: 700; font-size: 1.15em; transition: 0.2s; }
-        .nav-link.active, .nav-link:hover { color: #2563eb; font-weight: 800; }
+        .nav-link.active, .nav-link:hover { font-weight: 800; }
+        .nav-link[data-skill="read"]{color:#142657}
+        .nav-link[data-skill="listen"]{color:#142657}
+        .nav-link[data-skill="write"]{color:#f95052}
+        .nav-link[data-skill="grammar"]{color:#f95052}
+        .nav-link[data-skill="read"]:hover{color:#f95052!important}
+        .nav-link[data-skill="listen"]:hover{color:#f95052!important}
+        .nav-link[data-skill="write"]:hover{color:#142657!important}
+        .nav-link[data-skill="grammar"]:hover{color:#142657!important}
+        @keyframes blink-read{0%,100%{color:#142657}50%{color:#f95052}}
+        @keyframes blink-listen{0%,100%{color:#142657}50%{color:#f95052}}
+        @keyframes blink-write{0%,100%{color:#f95052}50%{color:#142657}}
+        @keyframes blink-grammar{0%,100%{color:#f95052}50%{color:#142657}}
+        .nav-link[data-skill="read"].active{animation:blink-read 1.2s infinite}
+        .nav-link[data-skill="listen"].active{animation:blink-listen 1.2s infinite}
+        .nav-link[data-skill="write"].active{animation:blink-write 1.2s infinite}
+        .nav-link[data-skill="grammar"].active{animation:blink-grammar 1.2s infinite}
         body.dark-mode .nav-link { color: #9ca3af; }
-        body.dark-mode .nav-link.active, body.dark-mode .nav-link:hover { color: #60a5fa; }
+        body.dark-mode .nav-link.active, body.dark-mode .nav-link:hover { font-weight: 800; }
         
         .nav-right { display: flex; align-items: center; gap: 10px; }
         .vocab-slider-container input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: white; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: 0.3s; }
@@ -56,7 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
             .nav-top-row { height: 50px; padding: 0 15px; position: relative; display: flex; align-items: center; justify-content: space-between; }
             .nav-logo-wrapper { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); white-space: nowrap; z-index: 1; }
             .nav-left, .nav-right { position: relative; z-index: 2; }
-            .nav-logo { font-size: 1.15em; margin: 0;}
+            .nav-logo img { height: 32px; }
+            .nav-logo-text { font-size: 1em; }
             .nav-desktop-links { display: none; }
             .vocab-text { display: none !important; }
         }
@@ -88,14 +110,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 
                 <div class="nav-logo-wrapper">
-                    <a href="${rootPath}index.html" class="nav-logo">📚 Vui Học Tiếng Hàn</a>
+                    <a href="${rootPath}index.html" class="nav-logo"><img src="${rootPath}assets/img/logo-navbar.png" alt=""><span class="nav-logo-text"><span class="vh">Vui Học</span><span class="th">Tiếng Hàn</span></span></a>
                 </div>
 
                 <div class="nav-desktop-links">
-                    <a href="${rootPath}index.html" class="nav-link active">Đọc</a>
-                    <a href="#" class="nav-link" onclick="alert('Đang cập nhật!'); return false;">Nghe</a>
-                    <a href="#" class="nav-link" onclick="alert('Đang cập nhật!'); return false;">Viết</a>
-                    <a href="#" class="nav-link" onclick="alert('Đang cập nhật!'); return false;">Ngữ pháp</a>
+                    <a href="${rootPath}index.html" class="nav-link active" data-skill="read">Đọc</a>
+                    <a href="#" class="nav-link" data-skill="listen" onclick="alert('Đang cập nhật!'); return false;">Nghe</a>
+                    <a href="#" class="nav-link" data-skill="write" onclick="alert('Đang cập nhật!'); return false;">Viết</a>
+                    <a href="#" class="nav-link" data-skill="grammar" onclick="alert('Đang cập nhật!'); return false;">Ngữ pháp</a>
                 </div>
 
                 <div class="nav-right">

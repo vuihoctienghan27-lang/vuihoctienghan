@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOPIK II 읽기 - 제52회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     
 
     <link rel="stylesheet" href="../../assets/css/writing.css">
@@ -18,9 +21,9 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/writing.js"></script>
+<script src="../../assets/js/writing.js"></script>
     <script src="../../assets/js/grading-engine.js"></script>
+    <script src="../../assets/js/gemini-grader.js"></script>
 
 <style>
     /* ===== HEADER BADGE ===== */
@@ -417,19 +420,19 @@
         <details><summary>10. 이는 ~이/가 가질 수 있는 편견과 오해를 해결할 수 있는 역할을 하기 때문이다.</summary><div class="details-content">Bởi vì điều này đóng vai trò giúp giải quyết những định kiến và hiểu lầm mà... có thể mắc phải.</div></details>
     </div>
 </div>
-
-<script src="exam-logic.js"></script>
-
 <script>
     // CÂU 51A — Cảm ơn vì đã cho mượn
     function grade51A() {
-        var result = gradeByConfig(
+        window.gradeWriting(
             document.getElementById('ans-51-a').value.trim(),
             {
                 exactAnswers: [
-                    '책을 빌려 주셔서 감사합니다.',
-                    '빌려 주셔서 정말 감사합니다.'
-                ],
+                        '빌려 줘서.',
+                        '빌려 주셔서.',
+                        '빌려주신 덕분에.',
+                        '빌려주신 것에 대해.'
+                    ],
+                context: ['노트북'],
                 stems: ['빌려'],
                 grammar: [
                     { pattern: /줘서[가-힣]*/, label: 'lý do' },
@@ -438,20 +441,22 @@
                 ]
             },
             "Cần từ vựng mang nghĩa 'cho mượn' (빌려주다)."
-        );
-        document.getElementById('score-51-a').innerHTML = result.display;
-        document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+        , 'score-51-a', 'btn-exp-51-a');
     }
 
     // CÂU 51B — Hỏi ý kiến về thời gian trả sách
     function grade51B() {
-        var result = gradeByConfig(
+        window.gradeWriting(
             document.getElementById('ans-51-b').value.trim(),
             {
                 exactAnswers: [
-                    '언제 돌려드리면 됩니까?',
-                    '언제까지 돌려드려야 합니까?'
-                ],
+                        '돌려주면 됩니까.',
+                        '돌려 드리면 되겠습니까.',
+                        '돌려 드려야 합니까.',
+                        '반납하면 됩니까.',
+                        '갖다 드리면 될까요.'
+                    ],
+                context: ['금요일'],
                 stems: ['돌려주', '돌려드리', '반납하', '갖다주'],
                 grammar: [
                     { pattern: /면\s*됩[가-힣]*/, label: 'hỏi ý kiến' },
@@ -459,20 +464,20 @@
                 ]
             },
             "Cần từ vựng mang nghĩa 'trả lại / đưa lại'."
-        );
-        document.getElementById('score-51-b').innerHTML = result.display;
-        document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+        , 'score-51-b', 'btn-exp-51-b');
     }
 
     // CÂU 52A — Cảm xúc ảnh hưởng biểu cảm
     function grade52A() {
-        var result = gradeByConfig(
+        window.gradeWriting(
             document.getElementById('ans-52-a').value.trim(),
             {
                 exactAnswers: [
-                    '감정이 표정에 영향을 주기 때문이다.',
-                    '기분이 얼굴 표정에 나타나기 때문이다.'
-                ],
+                        '감정이 표정에 영향을 주기 때문이다.',
+                        '기분이 표정으로 나타나기 때문이다.',
+                        '감정이 표정으로 드러나기 때문이다.'
+                    ],
+                context: ['마음'],
                 stems: ['감정', '기분'],
                 grammar: [
                     { pattern: /영향[가-힣]*/, label: 'ảnh hưởng' },
@@ -481,20 +486,22 @@
                 ]
             },
             "Phải có cụm 'Cảm xúc' ảnh hưởng/hiện ra 'Biểu cảm'."
-        );
-        document.getElementById('score-52-a').innerHTML = result.display;
-        document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+        , 'score-52-a', 'btn-exp-52-a');
     }
 
     // CÂU 52B — Lời khuyên nở nụ cười
     function grade52B() {
-        var result = gradeByConfig(
+        window.gradeWriting(
             document.getElementById('ans-52-b').value.trim(),
             {
                 exactAnswers: [
-                    '밝은 표정을 지어야 한다.',
-                    '표정을 밝게 하는 것이 좋다.'
-                ],
+                        '밝은 표정을 짓는.',
+                        '표정을 밝게 하는.',
+                        '웃는 표정을 짓는.',
+                        '일부러라도 웃는.',
+                        '표정을 밝게 짓는.'
+                    ],
+                context: ['표정'],
                 stems: ['밝은 표정', '표정을 밝게', '웃는 표정', '웃'],
                 grammar: [
                     { pattern: /짓[가-힣]*/, label: 'tạo' },
@@ -502,9 +509,7 @@
                 ]
             },
             "Cần cụm từ mang nghĩa 'tươi cười / làm khuôn mặt sáng sủa'."
-        );
-        document.getElementById('score-52-b').innerHTML = result.display;
-        document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+        , 'score-52-b', 'btn-exp-52-b');
     }
 
     // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 52 ---

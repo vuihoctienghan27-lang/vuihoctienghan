@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TOPIK II 읽기 - 제37회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
     
 
     <link rel="stylesheet" href="../../assets/css/writing.css">
@@ -18,9 +21,9 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="../../assets/js/block.js"></script>
-    <script src="../../assets/js/writing.js"></script>
+<script src="../../assets/js/writing.js"></script>
     <script src="../../assets/js/grading-engine.js"></script>
+    <script src="../../assets/js/gemini-grader.js"></script>
 
 <style>
     /* ===== HEADER BADGE ===== */
@@ -508,19 +511,19 @@
         <details><summary>10. 이렇게 내적으로는 ~을/를 기르고 외적으로는 ~을/를 갖춰 시대의 변화에 발맞추어 나가야 한다.</summary><div class="details-content">Như vậy, bên trong ta phải nuôi dưỡng... bên ngoài trang bị... để có thể bắt kịp bước tiến của sự thay đổi thời đại. <i>(Câu chốt kết bài hoàn hảo)</i></div></details>
     </div>
 </div>
-
-<script src="exam-logic.js"></script>
-
 <script>
         // CÂU 51A — Chiêu mộ thành viên mới
         function grade51A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-a').value.trim(),
                 {
                     exactAnswers: [
-                        '새로운 회원을 모집하고 있습니다.',
-                        '회원을 모집하려고 합니다.'
+                        '새로 신입 회원을 모집하려고 합니다.',
+                        '뽑으려고 합니다.',
+                        '신입 회원을 구하고 있습니다.',
+                        '신입 회원을 모집합니다.'
                     ],
+                    context: ['신입', '회원'],
                     stems: ['모집하', '뽑', '구하'],
                     grammar: [
                         { pattern: /려고\s*하[가-힣]*/, label: 'ý định' },
@@ -529,20 +532,22 @@
                     ]
                 },
                 "Cần từ vựng mang nghĩa 'chiêu mộ / tuyển / tìm kiếm'."
-            );
-            document.getElementById('score-51-a').innerHTML = result.display;
-            document.getElementById('btn-exp-51-a').style.display = 'inline-block';
+            , 'score-51-a', 'btn-exp-51-a');
         }
 
         // CÂU 51B — Hỏi lịch sự về người mới
         function grade51B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-51-b').value.trim(),
                 {
                     exactAnswers: [
-                        '처음 해 보시는 거라면 어렵다고 느끼실 수도 있습니다.',
-                        '처음 배우시는 거라면 모르는 게 많으실 거예요.'
+                        '태권도를 처음 배우십니까.',
+                        '태권도가 처음이십니까.',
+                        '태권도를 잘 모르십니까.',
+                        '태권도를 한 번도 안 해 보셨습니까.',
+                        '태권도를 할 줄 모르십니까.'
                     ],
+                    context: ['분', '사람'],
                     stems: ['처음', '모르', '못하', '안 해'],
                     grammar: [
                         { pattern: /십[가-힣]*/, label: 'kính ngữ' },
@@ -550,40 +555,42 @@
                     ]
                 },
                 "Cần từ vựng mang nghĩa 'mới học lần đầu / chưa biết gì'."
-            );
-            document.getElementById('score-51-b').innerHTML = result.display;
-            document.getElementById('btn-exp-51-b').style.display = 'inline-block';
+            , 'score-51-b', 'btn-exp-51-b');
         }
 
         // CÂU 52A — Liệt kê thái độ số 1: không từ bỏ
         function grade52A() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-a').value.trim(),
                 {
                     exactAnswers: [
-                        '하나는 어려운 일이 있어도 포기하지 않고 긍정적으로 생각하는 것이다.',
-                        '하나는 어떠한 상황에서도 포기하지 않는 것이다.'
+                        '하나는 아무리 어려워도 절대 포기하지 않는 것이다.',
+                        '하나는 가능하다는 믿음을 가지고 긍정적인 결과를 기대하는 것이다.',
+                        '하나는 끝까지 포기하지 않고 도전하는 것이다.',
+                        '하나는 긍정적으로 생각하는 것이다.'
                     ],
+                    context: ['하나'],
                     stems: ['하나는', '포기하지 않', '긍정적', '극복하'],
                     grammar: [
                         { pattern: /는\s*것[가-힣]*/, label: 'định nghĩa' }
                     ]
                 },
                 "Phải có chữ '하나는' và hành động 'Không từ bỏ/Suy nghĩ tích cực'."
-            );
-            document.getElementById('score-52-a').innerHTML = result.display;
-            document.getElementById('btn-exp-52-a').style.display = 'inline-block';
+            , 'score-52-a', 'btn-exp-52-a');
         }
 
         // CÂU 52B — Hệ quả của suy nghĩ tiêu cực
         function grade52B() {
-            var result = gradeByConfig(
+            window.gradeWriting(
                 document.getElementById('ans-52-b').value.trim(),
                 {
                     exactAnswers: [
-                        '부정적인 생각을 하면 성공할 가능성이 낮아진다.',
-                        '포기하는 마음이 들면 좋은 결과를 얻기 어렵다.'
+                        '부정적으로 생각하면 좋은 결과를 얻기 어렵다.',
+                        '부정적인 생각을 하면 좋은 결과를 얻을 확률이 낮다.',
+                        '포기하면 좋은 결과를 얻을 수 없다.',
+                        '부정적인 결과를 기대하면 나쁜 결과를 얻기 쉽다.'
                     ],
+                    context: ['사람'],
                     stems: ['부정적', '포기하'],
                     grammar: [
                         { pattern: /낮[가-힣]*/, label: 'thấp' },
@@ -592,9 +599,7 @@
                     ]
                 },
                 "Cần sự kết hợp giữa 'Suy nghĩ tiêu cực' và 'Khó đạt kết quả tốt / Tỷ lệ thấp'."
-            );
-            document.getElementById('score-52-b').innerHTML = result.display;
-            document.getElementById('btn-exp-52-b').style.display = 'inline-block';
+            , 'score-52-b', 'btn-exp-52-b');
         }
 
         // --- KHỞI TẠO SÁCH TƯƠNG TÁC ĐỀ 37 ---

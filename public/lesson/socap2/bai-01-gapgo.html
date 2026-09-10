@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 01 · 만남 Gặp gỡ — Vui Học Tiếng Hàn</title>
+<meta name="description" content="Bài 01 Tiếng Hàn: Gặp gỡ, thăm viếng và giới thiệu người khác — học nghe, nói, đọc, viết quanh chủ đề các mối quan hệ và phép tắc thăm viếng.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="../../auth.js"></script>
+<!-- Global assets -->
+<link rel="stylesheet" href="../../assets/css/style.css" onerror="this.remove()">
+<link rel="stylesheet" href="../../assets/css/lesson-giaoan.css">
+</head>
+<body>
+
+<div id="tocDrawer" class="toc-drawer">
+  <div class="toc-header">
+    <div class="toc-title">BÀI 01 · 만남</div>
+    <button class="toc-close" id="tocCloseBtn" title="Đóng">×</button>
+  </div>
+  <div id="lessonNav" style="display:flex; flex-direction:column;">
+    <button class="nav-pill" data-target="sec-obj"><span class="dot"></span>Mục tiêu</button>
+    <button class="nav-pill" data-target="sec-vocab"><span class="dot"></span>Từ vựng</button>
+    <button class="nav-pill" data-target="sec-gram"><span class="dot"></span>Ngữ pháp</button>
+    <button class="nav-pill" data-target="sec-speak"><span class="dot"></span>Nói</button>
+    <button class="nav-pill" data-target="sec-listen"><span class="dot"></span>Nghe</button>
+    <button class="nav-pill" data-target="sec-read"><span class="dot"></span>Đọc</button>
+    <button class="nav-pill" data-target="sec-write"><span class="dot"></span>Viết</button>
+    <button class="nav-pill" data-target="sec-pron"><span class="dot"></span>Phát âm</button>
+    <button class="nav-pill" data-target="sec-culture"><span class="dot"></span>Văn hoá</button>
+    <button class="nav-pill" data-target="sec-newwords"><span class="dot"></span>Từ mới</button>
+    <button class="nav-pill" data-target="sec-quiz"><span class="dot"></span>Kiểm tra</button>
+  </div>
+</div>
+
+<button id="tocFab" class="toc-fab" title="Mục lục bài học">☰</button>
+
+<!-- Floating admin pencil FAB — chỉ hiện khi đăng nhập bằng email admin -->
+<button id="adminFab" title="Chế độ quản trị">
+  <span class="fab-tooltip">Bật/tắt chế độ chỉnh sửa</span>
+  ✎
+</button>
+
+<div class="hero">
+  <div class="passport">
+    <div class="eyebrow">Bài 01 / Hộ chiếu học tập</div>
+    <h1><span class="kr-big">만남</span> — Gặp gỡ</h1>
+    <p class="sub">Học cách thăm viếng, giới thiệu người khác, nghe – nói – đọc – viết quanh chủ đề các mối quan hệ, lời chào hỏi và phép tắc thăm viếng của người Hàn Quốc.</p>
+    <div class="obj-grid">
+      <div class="obj-item"><div class="obj-label">Kỹ năng</div><div class="obj-val">Thăm viếng, giới thiệu người khác</div></div>
+      <div class="obj-item"><div class="obj-label">Từ vựng</div><div class="obj-val">Các mối quan hệ, thăm viếng, chào hỏi</div></div>
+      <div class="obj-item"><div class="obj-label">Ngữ pháp</div><div class="obj-val kr">의 · -(으)ㄹ 때 · -아/어 주다</div></div>
+      <div class="obj-item"><div class="obj-label">Văn hoá</div><div class="obj-val">Phép tắc trong việc thăm viếng của người Hàn Quốc</div></div>
+    </div>
+    <div class="hero-photo-row" id="heroPhotoRow"></div>
+    <div class="stamp-row" id="stampRow">
+      <div class="stamp-slot" data-stamp="obj"><span>MỤC TIÊU</span></div>
+      <div class="stamp-slot" data-stamp="vocab"><span>TỪ VỰNG</span></div>
+      <div class="stamp-slot" data-stamp="gram"><span>NGỮ PHÁP</span></div>
+      <div class="stamp-slot" data-stamp="speak"><span>NÓI</span></div>
+      <div class="stamp-slot" data-stamp="listen"><span>NGHE</span></div>
+      <div class="stamp-slot" data-stamp="read"><span>ĐỌC</span></div>
+      <div class="stamp-slot" data-stamp="write"><span>VIẾT</span></div>
+      <div class="stamp-slot" data-stamp="pron"><span>PHÁT ÂM</span></div>
+      <div class="stamp-slot" data-stamp="culture"><span>VĂN HOÁ</span></div>
+      <div class="stamp-slot" data-stamp="newwords"><span>TỪ MỚI</span></div>
+      <div class="stamp-slot" data-stamp="quiz"><span>KIỂM TRA</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="sec-obj">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Mục tiêu bài học<span class="kr-tag">학습 목표</span></h2></div>
+  <p class="sec-desc">Sau bài học này, bạn có thể thăm viếng và giới thiệu người khác một cách phù hợp, đồng thời luyện đủ 4 kỹ năng nghe – nói – đọc – viết quanh chủ đề này.</p>
+  <div class="card" style="display:flex; gap:1rem; flex-wrap:wrap;">
+    <div style="flex:1; min-width:220px;">
+      <p style="margin:0 0 8px; font-weight:600; font-size:0.9rem;">Tình huống</p>
+      <p style="margin:0; font-size:0.9rem; color:var(--ink-soft);">Bạn được mời đến thăm nhà hoặc công ty của người Hàn Quốc — bạn cần biết cách chào hỏi, giới thiệu người khác, và hiểu các phép tắc thăm viếng cơ bản.</p>
+    </div>
+    <div style="flex:1; min-width:220px;">
+      <p style="margin:0 0 8px; font-weight:600; font-size:0.9rem;">Bạn sẽ làm được</p>
+      <ul style="margin:0; padding-left:1.1rem; font-size:0.9rem; color:var(--ink-soft);">
+        <li>Gọi tên đúng các mối quan hệ, dùng 의 để nói về sự sở hữu</li>
+        <li>Dùng -(으)ㄹ 때 để nói về thời điểm, -아/어 주다 để nói về việc làm giúp ai đó</li>
+        <li>Biết quy tắc phát âm nguyên âm 의 và phép tắc thăm viếng của người Hàn</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="sec-vocab">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Từ vựng cơ bản<span class="kr-tag">기본 어휘</span></h2></div>
+  <p class="sec-desc">Chạm vào từng thẻ để lật xem nghĩa. Bấm biểu tượng loa để nghe cách đọc (giọng máy, tạm dùng trong lúc chưa có audio thật).</p>
+  <div class="helper-row">
+    <span id="vocabProgLabel">Đã xem 0/14 thẻ</span>
+    <div class="progress-bar"><div class="progress-fill" id="vocabProgFill"></div></div>
+    <span class="mono" style="font-size:11px;">🔊 = phát âm</span>
+  </div>
+  <p class="sub-heading">관계 · Các mối quan hệ <span class="tag">(bật quản trị để thay icon bằng ảnh thật)</span></p>
+  <div class="flip-grid" id="grid-relation" style="margin-bottom:1.75rem;"></div>
+  <p class="sub-heading">방문 · Từ vựng liên quan đến thăm hỏi <span class="tag">(bật quản trị để thay icon bằng ảnh thật)</span></p>
+  <div class="flip-grid" id="grid-visit" style="margin-bottom:1.75rem;"></div>
+  <p class="sub-heading">인사말 · Lời chào — chạm để xem nghĩa</p>
+  <div class="greet-grid" id="grid-greet"></div>
+</section>
+
+<section id="sec-gram">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Ngữ pháp cơ bản<span class="kr-tag">기본 문법</span></h2></div>
+  <p class="sec-desc">Bấm vào từng khung để mở rộng ví dụ. Cuối phần có bài luyện nhanh 3 câu.</p>
+  <div id="gramList"></div>
+  <div class="card">
+    <p class="sub-heading">Luyện nhanh — chọn đúng trợ từ / vĩ tố</p>
+    <div class="mini-quiz" id="miniQuiz"></div>
+  </div>
+</section>
+
+<section id="sec-speak">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Nói<span class="kr-tag">말하기</span></h2></div>
+  <p class="sec-desc">Các bài luyện dựa trên tình huống thăm viếng và giới thiệu người khác trong thực tế.</p>
+
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Chọn từ thích hợp và nói theo mẫu</div>
+      <div class="block-hint">Từ cho sẵn: 남편, 선배, 손님, 아내, 선생님, 후배. Mẫu: "준영의 손님입니다." Nhìn tranh rồi điền từ quan hệ phù hợp.</div>
+      <div class="img-grid" id="speakEx11"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Chọn và viết lời chào hỏi phù hợp với tình huống</div>
+      <div class="block-hint">Từ cho sẵn: 감사합니다, 실례하겠습니다, 실례했습니다, 잘 먹겠습니다, 잘 먹었습니다, 처음 뵙겠습니다.</div>
+      <div class="img-grid" id="speakEx12"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện nói <span class="tag">이야기해 봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">2.1 · Mẫu: 실례지만 누구세요? — OO 씨의 YY입니다.</div>
+      <div class="block-hint">① 디엠/아내 ② 한지원/동료 ③ 남/후배 ④ 김민준/동생</div>
+      <div id="speakEx21"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.2 · Mẫu: (tình huống) 갈 때 뭘 가져갈까요? — (đồ vật) 을/를 가져가세요.</div>
+      <div class="block-hint">① 병원에 가다/과일 ② 학교에 가다/사전 ③ 교수님 댁을 방문하다/꽃 ④ 회사를 방문하다/명함</div>
+      <div id="speakEx22"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.3 · Mẫu: 한국 사람들은 교수님을 만날 때 뭘 입어요? — 양복을 입어요.</div>
+      <div class="block-hint">① 영화를 보다/팝콘 ② 커피를 마시다/설탕과 크림 ③ 밥을 먹다/숟가락 ④ 사진을 찍다/김치 — luyện nói tự do theo mẫu, không chấm đúng/sai.</div>
+      <div id="speakEx23"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.4 · Những điều cần chú ý khi nhận lời mời đến nhà người Hàn Quốc</div>
+      <div class="block-hint">Dùng bảng gợi ý bên dưới để luyện hội thoại theo mẫu (xem gợi ý để biết mẫu hội thoại đầy đủ).</div>
+      <table class="ref-table" id="speakEx24Table"></table>
+      <div id="speakEx24Open"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">3.1 · Tự giới thiệu khi đến thăm nhà người Hàn Quốc</div>
+      <div class="block-hint">Bạn đến thăm nhà một người Hàn Quốc. Hãy tự giới thiệu về mình với người bạn gặp ở đó.</div>
+      <table class="ref-table" id="speakEx3Table"></table>
+      <div id="speakEx3Open"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-listen">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Nghe<span class="kr-tag">듣기</span></h2></div>
+  <p class="sec-desc">Các bài nghe phụ thuộc nội dung audio gốc (CD1 Track 01–06) nên không tự chấm đúng/sai — dán audio thật ở chế độ quản trị để học viên luyện, đối chiếu đáp án trong sách giấy nếu cần.</p>
+
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Nghe và nối với bức tranh phù hợp</div>
+      <div id="audioT01"></div>
+      <div class="match-wrap"><div id="listenMatch1Left"></div><div id="listenMatch1Right"></div></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Nghe đoạn hội thoại và nối quan hệ phù hợp với Jeongu</div>
+      <div id="audioT02"></div>
+      <div class="match-wrap"><div id="listenMatch2Left"></div><div id="listenMatch2Right"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện nghe <span class="tag">들어 봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">2.1 · Nghe 4 đoạn hội thoại, tìm bức tranh phù hợp và điền số thứ tự</div>
+      <div id="audioT03"></div>
+      <div class="match-wrap"><div id="listenMatch3Left"></div><div id="listenMatch3Right"></div></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.2 · Nghe hội thoại và chọn phương án đúng/sai</div>
+      <div id="audioT04"></div>
+      <div id="listenOX"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">3.1 · Nghe và điền vào chỗ trống</div>
+      <div id="audioT05"></div>
+      <div id="listenFillDialog"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">3.2 · Nghe hội thoại sau và trả lời câu hỏi</div>
+      <div id="audioT06"></div>
+      <div id="listenMCQ"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-read">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Đọc<span class="kr-tag">읽기</span></h2></div>
+  <p class="sec-desc">Các câu trả lời đúng/sai dưới đây được chấm dựa trên nội dung văn bản.</p>
+
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Đọc câu và nối với bức tranh phù hợp</div>
+      <div class="block-hint">Chạm 1 câu, sau đó chạm bức tranh tương ứng.</div>
+      <div class="match-wrap"><div id="readMatchLeft"></div><div id="readMatchRight"></div></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Đọc đoạn văn và đánh dấu O (đúng) / X (sai)</div>
+      <div id="readOX1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện đọc <span class="tag">읽어 봅시다</span></p>
+    <div class="block-hint">Đọc đoạn văn nói về phép lịch sự khi đến thăm một công ty hoặc một gia đình của người Hàn Quốc rồi trả lời câu hỏi.</div>
+    <div id="readPassage1"></div>
+    <div class="ex-block" style="margin-top:1.25rem;">
+      <div class="ex-block-title">Phân loại: câu sau phù hợp với việc thăm nhà (집) hay thăm công ty (회사)?</div>
+      <div id="readClassify"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">Viết câu trả lời đúng</div>
+      <div id="readAnswerFill"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div class="block-hint">Đọc 2 bức thư điện tử (e-mail) sau đây và trả lời câu hỏi.</div>
+    <div id="readEmails"></div>
+    <div class="ex-block" style="margin-top:1.25rem;">
+      <div class="ex-block-title">Đánh dấu O / X</div>
+      <div id="readOX2"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">Hãy nói những điểm cần chú ý khi đến thăm nhà hoặc công ty ở Việt Nam</div>
+      <div id="readOpenVN"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-write">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Viết<span class="kr-tag">쓰기</span></h2></div>
+  <p class="sec-desc">Nhập câu trả lời bằng tiếng Hàn rồi bấm "Kiểm tra" — các câu hỏi mở sẽ có nút "Xem gợi ý" thay vì chấm đúng/sai.</p>
+
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Viết câu dùng -아/어 주다 theo tranh</div>
+      <div id="writeImgFill"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Nối tình huống với đồ vật cần dùng, sau đó viết câu hoàn chỉnh</div>
+      <div class="block-hint">Mẫu: 단어를 모르다 → 사전 → "단어를 모를 때 사전이 필요합니다."</div>
+      <div class="match-wrap" style="margin-bottom:1rem;"><div id="writeMatchLeft"></div><div id="writeMatchRight"></div></div>
+      <div id="writeSentence1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện viết <span class="tag">써 봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">2.1 · Dịch câu sau sang tiếng Hàn</div>
+      <div id="writeTranslate"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.2 · Viết về một người bạn</div>
+      <div id="writeOpenFriend"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.3 · Viết đoạn văn về người đã giúp đỡ mình nhiều nhất (điền theo bảng cho sẵn)</div>
+      <table class="ref-table" id="writeHelperTable"></table>
+      <div id="writeFillPassage" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">3.1 · Điền thông tin của người đã giúp đỡ bạn nhiều nhất vào bảng</div>
+      <table class="ref-table" id="writeSelfTable"></table>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">3.2 · Hoàn thành đoạn văn với những thông tin đã cho ở bảng trên</div>
+      <div id="writeEssay"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-pron">
+  <div class="sec-head"><span class="sec-num">08</span><h2>Phát âm<span class="kr-tag">발음</span></h2></div>
+  <p class="sec-desc">Quy tắc phát âm nguyên âm 의 — dán audio thật ở chế độ quản trị, hoặc dùng nút 🔊 để nghe tạm bằng giọng máy.</p>
+  <div class="card">
+    <div class="ex-block">
+      <div class="ex-block-title">1 · Nghe và lưu ý phần gạch chân</div>
+      <div id="audioT07"></div>
+      <div id="pronPairs"></div>
+      <div class="rule-box">
+        <b>Quy tắc phát âm:</b> Nguyên âm 의 được phát âm như sau: (1) Khi là âm tiết đầu tiên của từ thì được phát âm là [의]. (2) Khi không phải âm tiết đầu tiên của từ thì 의 có thể được phát âm là [이]. (3) 의 của âm tiết bắt đầu bằng phụ âm thì được phát âm là [ㅣ]. (4) Tiểu từ 의 có thể phát âm là [에].<br>
+        의사 → [의사] · 회의 → [회의/회이] · 무늬 → [무니] · 나의 책 → [나의 책/나에 책]
+      </div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2 · Hãy nghe và đọc theo</div>
+      <div id="audioT08"></div>
+      <div id="pronRepeat"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">3 · Hãy đọc to đoạn văn sau</div>
+      <div id="audioT09"></div>
+      <div id="pronParagraph"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-culture">
+  <div class="sec-head"><span class="sec-num">09</span><h2>Văn hoá<span class="kr-tag">문화</span></h2></div>
+  <div class="card">
+    <div class="culture-title">한국의 방문 예절</div>
+    <div class="culture-sub">Phép tắc trong việc thăm viếng của người Hàn Quốc</div>
+    <div class="culture-photos" id="culturePhotos"></div>
+    <p class="culture-p"><b>1.</b> Nếu đến thăm nhà của người Hàn Quốc thì phải chú ý những điểm nào?</p>
+    <p class="culture-p"><b>2.</b> Hãy đọc đoạn văn sau đây về lễ nghi thăm hỏi của người Hàn Quốc và trả lời câu hỏi.</p>
+    <p class="culture-p">Thông thường, khi đến thăm công ty hoặc đến thăm nhà người Hàn Quốc, có những lễ nghi cần phải tuân theo. Chúng tôi xin giới thiệu một số điểm cần chú ý sau đây.</p>
+    <p class="culture-p">Khi đến thăm nhà nếu không phải là trường hợp đặc biệt thì nên tránh đến thăm vào thời gian ăn cơm hoặc vào buổi chiều. Thông thường, nên đến thăm vào thời gian phù hợp với tình hình của chủ nhà là tốt nhất. Khi đến thăm nhà, tốt nhất là chuẩn bị món quà đơn giản như bánh hoặc hoa quả. Ngoài ra, lúc đi vào nhà nên cởi bỏ giày dép ở hiên nhà. Nếu được mời ngồi vào ghế thì chủ nhân sẽ ngồi vào ghế đơn dùng cho 1 người, còn khách thì nên ngồi vào ghế sofa có 2 chỗ ngồi trở lên. Theo phép tắc của người Hàn Quốc, nếu trong phòng không có ghế thì ngồi chung là lịch sự, nhưng nên xin phép chủ nhà và ngồi làm sao cho đôi chân của mình thật thoải mái. Không nên ở lại quá lâu và khi ra về thì chào tạm biệt một cách khiêm tốn và lịch sự.</p>
+    <p class="culture-p">Khi đến thăm một công ty (văn phòng) thì phải hẹn trước cuộc gặp. Chỉ khi có nhiệm vụ cần thì mới đến công ty. Nên hạn chế việc tìm đến công ty vì việc riêng tư. Phải đến trước cửa công ty hoặc văn phòng sớm hơn 5~10 phút trước cuộc hẹn với trang phục comple hoặc trang phục gọn gàng và phải chờ thông báo điện thoại cho người cần gặp. Ở văn phòng phải tránh những lời nói và hành động gây phiền hà cho công việc như những câu chuyện tầm phào không cần thiết. Khi kết thúc công việc cần làm thì nên chào tạm biệt và ra về.</p>
+    <p class="culture-p"><b>(1)</b> Khi đến thăm nhà thì phải tuân theo những phép tắc nào?</p>
+    <p class="culture-p"><b>(2)</b> Khi đến làm việc với một cơ quan thì phải tuân theo những phép tắc gì?</p>
+    <p class="culture-p"><b>(3)</b> Hãy so sánh điểm giống và khác nhau trong phép tắc khi thăm viếng của người Hàn Quốc và của người Việt Nam.</p>
+    <div id="cultureReflect"></div>
+  </div>
+</section>
+
+<section id="sec-newwords">
+  <div class="sec-head"><span class="sec-num">10</span><h2>Từ mới<span class="kr-tag">새 단어</span></h2></div>
+  <p class="sec-desc">Từ vựng bổ sung xuất hiện trong các bài tập của Bài 01.</p>
+  <div class="card"><div class="word-grid" id="newWordsGrid"></div></div>
+</section>
+
+<section id="sec-quiz">
+  <div class="sec-head"><span class="sec-num">11</span><h2>Kiểm tra nhanh<span class="kr-tag">퀴즈</span></h2></div>
+  <p class="sec-desc">8 câu hỏi tổng hợp cả bài — trả lời hết rồi bấm nộp bài để xem điểm và nhận dấu mộc hoàn thành.</p>
+  <div class="card">
+    <div id="quizList"></div>
+    <button class="quiz-submit" id="quizSubmit">Nộp bài</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+</section>
+
+<footer>Phỏng theo tài liệu 만남 (Bài 01) — trình bày lại dưới dạng bài học tương tác cho vuihoctienghan.online</footer>
+
+<script src="../../assets/js/lesson-giaoan.js"></script>
+
+<!-- Global navbar & theme scripts (inject after page content) -->
+<script src="../../assets/js/script.js"></script>
+<script src="../../assets/js/navbar.js"></script>
+<script src="../../assets/js/theme-picker.js"></script>
+<script src="../../assets/js/theme.js"></script>
+</body>
+</html>

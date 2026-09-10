@@ -48,13 +48,13 @@ public/
 | **Exam** | `type-navigator.js` | Question navigator for type-practice pages (listens to `typeQuestionsLoaded`) |
 | **Exam** | `block1.js` / `block2.js` | Question block rendering for type-practice pages |
 | **Exam** | `activity-tracker.js` | Study time tracking → Firestore (10min blocks → +5 EXP) |
-| **Exam** | `study-timer.js` | Floating balloon study timer, idle after 10min |
 | **Exam** | `audio.js` | YouTube IFrame API audio playback for listening pages |
 | **Writing** | `writing.js` | Writing question keyword checking and scoring |
 | **Leaderboard** | `leaderboard.js` | Leaderboard V2 display with confetti animation |
 | **Vocab** | `mypage-vocab.js` | Vocab folder management (add/remove words) |
 | **Vocab** | `vocab-autowrap.js` | Auto-wrapping vocab highlighting in text |
 | **Vocab** | `vocab-dictionary.js` | Dictionary data array (Korean vocabulary) |
+| **Vocab** | `home-progress.js` | User exam progress for home pages (reading/listening/writing) |
 | **Vocab** | `vocab-external.js` | External dictionary API integration (Naver) |
 | **Vocab** | `vocab-tooltip.js` | Smart vocab popup tooltip (SweetAlert2) |
 | **Games** | `game-dictation.js` | Dictation minigame |
@@ -66,7 +66,6 @@ public/
 - `auth.js` is at `public/auth.js` (not in assets/js) — loaded before all other scripts to ensure Firebase readiness
 - All fix scripts in root (`fix.js`, `fix-exam.js`, `fix-type.js`) have **hardcoded absolute paths** to another machine — they will not work without editing
 - `copy_script.js` duplicates `index.html` into `home/` with adjusted relative paths; `restore.js` fetches HTML from Firebase hosting to restore lost files
-- `inject_timer.ps1` (in `public/`) injects `<script src=".../study-timer.js">` into all exam pages
 - No test framework exists — all verification is manual
 - `.github/`, `.cursor*`, and `opencode.json` do not exist; key instruction files: `AGENTS.md` (primary), `README.md` (project overview), `public/implementation_plan.md` (historical carousel spec)
 - `grammar/home.html` is **empty (0 bytes)** despite being listed as a page — needs content

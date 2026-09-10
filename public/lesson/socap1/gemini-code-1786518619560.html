@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 02 · 만남 Gặp gỡ — Vui Học Tiếng Hàn</title>
+<meta name="description" content="Bài 02 Tiếng Hàn: Gặp gỡ và Thăm viếng — học nghe, nói, đọc, viết quanh chủ đề các mối quan hệ, lời mời và phép tắc thăm nhà Hàn Quốc.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Be+Vietnam+Pro:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<!-- Firebase CDN -->
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+<script src="../../auth.js"></script>
+<!-- Global assets -->
+<link rel="stylesheet" href="../../assets/css/style.css" onerror="this.remove()">
+<style>
+  :root{
+    --paper:#FAF6EE; --paper-card:#FFFFFF; --ink:#1D2B45; --ink-soft:#4B5A78;
+    --stamp:#D8482B; --stamp-dark:#A83A22; --jade:#2E7A5B; --gold:#C79A2E;
+    --line:#E3DBC7; --line-strong:#CFC4A5;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; 
+    background: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
+    background-attachment: fixed;
+    color:var(--ink); font-family:'Pretendard', 'Inter', 'Be Vietnam Pro', sans-serif;
+    line-height:1.6; padding-bottom:6rem;
+  }
+  .kr{font-family:'Noto Serif KR','Be Vietnam Pro',serif;}
+  .mono{font-family:'JetBrains Mono', monospace;}
+  a{color:inherit;}
+
+  /* ---------- Floating TOC (Taskbar) ---------- */
+  .toc-fab {
+    position:fixed; bottom:95px; right:24px; z-index:9000;
+    width:52px; height:52px; border-radius:50%;
+    background:var(--paper-card); color:var(--ink); border:1px solid var(--line-strong);
+    display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer;
+    box-shadow:0 4px 15px rgba(0,0,0,0.1); transition:transform .2s, box-shadow .2s;
+  }
+  .toc-fab:hover { transform:scale(1.05); box-shadow:0 6px 20px rgba(0,0,0,0.15); }
+  
+  .toc-drawer {
+    position:fixed; top:0; right:-280px; width:280px; height:100vh;
+    background:rgba(250,246,238,0.95); backdrop-filter:blur(10px);
+    border-left:1px solid var(--line-strong); box-shadow:-5px 0 25px rgba(0,0,0,0.05);
+    z-index:9999; padding:20px; transition:all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    display:flex; flex-direction:column; overflow-y:auto;
+  }
+  body.toc-open .toc-drawer { right:0; }
+  
+  @media (min-width: 768px) {
+    body { transition:margin 0.35s cubic-bezier(0.4, 0, 0.2, 1); }
+    body.toc-open { margin-left:-120px; margin-right:120px; }
+  }
+
+  .toc-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; padding-bottom:0.75rem; border-bottom:1px solid var(--line); }
+  .toc-title { font-family:'JetBrains Mono', monospace; font-size:13px; font-weight:700; color:var(--ink); letter-spacing:0.05em; }
+  .toc-close { background:transparent; border:none; font-size:20px; color:var(--ink-soft); cursor:pointer; line-height:1; }
+  .toc-close:hover { color:var(--stamp); }
+
+  .nav-pill{display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; padding:10px 14px; border-radius:12px; border:1px solid transparent; background:transparent; color:var(--ink-soft); cursor:pointer; transition:all .2s ease; text-align:left; width:100%; margin-bottom:6px;}
+  .nav-pill:hover{background:var(--line); color:var(--ink);}
+  .nav-pill .dot{width:8px; height:8px; border-radius:50%; background:var(--line-strong); transition:all .2s ease; flex-shrink:0;}
+  .nav-pill.active{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+  .nav-pill.active .dot{background:var(--stamp);}
+  .nav-pill.done .dot{background:var(--jade);}
+
+  /* ---------- Floating admin pencil FAB ---------- */
+  #adminFab{
+    display:none; position:fixed; bottom:28px; right:24px; z-index:9999;
+    width:52px; height:52px; border-radius:50%;
+    background:linear-gradient(135deg,#1D2B45,#D8482B);
+    color:#fff; border:none; cursor:pointer;
+    align-items:center; justify-content:center; font-size:22px;
+    box-shadow:0 4px 20px rgba(0,0,0,.28);
+    transition:transform .2s, box-shadow .2s;
+  }
+  #adminFab.visible{display:flex;}
+  #adminFab:hover{transform:scale(1.1); box-shadow:0 6px 28px rgba(0,0,0,.38);}
+  #adminFab.admin-active{background:linear-gradient(135deg,#2E7A5B,#1D2B45); box-shadow:0 4px 20px rgba(46,122,91,.5);}
+  #adminFab .fab-tooltip{
+    display:none; position:absolute; right:60px; bottom:50%; transform:translateY(50%);
+    background:rgba(29,43,69,.92); color:#fff; border-radius:8px;
+    padding:6px 12px; font-size:12px; white-space:nowrap; font-family:'Be Vietnam Pro',sans-serif;
+  }
+  #adminFab:hover .fab-tooltip{display:block;}
+  body.admin-on #adminFab{background:linear-gradient(135deg,#2E7A5B,#142657);}
+
+  /* ---------- Hero ---------- */
+  .hero{max-width:950px; margin:0 auto; padding:2.5rem 1.25rem 1.5rem;}
+  .passport{background:var(--paper-card); border:1px solid var(--line); border-radius:18px; padding:2rem; position:relative; overflow:hidden;}
+  .passport::before{content:""; position:absolute; inset:8px; border:1px dashed var(--line-strong); border-radius:12px; pointer-events:none;}
+  .eyebrow{display:flex; align-items:center; gap:8px; font-family:'JetBrains Mono', monospace; font-size:11.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--stamp); margin-bottom:0.75rem;}
+  .eyebrow::before{content:"●"; font-size:8px;}
+  .hero h1{margin:0 0 0.35rem; font-size:clamp(2.2rem, 6vw, 3.2rem); font-weight:700;}
+  .hero h1 .kr-big{font-family:'Noto Serif KR',serif; color:var(--ink);}
+  .hero .sub{font-size:1.05rem; color:var(--ink-soft); margin:0 0 1.5rem; max-width:40ch;}
+  .obj-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:0.9rem; border-top:1px solid var(--line); padding-top:1.25rem;}
+  .obj-item .obj-label{font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); margin-bottom:3px;}
+  .obj-item .obj-val{font-size:14.5px; font-weight:500;}
+  .hero-photo-row{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:1.25rem; padding-top:1.25rem; border-top:1px solid var(--line);}
+  @media(max-width:520px){.hero-photo-row{grid-template-columns:1fr;}}
+  .stamp-row{display:flex; gap:8px; flex-wrap:wrap; margin-top:1.5rem; padding-top:1.25rem; border-top:1px solid var(--line);}
+  .stamp-slot{width:52px; height:52px; border-radius:50%; border:2px dashed var(--line-strong); display:flex; align-items:center; justify-content:center; font-family:'JetBrains Mono',monospace; font-size:8px; text-align:center; color:var(--line-strong); position:relative; transition:transform .3s ease;}
+  .stamp-slot span{padding:0 3px; line-height:1.1;}
+  .stamp-slot.stamped{border:2px solid var(--stamp); color:var(--stamp); transform:rotate(-8deg); animation:stampIn .35s ease;}
+  .stamp-slot.stamped::after{content:""; position:absolute; inset:-2px; border-radius:50%; border:1px solid var(--stamp); opacity:0.5;}
+  @keyframes stampIn{0%{transform:scale(1.6) rotate(-8deg); opacity:0;} 60%{transform:scale(0.92) rotate(-8deg); opacity:1;} 100%{transform:scale(1) rotate(-8deg); opacity:1;}}
+
+  /* ---------- Section shell ---------- */
+  section{max-width:950px; margin:0 auto; padding:3rem 1.25rem 0.5rem; scroll-margin-top:70px;}
+  .sec-head{display:flex; align-items:baseline; gap:12px; margin-bottom:1.5rem;}
+  .sec-num{font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--stamp); font-weight:600;}
+  .sec-head h2{margin:0; font-size:1.6rem; font-weight:700;}
+  .sec-head h2 .kr-tag{font-family:'Noto Serif KR',serif; color:var(--ink-soft); font-size:1.1rem; margin-left:8px;}
+  .sec-desc{color:var(--ink-soft); font-size:0.95rem; margin:-0.75rem 0 1.5rem; max-width:64ch;}
+  .card{background:var(--paper-card); border:1px solid var(--line); border-radius:14px; padding:1.5rem; margin-bottom:1rem;}
+  .sub-heading{font-weight:700; font-size:1rem; margin:0 0 0.9rem;}
+  .sub-heading .tag{font-weight:400; font-size:0.78rem; color:var(--ink-soft); margin-left:6px;}
+  .block-hint{font-size:0.85rem; color:var(--ink-soft); margin:-0.4rem 0 0.9rem;}
+
+  /* ---------- Image slot ---------- */
+  .img-slot{position:relative; border-radius:12px; border:1px dashed var(--line-strong); background:var(--paper); display:flex; align-items:center; justify-content:center; overflow:hidden; min-height:120px; font-size:12.5px; color:var(--ink-soft); text-align:center;}
+  .img-slot img{width:100%; height:100%; object-fit:cover; display:block;}
+  .img-slot .placeholder-text{padding:0 1rem; line-height:1.5;}
+  .img-slot .pencil-btn{display:none; position:absolute; top:8px; right:8px; width:28px; height:28px; border-radius:50%; background:var(--ink); color:var(--paper); border:none; align-items:center; justify-content:center; font-size:13px; cursor:pointer; z-index:2;}
+  body.admin-on .img-slot .pencil-btn{display:flex;}
+  .img-slot .url-form{display:none; position:absolute; inset:auto 8px 8px 8px; background:var(--paper-card); border:1px solid var(--line-strong); border-radius:8px; padding:6px; gap:6px; z-index:2;}
+  .img-slot .url-form.open{display:flex;}
+  .img-slot .url-form input{flex:1; min-width:0; border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:12px; font-family:'Be Vietnam Pro',sans-serif;}
+  .img-slot .url-form button{border:none; background:var(--jade); color:#fff; border-radius:6px; padding:0 10px; font-size:12px; cursor:pointer; flex-shrink:0;}
+  .img-slot.compact{min-height:64px; font-size:11px; border-radius:9px;}
+  .img-slot.compact .placeholder-text{padding:0 0.6rem;}
+  .img-slot.compact .pencil-btn{width:22px; height:22px; font-size:11px; top:5px; right:5px;}
+  .img-slot.compact .url-form{inset:auto 5px 5px 5px; padding:5px;}
+  .img-slot.compact .url-form input{font-size:10.5px; padding:5px 6px;}
+  .img-slot.compact .url-form button{font-size:10.5px; padding:0 7px;}
+  .img-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px;}
+  .img-grid-cap{font-size:11.5px; text-align:center; margin-top:5px; color:var(--ink-soft);}
+  .flip-img{width:52px; height:52px; object-fit:cover; border-radius:10px; display:block; margin:0 auto 2px;}
+
+  /* ---------- Audio slot ---------- */
+  .audio-slot{border:1px dashed var(--line-strong); border-radius:10px; padding:10px 12px; background:var(--paper); margin:0 0 12px;}
+  .audio-slot-head{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--ink-soft);}
+  .audio-icon{font-size:15px; flex-shrink:0;}
+  .audio-label{flex:1;}
+  .audio-pencil{display:none; width:24px; height:24px; border-radius:50%; background:var(--ink); color:var(--paper); border:none; font-size:11px; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0;}
+  body.admin-on .audio-pencil{display:inline-flex;}
+  .audio-form{display:none; margin-top:8px;}
+  .audio-form.open{display:flex;}
+  .audio-form input{flex:1; width:100%; border:1px solid var(--line); border-radius:6px; padding:6px 8px; font-size:12px;}
+  .audio-player-wrap audio{width:100%; margin-top:8px; height:34px;}
+
+  /* ---------- Vocab flip cards ---------- */
+  .flip-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(128px,1fr)); gap:10px;}
+  .flip-card{aspect-ratio:1/1; perspective:800px; cursor:pointer;}
+  .flip-inner{position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .5s cubic-bezier(.4,.2,.2,1);}
+  .flip-card.flipped .flip-inner{transform:rotateY(180deg);}
+  .flip-face{position:absolute; inset:0; backface-visibility:hidden; border-radius:12px; border:1px solid var(--line); display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:8px; gap:4px;}
+  .flip-front{background:var(--paper-card); position:relative;}
+  .flip-front .emo{font-size:1.7rem;}
+  .flip-front .kr{font-size:0.95rem; font-weight:700;}
+  .flip-back{background:var(--ink); color:var(--paper); transform:rotateY(180deg);}
+  .flip-back .vi{font-size:0.85rem; font-weight:600;}
+  .flip-back .kr-small{font-family:'Noto Serif KR',serif; font-size:0.78rem; color:var(--gold); margin-top:3px;}
+  .flip-card.seen .flip-front{border-color:var(--jade);}
+  .flip-front .pencil-btn{display:none; position:absolute; width:22px; height:22px; border-radius:50%; background:var(--ink); color:var(--paper); border:none; font-size:11px; top:4px; right:4px; align-items:center; justify-content:center; cursor:pointer; z-index:2;}
+  body.admin-on .flip-front .pencil-btn{display:flex;}
+  .flip-front .url-form{display:none; position:absolute; inset:auto 4px 4px 4px; padding:4px; background:var(--paper-card); border:1px solid var(--line-strong); border-radius:8px; z-index:2;}
+  .flip-front .url-form.open{display:flex;}
+  .flip-front .url-form input{width:100%; font-size:10.5px; padding:5px 6px;}
+  .helper-row{display:flex; align-items:center; justify-content:space-between; margin:0.6rem 0 1.5rem; font-size:12.5px; color:var(--ink-soft);}
+  .progress-bar{flex:1; height:5px; background:var(--line); border-radius:3px; margin:0 10px; overflow:hidden;}
+  .progress-fill{height:100%; background:var(--jade); width:0%; transition:width .3s ease;}
+  .greet-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  @media(max-width:520px){.greet-grid{grid-template-columns:1fr;}}
+  .greet-card{background:var(--paper-card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; cursor:pointer; transition:border-color .15s ease;}
+  .greet-card .kr{font-size:1rem; font-weight:700;}
+  .greet-card .vi{font-size:12.5px; color:var(--ink-soft); margin-top:2px; display:none;}
+  .greet-card.revealed .vi{display:block;}
+  .greet-card:hover{border-color:var(--stamp);}
+  .speak-btn{border:none; background:transparent; cursor:pointer; color:var(--ink-soft); font-size:14px; padding:2px 4px;}
+  .speak-btn:hover{color:var(--stamp);}
+
+  /* ---------- Grammar ---------- */
+  .gram-card{border:1px solid var(--line); border-radius:14px; background:var(--paper-card); margin-bottom:14px; overflow:hidden;}
+  .gram-head{display:flex; align-items:center; justify-content:space-between; padding:1rem 1.25rem; cursor:pointer;}
+  .gram-head .g-title{font-size:1.15rem; font-weight:700;}
+  .gram-head .g-title .kr{font-family:'Noto Serif KR',serif; color:var(--stamp);}
+  .gram-head .g-mean{font-size:0.85rem; color:var(--ink-soft); font-weight:400;}
+  .gram-chevron{transition:transform .2s ease; color:var(--ink-soft); font-size:14px;}
+  .gram-card.open .gram-chevron{transform:rotate(180deg);}
+  .gram-body{max-height:0; overflow:hidden; transition:max-height .3s ease; padding:0 1.25rem;}
+  .gram-card.open .gram-body{max-height:520px; padding:0 1.25rem 1.25rem;}
+  .gram-note{font-size:0.9rem; color:var(--ink-soft); margin:0 0 0.9rem;}
+  .ex-row{display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid var(--line); font-size:0.92rem;}
+  .ex-row:first-of-type{border-top:none;}
+  .ex-row .kr{font-weight:600;}
+  .ex-row .vi{color:var(--ink-soft); text-align:right;}
+  .mini-quiz{border-top:1px dashed var(--line-strong); margin-top:1rem; padding-top:1rem;}
+  .mq-item{margin-bottom:0.9rem; font-size:0.92rem;}
+  .mq-sentence{margin-bottom:6px;}
+  .mq-choices{display:flex; gap:8px;}
+  .choice-btn{font-family:'JetBrains Mono',monospace; font-size:13px; border:1px solid var(--line-strong); background:transparent; color:var(--ink); padding:6px 12px; border-radius:8px; cursor:pointer;}
+  .choice-btn.correct{background:var(--jade); border-color:var(--jade); color:#fff;}
+  .choice-btn.wrong{background:#F3D9D2; border-color:var(--stamp); color:var(--stamp-dark);}
+  .choice-btn:disabled{cursor:default;}
+
+  /* ---------- Speaking / matching ---------- */
+  .ex-block{margin-bottom:2rem;}
+  .ex-block:last-child{margin-bottom:0;}
+  .ex-block-title{font-weight:700; font-size:1rem; margin-bottom:0.35rem;}
+  .match-wrap{display:grid; grid-template-columns:1fr 1fr; gap:10px 20px;}
+  @media(max-width:560px){.match-wrap{grid-template-columns:1fr;}}
+  .match-item{border:1px solid var(--line-strong); border-radius:9px; padding:10px 12px; font-size:0.9rem; cursor:pointer; background:var(--paper-card); transition:all .15s ease; margin-bottom:8px;}
+  .match-item.kr{font-weight:600;}
+  .match-item.selected{border-color:var(--gold); background:#FCF4E0;}
+  .match-item.paired-correct{border-color:var(--jade); background:#E4F2EA; color:var(--jade); cursor:default;}
+  .match-item.paired-wrong{border-color:var(--stamp); background:#F8E2DC;}
+  .sub-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px;}
+  .sub-card{border:1px solid var(--line-strong); border-radius:10px; padding:12px; background:var(--paper-card); cursor:pointer; min-height:64px;}
+  .sub-card .prompt{font-weight:600; font-size:0.92rem;}
+  .sub-card .reveal{display:none; margin-top:8px; padding-top:8px; border-top:1px solid var(--line); font-size:0.85rem; line-height:1.55;}
+  .sub-card.open .reveal{display:block;}
+  .sub-card .reveal b{color:var(--stamp-dark);}
+
+  /* ---------- Fill-check exercises ---------- */
+  .fill-row{margin-bottom:14px;}
+  .fill-prompt{font-size:0.92rem; margin-bottom:6px;}
+  .fill-input-wrap{display:flex; gap:8px; flex-wrap:wrap;}
+  .fill-input{flex:1; min-width:160px; border:1px solid var(--line-strong); border-radius:8px; padding:8px 10px; font-family:'Noto Serif KR',serif; font-size:0.95rem;}
+  .fill-input.correct{border-color:var(--jade); background:#E4F2EA;}
+  .fill-input.incorrect{border-color:var(--stamp); background:#F8E2DC;}
+  .fill-check-btn{border:1px solid var(--line-strong); background:var(--paper-card); border-radius:8px; padding:0 14px; font-size:12.5px; cursor:pointer; flex-shrink:0;}
+  .fill-feedback{font-size:12.5px; margin-top:5px; color:var(--ink-soft);}
+  .fill-feedback.ok{color:var(--jade); font-weight:600;}
+  .fill-feedback.no{color:var(--stamp-dark);}
+
+  /* ---------- O/X + Yes/No ---------- */
+  .ox-row{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-top:1px solid var(--line); font-size:0.9rem; flex-wrap:wrap;}
+  .ox-row:first-child{border-top:none;}
+  .ox-btns{display:flex; gap:6px; flex-shrink:0; align-items:center;}
+  .ox-btn{min-width:34px; height:34px; padding:0 8px; border-radius:8px; border:1px solid var(--line-strong); background:var(--paper-card); font-weight:700; cursor:pointer;}
+  .ox-btn.correct{background:var(--jade); border-color:var(--jade); color:#fff;}
+  .ox-btn.wrong{background:#F3D9D2; border-color:var(--stamp); color:var(--stamp-dark);}
+  .ox-btn.picked-neutral{background:#FCF4E0; border-color:var(--gold);}
+
+  /* ---------- Answer-editing pencil (admin) ---------- */
+  .answer-pencil{display:none; width:22px; height:22px; border-radius:50%; background:var(--gold); color:#fff; border:none; font-size:11px; cursor:pointer; align-items:center; justify-content:center; flex-shrink:0; line-height:1;}
+  body.admin-on .answer-pencil{display:inline-flex;}
+  .answer-pencil.unset{background:var(--ink-soft);}
+  .fill-prompt .answer-pencil{margin-left:6px; vertical-align:middle;}
+  .answer-editor{width:100%; margin-top:8px; padding:8px; background:#FCF4E0; border:1px dashed var(--gold); border-radius:8px; display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .answer-editor-label{font-size:11px; color:#6B5416; flex-shrink:0;}
+  .answer-editor-opt{font-family:'JetBrains Mono',monospace; font-size:12px; border:1px solid var(--line-strong); background:#fff; padding:4px 10px; border-radius:6px; cursor:pointer;}
+  .answer-editor-opt.active{background:var(--gold); border-color:var(--gold); color:#fff;}
+  .answer-editor-input{flex:1; min-width:120px; border:1px solid var(--line-strong); border-radius:6px; padding:6px 8px; font-size:12px; font-family:'Noto Serif KR',serif;}
+  .answer-editor-select{flex:1; min-width:140px; border:1px solid var(--line-strong); border-radius:6px; padding:5px 6px; font-size:12px; font-family:'Be Vietnam Pro',sans-serif;}
+
+  /* ---------- Open prompts ---------- */
+  .open-textarea{width:100%; border:1px solid var(--line-strong); border-radius:10px; padding:10px 12px; font-family:'Be Vietnam Pro',sans-serif; font-size:0.9rem; resize:vertical;}
+  .lined-textarea{background-image:repeating-linear-gradient(var(--paper-card) 0 31px, var(--line) 31px 32px); line-height:32px; padding-top:8px;}
+  .hint-btn{margin-top:6px; font-size:12px; border:1px solid var(--line-strong); background:transparent; border-radius:999px; padding:5px 12px; cursor:pointer; color:var(--ink-soft);}
+  .hint-box{display:none; margin-top:8px; padding:10px 12px; background:var(--paper); border:1px dashed var(--line-strong); border-radius:8px; font-size:0.85rem; color:var(--ink-soft);}
+  .hint-box.open{display:block;}
+
+  /* ---------- Reference table ---------- */
+  .ref-table{width:100%; border-collapse:collapse; font-size:0.88rem; margin:0.75rem 0;}
+  .ref-table th,.ref-table td{border:1px solid var(--line); padding:8px 10px; text-align:left;}
+  .ref-table th{background:var(--paper); font-family:'JetBrains Mono',monospace; font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-soft);}
+
+  /* ---------- Pronunciation & Culture ---------- */
+  .rule-box{background:var(--paper); border:1px dashed var(--line-strong); border-radius:10px; padding:12px 14px; font-size:0.85rem; color:var(--ink-soft); margin-top:10px;}
+  .rule-box b{color:var(--ink);}
+  .pron-line{display:flex; align-items:center; gap:10px; padding:6px 0; border-top:1px solid var(--line); font-size:0.95rem;}
+  .pron-line:first-child{border-top:none;}
+
+  .culture-title{font-family:'Noto Serif KR',serif; font-size:1.4rem; text-align:center; margin:0 0 2px;}
+  .culture-sub{text-align:center; color:var(--ink-soft); font-size:0.85rem; margin:0 0 1.25rem;}
+  .culture-photos{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:1.25rem;}
+  @media(max-width:600px){.culture-photos{grid-template-columns:1fr;}}
+  .culture-p{font-size:0.92rem; color:var(--ink-soft); margin:0 0 0.9rem;}
+
+  /* ---------- Quiz ---------- */
+  .quiz-item{margin-bottom:1.4rem;}
+  .quiz-q{font-weight:600; margin-bottom:0.6rem; font-size:0.95rem;}
+  .quiz-opts{display:flex; flex-direction:column; gap:6px;}
+  .quiz-opt{text-align:left; border:1px solid var(--line-strong); border-radius:9px; padding:9px 13px; background:var(--paper-card); cursor:pointer; font-size:0.9rem;}
+  .quiz-opt.picked{border-color:var(--gold); background:#FCF4E0;}
+  .quiz-opt.correct{border-color:var(--jade); background:#E4F2EA; color:var(--jade); font-weight:600;}
+  .quiz-opt.incorrect{border-color:var(--stamp); background:#F8E2DC; color:var(--stamp-dark);}
+  .quiz-submit{margin-top:0.5rem; font-family:'JetBrains Mono',monospace; font-weight:600; font-size:13.5px; background:var(--ink); color:var(--paper); border:none; border-radius:9px; padding:11px 22px; cursor:pointer;}
+  .quiz-submit:disabled{opacity:0.4; cursor:default;}
+  .quiz-result{margin-top:1.25rem; padding:1.1rem 1.25rem; border-radius:12px; background:var(--paper); border:1px dashed var(--line-strong); display:none;}
+  .quiz-result.show{display:block;}
+  .quiz-result .score{font-size:1.4rem; font-weight:700; font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- Từ mới ---------- */
+  .word-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:8px;}
+  .word-card{border:1px solid var(--line); border-radius:9px; padding:9px 11px; background:var(--paper-card);}
+  .word-card .kr{font-size:0.95rem; font-weight:700;}
+  .word-card .vi{font-size:0.8rem; color:var(--ink-soft); margin-top:2px;}
+
+  footer{max-width:1040px; margin:3rem auto 0; padding:0 1.25rem; color:var(--ink-soft); font-size:0.8rem; text-align:center;}
+  ::selection{background:var(--gold); color:var(--ink);}
+</style>
+</head>
+<body>
+
+<div id="tocDrawer" class="toc-drawer">
+  <div class="toc-header">
+    <div class="toc-title">BÀI 02 · 만남</div>
+    <button class="toc-close" id="tocCloseBtn" title="Đóng">×</button>
+  </div>
+  <div id="lessonNav" style="display:flex; flex-direction:column;">
+    <button class="nav-pill" data-target="sec-obj"><span class="dot"></span>Mục tiêu</button>
+    <button class="nav-pill" data-target="sec-vocab"><span class="dot"></span>Từ vựng</button>
+    <button class="nav-pill" data-target="sec-gram"><span class="dot"></span>Ngữ pháp</button>
+    <button class="nav-pill" data-target="sec-speak"><span class="dot"></span>Nói</button>
+    <button class="nav-pill" data-target="sec-listen"><span class="dot"></span>Nghe</button>
+    <button class="nav-pill" data-target="sec-read"><span class="dot"></span>Đọc</button>
+    <button class="nav-pill" data-target="sec-write"><span class="dot"></span>Viết</button>
+    <button class="nav-pill" data-target="sec-pron"><span class="dot"></span>Phát âm</button>
+    <button class="nav-pill" data-target="sec-culture"><span class="dot"></span>Văn hoá</button>
+    <button class="nav-pill" data-target="sec-newwords"><span class="dot"></span>Từ mới</button>
+    <button class="nav-pill" data-target="sec-quiz"><span class="dot"></span>Kiểm tra</button>
+  </div>
+</div>
+
+<button id="tocFab" class="toc-fab" title="Mục lục bài học">☰</button>
+
+<button id="adminFab" title="Chế độ quản trị">
+  <span class="fab-tooltip">Bật/tắt chế độ chỉnh sửa</span>
+  ✎
+</button>
+
+<div class="hero">
+  <div class="passport">
+    <div class="eyebrow">Bài 02 / Hộ chiếu học tập</div>
+    <h1><span class="kr-big">만남</span> — Gặp gỡ</h1>
+    <p class="sub">Học cách thăm viếng, giới thiệu người khác và các quy tắc khi gặp gỡ trong văn hoá Hàn Quốc.</p>
+    <div class="obj-grid">
+      <div class="obj-item"><div class="obj-label">Kỹ năng</div><div class="obj-val">Thăm viếng, giới thiệu người khác</div></div>
+      <div class="obj-item"><div class="obj-label">Từ vựng</div><div class="obj-val">Quan hệ, thăm viếng, lời chào</div></div>
+      <div class="obj-item"><div class="obj-label">Ngữ pháp</div><div class="obj-val kr">의 · -(으)ㄹ 때 · -아/어 주다</div></div>
+      <div class="obj-item"><div class="obj-label">Văn hoá</div><div class="obj-val">Phép tắc thăm viếng của người Hàn Quốc</div></div>
+    </div>
+    <div class="hero-photo-row" id="heroPhotoRow"></div>
+    <div class="stamp-row" id="stampRow">
+      <div class="stamp-slot" data-stamp="obj"><span>MỤC TIÊU</span></div>
+      <div class="stamp-slot" data-stamp="vocab"><span>TỪ VỰNG</span></div>
+      <div class="stamp-slot" data-stamp="gram"><span>NGỮ PHÁP</span></div>
+      <div class="stamp-slot" data-stamp="speak"><span>NÓI</span></div>
+      <div class="stamp-slot" data-stamp="listen"><span>NGHE</span></div>
+      <div class="stamp-slot" data-stamp="read"><span>ĐỌC</span></div>
+      <div class="stamp-slot" data-stamp="write"><span>VIẾT</span></div>
+      <div class="stamp-slot" data-stamp="pron"><span>PHÁT ÂM</span></div>
+      <div class="stamp-slot" data-stamp="culture"><span>VĂN HOÁ</span></div>
+      <div class="stamp-slot" data-stamp="newwords"><span>TỪ MỚI</span></div>
+      <div class="stamp-slot" data-stamp="quiz"><span>KIỂM TRA</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="sec-obj">
+  <div class="sec-head"><span class="sec-num">01</span><h2>Mục tiêu bài học<span class="kr-tag">학습 목표</span></h2></div>
+  <p class="sec-desc">Nắm bắt cách chào hỏi trong các tình huống thăm hỏi, cách xưng hô trong các mối quan hệ và vận dụng linh hoạt các mẫu ngữ pháp đã học.</p>
+</section>
+
+<section id="sec-vocab">
+  <div class="sec-head"><span class="sec-num">02</span><h2>Từ vựng cơ bản<span class="kr-tag">기본 어휘</span></h2></div>
+  <p class="sec-desc">Chạm vào từng thẻ để lật xem nghĩa.</p>
+  <div class="helper-row">
+    <span id="vocabProgLabel">Đã xem 0/14 thẻ</span>
+    <div class="progress-bar"><div class="progress-fill" id="vocabProgFill"></div></div>
+    <span class="mono" style="font-size:11px;">🔊 = phát âm</span>
+  </div>
+  <p class="sub-heading">관계 · Từ vựng chỉ các mối quan hệ</p>
+  <div class="flip-grid" id="grid-relation" style="margin-bottom:1.75rem;"></div>
+  
+  <p class="sub-heading">방문 관련 어휘 · Từ vựng liên quan đến thăm hỏi</p>
+  <div class="flip-grid" id="grid-visit" style="margin-bottom:1.75rem;"></div>
+
+  <p class="sub-heading">인사말 · Các mối quan hệ và lời chào hỏi</p>
+  <div class="greet-grid" id="grid-greet"></div>
+</section>
+
+<section id="sec-gram">
+  <div class="sec-head"><span class="sec-num">03</span><h2>Ngữ pháp cơ bản<span class="kr-tag">기본 문법</span></h2></div>
+  <p class="sec-desc">Bấm vào từng khung để xem ví dụ.</p>
+  <div id="gramList"></div>
+  <div class="card">
+    <p class="sub-heading">Luyện nhanh</p>
+    <div class="mini-quiz" id="miniQuiz"></div>
+  </div>
+</section>
+
+<section id="sec-speak">
+  <div class="sec-head"><span class="sec-num">04</span><h2>Nói<span class="kr-tag">말하기</span></h2></div>
+  <div class="card">
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Chọn từ thích hợp (Mối quan hệ)</div>
+      <div id="speakEx1_1_img" class="img-grid" style="margin-bottom:10px;"></div>
+      <div id="speakEx1_1"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Chọn lời chào hỏi phù hợp</div>
+      <div id="speakEx1_2_img" class="img-grid" style="margin-bottom:10px;"></div>
+      <div id="speakEx1_2"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2 · Luyện tập hội thoại mẫu</div>
+      <div id="speakSubGrid" class="sub-grid"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-listen">
+  <div class="sec-head"><span class="sec-num">05</span><h2>Nghe<span class="kr-tag">듣기</span></h2></div>
+  <p class="sec-desc">Bật quản trị để thêm audio và sửa đáp án.</p>
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Nghe và nối với bức tranh phù hợp</div>
+      <div id="audioT01"></div>
+      <div class="match-wrap"><div id="listenMatch1Left"></div><div id="listenMatch1Right"></div></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Nghe và nối quan hệ phù hợp với Jeongu</div>
+      <div id="audioT02"></div>
+      <div class="match-wrap"><div id="listenMatch2Left"></div><div id="listenMatch2Right"></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện nghe <span class="tag">들어 봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">2.1 · Nghe 4 đoạn hội thoại và điền số thứ tự vào tranh</div>
+      <div id="audioT03"></div>
+      <div class="img-grid" id="listenGrid3"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.2 · Nghe và chọn Đúng/Sai (O/X)</div>
+      <div id="audioT04"></div>
+      <div id="listenOX1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">3.1 · Nghe và điền vào chỗ trống</div>
+      <div id="audioT05"></div>
+      <div id="listenFill"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">3.2 · Nghe hội thoại và trả lời câu hỏi</div>
+      <div id="audioT06"></div>
+      <div id="listenMCQ"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-read">
+  <div class="sec-head"><span class="sec-num">06</span><h2>Đọc<span class="kr-tag">읽기</span></h2></div>
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Nối câu với bức tranh phù hợp</div>
+      <div class="match-wrap"><div id="readMatch1Left"></div><div id="readMatch1Right"></div></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Đọc đoạn văn và chọn O/X</div>
+      <div id="readOX1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện đọc <span class="tag">읽어 봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">Đọc đoạn văn nói về phép lịch sự (집/회사)</div>
+      <div id="readChoice"></div>
+      <div style="margin-top:20px;" id="readOpen1"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">3 · Nâng cao <span class="tag">더 알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">Đọc email và trả lời</div>
+      <div id="readOX2"></div>
+      <div style="margin-top:20px;" id="readOpen2"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-write">
+  <div class="sec-head"><span class="sec-num">07</span><h2>Viết<span class="kr-tag">쓰기</span></h2></div>
+  <div class="card">
+    <p class="sub-heading">1 · Làm quen <span class="tag">알아봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">1.1 · Viết câu theo mẫu (-아/어 주다)</div>
+      <div id="writeFill1"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">1.2 · Nối/Viết câu (-(으)ㄹ 때)</div>
+      <div id="writeFill2"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sub-heading">2 · Luyện viết <span class="tag">써 봅시다</span></p>
+    <div class="ex-block">
+      <div class="ex-block-title">2.1 · Dịch sang tiếng Hàn</div>
+      <div id="writeFill3"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">2.2 & 2.3 · Viết đoạn văn về người bạn</div>
+      <div id="writeOpen1"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-pron">
+  <div class="sec-head"><span class="sec-num">08</span><h2>Phát âm<span class="kr-tag">발음</span></h2></div>
+  <div class="card">
+    <div class="ex-block">
+      <div class="ex-block-title">Nghe và lưu ý phần gạch chân</div>
+      <div id="audioT07"></div>
+      <div class="rule-box">
+        Nguyên âm '의' được phát âm như sau:<br>
+        (1) Âm tiết đầu tiên: [의]<br>
+        (2) Không phải âm tiết đầu tiên: [이]<br>
+        (3) Sau phụ âm: [이]<br>
+        (4) Trợ từ sở hữu: [에]
+      </div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">Nghe và đọc theo</div>
+      <div id="audioT08"></div>
+    </div>
+    <div class="ex-block">
+      <div class="ex-block-title">Đọc to đoạn văn</div>
+      <div id="audioT09"></div>
+    </div>
+  </div>
+</section>
+
+<section id="sec-culture">
+  <div class="sec-head"><span class="sec-num">09</span><h2>Văn hoá<span class="kr-tag">문화</span></h2></div>
+  <div class="card">
+    <div class="culture-title">한국의 방문 예절</div>
+    <div class="culture-sub">Phép tắc trong việc thăm viếng của người Hàn Quốc</div>
+    <div class="culture-photos" id="culturePhotos"></div>
+    <div id="cultureOpen"></div>
+  </div>
+</section>
+
+<section id="sec-newwords">
+  <div class="sec-head"><span class="sec-num">10</span><h2>Từ mới<span class="kr-tag">새 단어</span></h2></div>
+  <div class="card"><div class="word-grid" id="newWordsGrid"></div></div>
+</section>
+
+<section id="sec-quiz">
+  <div class="sec-head"><span class="sec-num">11</span><h2>Kiểm tra nhanh<span class="kr-tag">퀴즈</span></h2></div>
+  <div class="card">
+    <div id="quizList"></div>
+    <button class="quiz-submit" id="quizSubmit">Nộp bài</button>
+    <div class="quiz-result" id="quizResult"></div>
+  </div>
+</section>
+
+<footer>Phỏng theo tài liệu PDF (Bài 02) — trình bày lại dưới dạng bài học tương tác cho vuihoctienghan.online</footer>
+
+<script>
+const LESSON_KEY = 'bai02_media';
+
+const state = { stamped:{} };
+function stamp(key){
+  if(state.stamped[key]) return;
+  state.stamped[key]=true;
+  const slot = document.querySelector('.stamp-slot[data-stamp="'+key+'"]');
+  if(slot) slot.classList.add('stamped');
+  const pill = document.querySelector('.nav-pill[data-target="sec-'+key+'"]');
+  if(pill) pill.classList.add('done');
+}
+function speak(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang='ko-KR'; u.rate=0.85;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+/* ================= Admin mode ================= */
+const ADMIN_EMAILS = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+let isAdmin = false;
+const adminFab = document.getElementById('adminFab');
+
+function setAdminMode(on) {
+  isAdmin = on;
+  document.body.classList.toggle('admin-on', on);
+  if (adminFab) adminFab.classList.toggle('admin-active', on);
+}
+(function waitForFirebase() {
+  if (typeof firebase !== 'undefined' && firebase.auth) {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user && ADMIN_EMAILS.includes(user.email)) {
+        if (adminFab) adminFab.classList.add('visible');
+      } else {
+        if (adminFab) adminFab.classList.remove('visible');
+        setAdminMode(false);
+      }
+    });
+  } else { setTimeout(waitForFirebase, 300); }
+})();
+if (adminFab) adminFab.addEventListener('click', () => setAdminMode(!isAdmin));
+
+/* ================= Storage Core ================= */
+function getMediaStore() { try { return JSON.parse(localStorage.getItem(LESSON_KEY) || '{}'); } catch(e){ return {}; } }
+function saveMediaStore(store) {
+  try { localStorage.setItem(LESSON_KEY, JSON.stringify(store)); } catch(e){}
+  if (window.db) window.db.collection('lessons_media').doc('socap1_bai02').set(store, {merge: true}).catch(console.error);
+}
+if (window.db) {
+  window.db.collection('lessons_media').doc('socap1_bai02').onSnapshot(doc => {
+    if (doc.exists) {
+      const data = doc.data();
+      try { localStorage.setItem(LESSON_KEY, JSON.stringify(data)); } catch(e){}
+      document.querySelectorAll('[data-media-key]').forEach(el => {
+        const key = el.getAttribute('data-media-key');
+        if (data[key]) {
+          if (el.classList.contains('flip-card')) {
+            const emoEl = el.querySelector('.emo');
+            if (emoEl) {
+              const kr = el.querySelector('.kr') ? el.querySelector('.kr').textContent : '';
+              emoEl.outerHTML = `<img src="${data[key]}" alt="${kr}" class="flip-img">`;
+            } else { const img = el.querySelector('img'); if (img && img.src !== data[key]) img.src = data[key]; }
+          } else if (el.classList.contains('audio-slot')) {
+            const pw = el.querySelector('.audio-player-wrap');
+            if (pw && !pw.querySelector('audio')) pw.innerHTML = `<audio controls src="${data[key]}"></audio>`;
+            else { const audio = el.querySelector('audio'); if (audio && audio.src !== data[key]) audio.src = data[key]; }
+          } else {
+            const ph = el.querySelector('.placeholder-text');
+            if (ph) ph.outerHTML = `<img src="${data[key]}" alt="">`;
+            else { const img = el.querySelector('img'); if (img && img.src !== data[key]) img.src = data[key]; }
+          }
+        }
+      });
+    }
+  });
+}
+function getAnswer(key, fallback){ const s = getMediaStore(); const v = s['ans_' + key]; return (v === undefined || v === null || v === '') ? fallback : v; }
+function setAnswer(key, value){ const s = getMediaStore(); s['ans_' + key] = value; saveMediaStore(s); }
+
+/* ================= UI Builders ================= */
+function buildImageSlot({label, ratio, compact, storageKey}){
+  storageKey = storageKey || label;
+  const wrap = document.createElement('div');
+  wrap.className='img-slot' + (compact ? ' compact' : '');
+  wrap.setAttribute('data-media-key', 'img_' + storageKey);
+  if(ratio) wrap.style.aspectRatio = ratio;
+  const store = getMediaStore(); const savedUrl = store['img_' + storageKey];
+  function applyImage(url) {
+    wrap.innerHTML = `<img src="${url}" alt="${label}"><button class="pencil-btn" type="button" title="Đổi ảnh">✎</button><div class="url-form"><input type="url" placeholder="Dán link ảnh mới..." value="${url}"></div>`;
+    const pencil2 = wrap.querySelector('.pencil-btn'); const form2 = wrap.querySelector('.url-form'); const input2 = wrap.querySelector('input');
+    pencil2.addEventListener('click',(e)=>{ e.stopPropagation(); form2.classList.toggle('open'); if(form2.classList.contains('open')){ input2.focus(); input2.select(); } });
+    input2.addEventListener('keydown',(e)=>{ if(e.key==='Enter') { e.stopPropagation(); const newUrl = input2.value.trim(); if(!newUrl) return; if(storageKey){ const s=getMediaStore(); s['img_'+storageKey]=newUrl; saveMediaStore(s); } applyImage(newUrl); } });
+    wrap.addEventListener('click',(e)=>e.stopPropagation());
+  }
+  if(savedUrl){ applyImage(savedUrl); } else {
+    wrap.innerHTML = `<div class="placeholder-text">🖼️<br>${label}</div><button class="pencil-btn" type="button" title="Thêm link ảnh">✎</button><div class="url-form"><input type="url" placeholder="Dán link rồi nhấn Enter..."></div>`;
+    const pencil = wrap.querySelector('.pencil-btn'); const form = wrap.querySelector('.url-form'); const input = wrap.querySelector('input');
+    pencil.addEventListener('click',(e)=>{ e.stopPropagation(); form.classList.toggle('open'); if(form.classList.contains('open')) input.focus(); });
+    input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') { e.stopPropagation(); const url = input.value.trim(); if(!url) return; if(storageKey){ const s=getMediaStore(); s['img_'+storageKey]=url; saveMediaStore(s); } applyImage(url); } });
+    wrap.addEventListener('click',(e)=>e.stopPropagation());
+  }
+  return wrap;
+}
+
+function buildAudioSlot({label, storageKey}){
+  storageKey = storageKey || label;
+  const wrap = document.createElement('div'); wrap.className='audio-slot'; wrap.setAttribute('data-media-key', 'audio_' + storageKey);
+  const store = getMediaStore(); const savedUrl = store['audio_' + storageKey];
+  wrap.innerHTML = `<div class="audio-slot-head"><span class="audio-icon">🔊</span><span class="audio-label">${label}</span><button class="audio-pencil" type="button" title="${savedUrl ? 'Đổi audio' : 'Thêm link audio'}">✎</button></div><div class="audio-form"><input type="url" placeholder="Dán link audio rồi nhấn Enter..."${savedUrl ? ' value="'+savedUrl+'"' : ''}></div><div class="audio-player-wrap">${savedUrl ? '<audio controls src="'+savedUrl+'"></audio>' : ''}</div>`;
+  const pencil = wrap.querySelector('.audio-pencil'); const form = wrap.querySelector('.audio-form'); const input = wrap.querySelector('.audio-form input'); const playerWrap = wrap.querySelector('.audio-player-wrap');
+  pencil.addEventListener('click',(e)=>{ e.stopPropagation(); form.classList.toggle('open'); if(form.classList.contains('open')) input.focus(); });
+  input.addEventListener('keydown', e=>{ if(e.key==='Enter') { e.stopPropagation(); const url = input.value.trim(); if(!url) return; if(storageKey){ const s=getMediaStore(); s['audio_'+storageKey]=url; saveMediaStore(s); } playerWrap.innerHTML = `<audio controls src="${url}"></audio>`; input.value = url; form.classList.remove('open'); } });
+  return wrap;
+}
+
+function buildFillChecklist(container, items, onAnyCheck){
+  items.forEach((it, idx)=>{
+    const key = it.key || (container.id||'fill') + '_' + idx;
+    let currentAnswer = getAnswer('fill_'+key, it.answer || '');
+    const row = document.createElement('div'); row.className='fill-row';
+    row.innerHTML = `<div class="fill-prompt">${it.prompt} <button type="button" class="answer-pencil" title="Sửa đáp án chuẩn">✎</button></div><div class="fill-input-wrap"><input type="text" class="fill-input" placeholder="Nhập câu trả lời bằng tiếng Hàn..."><button type="button" class="fill-check-btn">Kiểm tra</button></div><div class="fill-feedback"></div>`;
+    const input = row.querySelector('.fill-input'); const btn = row.querySelector('.fill-check-btn'); const fb = row.querySelector('.fill-feedback'); const pencil = row.querySelector('.answer-pencil');
+    function refreshPencil(){ pencil.classList.toggle('unset', !currentAnswer); pencil.title = currentAnswer ? ('Đáp án chuẩn: '+currentAnswer) : 'Chưa có đáp án chuẩn'; }
+    refreshPencil();
+    btn.addEventListener('click', ()=>{
+      if(!currentAnswer){ fb.textContent='Chưa có đáp án chuẩn cho câu này.'; fb.className='fill-feedback no'; return; }
+      const norm = s => (s||'').replace(/\s+/g,'').replace(/[.?!,]/g,'');
+      const ok = norm(input.value) === norm(currentAnswer);
+      fb.textContent = ok ? '✓ Chính xác!' : ('Đáp án gợi ý: ' + currentAnswer);
+      fb.className = 'fill-feedback ' + (ok ? 'ok':'no');
+      input.classList.toggle('correct', ok); input.classList.toggle('incorrect', !ok);
+      if(onAnyCheck) onAnyCheck();
+    });
+    pencil.addEventListener('click', (e)=>{
+      e.stopPropagation(); const existing = row.querySelector('.answer-editor'); if(existing){ existing.remove(); return; }
+      const editor = document.createElement('div'); editor.className='answer-editor';
+      editor.innerHTML = `<span class="answer-editor-label">Đáp án:</span><input type="text" class="answer-editor-input" value="${currentAnswer||''}" placeholder="Nhập đáp án, Enter...">`;
+      const ei = editor.querySelector('.answer-editor-input');
+      ei.addEventListener('keydown', ev=>{ if(ev.key==='Enter'){ currentAnswer = ei.value.trim(); setAnswer('fill_'+key, currentAnswer); fb.textContent=''; input.classList.remove('correct','incorrect'); refreshPencil(); editor.remove(); } });
+      row.insertBefore(editor, row.querySelector('.fill-input-wrap')); ei.focus();
+    });
+    container.appendChild(row);
+  });
+}
+
+function buildChoiceList(container, items, onAllDone){
+  let doneCount=0;
+  items.forEach((it, idx)=>{
+    const key = it.key || (container.id||'choice') + '_' + idx;
+    let currentAnswer = getAnswer('choice_'+key, it.answer || '');
+    const row=document.createElement('div'); row.className='ox-row';
+    const btnsHtml = it.choices.map(c=>`<button type="button" class="ox-btn" data-v="${c.value}"${c.wide?' style="width:auto;"':''}>${c.label}</button>`).join('');
+    row.innerHTML = `<div class="ox-text">${it.text}</div><div class="ox-btns">${btnsHtml}<button type="button" class="answer-pencil" title="Sửa đáp án đúng">✎</button></div>`;
+    const btns = row.querySelectorAll('.ox-btn'); const pencil = row.querySelector('.answer-pencil');
+    function refreshPencil(){ pencil.classList.toggle('unset', !currentAnswer); }
+    refreshPencil();
+    btns.forEach(b=>b.addEventListener('click', ()=>{
+      if(row.dataset.done) return;
+      if(currentAnswer){ const correct = b.dataset.v === currentAnswer; b.classList.add(correct?'correct':'wrong'); if(!correct){ [...btns].find(x=>x.dataset.v===currentAnswer).classList.add('correct'); } }
+      else { b.classList.add('picked-neutral'); }
+      row.dataset.done='1'; doneCount++; if(doneCount===items.length && onAllDone) onAllDone();
+    }));
+    pencil.addEventListener('click',(e)=>{
+      e.stopPropagation(); const existing = row.querySelector('.answer-editor'); if(existing){ existing.remove(); return; }
+      const editor=document.createElement('div'); editor.className='answer-editor';
+      editor.innerHTML = `<span class="answer-editor-label">Đáp án đúng:</span>` + it.choices.map(c=>`<button type="button" class="answer-editor-opt${c.value===currentAnswer?' active':''}" data-v="${c.value}">${c.label}</button>`).join('');
+      editor.querySelectorAll('.answer-editor-opt').forEach(ob=>{
+        ob.addEventListener('click',(ev)=>{
+          ev.stopPropagation(); currentAnswer = ob.dataset.v; setAnswer('choice_'+key, currentAnswer); refreshPencil();
+          if(row.dataset.done){ doneCount--; row.dataset.done=''; } btns.forEach(b=>b.classList.remove('correct','wrong','picked-neutral')); editor.remove();
+        });
+      });
+      row.appendChild(editor);
+    });
+    container.appendChild(row);
+  });
+}
+function buildOXList(container, items, onAllDone){ buildChoiceList(container, items.map((it,i)=>({key:it.key||((container.id||'ox')+'_'+i), text:it.text, answer:it.answer, choices:[{value:'O',label:'O'},{value:'X',label:'X'}]})), onAllDone); }
+function buildYesNoList(container, items, onAllDone){ buildChoiceList(container, items.map((it,i)=>({key:it.key||((container.id||'yn')+'_'+i), text:it.text, answer:it.answer, choices:[{value:'네',label:'네',wide:true},{value:'아니요',label:'아니요',wide:true}]})), onAllDone); }
+
+function buildOpenPrompt(container, {prompt, placeholder, hint, lines, lined}){
+  const wrap=document.createElement('div'); wrap.className='fill-row';
+  wrap.innerHTML = `<div class="fill-prompt">${prompt||''}</div><textarea class="open-textarea ${lined?'lined-textarea':''}" rows="${lines||3}" placeholder="${placeholder||''}"></textarea>${hint ? `<button type="button" class="hint-btn">Xem gợi ý</button><div class="hint-box"></div>` : ''}`;
+  if(hint){ const btn = wrap.querySelector('.hint-btn'); const box = wrap.querySelector('.hint-box'); btn.addEventListener('click', ()=>{ box.classList.toggle('open'); box.innerHTML = box.classList.contains('open') ? hint : ''; }); }
+  container.appendChild(wrap);
+}
+
+function buildMatching(leftEl, rightEl, leftItems, rightItems, onAllMatched, graded, matchId){
+  let selected=null, matched=0;
+  leftItems.forEach(it=>{
+    const el=document.createElement('div'); el.className='match-item kr'; el.dataset.key=it.key;
+    if(it.node) el.appendChild(it.node); else el.innerHTML = it.html;
+    el.addEventListener('click', (e)=>{ if(e.target.closest('.img-slot') || e.target.closest('.answer-editor') || e.target.closest('.answer-pencil')) return; if(el.classList.contains('paired-correct')) return; leftEl.querySelectorAll('.match-item').forEach(x=>x.classList.remove('selected')); el.classList.add('selected'); selected=el; });
+    leftEl.appendChild(el);
+  });
+  rightItems.forEach(it=>{
+    const el=document.createElement('div'); el.className='match-item';
+    const storeKey = matchId ? ('match_'+matchId+'_'+it.key) : null; let correctKey = storeKey ? getAnswer(storeKey, it.correctKey || '') : (it.correctKey || ''); el.dataset.correctKey = correctKey;
+    const content = document.createElement('div'); if(it.node) content.appendChild(it.node); else content.innerHTML = it.html; el.appendChild(content);
+    if(matchId){
+      const pencil = document.createElement('button'); pencil.type='button'; pencil.className='answer-pencil'; pencil.style.cssText='margin-top:6px;';
+      function refreshPencil(){ pencil.classList.toggle('unset', !correctKey); pencil.textContent = '✎'; } refreshPencil();
+      pencil.addEventListener('click',(e)=>{
+        e.stopPropagation(); const existing = el.querySelector('.answer-editor'); if(existing){ existing.remove(); return; }
+        const editor=document.createElement('div'); editor.className='answer-editor'; const sel=document.createElement('select'); sel.className='answer-editor-select';
+        sel.innerHTML = `<option value="">— chưa chọn —</option>` + leftItems.map(l=>`<option value="${l.key}"${l.key===correctKey?' selected':''}>${l.label||l.key}</option>`).join('');
+        sel.addEventListener('click', ev=>ev.stopPropagation());
+        sel.addEventListener('change', ()=>{ correctKey = sel.value; el.dataset.correctKey = correctKey; if(storeKey) setAnswer(storeKey, correctKey); el.classList.remove('paired-correct','paired-wrong'); refreshPencil(); editor.remove(); });
+        editor.appendChild(sel); el.appendChild(editor);
+      }); el.appendChild(pencil);
+    }
+    el.addEventListener('click',(e)=>{
+      if(e.target.closest('.img-slot') || e.target.closest('.answer-editor') || e.target.closest('.answer-pencil')) return; if(!selected || el.classList.contains('paired-correct')) return;
+      const ck = el.dataset.correctKey; const isMatch = (graded===false || !ck) ? true : (selected.dataset.key===ck);
+      if(isMatch){ selected.classList.add('paired-correct'); selected.classList.remove('selected'); el.classList.add('paired-correct'); matched++; if(matched===leftItems.length && onAllMatched) onAllMatched(); }
+      else { el.classList.add('paired-wrong'); setTimeout(()=>el.classList.remove('paired-wrong'),500); } selected=null;
+    }); rightEl.appendChild(el);
+  });
+}
+
+function buildFlipGrid(container, data, imgEditable){
+  let seen = 0;
+  data.forEach(([kr,emo,vi])=>{
+    const sKey = 'flip_' + kr; const store = getMediaStore(); const savedImg = imgEditable ? store['img_' + sKey] : null;
+    const card = document.createElement('div'); card.className='flip-card'; if (imgEditable) card.setAttribute('data-media-key', 'img_' + sKey);
+    let frontContent = savedImg ? `<img src="${savedImg}" alt="${kr}" class="flip-img"><div class="kr">${kr}</div>${imgEditable ? `<button class="pencil-btn" type="button" title="Đổi ảnh">✎</button><div class="url-form"><input type="url" placeholder="Link mới, Enter..."></div>` : ''}` : `<div class="emo">${emo}</div><div class="kr">${kr}</div>${imgEditable ? `<button class="pencil-btn" type="button" title="Thêm ảnh thật">✎</button><div class="url-form"><input type="url" placeholder="Link, Enter..."></div>` : ''}`;
+    card.innerHTML = `<div class="flip-inner"><div class="flip-face flip-front">${frontContent}</div><div class="flip-face flip-back"><div class="vi">${vi}</div><div class="kr-small">${kr} <span class="speak-btn" data-kr="${kr}">🔊</span></div></div></div>`;
+    card.addEventListener('click',(e)=>{
+      if(e.target.classList.contains('speak-btn')){ speak(e.target.dataset.kr); return; }
+      if(imgEditable && (e.target.closest('.pencil-btn') || e.target.closest('.url-form'))) return;
+      card.classList.toggle('flipped'); if(!card.classList.contains('seen')){ card.classList.add('seen'); seen++; }
+    });
+    if(imgEditable){
+      const front = card.querySelector('.flip-front'); const pencil = front.querySelector('.pencil-btn'); const form = front.querySelector('.url-form'); const input = front.querySelector('input');
+      if(pencil) pencil.addEventListener('click',(e)=>{ e.stopPropagation(); form.classList.toggle('open'); if(form.classList.contains('open')) input.focus(); });
+      if(input) input.addEventListener('keydown',(e)=>{ if(e.key==='Enter') { e.stopPropagation(); const url = input.value.trim(); if(!url) return; const s = getMediaStore(); s['img_' + sKey] = url; saveMediaStore(s); const emoEl = front.querySelector('.emo'); const imgEl = front.querySelector('.flip-img'); if(emoEl) emoEl.outerHTML = `<img src="${url}" alt="${kr}" class="flip-img">`; else if(imgEl) imgEl.src = url; front.querySelector('.kr').style.display = ''; form.classList.remove('open'); }});
+    }
+    container.appendChild(card);
+  });
+}
+
+/* ================= Execute Data population ================= */
+const heroRow = document.getElementById('heroPhotoRow');
+heroRow.appendChild(buildImageSlot({label:'Ảnh 1 · Gặp gỡ', ratio:'4/3', storageKey:'b2_hero1'}));
+heroRow.appendChild(buildImageSlot({label:'Ảnh 2 · Thăm viếng', ratio:'4/3', storageKey:'b2_hero2'}));
+new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) stamp('obj'); }); }).observe(document.getElementById('sec-obj'));
+
+const tocFab = document.getElementById('tocFab'); const tocCloseBtn = document.getElementById('tocCloseBtn');
+if(tocFab) tocFab.addEventListener('click', () => document.body.classList.toggle('toc-open'));
+if(tocCloseBtn) tocCloseBtn.addEventListener('click', () => document.body.classList.remove('toc-open'));
+document.querySelectorAll('.nav-pill').forEach(p => p.addEventListener('click', ()=>{ document.getElementById(p.dataset.target).scrollIntoView({behavior:'smooth'}); if (window.innerWidth < 768) document.body.classList.remove('toc-open'); }));
+const io = new IntersectionObserver((entries)=>{ entries.forEach(en=>{ const pill = document.querySelector('.nav-pill[data-target="'+en.target.id+'"]'); if(en.isIntersecting && pill){ document.querySelectorAll('.nav-pill').forEach(p=>p.classList.remove('active')); pill.classList.add('active'); } }); },{rootMargin:'-40% 0px -50% 0px'});
+['sec-obj','sec-vocab','sec-gram','sec-speak','sec-listen','sec-read','sec-write','sec-pron','sec-culture','sec-newwords','sec-quiz'].forEach(id=>{ const el=document.getElementById(id); if(el) io.observe(el); });
+
+// Vocab
+const relation = [['남편','👨','chồng'],['아내','👩','vợ'],['선배','🎓','tiền bối'],['후배','🎒','hậu bối'],['주인','🏠','chủ nhà'],['손님','☕','khách'],['상사','👔','cấp trên'],['부하','💼','cấp dưới']];
+const visit = [['초대하다','✉️','mời'],['초대를 받다','📬','nhận lời mời'],['방문하다','🚪','thăm hỏi'],['소개하다','🤝','giới thiệu'],['소개를 받다','👥','được giới thiệu'],['인사하다','🙇','chào hỏi']];
+const greet = [['잘 먹겠습니다.','Tôi sẽ ăn rất ngon.'],['잘 먹었습니다.','Tôi đã ăn rất ngon.'],['실례하겠습니다.','Xin lỗi... (sắp làm phiền)'],['실례했습니다.','Xin lỗi đã làm phiền.']];
+buildFlipGrid(document.getElementById('grid-relation'), relation, true);
+buildFlipGrid(document.getElementById('grid-visit'), visit, true);
+const greetGrid = document.getElementById('grid-greet');
+greet.forEach(([kr,vi])=>{
+  const d = document.createElement('div'); d.className='greet-card';
+  d.innerHTML = `<div class="kr">${kr} <span class="speak-btn" data-kr="${kr}">🔊</span></div><div class="vi">${vi}</div>`;
+  d.addEventListener('click',(e)=>{ if(e.target.classList.contains('speak-btn')){ e.stopPropagation(); speak(e.target.dataset.kr); return; } d.classList.toggle('revealed'); stamp('vocab'); });
+  greetGrid.appendChild(d);
+});
+
+// Gram
+const grammar = [
+  {kr:'의', mean:'Sở hữu cách (của)', note:'Dùng để thể hiện sự sở hữu. 저의 rút gọn thành 제, 나의 rút gọn thành 내.', examples:[['오늘은 친구의 생일입니다.','Hôm nay là sinh nhật của bạn tôi.']]},
+  {kr:'-(으)ㄹ 때', mean:'Khi, lúc', note:'Động/tính từ có patchim: -을 때, không patchim: -ㄹ 때.', examples:[['아플 때 이 약을 드세요.','Khi ốm hãy uống thuốc này.']]},
+  {kr:'-아/어 주다', mean:'Làm gì cho ai', note:'Hành động làm giúp người khác. Kính ngữ: -아/어 드리다.', examples:[['창문을 좀 닫아 주세요.','Xin đóng cửa sổ giúp tôi.']]}
+];
+const gramList = document.getElementById('gramList');
+grammar.forEach(g=>{
+  const card = document.createElement('div'); card.className='gram-card';
+  card.innerHTML = `<div class="gram-head"><div><span class="g-title kr">${g.kr}</span><br><span class="g-mean">${g.mean}</span></div><span class="gram-chevron">▾</span></div><div class="gram-body"><p class="gram-note">${g.note}</p>${g.examples.map(([kr,vi])=>`<div class="ex-row"><span class="kr">${kr}</span><span class="vi">${vi}</span></div>`).join('')}</div>`;
+  card.querySelector('.gram-head').addEventListener('click',()=>card.classList.toggle('open'));
+  gramList.appendChild(card);
+});
+buildChoiceList(document.getElementById('miniQuiz'), [
+  {text:'1. 이것이 내 동생___ 가방입니다.', choices:[{value:'의',label:'의'},{value:'은',label:'은'}], answer:'의'},
+  {text:'2. 밥을 먹___ 전화가 왔어요.', choices:[{value:'을 때',label:'을 때'},{value:'ㄹ 때',label:'ㄹ 때'}], answer:'을 때'},
+  {text:'3. 문을 좀 열어 ___.', choices:[{value:'주세요',label:'주세요'},{value:'드리세요',label:'드리세요'}], answer:'주세요'}
+], ()=>stamp('gram'));
+
+// Speak
+const speak11 = document.getElementById('speakEx1_1_img');
+['Ảnh Khách','Ảnh Tiền bối/hậu bối','Ảnh Vợ/Chồng','Ảnh Thầy/Trò'].forEach((l,i) => speak11.appendChild(buildImageSlot({label:l, ratio:'1/1', compact:true, storageKey:'b2_speak_1_img'+i})));
+buildFillChecklist(document.getElementById('speakEx1_1'), [
+  {prompt:'(1) 준영의 ________ 입니다.', answer:'손님'},
+  {prompt:'(2) 2학년 ________ 입니다.', answer:'선배'},
+  {prompt:'(3) 2학년 ________ 입니다.', answer:'선생님'},
+  {prompt:'(4) ________ 입니다.', answer:'남편'}
+]);
+
+const speak12 = document.getElementById('speakEx1_2_img');
+['Xin phép vào','Ăn ngon','Ăn xong','Cúi chào'].forEach((l,i) => speak12.appendChild(buildImageSlot({label:l, ratio:'1/1', compact:true, storageKey:'b2_speak_2_img'+i})));
+buildFillChecklist(document.getElementById('speakEx1_2'), [
+  {prompt:'(1) [Làm phiền] ________', answer:'실례하겠습니다.'},
+  {prompt:'(2) [Cảm ơn trước khi ăn] ________', answer:'잘 먹겠습니다.'},
+  {prompt:'(3) [Cảm ơn sau khi ăn] ________', answer:'잘 먹었습니다.'},
+  {prompt:'(4) [Chào lần đầu] ________', answer:'처음 뵙겠습니다.'}
+]);
+
+const subGrid = document.getElementById('speakSubGrid');
+[['조민재','친구'],['디엠','아내'],['한지원','동료'],['남','후배']].forEach(([a,b])=>{
+  const c = document.createElement('div'); c.className='sub-card';
+  c.innerHTML = `<div class="prompt">${a} / ${b}</div><div class="reveal">A: 실례지만 누구세요?<br>B: ${a} 씨의 ${b}입니다.</div>`;
+  c.addEventListener('click',()=>{ c.classList.toggle('open'); stamp('speak'); });
+  subGrid.appendChild(c);
+});
+
+// Listen
+document.getElementById('audioT01').appendChild(buildAudioSlot({label:'CD1 Track 01', storageKey:'b2_audio_t01'}));
+const lm1L = document.getElementById('listenMatch1Left'); const lm1R = document.getElementById('listenMatch1Right');
+buildMatching(lm1L, lm1R, 
+  [{key:'L1', label:'(1)', html:'(1)'},{key:'L2', label:'(2)', html:'(2)'},{key:'L3', label:'(3)', html:'(3)'},{key:'L4', label:'(4)', html:'(4)'}],
+  ['Xe ô tô','Nghe nhạc','Ăn','Cười'].map((l,i)=>({key:'R'+i, node:buildImageSlot({label:l, ratio:'1/1', compact:true, storageKey:'b2_lis1_'+i})})), 
+  null, true, 'b2_lis_match1'
+);
+
+document.getElementById('audioT02').appendChild(buildAudioSlot({label:'CD1 Track 02', storageKey:'b2_audio_t02'}));
+const lm2L = document.getElementById('listenMatch2Left'); const lm2R = document.getElementById('listenMatch2Right');
+buildMatching(lm2L, lm2R, 
+  [{key:'L1', label:'(1)', html:'(1)'},{key:'L2', label:'(2)', html:'(2)'},{key:'L3', label:'(3)', html:'(3)'},{key:'L4', label:'(4)', html:'(4)'}],
+  [{key:'누나', html:'누나'},{key:'동생', html:'동생'},{key:'선배', html:'선배'},{key:'선생님', html:'선생님'},{key:'어머니', html:'어머니'}], 
+  null, true, 'b2_lis_match2'
+);
+
+document.getElementById('audioT03').appendChild(buildAudioSlot({label:'CD1 Track 03', storageKey:'b2_audio_t03'}));
+const listenGrid3 = document.getElementById('listenGrid3');
+for(let i=0; i<4; i++){
+  const wrap = document.createElement('div');
+  wrap.appendChild(buildImageSlot({label:'Tranh '+(i+1), ratio:'1/1', compact:true, storageKey:'b2_lis3_img'+i}));
+  wrap.innerHTML += `<div style="display:flex; margin-top:4px;"><input type="text" placeholder="Số" style="width:100%; border:1px solid var(--line-strong); border-radius:6px; padding:4px;"></div>`;
+  listenGrid3.appendChild(wrap);
+}
+
+document.getElementById('audioT04').appendChild(buildAudioSlot({label:'CD1 Track 04', storageKey:'b2_audio_t04'}));
+buildOXList(document.getElementById('listenOX1'), [
+  {text:'(1-1) 루이엔 씨는 한국 친구를 집에 초대했어요.', answer:''},
+  {text:'(1-2) 루이엔 씨는 수빈 씨의 동생을 처음 만났어요.', answer:''},
+  {text:'(1-3) 루이엔 씨의 동생은 한국대학교에 다녀요.', answer:''},
+  {text:'(2-1) 뚜안 씨는 지훈 씨의 아내를 처음 만났어요.', answer:''},
+  {text:'(2-2) 뚜안 씨는 과일을 가져갔어요.', answer:''},
+  {text:'(2-3) 뚜안 씨는 점심을 먹으러 갔어요.', answer:''}
+]);
+
+document.getElementById('audioT05').appendChild(buildAudioSlot({label:'CD1 Track 05', storageKey:'b2_audio_t05'}));
+buildFillChecklist(document.getElementById('listenFill'), [
+  {prompt:'지훈 아내: 지훈 씨, 이거 받으세요. ________.', answer:''},
+  {prompt:'풍: 선생님, 안녕하세요? ________.', answer:''}
+]);
+
+document.getElementById('audioT06').appendChild(buildAudioSlot({label:'CD1 Track 06', storageKey:'b2_audio_t06'}));
+buildChoiceList(document.getElementById('listenMCQ'), [
+  {text:'(1) 풍 씨는 왜 여기에 왔습니까?', choices:[{value:'컴퓨터를 사러',label:'컴퓨터를 사러'},{value:'점심을 먹으러',label:'점심을 먹으러'},{value:'김민준 씨를 만나러',label:'김민준 씨를 만나러'}]},
+  {text:'(2) 풍 씨는 남자에게 무엇을 주었습니까?', choices:[{value:'(Tùy chọn)',label:'(Điền sau khi có audio)'}]}
+]);
+
+// Read
+const readL = document.getElementById('readMatch1Left'); const readR = document.getElementById('readMatch1Right');
+buildMatching(readL, readR, 
+  [{key:'s1', html:'공부할 때 음악을 듣습니다.'},{key:'s2', html:'요리할 때 노래를 합니다.'},{key:'s3', html:'밥을 먹을 때 숟가락으로 먹습니다.'},{key:'s4', html:'운동을 할 때 물을 많이 마십니다.'}],
+  [{key:'a', node:buildImageSlot({label:'Xe ô tô', ratio:'1/1', compact:true, storageKey:'b2_rd_a'}), correctKey:''},
+   {key:'b', node:buildImageSlot({label:'Nghe nhạc', ratio:'1/1', compact:true, storageKey:'b2_rd_b'}), correctKey:'s1'},
+   {key:'c', node:buildImageSlot({label:'Ăn', ratio:'1/1', compact:true, storageKey:'b2_rd_c'}), correctKey:'s3'},
+   {key:'d', node:buildImageSlot({label:'Hát', ratio:'1/1', compact:true, storageKey:'b2_rd_d'}), correctKey:'s2'},
+   {key:'e', node:buildImageSlot({label:'Uống nước', ratio:'1/1', compact:true, storageKey:'b2_rd_e'}), correctKey:'s4'}], 
+  ()=>stamp('read'), true, 'b2_read_match1'
+);
+
+buildOXList(document.getElementById('readOX1'), [
+  {text:'(1) 금요일에 학생들은 식당에 갈 수 없습니다.', answer:'X'},
+  {text:'(2) 금요일에 식당에 갈 때 돈을 가져오세요.', answer:'O'},
+  {text:'(3) 학생들은 걱정이 있을 때 상담소를 방문할 수 있습니다.', answer:'O'},
+  {text:'(4) 상담 시간은 여덟 시부터 두 시까지입니다.', answer:'X'}
+]);
+
+buildChoiceList(document.getElementById('readChoice'), [
+  {text:'(1) 들어갈 때 신발을 벗습니다.', choices:[{value:'집',label:'집'},{value:'회사',label:'회사'}], answer:'집'},
+  {text:'(2) 약속 장소에 일찍 도착합니다.', choices:[{value:'집',label:'집'},{value:'회사',label:'회사'}], answer:'회사'},
+  {text:'(3) 직원에게 전화하고 기다립니다.', choices:[{value:'집',label:'집'},{value:'회사',label:'회사'}], answer:'회사'},
+  {text:'(4) 식사할 때 소리를 많이 내지 않습니다.', choices:[{value:'집',label:'집'},{value:'회사',label:'회사'}], answer:'집'}
+]);
+buildOpenPrompt(document.getElementById('readOpen1'), {prompt:'Trả lời câu hỏi:', placeholder:'1. 한국에서는 집을 방문할 때 보통 무엇을 가져갑니까?\n2. 회사를 방문할 때 어디에서 코트를 벗습니까?\n3. 한국에서는 밥을 먹을 때 무엇으로 먹습니까?', lines:4, hint:'1. 과일, 케이크, 과자\n2. 사무실 앞\n3. 숟가락과 젓가락'});
+
+buildOXList(document.getElementById('readOX2'), [
+  {text:'(1) 반 씨는 지원 씨를 집에 초대했습니다.', answer:'X'},
+  {text:'(2) 베트남 사람들은 악수하지 않습니다.', answer:'X'},
+  {text:'(3) 베트남 사람들은 이야기할 때 다른 사람의 몸을 만지지 않습니다.', answer:'O'},
+  {text:'(4) 베트남 사람들은 식사할 때 소리를 많이 냅니다.', answer:'X'}
+]);
+buildOpenPrompt(document.getElementById('readOpen2'), {prompt:'Điểm chú ý khi thăm nhà/công ty ở Việt Nam:', placeholder:'인사할 때:\n이야기할 때:\n식사할 때:', lines:3});
+
+// Write
+buildFillChecklist(document.getElementById('writeFill1'), [
+  {prompt:'(1) 어머니가 창문을 닫다 →', answer:'어머니가 창문을 닫아 줍니다.'},
+  {prompt:'(2) 동생이 텔레비전을 켜다 →', answer:'동생이 텔레비전을 켜 줍니다.'},
+  {prompt:'(3) 친구가 가방을 들다 →', answer:'친구가 가방을 들어 줍니다.'},
+  {prompt:'(4) 언니가 숙제를 돕다 →', answer:'언니가 숙제를 도와 줍니다.'}
+], ()=>stamp('write'));
+
+buildFillChecklist(document.getElementById('writeFill2'), [
+  {prompt:'(1) 외국에 여행을 가다 →', answer:'외국에 여행을 갈 때 여권이 필요합니다.'},
+  {prompt:'(2) 친구에게 전화하다 →', answer:'친구에게 전화할 때 휴대전화가 필요합니다.'},
+  {prompt:'(3) 책을 읽다 →', answer:'책을 읽을 때 안경이 필요합니다.'},
+  {prompt:'(4) 사진을 찍다 →', answer:'사진을 찍을 때 카메라가 필요합니다.'},
+  {prompt:'(5) 비가 오다 →', answer:'비가 올 때 우산이 필요합니다.'}
+]);
+
+buildFillChecklist(document.getElementById('writeFill3'), [
+  {prompt:'(1) Người này là bạn của tôi.', answer:'이 사람은 제 친구입니다.'},
+  {prompt:'(2) Khi bị đau thì đi bệnh viện.', answer:'아플 때 병원에 갑니다.'},
+  {prompt:'(3) Tôi mua cà phê cho bạn.', answer:'제가 친구에게 커피를 사 줍니다.'},
+  {prompt:'(4) Bạn bè đã giúp đỡ tôi.', answer:'친구가 저를 도와주었습니다.'}
+]);
+buildOpenPrompt(document.getElementById('writeOpen1'), {prompt:'Viết đoạn văn về người bạn (2.2) và người giúp đỡ bạn nhiều nhất (2.3).', placeholder:'...', lines:5});
+
+// Pron
+document.getElementById('audioT07').appendChild(buildAudioSlot({label:'CD1 Track 07', storageKey:'b2_audio_t07'}));
+document.getElementById('audioT08').appendChild(buildAudioSlot({label:'CD1 Track 08', storageKey:'b2_audio_t08'}));
+document.getElementById('audioT09').appendChild(buildAudioSlot({label:'CD1 Track 09', storageKey:'b2_audio_t09'}));
+document.getElementById('sec-pron').addEventListener('click', ()=>stamp('pron'));
+
+// Culture
+const culturePhotos = document.getElementById('culturePhotos');
+['Khách đến nhà', 'Nhân viên công ty'].forEach(l => culturePhotos.appendChild(buildImageSlot({label:l, ratio:'4/3', storageKey:'b2_cul_'+l})));
+buildOpenPrompt(document.getElementById('cultureOpen'), {prompt:'So sánh cách chào hỏi giữa Hàn Quốc và Việt Nam:', placeholder:'...', lines:4});
+new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) stamp('culture'); }); }).observe(document.getElementById('sec-culture'));
+
+// New Words
+const newWords = [['가져오다','mang đến'],['걱정','lo lắng'],['넣다','cho vào'],['닫다','đóng'],['댁','nhà (kính ngữ)'],['들다','cầm, mang'],['들어가다','đi vào'],['먼저','trước tiên'],['명함','danh thiếp'],['벗다','cởi ra'],['비슷하다','tương tự'],['사용하다','sử dụng'],['상담','tư vấn'],['상담소','văn phòng tư vấn'],['설탕','đường'],['소리를 내다','phát ra tiếng'],['심심하다','buồn chán'],['씻다','rửa'],['악수하다','bắt tay'],['연락','liên lạc'],['예절','lễ nghi'],['올림','kính thư'],['일찍','sớm'],['정장','trang phục trang trọng'],['조심하다','cẩn thận'],['직원','nhân viên'],['만지다','sờ, chạm'],['찍다','chụp (ảnh)'],['켜다','bật'],['크림','kem']];
+const newWordsGrid = document.getElementById('newWordsGrid');
+newWords.forEach(([kr,vi])=>{
+  const c=document.createElement('div'); c.className='word-card';
+  c.innerHTML = `<div class="kr">${kr} <span class="speak-btn" data-kr="${kr}" style="font-size:12px;">🔊</span></div><div class="vi">${vi}</div>`;
+  c.querySelector('.speak-btn').addEventListener('click',(e)=>speak(e.target.dataset.kr));
+  newWordsGrid.appendChild(c);
+});
+new IntersectionObserver((entries)=>{ entries.forEach(en=>{ if(en.isIntersecting) stamp('newwords'); }); }).observe(document.getElementById('sec-newwords'));
+
+// Quiz
+const quizData = [
+  {q:'Nghĩa của từ "아내" là gì?', opts:['Chồng','Vợ','Cấp trên','Khách'], answer:'Vợ'},
+  {q:'Điền từ: 오늘은 친구___ 생일입니다.', opts:['의','를','은','는'], answer:'의'},
+  {q:'"Khi bị đau hãy uống thuốc" dịch là?', opts:['아플 때 약을 드세요','아픈 약을 드세요','아파서 약을 드세요','아플 약을 드세요'], answer:'아플 때 약을 드세요'},
+  {q:'Kính ngữ của -아/어 주다 là gì?', opts:['-아/어 드리다','-아/어 하다','-고 싶다','-(으)ㄹ 때'], answer:'-아/어 드리다'},
+  {q:'Trong văn hoá Hàn Quốc, khi người lớn tuổi trao đồ vật, nên nhận bằng:', opts:['Một tay','Hai tay','Tay trái','Không nhận'], answer:'Hai tay'},
+  {q:'"초대하다" nghĩa là gì?', opts:['Chào hỏi','Giới thiệu','Mời','Thăm viếng'], answer:'Mời'},
+  {q:'Nghĩa của "잘 먹겠습니다" là:', opts:['Tôi đã ăn ngon','Tôi sẽ ăn rất ngon','Xin lỗi đã làm phiền','Rất vui được gặp'], answer:'Tôi sẽ ăn rất ngon'},
+  {q:'Phát âm của chữ "의" trong "의사" là:', opts:['이','에','의','으'], answer:'의'}
+];
+const quizList = document.getElementById('quizList');
+const picks = {};
+quizData.forEach((q,i)=>{
+  const key = 'b2_quiz_'+i; q._currentAnswer = getAnswer('choice_'+key, q.answer);
+  const wrap = document.createElement('div'); wrap.className='quiz-item';
+  wrap.innerHTML = `<div class="quiz-q">${i+1}. ${q.q} <button type="button" class="answer-pencil" title="Sửa đáp án đúng">✎</button></div><div class="quiz-opts"></div>`;
+  const optsEl = wrap.querySelector('.quiz-opts'); const pencil = wrap.querySelector('.answer-pencil');
+  q.opts.forEach(o=>{
+    const b = document.createElement('button'); b.className='quiz-opt'; b.textContent=o;
+    b.addEventListener('click',()=>{ optsEl.querySelectorAll('.quiz-opt').forEach(x=>x.classList.remove('picked')); b.classList.add('picked'); picks[i]=o; });
+    optsEl.appendChild(b);
+  });
+  pencil.addEventListener('click',(e)=>{
+    e.stopPropagation(); const existing = wrap.querySelector('.answer-editor'); if(existing){ existing.remove(); return; }
+    const editor=document.createElement('div'); editor.className='answer-editor';
+    editor.innerHTML = `<span class="answer-editor-label">Đáp án:</span>` + q.opts.map(o=>`<button type="button" class="answer-editor-opt${o===q._currentAnswer?' active':''}" data-v="${o}">${o}</button>`).join('');
+    editor.querySelectorAll('.answer-editor-opt').forEach(ob=>{
+      ob.addEventListener('click',()=>{ q._currentAnswer = ob.dataset.v; setAnswer('choice_'+key, q._currentAnswer); editor.querySelectorAll('.answer-editor-opt').forEach(x=>x.classList.remove('active')); ob.classList.add('active'); editor.remove(); });
+    });
+    wrap.appendChild(editor);
+  });
+  quizList.appendChild(wrap);
+});
+document.getElementById('quizSubmit').addEventListener('click',()=>{
+  let score=0;
+  quizData.forEach((q,i)=>{
+    const optsEl = quizList.children[i].querySelector('.quiz-opts');
+    if(picks[i]===q._currentAnswer) score++;
+    [...optsEl.children].forEach(b=>{
+      b.disabled=true; if(b.textContent===q._currentAnswer) b.classList.add('correct'); else if(b.textContent===picks[i]) b.classList.add('incorrect');
+    });
+  });
+  const result = document.getElementById('quizResult'); result.classList.add('show');
+  result.innerHTML = `<div class="score">${score}/${quizData.length} câu đúng</div><p style="margin:0.5rem 0 0; color:var(--ink-soft); font-size:0.9rem;">${score>=6 ? 'Xuất sắc! Dấu mộc hoàn thành đã được đóng.' : 'Cố gắng ôn tập thêm nhé.'}</p>`;
+  document.getElementById('quizSubmit').disabled = true; if(score>=6) stamp('quiz');
+});
+</script>
+
+<script src="../../assets/js/script.js"></script>
+<script src="../../assets/js/navbar.js"></script>
+<script src="../../assets/js/theme-picker.js"></script>
+<script src="../../assets/js/theme.js"></script>
+</body>
+</html>

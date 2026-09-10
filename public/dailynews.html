@@ -19,9 +19,8 @@
     <script src="assets/js/theme-picker.js"></script>
     <script src="assets/js/navbar.js"></script>
     
-    <!-- Vocab Scripts -->
-    <script src="assets/js/vocab-external.js"></script>
-    <script src="assets/js/vocab-tooltip.js"></script>
+    <!-- Vocab Scripts (dictionary only — lookup via dblclick, no autowrap) -->
+    <script src="assets/js/vocab-dictionary.js"></script>
 
     <style>
         :root {
@@ -38,39 +37,63 @@
         button, input, textarea, select { font-family: 'Pretendard','Inter',sans-serif; }
 
         /* Wrapper */
-        .dn-wrapper { box-sizing: border-box; }
+        .dn-wrapper {
+            box-sizing: border-box;
+            max-width: 1000px; margin: 0 auto; padding: 15px 20px;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 24px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        }
 
         /* Navbar width sync */
 
         /* Hero wrap */
-        .dn-hero-wrap { position: relative; border-radius: 24px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 8px 36px rgba(99,102,241,0.12); }
+        .hero-section {
+            position: relative;
+            background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #be185d 100%);
+            border-radius: 22px; padding: 34px 38px; color: #fff; margin-bottom: 20px;
+            box-shadow: 0 18px 40px rgba(124,58,237,.18);
+            display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 200px;
+        }
+        .hero-bg { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; pointer-events: none; }
+        .hero-bg::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1px);
+            background-size: 22px 22px; opacity: .45;
+        }
+        .hero-blob { position: absolute; border-radius: 50%; filter: blur(64px); }
+        .hero-blob.b1 { width: 230px; height: 230px; background: rgba(255,255,255,.2); top: -70px; right: -50px; animation: blobFloat 8s ease-in-out infinite; }
+        .hero-blob.b2 { width: 170px; height: 170px; background: rgba(255,255,255,.13); bottom: -70px; left: -40px; animation: blobFloat 11s ease-in-out infinite reverse; }
+        @keyframes blobFloat { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-12px) scale(1.08); } }
+        .hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
+        .hero-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,.16); color: #fff;
+            font-size: .8em; font-weight: 800; padding: 6px 14px; border-radius: 99px;
+            letter-spacing: .6px; text-transform: uppercase;
+            backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.24); margin-bottom: 14px;
+        }
+        .hero-title {
+            font-size: 2.3em; font-weight: 900; margin: 0; line-height: 1.12; letter-spacing: -.6px;
+            background: linear-gradient(120deg, #fff 35%, rgba(255,255,255,.5));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .hero-sub { margin: 9px 0 0; font-size: .95em; color: rgba(255,255,255,.88); font-weight: 500; }
+        .hero-right { position: relative; z-index: 1; flex-shrink: 0; }
+        .hero-icon {
+            width: 110px; height: 110px; border-radius: 50%;
+            background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,255,255,.34);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 22px 44px rgba(0,0,0,.22), inset 0 0 34px rgba(255,255,255,.12);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            animation: heroFloat 4s ease-in-out infinite;
+        }
+        @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
 
-        /* Korean rain canvas */
-        #dnRainCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.55; }
-
-        /* Hero header banner */
-        .dn-hero-header {
-            position: relative; z-index: 1;
-            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 25%, #4c1d95 50%, #831843 100%);
-            padding: 48px 28px 44px; text-align: center;
-        }
-        .dn-hero-header-icon {
-            display: inline-block; width: 48px; height: 48px; border-radius: 14px;
-            background: rgba(255,255,255,0.15); font-size: 1.5em; line-height: 48px;
-            backdrop-filter: blur(6px); margin-bottom: 12px;
-            animation: dnFloatIcon 3s ease-in-out infinite;
-        }
-        @keyframes dnFloatIcon {
-            0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); }
-        }
-        .dn-hero-header h1 {
-            font-size: 1.9em; font-weight: 900; letter-spacing: -0.5px;
-            color: #fff; margin: 0 0 6px 0;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .dn-hero-header p {
-            color: rgba(255,255,255,0.75); font-size: 0.92em; margin: 0; font-weight: 500;
-        }
+        /* Korean rain canvas (chữ Hàn chạy) */
+        #dnRainCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.55; }
 
         /* Search Bar */
         .dn-search-bar {
@@ -78,7 +101,7 @@
             background: rgba(255,255,255,0.65); backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1.5px solid rgba(255,255,255,0.7); border-radius: 16px;
-            padding: 4px; margin-bottom: 24px;
+            padding: 4px; margin-bottom: 24px; position: relative; z-index: 100;
             box-shadow: 0 4px 20px rgba(0,0,0,0.04);
             transition: border-color 0.25s, box-shadow 0.25s;
         }
@@ -100,6 +123,25 @@
         .dn-search-date-btn.active { background: var(--primary); color: #fff; }
         .dn-search-date-wrap { position: relative; flex-shrink: 0; }
         .dn-search-date-wrap input[type="date"] { position: absolute; top: 0; right: 0; width: 42px; height: 42px; opacity: 0; pointer-events: none; }
+        .dn-search-topic-wrap { position: relative; flex-shrink: 0; z-index: 200; }
+        .dn-topic-dropdown {
+            display: none; position: absolute; top: 100%; right: 0; z-index: 999;
+            background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px;
+            background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12); min-width: 200px; max-height: 320px;
+            overflow-y: auto; margin-top: 8px; padding: 6px;
+        }
+        .dn-topic-dropdown.visible { display: block; }
+        .dn-topic-item {
+            display: block; width: 100%; padding: 8px 14px; border: none; border-radius: 10px;
+            background: transparent; cursor: pointer; font-size: 0.85em; font-weight: 600;
+            color: #475569; text-align: left; transition: 0.15s;
+        }
+        .dn-topic-item:hover { background: #eef2ff; color: #4f46e5; }
+        .dn-topic-item.active { background: #eef2ff; color: #4f46e5; }
+        body.dark-mode .dn-topic-dropdown { background: #1e293b; border-color: rgba(255,255,255,0.1); }
+        body.dark-mode .dn-topic-item { color: #cbd5e1; }
+        body.dark-mode .dn-topic-item:hover { background: rgba(99,102,241,0.15); }
         .dn-search-clear-btn {
             width: 42px; height: 42px; border: none; border-radius: 12px;
             background: transparent; cursor: pointer; display: none; align-items: center;
@@ -140,12 +182,82 @@
         .dn-result-count { font-weight: 600; }
 
         /* Hero section */
-        .dn-hero {
-            display: grid; grid-template-columns: 1fr 1fr 1fr 1fr;
-            grid-template-rows: 1fr 1fr; gap: 16px; margin-bottom: 16px; min-height: 400px;
-            position: relative; z-index: 2;
+        .dn-hero { margin-bottom: 20px; }
+        .dn-hero-newest {
+            position: relative; border-radius: 20px; overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
+            display: flex; flex-direction: column;
         }
-        .dn-hero-main { grid-column: 1 / 3; grid-row: 1 / 3; }
+        .dn-hero-newest:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(99,102,241,0.2); }
+        .dn-hero-newest .dn-card-badge { font-size: 0.85em; padding: 6px 14px; }
+        .dn-hero-newest .dn-card-body {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.82) 100%);
+            padding: 50px 24px 20px;
+        }
+        .dn-hero-newest .dn-card-title {
+            color: #fff; font-size: 1.3em; font-weight: 900;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3); -webkit-line-clamp: 3;
+        }
+        .dn-hero-newest .dn-card-meta { color: rgba(255,255,255,0.8); }
+        .dn-hero-newest .dn-card-thumb.no-img::after { font-size: 3em; opacity: 0.3; }
+
+        .dn-hero-hot { }
+        .dn-hero-hot .dn-card {
+            position: relative; border-radius: 18px; overflow: hidden;
+            cursor: pointer; transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            background: var(--bg-card); border: 1px solid var(--border-card);
+            display: flex; flex-direction: column;
+        }
+        .dn-hero-hot .dn-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(99,102,241,0.15); }
+        .dn-hero-hot .dn-card-body {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.75));
+            padding: 30px 14px 14px;
+        }
+        .dn-hero-hot .dn-card-title {
+            color: #fff; font-size: 0.85em; font-weight: 800;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+        }
+        .dn-hero-hot .dn-card-meta { color: rgba(255,255,255,0.75); }
+
+        /* Desktop: 3-col hero (newest 2/3 width, 2 hot stacked 1/3) */
+        @media(min-width:769px) {
+            .dn-hero { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; min-height: 400px; position: relative; z-index: 2; }
+            .dn-hero-newest { grid-row: 1 / 3; min-height: 400px; }
+            .dn-hero-newest .dn-card-thumb { height: 100%; min-height: 400px; }
+            .dn-hero-hot { display: grid; grid-template-rows: 1fr 1fr; gap: 16px; }
+            .dn-hero-hot .dn-card { min-height: 0; }
+            .dn-hero-hot .dn-card-thumb { height: 100%; min-height: 80px; }
+            .dn-hero-hot .dn-card-title { font-size: 0.78em; }
+        }
+
+        /* Mobile: stacked layout */
+        @media(max-width:768px) {
+            .hero-section { padding: 26px 22px; flex-direction: column; align-items: flex-start; min-height: 0; }
+            .hero-right { position: absolute; top: 18px; right: 14px; }
+            .hero-icon { width: 60px; height: 60px; }
+            .hero-icon svg { width: 30px !important; height: 30px !important; }
+            .hero-title { padding-right: 64px; }
+            .hero-title { white-space: nowrap; font-size: 1.35em; }
+            .hero-sub { font-size: .86em; }
+            .dn-hero { display: flex; flex-direction: column; gap: 14px; }
+            .dn-hero-newest { width: 100%; min-height: 220px; }
+            .dn-hero-newest .dn-card-thumb { height: 220px; min-height: 220px; }
+            .dn-hero-hot { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+            .dn-hero-hot .dn-card { min-height: 140px; }
+            .dn-hero-hot .dn-card-thumb { height: 140px; min-height: 140px; }
+        }
+        @media(max-width:480px) {
+            .dn-wrapper { padding: 0 12px; }
+            .dn-hero-newest { min-height: 180px; }
+            .dn-hero-newest .dn-card-thumb { height: 180px; min-height: 180px; }
+            .dn-hero-newest .dn-card-title { font-size: 1.1em; }
+            .dn-fab { bottom: 20px; right: 20px; }
+            .dn-fab button { width: 50px; height: 50px; font-size: 1.5em; }
+        }
 
         /* Cards */
         .dn-card {
@@ -199,35 +311,49 @@
             50% { box-shadow: 0 2px 22px rgba(239,68,68,0.6); }
         }
 
-        /* Main hero card */
-        .dn-hero-main .dn-card-badge { font-size: 0.8em; padding: 6px 14px; }
-        .dn-hero-main .dn-card-title {
-            font-size: 1.25em; -webkit-line-clamp: 3; font-weight: 900;
+        /* Topic badge */
+        .dn-card-topic {
+            position: absolute; top: 44px; left: 10px; z-index: 4;
+            background: rgba(79,70,229,0.88); color: #fff; font-size: 0.65em; font-weight: 700;
+            padding: 3px 8px; border-radius: 12px; backdrop-filter: blur(4px);
         }
-        .dn-hero-main .dn-card-body {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(transparent 0%, rgba(0,0,0,0.15) 30%, rgba(0,0,0,0.78) 100%);
-            color: #fff; padding: 50px 20px 18px;
+        /* View count */
+        .dn-card-views {
+            font-size: 0.68em; color: #94a3b8; display: flex; align-items: center; gap: 3px;
         }
-        .dn-hero-main .dn-card-title { color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.3); }
-        .dn-hero-main .dn-card-meta { color: rgba(255,255,255,0.8); }
-        .dn-hero-main .dn-card-thumb.no-img::after {
-            content: '📰'; font-size: 3em; opacity: 0.3;
+        /* Hot tag */
+        .dn-card-hot {
+            position: absolute; top: 10px; left: 10px; z-index: 4;
+            background: rgba(245,158,11,0.92); color: #fff; font-size: 0.7em; font-weight: 800;
+            padding: 4px 10px; border-radius: 20px; letter-spacing: 0.3px;
+            backdrop-filter: blur(4px); box-shadow: 0 2px 10px rgba(245,158,11,0.45);
+            animation: dnPulseHot 2s ease-in-out infinite;
+        }
+        @keyframes dnPulseHot {
+            0%,100% { box-shadow: 0 2px 10px rgba(245,158,11,0.45); }
+            50% { box-shadow: 0 2px 26px rgba(245,158,11,0.7); }
         }
 
-        /* Side hero cards */
-        .dn-hero .dn-card:not(.dn-hero-main) .dn-card-body {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: linear-gradient(transparent, rgba(0,0,0,0.68));
-            padding: 28px 12px 12px;
+        /* Pagination */
+        .dn-pagination {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            margin-top: 24px; padding: 10px 0;
         }
-        .dn-hero .dn-card:not(.dn-hero-main) .dn-card-title {
-            color: #fff; font-size: 0.78em; font-weight: 800;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.4);
+        .dn-page-btn {
+            width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #e2e8f0;
+            background: #fff; cursor: pointer; font-weight: 700; font-size: 0.8em;
+            color: #64748b; transition: 0.2s; display: flex; align-items: center; justify-content: center;
         }
-        .dn-hero .dn-card:not(.dn-hero-main) .dn-card-meta {
-            color: rgba(255,255,255,0.75);
+        .dn-page-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .dn-page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .dn-page-nav { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid #e2e8f0;
+            background: #fff; cursor: pointer; font-size: 0.9em; color: #64748b;
+            display: flex; align-items: center; justify-content: center; transition: 0.2s;
         }
+        .dn-page-nav:hover { border-color: var(--primary); color: var(--primary); }
+        .dn-page-nav:disabled { opacity: 0.3; cursor: default; }
+        body.dark-mode .dn-page-btn, body.dark-mode .dn-page-nav { background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.1); color: #94a3b8; }
+        body.dark-mode .dn-page-btn.active { background: var(--primary); color: #fff; }
 
         /* Grid below */
         .dn-grid-below { margin-top: 20px; }
@@ -241,7 +367,9 @@
         }
         body.dark-mode .dn-grid-below h3::after { background: linear-gradient(to right, rgba(255,255,255,0.08), transparent); }
         .dn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-        .dn-grid .dn-card-thumb { height: 140px; }
+        .dn-grid .dn-card { position: relative; flex-shrink: 0; }
+        .dn-grid .dn-card-thumb { height: 140px; min-height: 140px; flex-shrink: 0; }
+        .dn-grid .dn-card-body { position: relative !important; background: none !important; padding: 10px 14px 14px !important; }
 
         /* Article Detail Modal */
         .dn-modal-body .dn-modal-thumb { width: 100%; max-height: 220px; object-fit: cover; border-radius: 14px; margin-bottom: 14px; display: block; }
@@ -254,17 +382,6 @@
         .dn-sentence-pair:last-child { border-bottom: none; }
         .dn-sentence-ko { font-size: 1em; font-weight: 600; color: #1e293b; line-height: 1.6; margin-bottom: 3px; }
         .dn-sentence-vi { font-size: 0.85em; color: #64748b; line-height: 1.5; font-style: italic; padding-left: 10px; }
-
-        /* Vocab grid — 2 columns */
-        .dn-vocab-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .dn-vocab-card {
-            background: #fff; border: 1.5px solid #e2e8f0; border-radius: 14px;
-            padding: 14px 16px; transition: 0.2s; text-align: center;
-        }
-        .dn-vocab-card:hover { border-color: #a5b4fc; box-shadow: 0 2px 10px rgba(99,102,241,0.1); }
-        .dn-vocab-card .vc-word { font-size: 1.05em; font-weight: 800; color: #4f46e5; margin-bottom: 4px; }
-        .dn-vocab-card .vc-mean { font-size: 0.82em; color: #64748b; line-height: 1.4; }
-        @media(max-width:480px) { .dn-vocab-grid { grid-template-columns: 1fr; } }
 
         /* Grammar cards */
         .dn-grammar-list { display: flex; flex-direction: column; gap: 12px; }
@@ -390,7 +507,6 @@
         /* Dark mode */
         body.dark-mode .dn-card { background: rgba(15,23,42,0.72); border-color: rgba(255,255,255,0.08); }
         body.dark-mode .dn-card-title { color: #f1f5f9; }
-        body.dark-mode .dn-hero-main .dn-card-title { color: #fff; }
         body.dark-mode .dn-search-bar { background: rgba(15,23,42,0.6); border-color: rgba(255,255,255,0.1); }
         body.dark-mode .dn-search-input { color: #f1f5f9; }
         body.dark-mode .dn-filter-tag { background: rgba(99,102,241,0.2); }
@@ -400,9 +516,6 @@
         body.dark-mode .dn-modal-body .kr-text { color: #cbd5e1; }
         body.dark-mode .dn-sentence-ko { color: #e2e8f0; }
         body.dark-mode .dn-sentence-vi { color: #94a3b8; }
-        body.dark-mode .dn-vocab-card { background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.08); }
-        body.dark-mode .dn-vocab-card .vc-word { color: #a5b4fc; }
-        body.dark-mode .dn-vocab-card .vc-mean { color: #94a3b8; }
         body.dark-mode .dn-grammar-card { background: rgba(30,41,59,0.8); border-color: rgba(255,255,255,0.08); }
         body.dark-mode .dn-grammar-card .gm-title { background: rgba(245,158,11,0.1); color: #fde68a; border-color: rgba(245,158,11,0.12); }
         body.dark-mode .dn-grammar-card .gm-body { color: #cbd5e1; }
@@ -449,38 +562,28 @@
 
         /* Responsive */
         @media(max-width:768px) {
-            .dn-hero { grid-template-columns: 1fr; grid-template-rows: auto; min-height: auto; }
-            .dn-hero-main { grid-column: auto; grid-row: auto; }
-            .dn-hero-main .dn-card-thumb { height: 220px; min-height: 220px; }
-            .dn-hero .dn-card:not(.dn-hero-main) { flex-direction: row; }
-            .dn-hero .dn-card:not(.dn-hero-main) .dn-card-thumb { width: 120px; height: 90px; min-height: 90px; }
-            .dn-hero .dn-card:not(.dn-hero-main) .dn-card-body { position: static; background: none; padding: 10px 12px; }
-            .dn-hero .dn-card:not(.dn-hero-main) .dn-card-title { color: var(--text-main); font-size: 0.85em; text-shadow: none; }
-            .dn-hero .dn-card:not(.dn-hero-main) .dn-card-meta { color: #94a3b8; }
             .dn-grid { grid-template-columns: repeat(2, 1fr); }
-            .dn-grid .dn-card-thumb { height: 110px; }
-            body.dark-mode .dn-hero .dn-card:not(.dn-hero-main) .dn-card-title { color: #f1f5f9; }
-        }
-        @media(max-width:480px) {
-            .dn-wrapper { padding: 0 12px; }
-            .dn-header h1 { font-size: 1.5em; }
-            .dn-grid { grid-template-columns: 1fr; }
-            .dn-hero-main .dn-card-thumb { height: 180px; min-height: 180px; }
-            .dn-fab { bottom: 20px; right: 20px; }
-            .dn-fab button { width: 50px; height: 50px; font-size: 1.5em; }
+            .dn-grid .dn-card-thumb { height: 110px; min-height: 110px; }
+            .dn-grid .dn-card-body { position: relative !important; background: none !important; padding: 10px 12px 14px !important; }
+            .dn-grid .dn-card-title { font-size: 0.82em; }
         }
     </style>
 </head>
 <body>
     <div class="dn-wrapper wrapper">
-        <div class="dn-hero-wrap" id="dnHeroWrap">
-                <div class="dn-hero-header">
-                    <canvas id="dnRainCanvas"></canvas>
-                    <div class="dn-hero-header-icon">📰</div>
-                    <h1>Mỗi Ngày Một Bài Báo</h1>
-                    <p>Mở rộng từ vựng & ngữ pháp mỗi ngày</p>
+        <div class="hero-section dn-hero-header" id="dnHeroWrap">
+            <div class="hero-bg"><canvas id="dnRainCanvas"></canvas><div class="hero-blob b1"></div><div class="hero-blob b2"></div></div>
+            <div class="hero-left">
+                <div class="hero-tag">📰 Đọc báo</div>
+                <h1 class="hero-title">Mỗi Ngày Một Bài Báo</h1>
+                <p class="hero-sub">Mở rộng từ vựng & ngữ pháp mỗi ngày</p>
+            </div>
+            <div class="hero-right">
+                <div class="hero-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="52" height="52" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6z"/></svg>
                 </div>
             </div>
+        </div>
 
             <div class="dn-search-bar">
             <input type="text" class="dn-search-input" id="dnSearchInput" placeholder="Tìm kiếm bài báo (tiếng Hàn hoặc Việt)...">
@@ -491,6 +594,15 @@
                     </svg>
                 </button>
                 <input type="date" id="dnDatePicker">
+            </div>
+            <div class="dn-search-topic-wrap" id="dnTopicWrap">
+                <button class="dn-search-date-btn" id="dnTopicBtn" title="Lọc theo chủ đề">
+                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>
+                    </svg>
+                </button>
+                <div class="dn-topic-dropdown" id="dnTopicDropdown">
+                </div>
             </div>
             <button class="dn-search-clear-btn" id="dnClearBtn" title="Xoá bộ lọc">✕</button>
         </div>
