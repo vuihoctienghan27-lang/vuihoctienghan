@@ -301,6 +301,14 @@
         return Math.max(0, Math.floor((d.totalStudyMinutes||0)/10)*5 + (d.bonusEXP||0));
     }
 
+    // Chống XSS: dữ liệu users/feedback do người dùng tự ghi → escape trước khi vào innerHTML
+    function esc(v) {
+        return String(v == null ? '' : v)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function arg(v) { return esc(JSON.stringify(v == null ? '' : String(v))); }
+
     function fmtDate(s) {
         if (!s) return '—';
         if (s.includes('T')) {
@@ -399,14 +407,14 @@
             const name = u.fullName || '';
             return `<tr>
                 <td class="col-rank" style="color:var(--text-sub);font-weight:700;">${i+1}</td>
-                <td class="col-email user-email" title="${email}">${email || '—'}</td>
-                <td class="col-name" style="font-weight:600;" title="${name}">${name || '—'}</td>
-                <td class="col-streak"><span class="badge ${(u.streakDays||0)>=7?'badge-green':'badge-yellow'}">${u.streakDays||0}🔥</span></td>
-                <td class="col-today">${tm}p</td>
-                <td class="col-total">${fmtMins(u.totalStudyMinutes)}</td>
-                <td class="col-exp" style="font-weight:800;color:#7c3aed;">${(u._exp||0).toLocaleString()}</td>
-                <td class="col-login login-time">${fmtDate(u.lastLoginAt)}</td>
-                <td class="col-join login-time">${fmtDate(u.joinDate)}</td>
+                <td class="col-email user-email" title="${esc(email)}">${esc(email || '—')}</td>
+                <td class="col-name" style="font-weight:600;" title="${esc(name)}">${esc(name || '—')}</td>
+                <td class="col-streak"><span class="badge ${(u.streakDays||0)>=7?'badge-green':'badge-yellow'}">${esc(u.streakDays||0)}🔥</span></td>
+                <td class="col-today">${esc(tm)}p</td>
+                <td class="col-total">${esc(fmtMins(u.totalStudyMinutes))}</td>
+                <td class="col-exp" style="font-weight:800;color:#7c3aed;">${esc((u._exp||0).toLocaleString())}</td>
+                <td class="col-login login-time">${esc(fmtDate(String(u.lastLoginAt || '')))}</td>
+                <td class="col-join login-time">${esc(fmtDate(String(u.joinDate || '')))}</td>
             </tr>`;
         }).join('');
     }
@@ -636,21 +644,22 @@
             const date = fb.createdAt && fb.createdAt.toDate ? fb.createdAt.toDate() : null;
             const dateLabel = date ? `${String(date.getDate()).padStart(2,'0')}/${String(date.getMonth()+1).padStart(2,'0')}/${date.getFullYear()}` : '—';
             const timeLabel = date ? `${String(date.getHours()).padStart(2,'0')}:${String(date.getMinutes()).padStart(2,'0')}` : '—';
-            const status = fb.status || 'new';
+            // status do người gửi tự đặt được → chỉ chấp nhận 3 giá trị hợp lệ
+            const status = ['new', 'read', 'done'].includes(fb.status) ? fb.status : 'new';
             if (dateLabel !== lastDate) {
                 lastDate = dateLabel;
                 html += `<div class="fb-date-group">📅 ${dateLabel}</div>`;
             }
             html += `<div class="feedback-item" style="border-left: 3px solid ${status==='new'?'#ef4444':status==='read'?'#f59e0b':'#10b981'};">
                 <div style="display:flex;align-items:flex-start;gap:12px;">
-                    <div class="fb-status-dot ${status}" onclick="toggleFeedbackStatus('${fb._id}','${status}')" title="${status==='new'?'Chưa đọc - Nhấp để đánh dấu đã đọc':status==='read'?'Đã đọc - Nhấp để đánh dấu đã xử lý':'Đã xử lý'}"></div>
+                    <div class="fb-status-dot ${status}" onclick="toggleFeedbackStatus(${arg(fb._id)},${arg(status)})" title="${status==='new'?'Chưa đọc - Nhấp để đánh dấu đã đọc':status==='read'?'Đã đọc - Nhấp để đánh dấu đã xử lý':'Đã xử lý'}"></div>
                     <div style="flex:1;min-width:0;">
                         <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:4px;">
-                            <span style="font-weight:700;font-size:0.95em;">${fb.name || 'Ẩn danh'}</span>
+                            <span style="font-weight:700;font-size:0.95em;">${esc(fb.name || 'Ẩn danh')}</span>
                             <span style="font-size:0.8em;color:var(--text-sub);">${timeLabel}</span>
                         </div>
-                        <div style="font-size:0.78em;color:#2563eb;margin-bottom:4px;">${fb.email || ''}</div>
-                        <div style="line-height:1.6;white-space:pre-wrap;font-size:0.9em;">${fb.message || ''}</div>
+                        <div style="font-size:0.78em;color:#2563eb;margin-bottom:4px;">${esc(fb.email || '')}</div>
+                        <div style="line-height:1.6;white-space:pre-wrap;font-size:0.9em;">${esc(fb.message || '')}</div>
                         <div style="margin-top:6px;">
                             <span class="fb-status-label" style="color:${status==='new'?'#ef4444':status==='read'?'#f59e0b':'#10b981'};">${status==='new'?'● Chưa đọc':status==='read'?'◉ Đã đọc':'✓ Đã xử lý'}</span>
                         </div>

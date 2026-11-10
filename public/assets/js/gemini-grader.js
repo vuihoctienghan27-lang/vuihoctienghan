@@ -249,6 +249,13 @@
         catch(e) { throw new Error('Tất cả AI đều lỗi: ' + e.message); }
     }
 
+    // Chống XSS: nhận xét do AI sinh ra (có thể bị học viên lái nội dung) → escape trước khi vào innerHTML
+    function escapeHTML(str) {
+        return String(str == null ? '' : str)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+
     // ── Parse JSON response ──
     function parseResult(raw) {
         var jsonMatch = raw.match(/\{[\s\S]*\}/);
@@ -351,7 +358,7 @@
             showResult(sc, raw);
         }).catch(function(err) {
             console.warn('[AI] Thất bại:', err.message);
-            if (sc) sc.innerHTML = '<strong style="color:#ef4444;">⚠ ' + err.message + '</strong>';
+            if (sc) sc.innerHTML = '<strong style="color:#ef4444;">⚠ ' + escapeHTML(err.message) + '</strong>';
         });
     };
 
@@ -370,7 +377,7 @@
             showResult(sc, raw);
         }).catch(function(err) {
             console.warn('[Gemini] Thất bại:', err.message);
-            sc.innerHTML = '<strong style="color:#ef4444;">⚠ Gemini lỗi: ' + err.message + '</strong>';
+            sc.innerHTML = '<strong style="color:#ef4444;">⚠ Gemini lỗi: ' + escapeHTML(err.message) + '</strong>';
         });
     };
 
@@ -380,7 +387,7 @@
             (ai.score !== null ? ai.score + '/5' : '—') + '</div>';
         if (ai.feedback) {
             html += '<div style="font-size:0.95em;color:#334155;padding:10px 14px;background:#f0f9ff;border-radius:8px;border-left:3px solid #3b82f6;line-height:1.6;">' +
-                '<span style="font-weight:600;color:#2563eb;">AI nhận xét:</span><br>' + ai.feedback + '</div>';
+                '<span style="font-weight:600;color:#2563eb;">AI nhận xét:</span><br>' + escapeHTML(ai.feedback).replace(/\n/g, '<br>') + '</div>';
         }
         if (sc) sc.innerHTML = html;
     }

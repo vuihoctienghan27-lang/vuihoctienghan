@@ -440,6 +440,24 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
     const ADMIN_EMAILS = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+    const DEFAULT_AVATAR = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';
+
+    // ── Chống XSS: MỌI dữ liệu người dùng phải đi qua các hàm này trước khi vào innerHTML ──
+    // esc(v)     → chèn làm text hoặc giá trị thuộc tính HTML
+    // arg(v)     → chèn làm tham số chuỗi trong onclick="fn(${arg(x)})" (đã có dấu nháy)
+    // safeUrl(u) → chỉ chấp nhận ảnh https, còn lại dùng avatar mặc định
+    function esc(v) {
+      return String(v == null ? '' : v)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function arg(v) {
+      return esc(JSON.stringify(v == null ? '' : String(v)));
+    }
+    function safeUrl(u) {
+      u = String(u || '').trim();
+      return /^https:\/\//i.test(u) ? u : DEFAULT_AVATAR;
+    }
 
     let chatBoxOpen = false;
     let isChatBoxExpanded = false;
@@ -606,15 +624,16 @@
             card.style.padding = '10px 12px';
             card.style.borderRadius = '10px';
             card.style.border = '1px solid #334155';
+            const openThread = `window.vuiHocChat.openQAThread(${arg(doc.id)}, ${esc(JSON.stringify(q))})`;
             card.innerHTML = `
               <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 6px;">
-                <div style="font-size: 13px; font-weight: bold; color: #f87171; margin-bottom: 4px; cursor: pointer; flex: 1;" onclick="window.vuiHocChat.openQAThread('${doc.id}', ${JSON.stringify(q).replace(/"/g, '&quot;')})">❓ ${q.title}</div>
-                ${canManageQ ? `<div style="display: flex; gap: 4px;"><button onclick="window.vuiHocChat.editQuestion('${doc.id}', '${q.title.replace(/'/g, "\\'")}', '${q.content.replace(/'/g, "\\'")}')" class="flat-btn-edit">Sửa</button><button onclick="window.vuiHocChat.deleteQuestion('${doc.id}')" class="flat-btn-delete">Xóa</button></div>` : ''}
+                <div style="font-size: 13px; font-weight: bold; color: #f87171; margin-bottom: 4px; cursor: pointer; flex: 1;" onclick="${openThread}">❓ ${esc(q.title)}</div>
+                ${canManageQ ? `<div style="display: flex; gap: 4px;"><button onclick="window.vuiHocChat.editQuestion(${arg(doc.id)}, ${arg(q.title)}, ${arg(q.content)})" class="flat-btn-edit">Sửa</button><button onclick="window.vuiHocChat.deleteQuestion(${arg(doc.id)})" class="flat-btn-delete">Xóa</button></div>` : ''}
               </div>
-              <div style="font-size: 12px; color: #cbd5e1; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; cursor: pointer;" onclick="window.vuiHocChat.openQAThread('${doc.id}', ${JSON.stringify(q).replace(/"/g, '&quot;')})">${q.content}</div>
+              <div style="font-size: 12px; color: #cbd5e1; margin-bottom: 8px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; cursor: pointer;" onclick="${openThread}">${esc(q.content)}</div>
               <div style="font-size: 10px; color: #94a3b8; display: flex; justify-content: space-between; align-items: center;">
-                <span>Bởi: <strong>${q.userName}</strong></span>
-                <span style="color: #f87171; font-weight: bold; cursor: pointer;" onclick="window.vuiHocChat.openQAThread('${doc.id}', ${JSON.stringify(q).replace(/"/g, '&quot;')})">💬 Xem & Trả lời →</span>
+                <span>Bởi: <strong>${esc(q.userName)}</strong></span>
+                <span style="color: #f87171; font-weight: bold; cursor: pointer;" onclick="${openThread}">💬 Xem & Trả lời →</span>
               </div>
             `;
             qaStream.appendChild(card);
@@ -662,9 +681,9 @@
         document.getElementById('qa-list-view').style.display = 'none';
         document.getElementById('qa-thread-view').style.display = 'flex';
         document.getElementById('qa-thread-header-content').innerHTML = `
-          <div style="font-size: 13px; font-weight: bold; color: #f87171; margin-bottom: 4px;">❓ ${qData.title}</div>
-          <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4; margin-bottom: 6px;">${qData.content}</div>
-          <div style="font-size: 10px; color: #94a3b8;">Đăng bởi: <strong>${qData.userName}</strong> • ${qData.timestamp}</div>
+          <div style="font-size: 13px; font-weight: bold; color: #f87171; margin-bottom: 4px;">❓ ${esc(qData.title)}</div>
+          <div style="font-size: 12px; color: #e2e8f0; line-height: 1.4; margin-bottom: 6px;">${esc(qData.content)}</div>
+          <div style="font-size: 10px; color: #94a3b8;">Đăng bởi: <strong>${esc(qData.userName)}</strong> • ${esc(qData.timestamp)}</div>
         `;
         const commentsStream = document.getElementById('qa-comments-stream');
         if (qaThreadUnsubscribe) qaThreadUnsubscribe();
@@ -685,13 +704,13 @@
             cDiv.style.border = '1px solid #334155';
             cDiv.innerHTML = `
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-                <span style="font-weight: bold; color: #93c5fd; cursor: pointer;" onclick="window.vuiHocChat.openUserProfileModal('${c.userId}', '${c.userName}', '${c.userAvatar}')">${c.userName}</span>
-                <span style="font-size: 10px; color: #64748b;">${c.timestamp || ''}</span>
+                <span style="font-weight: bold; color: #93c5fd; cursor: pointer;" onclick="window.vuiHocChat.openUserProfileModal(${arg(c.userId)}, ${arg(c.userName)}, ${arg(safeUrl(c.userAvatar))})">${esc(c.userName)}</span>
+                <span style="font-size: 10px; color: #64748b;">${esc(c.timestamp || '')}</span>
               </div>
-              <div style="color: #cbd5e1; font-size: 12px; line-height: 1.4; margin-bottom: 6px; word-break: break-word;">${c.content}</div>
+              <div style="color: #cbd5e1; font-size: 12px; line-height: 1.4; margin-bottom: 6px; word-break: break-word;">${esc(c.content)}</div>
               <div style="display: flex; justify-content: space-between; align-items: center; font-size: 10px;">
-                <button onclick="window.vuiHocChat.replyToComment('${c.userName}')" style="background: none; border: none; color: #f87171; cursor: pointer; font-weight: bold;">💬 Trả lời</button>
-                ${canManage ? `<button onclick="window.vuiHocChat.deleteComment('${cDoc.id}')" class="flat-btn-delete">Xóa</button>` : ''}
+                <button onclick="window.vuiHocChat.replyToComment(${arg(c.userName)})" style="background: none; border: none; color: #f87171; cursor: pointer; font-weight: bold;">💬 Trả lời</button>
+                ${canManage ? `<button onclick="window.vuiHocChat.deleteComment(${arg(cDoc.id)})" class="flat-btn-delete">Xóa</button>` : ''}
               </div>
             `;
             commentsStream.appendChild(cDiv);
@@ -714,6 +733,11 @@
       },
       cancelReplyTo: function () {
         document.getElementById('reply-indicator').style.display = 'none';
+      },
+      deletePublicMessage: function (msgId) {
+        if (confirm("Bạn có chắc muốn xóa tin nhắn này?")) {
+          db.collection('public_messages').doc(msgId).delete();
+        }
       },
       deleteComment: function (commentId) {
         if (confirm("Bạn có chắc muốn xóa bình luận này?")) {
@@ -746,13 +770,13 @@
             row.style.padding = '6px 8px';
             row.style.borderRadius = '6px';
             row.innerHTML = `
-              <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;" onclick="window.vuiHocChat.openUserProfileModal('${req.senderId}', '${req.senderName}', '${req.senderAvatar}')">
-                <img src="${req.senderAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;" />
-                <span style="font-size: 12px; font-weight: bold; color: white;">${req.senderName}</span>
+              <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;" onclick="window.vuiHocChat.openUserProfileModal(${arg(req.senderId)}, ${arg(req.senderName)}, ${arg(safeUrl(req.senderAvatar))})">
+                <img src="${esc(safeUrl(req.senderAvatar))}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;" />
+                <span style="font-size: 12px; font-weight: bold; color: white;">${esc(req.senderName)}</span>
               </div>
               <div style="display: flex; gap: 4px;">
-                <button onclick="window.vuiHocChat.acceptFriendRequest('${doc.id}', '${req.senderId}', '${req.senderName.replace(/'/g, "\\'")}', '${req.senderAvatar || ''}')" style="background: #059669; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; cursor: pointer;">Chấp nhận</button>
-                <button onclick="window.vuiHocChat.declineFriendRequest('${doc.id}')" style="background: #dc2626; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; cursor: pointer;">Từ chối</button>
+                <button onclick="window.vuiHocChat.acceptFriendRequest(${arg(doc.id)}, ${arg(req.senderId)}, ${arg(req.senderName)}, ${arg(req.senderAvatar ? safeUrl(req.senderAvatar) : '')})" style="background: #059669; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; cursor: pointer;">Chấp nhận</button>
+                <button onclick="window.vuiHocChat.declineFriendRequest(${arg(doc.id)})" style="background: #dc2626; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; cursor: pointer;">Từ chối</button>
               </div>
             `;
             recStream.appendChild(row);
@@ -777,8 +801,8 @@
             row.style.padding = '6px 8px';
             row.style.borderRadius = '6px';
             row.innerHTML = `
-              <span style="font-size: 12px; color: white;">${req.receiverName || 'Thành viên'}</span>
-              <button onclick="window.vuiHocChat.declineFriendRequest('${doc.id}')" style="background: #475569; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; cursor: pointer;">Hủy</button>
+              <span style="font-size: 12px; color: white;">${esc(req.receiverName || 'Thành viên')}</span>
+              <button onclick="window.vuiHocChat.declineFriendRequest(${arg(doc.id)})" style="background: #475569; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; cursor: pointer;">Hủy</button>
             `;
             sentStream.appendChild(row);
           });
@@ -807,13 +831,13 @@
             fRow.style.padding = '6px 8px';
             fRow.style.borderRadius = '6px';
             fRow.innerHTML = `
-              <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;" onclick="window.vuiHocChat.openUserProfileModal('${partnerId}', '${partnerName.replace(/'/g, "\\'")}', '${partnerAvatar}')">
-                <img src="${partnerAvatar}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;" />
-                <span style="font-size: 12px; font-weight: bold; color: white;">${partnerName}</span>
+              <div style="display: flex; align-items: center; gap: 6px; cursor: pointer;" onclick="window.vuiHocChat.openUserProfileModal(${arg(partnerId)}, ${arg(partnerName)}, ${arg(safeUrl(partnerAvatar))})">
+                <img src="${esc(safeUrl(partnerAvatar))}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;" />
+                <span style="font-size: 12px; font-weight: bold; color: white;">${esc(partnerName)}</span>
               </div>
               <div style="display: flex; gap: 4px;">
-                <button onclick="window.vuiHocChat.openDirectChat('${partnerId}', '${partnerName.replace(/'/g, "\\'")}')" style="background: #dc2626; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; cursor: pointer;">💬 Nhắn tin</button>
-                <button onclick="window.vuiHocChat.unfriendUser('${partnerId}', '${partnerName.replace(/'/g, "\\'")}')" title="Hủy kết bạn" style="background: #334155; color: #94a3b8; border: none; border-radius: 4px; padding: 4px 6px; font-size: 10px; cursor: pointer;">✕</button>
+                <button onclick="window.vuiHocChat.openDirectChat(${arg(partnerId)}, ${arg(partnerName)})" style="background: #dc2626; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 10px; font-weight: bold; cursor: pointer;">💬 Nhắn tin</button>
+                <button onclick="window.vuiHocChat.unfriendUser(${arg(partnerId)}, ${arg(partnerName)})" title="Hủy kết bạn" style="background: #334155; color: #94a3b8; border: none; border-radius: 4px; padding: 4px 6px; font-size: 10px; cursor: pointer;">✕</button>
               </div>
             `;
             friendsStream.appendChild(fRow);
@@ -846,8 +870,8 @@
               dRow.onclick = function () { window.vuiHocChat.openDirectChat(p.id, p.name); };
               dRow.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 6px;">
-                  <img src="${p.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;" />
-                  <span style="font-size: 12px; font-weight: bold; color: white;">${p.name}</span>
+                  <img src="${esc(safeUrl(p.avatar))}" style="width:24px; height:24px; border-radius:50%; object-fit:cover;" />
+                  <span style="font-size: 12px; font-weight: bold; color: white;">${esc(p.name)}</span>
                 </div>
                 <span style="font-size: 10px; color: #f87171;">Mở chat →</span>
               `;
@@ -1095,7 +1119,7 @@
         const userEmail = (user.email || '').toLowerCase();
         isCurrentUserAdmin = ADMIN_EMAILS.includes(userEmail);
         const name = user.displayName || 'Thành viên Google';
-        userLabel.innerHTML = `<span style="color: #4ade80;">🟢 ${name} ${isCurrentUserAdmin ? '<span style="color:#fbbf24; font-weight:bold;">👑 Admin</span>' : ''}</span>`;
+        userLabel.innerHTML = `<span style="color: #4ade80;">🟢 ${esc(name)} ${isCurrentUserAdmin ? '<span style="color:#fbbf24; font-weight:bold;">👑 Admin</span>' : ''}</span>`;
         chatInput.disabled = false;
         chatSendBtn.disabled = false;
         chatInput.placeholder = `Nhắn tin với tư cách ${name}...`;
@@ -1205,18 +1229,18 @@
         msgDiv.style.display = 'flex';
         msgDiv.style.flexDirection = 'column';
         msgDiv.style.alignItems = isMe ? 'flex-end' : 'flex-start';
-        const avatar = data.userAvatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';
+        const avatar = safeUrl(data.userAvatar);
 
         msgDiv.innerHTML = `
-          <div style="font-size: 10px; color: #64748b; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; cursor: pointer;" onclick="window.vuiHocChat.openUserProfileModal('${data.userId}', '${data.userName}', '${avatar}')">
-            <img src="${avatar}" style="width:14px; height:14px; border-radius:50%; object-fit:cover;" />
-            <span style="font-weight: 600; color: #94a3b8;">${data.userName || 'Thành viên'}</span>
-            <span>• ${data.timestamp || ''}</span>
+          <div style="font-size: 10px; color: #64748b; margin-bottom: 2px; display: flex; align-items: center; gap: 4px; cursor: pointer;" onclick="window.vuiHocChat.openUserProfileModal(${arg(data.userId)}, ${arg(data.userName)}, ${arg(avatar)})">
+            <img src="${esc(avatar)}" style="width:14px; height:14px; border-radius:50%; object-fit:cover;" />
+            <span style="font-weight: 600; color: #94a3b8;">${esc(data.userName || 'Thành viên')}</span>
+            <span>• ${esc(data.timestamp || '')}</span>
           </div>
           <div style="display: flex; align-items: center; gap: 4px; max-width: 86%;">
-            ${isMe && canDelete ? `<button onclick="db.collection('public_messages').doc('${doc.id}').delete()" class="flat-btn-delete">Xóa</button>` : ''}
-            <div style="background: ${isMe ? '#dc2626' : '#1e293b'}; color: white; padding: 7px 12px; border-radius: 12px; font-size: 12px; word-break: break-word;">${data.content}</div>
-            ${!isMe && canDelete ? `<button onclick="db.collection('public_messages').doc('${doc.id}').delete()" class="flat-btn-delete">Xóa</button>` : ''}
+            ${isMe && canDelete ? `<button onclick="window.vuiHocChat.deletePublicMessage(${arg(doc.id)})" class="flat-btn-delete">Xóa</button>` : ''}
+            <div style="background: ${isMe ? '#dc2626' : '#1e293b'}; color: white; padding: 7px 12px; border-radius: 12px; font-size: 12px; word-break: break-word;">${esc(data.content)}</div>
+            ${!isMe && canDelete ? `<button onclick="window.vuiHocChat.deletePublicMessage(${arg(doc.id)})" class="flat-btn-delete">Xóa</button>` : ''}
           </div>
         `;
         msgStream.appendChild(msgDiv);

@@ -24,12 +24,114 @@ service cloud.firestore {
       return get(/databases/$(database)/documents/friendships/$(friendshipId)).data.users;
     }
 
+    // ===== HELPERS KIỂM TRA DỮ LIỆU =====
+    // Trường f (nếu có) phải là chuỗi dài tối đa n ký tự
+    function strMax(data, f, n) {
+      return !(f in data) || (data[f] is string && data[f].size() <= n);
+    }
+    // Không được đổi chủ sở hữu khi sửa bài/bình luận
+    function keepsOwner() {
+      return request.resource.data.userId == resource.data.userId;
+    }
+
+    // ===== NGƯỜI DÙNG: các luật chống gian lận EXP / streak / vai trò =====
+    // Lưu ý: rules chỉ GIỚI HẠN tốc độ cộng điểm, không chặn tuyệt đối việc chạy script cày điểm.
+    // Muốn chặn hẳn: chuyển phần cộng EXP sang Cloud Function.
+    function uChanged(f) {
+      return f in request.resource.data.diff(resource.data).affectedKeys();
+    }
+    function uOld(f) { return resource.data.get(f, 0); }
+    function uNew(f) { return request.resource.data.get(f, 0); }
+    // Trường timestamp f phải = thời điểm server, và cách lần trước ít nhất `secs` giây
+    function tickedAfter(f, secs) {
+      return request.resource.data.get(f, null) == request.time
+        && (resource.data.get(f, null) == null
+            || request.time > resource.data[f] + duration.value(secs, 's'));
+    }
+    // Ngày dạng 'YYYY-MM-DD', không vượt quá ngày mai (giờ server)
+    function validDay(s) {
+      return s is string && s.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && timestamp.date(int(s.split('-')[0]), int(s.split('-')[1]), int(s.split('-')[2]))
+           <= request.time + duration.value(1, 'd');
+    }
+    // Hồ sơ: giới hạn kiểu + độ dài; avatar chỉ nhận https
+    function profileOk(d) {
+      return strMax(d, 'fullName', 60) && strMax(d, 'name', 60) && strMax(d, 'bio', 200)
+        && strMax(d, 'dob', 20) && strMax(d, 'studyPurpose', 200) && strMax(d, 'studyDuration', 50)
+        && (!('avatar' in d) || (d.avatar is string && d.avatar.size() <= 1000 && d.avatar.matches('^https://.*')))
+        && (!('email' in d) || d.email == request.auth.token.email)
+        && (!('role' in d) || d.role == 'member')
+        && (!('roleTitle' in d) || d.roleTitle in ['Thành viên mới', 'Thành viên cộng đồng'])
+        && (!('bonusEXPAt' in d) || d.bonusEXPAt is timestamp)
+        && (!('studyTickAt' in d) || d.studyTickAt is timestamp);
+    }
+    // bonusEXP: chỉ tăng, tối đa 200 mỗi lần, cách nhau >= 20 giây
+    function bonusOk() {
+      return !uChanged('bonusEXP') || (
+        uNew('bonusEXP') is number && (
+          uNew('bonusEXP') == uOld('bonusEXP') ||
+          (uNew('bonusEXP') > uOld('bonusEXP') && uNew('bonusEXP') - uOld('bonusEXP') <= 200
+            && tickedAfter('bonusEXPAt', 20))
+        ));
+    }
+    // totalStudyMinutes: tăng tối đa 1 phút mỗi lần, cách nhau >= 50 giây
+    function studyOk() {
+      return !uChanged('totalStudyMinutes') || (
+        uNew('totalStudyMinutes') is number && (
+          uNew('totalStudyMinutes') == uOld('totalStudyMinutes') ||
+          (uNew('totalStudyMinutes') == uOld('totalStudyMinutes') + 1 && tickedAfter('studyTickAt', 50))
+        ));
+    }
+    // streakDays: chỉ về 1 hoặc +1, và +1 phải đi kèm lastLoginDate tiến lên ngày mới hợp lệ
+    function streakOk() {
+      return !uChanged('streakDays') || (
+        uNew('streakDays') is number && (
+          uNew('streakDays') == 1 ||
+          (uNew('streakDays') == uOld('streakDays') + 1 && uChanged('lastLoginDate')
+            && validDay(request.resource.data.lastLoginDate)
+            && request.resource.data.lastLoginDate > resource.data.get('lastLoginDate', ''))
+        ));
+    }
+    // reputation (điểm uy tín chat): chỉ tăng, tối đa 20 mỗi lần
+    function reputationOk() {
+      return !uChanged('reputation') || (
+        uNew('reputation') is number && uNew('reputation') >= uOld('reputation')
+        && uNew('reputation') - uOld('reputation') <= 20);
+    }
+    function userCreateOk() {
+      let d = request.resource.data;
+      return profileOk(d)
+        && d.get('bonusEXP', 0) == 0
+        && d.get('totalStudyMinutes', 0) in [0, 1]
+        && d.get('streakDays', 0) in [0, 1]
+        && d.get('reputation', 0) == 0;
+    }
+    function userUpdateOk() {
+      let d = request.resource.data;
+      return (!uChanged('fullName') || strMax(d, 'fullName', 60))
+        && (!uChanged('name') || strMax(d, 'name', 60))
+        && (!uChanged('bio') || strMax(d, 'bio', 200))
+        && (!uChanged('dob') || strMax(d, 'dob', 20))
+        && (!uChanged('studyPurpose') || strMax(d, 'studyPurpose', 200))
+        && (!uChanged('studyDuration') || strMax(d, 'studyDuration', 50))
+        && (!uChanged('avatar') || (d.avatar is string && d.avatar.size() <= 1000 && d.avatar.matches('^https://.*')))
+        && (!uChanged('email') || d.email == request.auth.token.email)
+        && (!uChanged('role') || d.role == 'member')
+        && (!uChanged('roleTitle') || d.roleTitle in ['Thành viên mới', 'Thành viên cộng đồng'])
+        && (!uChanged('bonusEXPAt') || d.bonusEXPAt == request.time)
+        && (!uChanged('studyTickAt') || d.studyTickAt == request.time)
+        && bonusOk() && studyOk() && streakOk() && reputationOk();
+    }
+
     // ===== NGƯỜI DÙNG =====
     // - Đọc: công khai (bảng xếp hạng leaderboard.html đọc danh sách users khi chưa đăng nhập)
-    // - Ghi: chỉ chính mình (admin được phép ghi để chạy tool bảo trì như chuẩn hóa EXP)
+    // - Ghi: chính mình (qua các luật kiểm tra ở trên); admin toàn quyền (tool bảo trì chuẩn hóa EXP)
     match /users/{userId} {
       allow read: if true;
-      allow write: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow write: if isAdmin();
+      allow create: if isSignedIn() && request.auth.uid == userId && userCreateOk();
+      allow update: if isSignedIn() && request.auth.uid == userId && userUpdateOk();
+      allow delete: if isSignedIn() && request.auth.uid == userId;
 
       // Từ vựng đã lưu (chỉ chủ sở hữu)
       match /vocabulary/{docId} {
@@ -40,42 +142,73 @@ service cloud.firestore {
       match /examAttempts/{attemptId} {
         allow read, write: if isSignedIn() && request.auth.uid == userId;
       }
+
+      // Tiến độ học Shared Folder (lưu riêng cho từng học viên)
+      match /shared_progress/{docId} {
+        allow read, write: if isSignedIn() && request.auth.uid == userId;
+      }
     }
 
     // ===== DIỄN ĐÀN =====
+    function postOk(d) {
+      return strMax(d, 'title', 200) && strMax(d, 'content', 5000) && strMax(d, 'userName', 60);
+    }
     match /forum_posts/{postId} {
       allow read: if true;
-      allow create: if isDocOwner();
-      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isDocOwner() && postOk(request.resource.data)
+        && request.resource.data.get('replyCount', 0) == 0;
+      allow update: if isSignedIn() && (isAdmin() || (
+        request.auth.uid == resource.data.userId && keepsOwner() && postOk(request.resource.data)
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['replyCount'])));
+      // Người bình luận được tăng/giảm replyCount đúng 1 đơn vị (forum.js gửi kèm batch khi trả lời/xóa)
+      allow update: if isSignedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['replyCount'])
+        && request.resource.data.replyCount is int
+        && (request.resource.data.replyCount == resource.data.get('replyCount', 0) + 1
+            || request.resource.data.replyCount == resource.data.get('replyCount', 0) - 1);
+      allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
     }
     match /forum_replies/{replyId} {
       allow read: if true;
-      allow create: if isDocOwner();
-      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isDocOwner() && strMax(request.resource.data, 'text', 2000)
+        && strMax(request.resource.data, 'userName', 60);
+      allow update: if isSignedIn() && (isAdmin() || (request.auth.uid == resource.data.userId
+        && keepsOwner() && strMax(request.resource.data, 'text', 2000)));
+      allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
     }
 
     // ===== HỎI ĐÁP =====
+    function commentOk(d) {
+      return strMax(d, 'content', 2000) && strMax(d, 'userName', 60) && strMax(d, 'userAvatar', 1000)
+        && strMax(d, 'timestamp', 40);
+    }
     match /questions/{questionId} {
       allow read: if true;
-      allow create: if isDocOwner();
-      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isDocOwner() && postOk(request.resource.data) && commentOk(request.resource.data);
+      allow update: if isSignedIn() && (isAdmin() || (request.auth.uid == resource.data.userId
+        && keepsOwner() && postOk(request.resource.data)));
+      allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
       match /comments/{commentId} {
         allow read: if true;
-        allow create: if isDocOwner();
-        allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+        allow create: if isDocOwner() && commentOk(request.resource.data);
+        allow update: if isSignedIn() && (isAdmin() || (request.auth.uid == resource.data.userId
+          && keepsOwner() && commentOk(request.resource.data)));
+        allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
       }
     }
 
     // ===== CHAT CÔNG KHAI =====
     match /public_messages/{msgId} {
       allow read: if true;
-      allow create: if isDocOwner();
+      allow create: if isDocOwner() && strMax(request.resource.data, 'content', 1000)
+        && commentOk(request.resource.data);
       allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
     }
     // Chat nổi trên trang chủ (landing): ai cũng xem được, chỉ đăng khi đăng nhập
     match /global_chats/{msgId} {
       allow read: if true;
-      allow create: if isDocOwner();
+      allow create: if isDocOwner() && strMax(request.resource.data, 'text', 1000)
+        && strMax(request.resource.data, 'userName', 60);
       allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
     }
 
@@ -87,7 +220,14 @@ service cloud.firestore {
         request.auth.uid == resource.data.receiverId ||
         isAdmin()
       );
-      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+      allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid
+        && request.resource.data.receiverId is string
+        && request.resource.data.receiverId != request.auth.uid
+        && strMax(request.resource.data, 'senderName', 60)
+        && strMax(request.resource.data, 'receiverName', 60)
+        && (!('senderAvatar' in request.resource.data) || request.resource.data.senderAvatar == ''
+            || (request.resource.data.senderAvatar is string && request.resource.data.senderAvatar.size() <= 1000
+                && request.resource.data.senderAvatar.matches('^https://.*')));
       allow delete: if isSignedIn() && (
         request.auth.uid == resource.data.senderId ||
         request.auth.uid == resource.data.receiverId ||
@@ -131,17 +271,28 @@ service cloud.firestore {
     // Chỉ người nhận (userId) đọc/cập nhật được; người gửi phải là chính mình
     match /notifications/{notifId} {
       allow read: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
-      allow create: if isSignedIn() && request.resource.data.fromUserId == request.auth.uid;
-      allow update, delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isSignedIn() && request.resource.data.fromUserId == request.auth.uid
+        && request.resource.data.userId is string
+        && request.resource.data.userId != request.auth.uid
+        && request.resource.data.get('read', false) == false
+        && strMax(request.resource.data, 'fromUserName', 60)
+        && strMax(request.resource.data, 'type', 30)
+        && strMax(request.resource.data, 'message', 500)
+        && strMax(request.resource.data, 'postTitle', 200);
+      // Người nhận chỉ được đánh dấu đã đọc
+      allow update: if isSignedIn() && (isAdmin() || (request.auth.uid == resource.data.userId
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])));
+      allow delete: if isSignedIn() && (request.auth.uid == resource.data.userId || isAdmin());
     }
 
     // ===== BÀI BÁO (daily news) =====
     match /daily-articles/{articleId} {
       allow read: if true;
       allow create, delete: if isAdmin();
-      // Admin toàn quyền; mọi người chỉ được tăng lượt xem (viewCount)
+      // Admin toàn quyền; mọi người chỉ được tăng lượt xem (viewCount) đúng +1 mỗi lần
       allow update: if isAdmin()
-        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount']);
+        || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['viewCount'])
+            && request.resource.data.viewCount == resource.data.get('viewCount', 0) + 1);
     }
 
     // ===== NỘI DUNG BÀI HỌC (media/đáp án đồng bộ) =====
@@ -157,19 +308,108 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // ===== CẤU HÌNH ỨNG DỤNG (API key AI chấm điểm) =====
-    // Key nạp động từ Firestore để không hardcode trong mã nguồn (tránh lộ khi push GitHub).
-    // LƯU Ý: client đọc được nên key vẫn có thể bị trích xuất qua DevTools.
-    // Muốn siết hơn: đổi read thành `if isSignedIn()` (yêu cầu đăng nhập mới chấm AI).
+    // ===== CẤU HÌNH ỨNG DỤNG =====
+    // TẠM THỜI: gemini-grader.js vẫn đọc khoá AI từ đây (project chưa bật Blaze nên chưa chạy được
+    // Cloud Function). Người đã đăng nhập đọc được → khoá vẫn có thể bị trích xuất qua DevTools.
+    // Khi bật Blaze: deploy functions, dùng server-mode/gemini-grader.js, rồi đổi read thành isAdmin().
     match /app_config/{docId} {
-      allow read: if true;
+      allow read: if isSignedIn();
       allow write: if isAdmin();
     }
+    // ai_usage (đếm lượt chấm AI / ngày): chỉ Cloud Function (Admin SDK) ghi — không có rule = client bị chặn.
 
     // ===== PHẢN HỒI NGƯỜI DÙNG =====
     match /feedback/{feedbackId} {
-      allow create: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.get('uid', request.auth.uid) == request.auth.uid
+        && request.resource.data.get('status', 'new') == 'new'
+        && strMax(request.resource.data, 'message', 5000)
+        && strMax(request.resource.data, 'name', 100)
+        && strMax(request.resource.data, 'email', 200);
       allow read, update: if isAdmin();
+    }
+
+    // ===== THƯ MỤC LỚP HỌC 1:1 (Shared Vocab Folders) =====
+    // - Admin (vuihoctienghan27@gmail.com): toàn quyền tạo/sửa/xóa thư mục và từ vựng
+    // - Học viên đã đăng nhập: đọc thư mục để xác thực Key Code và xem nội dung bài học
+    match /shared_folders/{folderId} {
+      // Admin toàn quyền đọc/ghi
+      allow read, write: if isAdmin();
+
+      // Mọi học viên đã đăng nhập: đọc để tra key code và xem thông tin thư mục
+      allow read: if isSignedIn();
+
+      // Từ vựng trong thư mục (subcollection words)
+      match /words/{wordId} {
+        // Admin toàn quyền
+        allow read, write: if isAdmin();
+
+        // Học viên đã đăng nhập: đọc để học
+        allow read: if isSignedIn();
+      }
+
+      // Ngữ pháp trong bài học (subcollection grammar)
+      match /grammar/{grammarId} {
+        // Admin toàn quyền tạo/sửa/xóa
+        allow read, write: if isAdmin();
+
+        // Học viên đã đăng nhập: đọc để học
+        allow read: if isSignedIn();
+      }
+
+      // Học viên tham gia lớp & Tiến độ học (subcollection students)
+      match /students/{studentId} {
+        // Admin toàn quyền đọc/ghi
+        allow read, write: if isAdmin();
+
+        // Học viên ghi nhận thông tin tham gia và đọc thông tin của chính mình
+        allow read, delete: if isSignedIn() && request.auth.uid == studentId;
+        allow create, update: if isSignedIn() && request.auth.uid == studentId
+          && strMax(request.resource.data, 'displayName', 60)
+          && strMax(request.resource.data, 'email', 200)
+          && strMax(request.resource.data, 'photoURL', 1000)
+          && request.resource.data.get('uid', studentId) == studentId;
+
+        // Tiến độ nhớ từng từ của học viên
+        match /progress/{wordId} {
+          allow read, write: if isSignedIn() && (request.auth.uid == studentId || isAdmin());
+        }
+      }
+
+      // Bài tập trong bài học (subcollection exercises)
+      match /exercises/{exerciseId} {
+        // Admin toàn quyền tạo/sửa đề bài
+        allow read, write: if isAdmin();
+
+        // Học viên đã đăng nhập: đọc đề bài tập
+        allow read: if isSignedIn();
+
+        // Bài nộp của học viên (subcollection submissions)
+        match /submissions/{studentId} {
+          // Admin toàn quyền đọc và chấm bài
+          allow read, write: if isAdmin();
+
+          // Học viên đọc và nộp/chỉnh sửa bài làm của chính mình
+          allow read, write: if isSignedIn() && (request.auth.uid == studentId || isAdmin());
+        }
+
+        // Tiến độ bài tập tương tác (JSON) — câu đã chọn / đã điền của từng học viên
+        // (shared-vocab.js → setupQuizPersistence). Giáo viên (admin) đọc được để theo dõi.
+        match /quiz_attempts/{studentId} {
+          allow read: if isAdmin() || (isSignedIn() && request.auth.uid == studentId);
+          allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == studentId);
+          allow create, update: if isSignedIn() && request.auth.uid == studentId
+            && request.resource.data.answers is map
+            && request.resource.data.answers.size() <= 500
+            && request.resource.data.answered is int
+            && request.resource.data.correct is int
+            && request.resource.data.total is int
+            && request.resource.data.correct <= request.resource.data.answered
+            && strMax(request.resource.data, 'studentName', 60)
+            && strMax(request.resource.data, 'studentEmail', 200)
+            && strMax(request.resource.data, 'lessonName', 300);
+        }
+      }
     }
   }
 }

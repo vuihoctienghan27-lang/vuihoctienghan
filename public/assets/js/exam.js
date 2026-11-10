@@ -315,6 +315,7 @@ function saveExamTime() {
 
     if (sessionMins === 60) {
         updates.bonusEXP = firebase.firestore.FieldValue.increment(10);
+        updates.bonusEXPAt = firebase.firestore.FieldValue.serverTimestamp(); // firestore.rules yêu cầu
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 title: "Tuyệt vời!",
@@ -326,8 +327,20 @@ function saveExamTime() {
         }
     }
     if (Object.keys(updates).length > 0) {
-        firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).set(updates, { merge: true });
+        writeBonusWithRetry(updates);
     }
+}
+
+// Rules giới hạn 1 lần cộng EXP / 20 giây; nếu trùng lúc với bonus giờ học của activity-tracker
+// thì lần ghi bị từ chối → thử lại một lần sau 25 giây.
+function writeBonusWithRetry(updates) {
+    const ref = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
+    ref.set(updates, { merge: true }).catch(() => {
+        setTimeout(() => {
+            updates.bonusEXPAt = firebase.firestore.FieldValue.serverTimestamp();
+            ref.set(updates, { merge: true }).catch(e => console.warn('[Exam] Không cộng được EXP:', e));
+        }, 25000);
+    });
 }
 
 function saveExamResult(score, correctCount, answeredCount, totalQuestions, answeredQuestions, correctQuestions, answers) {
@@ -502,18 +515,33 @@ window.toggleGlobalVocab = () => {
 };
 
 // ===== HÀM TÍNH ĐIỂM THEO LOẠI CÂU HỎI TOPIK =====
-// TOPIK I Đọc: câu 3 điểm và câu 2 điểm
-const TOPIK_I_READING_3PT = [37, 38, 40, 41, 42, 43, 45, 46, 47, 51, 54, 56, 57, 60, 64, 66, 67, 68, 69, 70];
+// TOPIK I Nghe: 4 điểm cho các câu này, còn lại 3 điểm
+const TOPIK_I_LISTENING_4PT = [1, 2, 15, 16, 20, 23, 24, 26, 28, 30];
+// TOPIK I Đọc: 3 điểm cho các câu này, còn lại 2 điểm
+const TOPIK_I_READING_3PT = [37, 38, 39, 43, 44, 45, 50, 51, 54, 56, 57, 58, 60, 62, 63, 66, 68, 69, 70];
 
-function getQuestionScore(qText) {
+function getQuestionScore(qText, block) {
+    // Nếu câu có nhãn điểm hiển thị (q-score) → ưu tiên theo nhãn
+    if (block) {
+        const scoreEl = block.querySelector('.q-score');
+        if (scoreEl) {
+            const m = scoreEl.textContent.match(/(\d+)/);
+            if (m) return parseInt(m[1]);
+        }
+    }
+
     const num = parseInt(String(qText).replace(/\D/g, ''));
     if (isNaN(num)) return 2;
 
     const path = window.location.pathname;
-    const isTopikIReading = path.includes('/topik_i/') && path.includes('/reading/');
+    const isTopikI = path.includes('/topik_i/');
 
-    if (isTopikIReading) {
-        // TOPIK I Đọc: câu 31-70, mặc định 2 điểm, các câu trong mảng là 3 điểm
+    // TOPIK I Nghe: 4 điểm (danh sách), còn lại 3 điểm
+    if (isTopikI && path.includes('/listening/')) {
+        return TOPIK_I_LISTENING_4PT.includes(num) ? 4 : 3;
+    }
+    // TOPIK I Đọc: 3 điểm (danh sách), còn lại 2 điểm
+    if (isTopikI && path.includes('/reading/')) {
         return TOPIK_I_READING_3PT.includes(num) ? 3 : 2;
     }
     // Mặc định cho TOPIK II và các loại khác: 2 điểm
@@ -621,7 +649,7 @@ function processSubmitExam() {
 
         const qNum = block.querySelector('.q-number');
         const qText = qNum ? qNum.innerText.replace('.', '').trim() : (index + 1);
-        const questionPoints = getQuestionScore(qText);
+        const questionPoints = getQuestionScore(qText, block);
 
         if (selOpt) {
             answeredCount++;
@@ -651,9 +679,8 @@ function processSubmitExam() {
                 } else if (corOpt) {
                     corOpt.classList.add('correct');
                 }
-            } else if (corOpt) {
-                corOpt.classList.add('correct');
             }
+            // Câu CHƯA LÀM: giữ nguyên, không lộ đáp án đúng
         } else if (corOpt) {
             corOpt.classList.add('correct');
         }
@@ -665,7 +692,7 @@ function processSubmitExam() {
         }
 
         const actArea = block.querySelector('.action-area');
-        if (actArea) actArea.style.display = 'block';
+        if (actArea && (isExamMode || answeredQuestions.includes(String(qText)))) actArea.style.display = 'block';
 
         // Xanh = đúng, đỏ = sai, xám = chưa làm
         const stateCls = isCor ? 'q-correct' : (answeredQuestions.includes(String(qText)) ? 'q-wrong' : 'q-skipped');

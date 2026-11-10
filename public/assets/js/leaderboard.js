@@ -8,6 +8,14 @@
     const STICKERS = ['🐶', '🐱', '🦊', '🐻', '🐼', '🦄', '🐯', '🐰', '🦁', '🐨', '🐸', '🐙', '🦋', '🌸', '⭐', '🔥', '💎', '🌈', '🎯', '🚀'];
 
     let lbUsers = [];
+
+    // Chống XSS: tên/streak do người dùng tự ghi vào Firestore → luôn escape trước khi vào innerHTML
+    function esc(v) {
+        return String(v == null ? '' : v)
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+    function arg(v) { return esc(JSON.stringify(v == null ? '' : String(v))); }
     
     function calcExp(data) {
         return Math.max(0, Math.floor((data.totalStudyMinutes || 0) / 10) * 5 + (data.bonusEXP || 0));
@@ -138,13 +146,13 @@
         if(!u) return `<div class="lb-podium-item" style="opacity:0"></div>`;
         const av = getUserAvatar(u._uid);
         return `
-            <div class="lb-podium-item" onclick="window.lbShowProfile('${u._uid}')">
+            <div class="lb-podium-item" onclick="window.lbShowProfile(${arg(u._uid)})">
                 <div class="lb-avatar rank-${rankBox}">${av}</div>
                 <div class="lb-bar rank-${rankBox}">
                     <div class="lb-medal">${medal}</div>
-                    <div class="lb-bar-name">${u.fullName || 'Ẩn danh'}</div>
-                    <div class="lb-bar-exp">${u._exp} ⭐</div>
-                    <div style="font-size: 0.75em; opacity: 0.92; font-weight:900; margin-top:2px;">${u._effectiveStreak} 🔥</div>
+                    <div class="lb-bar-name">${esc(u.fullName || 'Ẩn danh')}</div>
+                    <div class="lb-bar-exp">${esc(u._exp)} ⭐</div>
+                    <div style="font-size: 0.75em; opacity: 0.92; font-weight:900; margin-top:2px;">${esc(u._effectiveStreak)} 🔥</div>
                 </div>
             </div>
         `;
@@ -173,16 +181,16 @@
         for (let i = 3; i <= endIdx; i++) {
             let u = lbUsers[i];
             html += `
-                <div class="lb-row" onclick="window.lbShowProfile('${u._uid}')">
+                <div class="lb-row" onclick="window.lbShowProfile(${arg(u._uid)})">
                     <div class="lb-rank ${i < 6 ? 'gold' : ''}">${i + 1}</div>
                     <div class="lb-row-avatar">${getUserAvatar(u._uid)}</div>
                     <div class="lb-name-wrap">
-                        <div class="lb-name">${u.fullName || 'Ẩn danh'}</div>
+                        <div class="lb-name">${esc(u.fullName || 'Ẩn danh')}</div>
                         <div class="lb-title">${getLevelName(u._exp)}</div>
                     </div>
                     <div class="lb-score">
-                        <div class="exp">${u._exp} ⭐</div>
-                        <div class="stk">${u._effectiveStreak} 🔥</div>
+                        <div class="exp">${esc(u._exp)} ⭐</div>
+                        <div class="stk">${esc(u._effectiveStreak)} 🔥</div>
                     </div>
                 </div>
             `;
@@ -191,15 +199,15 @@
 
         if (myUser) {
             html += `
-                <div class="lb-me-sticky" onclick="window.lbShowProfile('${currentUid}')">
+                <div class="lb-me-sticky" onclick="window.lbShowProfile(${arg(currentUid)})">
                     <div class="rank">#${myRank + 1}</div>
                     <div class="lb-row-avatar">${getUserAvatar(currentUid)}</div>
                     <div class="info">
-                        <div class="name">${myUser.fullName || 'Bạn'}</div>
+                        <div class="name">${esc(myUser.fullName || 'Bạn')}</div>
                         <div class="sub">Vị trí của bạn · ${getLevelName(myUser._exp)}</div>
                     </div>
                     <div class="lb-score">
-                        <div class="exp">${myUser._exp} ⭐</div>
+                        <div class="exp">${esc(myUser._exp)} ⭐</div>
                         <div class="stk">${myUser._effectiveStreak} 🔥</div>
                     </div>
                 </div>

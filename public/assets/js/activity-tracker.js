@@ -71,6 +71,7 @@
         // EXP nền (5 EXP / 10 phút) được tính ở phần hiển thị từ totalStudyMinutes,
         // nên ở đây CHỈ cộng thêm bonus giờ vào bonusEXP (tránh đếm EXP 2 lần).
         const newHours = Math.floor(localTodayMins / 60);
+        const prevHourBonusGiven = hourBonusGiven;
         let hourExp = 0;
         if (newHours > hourBonusGiven) {
             for (let h = hourBonusGiven + 1; h <= newHours; h++) {
@@ -79,15 +80,21 @@
             hourBonusGiven = newHours;
         }
 
-        // Ghi Firestore
+        // Ghi Firestore — studyTickAt / bonusEXPAt là mốc thời gian server mà firestore.rules
+        // dùng để giới hạn tốc độ cộng phút học / EXP (chống tự sửa điểm).
         try {
             const updates = {
                 [`dailyStudyData.${today}`]: firebase.firestore.FieldValue.increment(1),
                 totalStudyMinutes: firebase.firestore.FieldValue.increment(1),
+                studyTickAt: firebase.firestore.FieldValue.serverTimestamp(),
             };
             if (hourExp > 0) {
                 updates.bonusEXP = firebase.firestore.FieldValue.increment(hourExp);
+                updates.bonusEXPAt = firebase.firestore.FieldValue.serverTimestamp();
                 updates[`hourBonusData.${today}`] = newHours;
+            }
+            await db.collection('users').doc(uid).set(updates, { merge: true });
+            if (hourExp > 0) {
                 setTimeout(() => {
                     if (typeof Swal !== 'undefined') {
                         Swal.fire({icon: 'success', title: 'Hoàn thành giờ học!', text: `🎉 Tuyệt vời! Bạn đã học ${newHours} giờ hôm nay và nhận ${hourExp} EXP thưởng!`, confirmButtonColor: '#2563eb'});
@@ -96,8 +103,12 @@
                     }
                 }, 200);
             }
-            await db.collection('users').doc(uid).set(updates, { merge: true });
-        } catch(e) { console.log('[Tracker] Write error:', e); }
+        } catch(e) {
+            // Bị từ chối (vd. tab khác vừa ghi, hoặc trùng lúc cộng EXP khác) → hoàn tác để phút sau thử lại
+            localTodayMins--;
+            hourBonusGiven = prevHourBonusGiven;
+            console.log('[Tracker] Write error:', e);
+        }
     }
 
     /* ---------- Khởi động ---------- */

@@ -577,7 +577,7 @@
             div.className = 'friend-item' + (activeFriendshipId === f.id ? ' active' : '');
             div.onclick = function () { openDm(f.id, otherUserName, otherUserId); };
             div.innerHTML = ''
-                + '<div class="friend-avatar">' + otherUserName.charAt(0).toUpperCase() + '</div>'
+                + '<div class="friend-avatar">' + escapeHTML(otherUserName.charAt(0).toUpperCase()) + '</div>'
                 + '<div class="friend-info">'
                 + '<div class="friend-name">' + escapeHTML(otherUserName) + '</div>'
                 + '<div class="friend-status">Bạn bè</div>'
@@ -690,7 +690,9 @@
         if (el.dmPlaceholder) el.dmPlaceholder.style.display = 'none';
         if (el.dmArea) el.dmArea.style.display = 'flex';
         if (el.dmChatName) {
-            el.dmChatName.innerHTML = '<span style="cursor:pointer;" onclick="if(window.showGlobalUserProfile) window.showGlobalUserProfile(\'' + otherUserId + '\', \'' + otherName + '\')">' + otherName + '</span>';
+            el.dmChatName.innerHTML = '<span style="cursor:pointer;" onclick="if(window.showGlobalUserProfile) window.showGlobalUserProfile('
+                + escapeHTML(JSON.stringify(String(otherUserId || ''))) + ', '
+                + escapeHTML(JSON.stringify(String(otherName || ''))) + ')">' + escapeHTML(otherName) + '</span>';
         }
 
         if (dmUnsubscribe) { dmUnsubscribe(); dmUnsubscribe = null; }

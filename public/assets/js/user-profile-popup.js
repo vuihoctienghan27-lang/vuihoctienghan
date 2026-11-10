@@ -47,7 +47,7 @@
                     <div style="display: flex; align-items: center; gap: 12px;">
                         <div id="gup-avatar" style="width: 68px; height: 68px; border-radius: 16px; background: #1e293b; border: 2px solid #334155; display: flex; align-items: center; justify-content: center; font-size: 2.4em; flex-shrink: 0;">👤</div>
                         <div style="flex: 1; min-width: 0;">
-                            <div id="gup-name" style="font-size: 17px; font-weight: 900; color: #ffffff; line-height: 1.2; word-break: break-word;">${targetName || 'Đang tải...'}</div>
+                            <div id="gup-name" style="font-size: 17px; font-weight: 900; color: #ffffff; line-height: 1.2; word-break: break-word;">${String(targetName || 'Đang tải...').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}</div>
                             <div id="gup-rank" style="display: inline-block; font-size: 11px; font-weight: 800; color: #fbbf24; background: rgba(120, 53, 15, 0.3); border: 1px solid rgba(180, 83, 9, 0.45); padding: 2px 10px; border-radius: 20px; margin-top: 5px;">🌱 Thường Dân</div>
                             <div id="gup-role" style="font-size: 12px; color: #f87171; font-weight: 600; margin-top: 3px;">Thành viên cộng đồng</div>
                         </div>
@@ -128,7 +128,18 @@
                         document.getElementById('gup-name').innerText = d.fullName || d.name || targetName || 'Ẩn danh';
                         document.getElementById('gup-avatar').innerText = d.avatar ? '' : randomSticker(targetUid);
                         if (d.avatar) {
-                            document.getElementById('gup-avatar').innerHTML = '<img src="' + d.avatar + '" style="width:100%;height:100%;border-radius:16px;object-fit:cover;" />';
+                            // Tạo ảnh bằng DOM (không nối chuỗi HTML) để avatar do người dùng ghi không chèn được mã
+                            const avatarUrl = String(d.avatar).trim();
+                            if (/^https:\/\//i.test(avatarUrl)) {
+                                const img = document.createElement('img');
+                                img.src = avatarUrl;
+                                img.style.cssText = 'width:100%;height:100%;border-radius:16px;object-fit:cover;';
+                                const box = document.getElementById('gup-avatar');
+                                box.textContent = '';
+                                box.appendChild(img);
+                            } else {
+                                document.getElementById('gup-avatar').innerText = randomSticker(targetUid);
+                            }
                         }
 
                         const totalExp = calcTotalExp(d);

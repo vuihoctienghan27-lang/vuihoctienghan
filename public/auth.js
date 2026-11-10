@@ -108,7 +108,10 @@ window.auth.onAuthStateChanged(async (user) => {
                 }
 
                 let updates = { lastLoginDate: today, streakDays: streak, streakBonusDays: bonusDays };
-                if (bonusToAdd > 0) updates.bonusEXP = firebase.firestore.FieldValue.increment(bonusToAdd);
+                if (bonusToAdd > 0) {
+                    updates.bonusEXP = firebase.firestore.FieldValue.increment(bonusToAdd);
+                    updates.bonusEXPAt = firebase.firestore.FieldValue.serverTimestamp(); // firestore.rules yêu cầu
+                }
 
                 await userRef.set(updates, { merge: true });
                 
