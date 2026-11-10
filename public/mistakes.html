@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sổ Câu Sai - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/exam-layout.css">
+    <style>
+        body { font-family: 'Pretendard', 'Inter', sans-serif; min-height: 100vh; }
+        .mk-page { max-width: 880px; margin: 24px auto 70px; padding: 0 16px; }
+        .mk-hero { text-align: center; margin-bottom: 20px; }
+        .mk-hero h1 { font-size: 2em; font-weight: 900; color: #0f172a; margin: 0 0 6px; }
+        .mk-hero p { color: #475569; margin: 0; }
+        .mk-card { background: rgba(255,255,255,0.95); border-radius: 18px; padding: 18px 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); margin-bottom: 16px; }
+        .mk-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .mk-stat { text-align: center; padding: 8px; border-radius: 12px; background: #f8fafc; }
+        .mk-stat b { display: block; font-size: 1.7em; font-weight: 900; line-height: 1.15; }
+        .mk-stat span { font-size: 0.8em; color: #64748b; font-weight: 600; }
+        .mk-start { width: 100%; margin-top: 14px; background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; border: none;
+            border-radius: 12px; padding: 13px; font-size: 1.05em; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(239,68,68,0.3); }
+        .mk-start:disabled { background: #10b981; box-shadow: none; cursor: default; }
+        .mk-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+        .mk-chip { border: 1.5px solid #e2e8f0; background: #fff; border-radius: 20px; padding: 6px 14px; font-weight: 700; font-size: 0.86em; color: #475569; cursor: pointer; }
+        .mk-chip.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+        .mk-sep { width: 1px; background: #e2e8f0; margin: 0 4px; }
+        .mk-item { border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; background: #fff; }
+        .mk-item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+        .mk-src { font-size: 0.78em; font-weight: 800; padding: 3px 10px; border-radius: 10px; display: inline-block; margin-bottom: 6px; }
+        .mk-src.reading { background: #dbeafe; color: #1d4ed8; } .mk-src.listening { background: #fae8ff; color: #a21caf; }
+        .mk-src.quiz { background: #dcfce7; color: #15803d; } .mk-src.writing { background: #fef3c7; color: #b45309; }
+        .mk-title { font-weight: 800; color: #1e293b; }
+        .mk-meta { font-size: 0.82em; color: #64748b; margin-top: 2px; }
+        .mk-dots { letter-spacing: 2px; color: #10b981; }
+        .mk-preview { margin-top: 8px; color: #334155; font-size: 0.95em; line-height: 1.55; }
+        .mk-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .mk-btn { border: 1px solid #cbd5e1; background: #fff; border-radius: 9px; padding: 6px 12px; font-weight: 700; font-size: 0.84em; cursor: pointer; color: #334155; text-decoration: none; }
+        .mk-btn:hover { background: #f1f5f9; }
+        .mk-btn.danger { color: #ef4444; border-color: #fecaca; }
+        .mk-detail { margin-top: 12px; border-top: 1px dashed #e2e8f0; padding-top: 12px; }
+        .mk-empty { text-align: center; color: #64748b; padding: 36px 10px; }
+        .mk-empty div { font-size: 2.4em; margin-bottom: 8px; }
+
+        /* Câu hỏi (dùng chung cho xem chi tiết + ôn tập) */
+        .mk-q .shared-text { margin-bottom: 12px; max-height: 260px; overflow-y: auto; }
+        .mk-q .mk-stem { font-weight: 700; font-size: 1.05em; line-height: 1.6; margin-bottom: 12px; color: #0f172a; }
+        .mk-opts { display: flex; flex-direction: column; gap: 8px; }
+        .mk-opt { text-align: left; border: 1.5px solid #e2e8f0; background: #fff; border-radius: 10px; padding: 10px 14px; font-size: 1em;
+            cursor: pointer; font-family: inherit; color: #1e293b; transition: 0.15s; }
+        .mk-opt:hover:not(:disabled) { border-color: #93c5fd; background: #eff6ff; }
+        .mk-opt.correct { border-color: #22c55e; background: #dcfce7; color: #166534; font-weight: 700; }
+        .mk-opt.wrong { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+        .mk-opt:disabled { cursor: default; }
+        .mk-fill { display: flex; gap: 8px; flex-wrap: wrap; }
+        .mk-fill input { flex: 1 1 200px; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-size: 1em; font-family: inherit; }
+        .mk-q .explanation-content { display: block; margin-top: 14px; }
+        .mk-was { font-size: 0.85em; color: #991b1b; background: #fef2f2; border-radius: 8px; padding: 6px 10px; margin-top: 8px; }
+
+        /* Ôn tập */
+        .mk-review { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 100000; display: flex; align-items: center;
+            justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
+        .mk-review-box { background: #fff; width: 100%; max-width: 780px; max-height: 94vh; border-radius: 18px; display: flex; flex-direction: column; overflow: hidden; }
+        .mk-review-head { padding: 14px 18px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; background: #f8fafc; }
+        .mk-review-bar { flex: 1; height: 8px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
+        .mk-review-bar div { height: 100%; background: linear-gradient(90deg, #f97316, #ef4444); transition: width 0.3s; }
+        .mk-review-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
+        .mk-review-foot { padding: 12px 18px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+        .mk-feedback { font-weight: 800; }
+        .mk-next { background: #2563eb; color: #fff; border: none; border-radius: 10px; padding: 10px 22px; font-weight: 800; cursor: pointer; }
+        .mk-close { border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; color: #64748b; }
+
+        body.dark-mode .mk-card, body.dark-mode .mk-item, body.dark-mode .mk-review-box { background: #1e293b; color: #e2e8f0; }
+        body.dark-mode .mk-hero h1, body.dark-mode .mk-title, body.dark-mode .mk-q .mk-stem { color: #f1f5f9; }
+        body.dark-mode .mk-stat, body.dark-mode .mk-review-head { background: #0f172a; }
+        body.dark-mode .mk-opt { background: #0f172a; color: #e2e8f0; border-color: #334155; }
+        @media (max-width: 640px) {
+            .mk-hero h1 { font-size: 1.6em; }
+            .mk-review { padding: 0; align-items: stretch; }
+            .mk-review-box { max-height: 100vh; border-radius: 0; }
+            .mk-review-body { padding: 14px; }
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="assets/js/theme-picker.js"></script>
+    <script src="assets/js/navbar.js"></script>
+</head>
+<body>
+    <div class="mk-page">
+        <div class="mk-hero">
+            <h1>📕 Sổ Câu Sai</h1>
+            <p>Mỗi câu bạn làm sai sẽ được lưu ở đây. Làm đúng <b>2 lần liên tiếp</b> là thuộc!</p>
+        </div>
+
+        <div id="mkLogin" class="mk-card mk-empty" style="display:none;">
+            <div>🔒</div>Vui lòng đăng nhập để xem Sổ câu sai của bạn.
+        </div>
+
+        <div id="mkMain" style="display:none;">
+            <div class="mk-card">
+                <div class="mk-stats">
+                    <div class="mk-stat"><b id="mkNeed" style="color:#ef4444;">0</b><span>câu cần ôn</span></div>
+                    <div class="mk-stat"><b id="mkMastered" style="color:#10b981;">0</b><span>câu đã thuộc</span></div>
+                    <div class="mk-stat"><b id="mkWeek" style="color:#2563eb;">0</b><span>thuộc trong 7 ngày</span></div>
+                </div>
+                <button id="mkStartBtn" class="mk-start" onclick="MK.startReview()">▶ Ôn tập ngay</button>
+            </div>
+
+            <div class="mk-filters" id="mkFilters">
+                <button class="mk-chip active" data-status="need">Cần ôn</button>
+                <button class="mk-chip" data-status="mastered">Đã thuộc</button>
+                <span class="mk-sep"></span>
+                <button class="mk-chip active" data-src="all">Tất cả</button>
+                <button class="mk-chip" data-src="reading">📖 Đọc</button>
+                <button class="mk-chip" data-src="listening">🎧 Nghe</button>
+                <button class="mk-chip" data-src="quiz">📝 Bài tập lớp</button>
+            </div>
+            <div id="mkList"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="auth.js"></script>
+    <script>
+    (function () {
+        'use strict';
+        const SRC_LABEL = { reading: '📖 Đọc', listening: '🎧 Nghe', quiz: '📝 Bài tập lớp', writing: '✍️ Viết' };
+        const REVIEW_LIMIT = 20;
+        let uid = null, all = [], unsub = null;
+        let filterStatus = 'need', filterSrc = 'all';
+        const openDetail = {};
+
+        function esc(s) {
+            return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+        function textOf(html) { const d = document.createElement('div'); d.innerHTML = html || ''; return d.textContent.replace(/\s+/g, ' ').trim(); }
+        function ms(ts) { return ts && ts.toMillis ? ts.toMillis() : 0; }
+        function srcOf(m) { return m.source === 'quiz' ? 'quiz' : (m.skill || 'reading'); }
+        function dots(m) { const s = Math.min(2, m.streak || 0); return '●'.repeat(s) + '○'.repeat(2 - s); }
+        function ago(t) {
+            if (!t) return '';
+            const d = Math.floor((Date.now() - t) / 86400000);
+            return d <= 0 ? 'hôm nay' : d === 1 ? 'hôm qua' : d + ' ngày trước';
+        }
+
+        function filtered() {
+            return all.filter(m => (filterStatus === 'need' ? !m.mastered : m.mastered) && (filterSrc === 'all' || srcOf(m) === filterSrc));
+        }
+
+        // Thứ tự ôn: chưa có chuỗi đúng trước, sai nhiều trước, sai lâu nhất trước
+        function reviewQueue() {
+            return all.filter(m => !m.mastered && (filterSrc === 'all' || srcOf(m) === filterSrc))
+                .sort((a, b) => (a.streak || 0) - (b.streak || 0) || (b.wrongCount || 0) - (a.wrongCount || 0) || ms(a.lastWrongAt) - ms(b.lastWrongAt))
+                .slice(0, REVIEW_LIMIT);
+        }
+
+        // ── Khối hiển thị câu hỏi (chế độ xem: tô sẵn đáp án) ──
+        function questionHtml(m, mode) {
+            let h = '<div class="mk-q">';
+            if (m.sharedHtml) h += '<div class="shared-text">' + m.sharedHtml + '</div>';
+            h += '<div class="mk-stem">' + (m.qNum ? 'Câu ' + esc(m.qNum) + '. ' : '') + '<span>' + (m.questionHtml || '') + '</span></div>';
+            if (m.type === 'fill') {
+                if (mode === 'view') {
+                    h += '<div class="mk-opt correct">✅ Đáp án: ' + esc(String(m.correctText || '').split('|').join(' / ')) + '</div>';
+                    if (m.userText) h += '<div class="mk-was">Bạn đã điền: “' + esc(m.userText) + '”</div>';
+                } else {
+                    h += '<div class="mk-fill"><input type="text" id="mkFillInput" placeholder="Nhập đáp án..." autocomplete="off">' +
+                        '<button class="mk-next" id="mkFillCheck">Kiểm tra</button></div>';
+                }
+            } else {
+                h += '<div class="mk-opts">';
+                (m.options || []).forEach((o, i) => {
+                    let cls = 'mk-opt';
+                    if (mode === 'view') {
+                        if (i === m.correctIndex) cls += ' correct';
+                        else if (i === m.userIndex) cls += ' wrong';
+                    }
+                    h += '<button class="' + cls + '" data-i="' + i + '"' + (mode === 'view' ? ' disabled' : '') + '>' + esc(o) + '</button>';
+                });
+                h += '</div>';
+                if (mode === 'view' && m.userIndex >= 0 && m.userIndex !== m.correctIndex && m.options && m.options[m.userIndex]) {
+                    h += '<div class="mk-was">Lần sai gần nhất bạn chọn: ' + esc(m.options[m.userIndex]) + '</div>';
+                }
+            }
+            if (mode === 'view' && m.explanationHtml) h += '<div class="explanation-content">' + m.explanationHtml + '</div>';
+            h += '</div>';
+            return h;
+        }
+
+        function render() {
+            const need = all.filter(m => !m.mastered).length;
+            const mastered = all.length - need;
+            const weekAgo = Date.now() - 7 * 86400000;
+            document.getElementById('mkNeed').textContent = need;
+            document.getElementById('mkMastered').textContent = mastered;
+            document.getElementById('mkWeek').textContent = all.filter(m => m.mastered && ms(m.masteredAt) >= weekAgo).length;
+            const q = reviewQueue();
+            const btn = document.getElementById('mkStartBtn');
+            btn.disabled = !q.length;
+            btn.textContent = q.length ? '▶ Ôn tập ngay (' + q.length + ' câu)' : '✓ Không còn câu nào cần ôn';
+
+            const list = filtered().sort((a, b) => ms(b.lastWrongAt) - ms(a.lastWrongAt));
+            const box = document.getElementById('mkList');
+            if (!list.length) {
+                box.innerHTML = '<div class="mk-card mk-empty"><div>' + (filterStatus === 'need' ? '🎉' : '📭') + '</div>' +
+                    (filterStatus === 'need'
+                        ? (all.length ? 'Bạn đã ôn hết các câu sai trong mục này!' : 'Chưa có câu sai nào. Hãy làm đề thi hoặc bài tập — câu sai sẽ tự được lưu vào đây.')
+                        : 'Chưa có câu nào đã thuộc trong mục này.') + '</div>';
+                return;
+            }
+            box.innerHTML = list.map(m => {
+                const src = srcOf(m);
+                const preview = textOf(m.questionHtml).slice(0, 160);
+                const isOpen = !!openDetail[m.id];
+                return '<div class="mk-item">' +
+                    '<div class="mk-item-head"><div style="min-width:0;">' +
+                    '<span class="mk-src ' + src + '">' + (SRC_LABEL[src] || src) + '</span>' +
+                    '<div class="mk-title">' + esc(m.refName || '') + (m.qNum ? ' · Câu ' + esc(m.qNum) : '') + '</div>' +
+                    '<div class="mk-meta">Sai ' + (m.wrongCount || 1) + ' lần' + (ms(m.lastWrongAt) ? ' · ' + ago(ms(m.lastWrongAt)) : '') +
+                    ' · đúng liên tiếp <span class="mk-dots">' + dots(m) + '</span></div>' +
+                    '</div></div>' +
+                    (isOpen ? '<div class="mk-detail">' + questionHtml(m, 'view') + '</div>' : '<div class="mk-preview">' + esc(preview) + (preview.length >= 160 ? '…' : '') + '</div>') +
+                    '<div class="mk-actions">' +
+                    '<button class="mk-btn" data-act="toggle" data-id="' + esc(m.id) + '">' + (isOpen ? '▲ Thu gọn' : '👁️ Xem lời giải') + '</button>' +
+                    (m.source === 'exam' && m.url ? '<a class="mk-btn" href="' + esc(m.url) + '">↗ Mở đề gốc</a>' : '') +
+                    '<button class="mk-btn danger" data-act="del" data-id="' + esc(m.id) + '">🗑 Xoá</button>' +
+                    '</div></div>';
+            }).join('');
+        }
+
+        // ── Cập nhật kết quả ôn ──
+        function saveResult(m, ok) {
+            const FV = firebase.firestore.FieldValue;
+            const ref = firebase.firestore().collection('users').doc(uid).collection('mistakes').doc(m.id);
+            let upd;
+            if (ok) {
+                const streak = (m.streak || 0) + 1;
+                upd = { streak: streak, lastReviewAt: FV.serverTimestamp() };
+                if (streak >= 2) { upd.mastered = true; upd.masteredAt = FV.serverTimestamp(); }
+            } else {
+                upd = { streak: 0, wrongCount: FV.increment(1), lastWrongAt: FV.serverTimestamp(), lastReviewAt: FV.serverTimestamp() };
+            }
+            return ref.update(upd).catch(e => console.warn('[Mistakes] Lưu kết quả ôn lỗi:', e && e.message));
+        }
+
+        // ── Chế độ ôn tập ──
+        function startReview() {
+            const queue = reviewQueue();
+            if (!queue.length) return;
+            let i = 0, right = 0, newlyMastered = 0;
+            const ov = document.createElement('div');
+            ov.className = 'mk-review';
+            ov.innerHTML = '<div class="mk-review-box">' +
+                '<div class="mk-review-head"><b id="mkRvCount" style="white-space:nowrap;"></b><div class="mk-review-bar"><div id="mkRvBar"></div></div>' +
+                '<button class="mk-close" title="Thoát (Esc)">✕</button></div>' +
+                '<div class="mk-review-body" id="mkRvBody"></div>' +
+                '<div class="mk-review-foot"><span class="mk-feedback" id="mkRvFb"></span><button class="mk-next" id="mkRvNext" style="display:none;">Tiếp →</button></div></div>';
+            document.body.appendChild(ov);
+            const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); };
+            const onKey = e => { if (e.key === 'Escape') close(); };
+            document.addEventListener('keydown', onKey);
+            ov.querySelector('.mk-close').onclick = close;
+
+            function show() {
+                const m = queue[i];
+                document.getElementById('mkRvCount').textContent = (i + 1) + ' / ' + queue.length;
+                document.getElementById('mkRvBar').style.width = Math.round(i / queue.length * 100) + '%';
+                const body = document.getElementById('mkRvBody');
+                body.innerHTML = '<div class="mk-meta" style="margin-bottom:10px;">' + esc(m.refName || '') + ' · đã sai ' + (m.wrongCount || 1) +
+                    ' lần · đúng liên tiếp <span class="mk-dots">' + dots(m) + '</span></div>' + questionHtml(m, 'review');
+                body.scrollTop = 0;
+                document.getElementById('mkRvFb').textContent = '';
+                document.getElementById('mkRvNext').style.display = 'none';
+
+                const finish = ok => {
+                    if (ok) { right++; if ((m.streak || 0) + 1 >= 2) newlyMastered++; }
+                    saveResult(m, ok);
+                    const fb = document.getElementById('mkRvFb');
+                    fb.textContent = ok ? ((m.streak || 0) + 1 >= 2 ? '🎉 Chính xác — đã thuộc câu này!' : '✅ Chính xác! Đúng thêm 1 lần nữa là thuộc.') : '❌ Chưa đúng — xem lời giải bên dưới.';
+                    fb.style.color = ok ? '#059669' : '#dc2626';
+                    if (m.explanationHtml) {
+                        const ex = document.createElement('div');
+                        ex.className = 'explanation-content';
+                        ex.innerHTML = m.explanationHtml;
+                        body.querySelector('.mk-q').appendChild(ex);
+                    }
+                    const nx = document.getElementById('mkRvNext');
+                    nx.style.display = '';
+                    nx.textContent = i < queue.length - 1 ? 'Tiếp →' : 'Xem kết quả';
+                    nx.focus();
+                };
+
+                if (m.type === 'fill') {
+                    const inp = document.getElementById('mkFillInput');
+                    const check = () => {
+                        const v = inp.value.trim().toLowerCase();
+                        if (!v || inp.readOnly) return;
+                        inp.readOnly = true;
+                        document.getElementById('mkFillCheck').disabled = true;
+                        const ok = String(m.correctText || '').split('|').map(a => a.trim().toLowerCase()).indexOf(v) !== -1;
+                        inp.style.borderColor = ok ? '#22c55e' : '#ef4444';
+                        if (!ok) {
+                            const c = document.createElement('div');
+                            c.className = 'mk-opt correct'; c.style.marginTop = '8px';
+                            c.textContent = '✅ Đáp án: ' + String(m.correctText || '').split('|').join(' / ');
+                            inp.parentNode.after(c);
+                        }
+                        finish(ok);
+                    };
+                    document.getElementById('mkFillCheck').onclick = check;
+                    inp.addEventListener('keydown', e => { if (e.key === 'Enter') check(); });
+                    inp.focus();
+                } else {
+                    const opts = body.querySelectorAll('.mk-opt');
+                    opts.forEach(b => b.addEventListener('click', () => {
+                        const k = parseInt(b.dataset.i, 10);
+                        const ok = k === m.correctIndex;
+                        opts.forEach(o => { o.disabled = true; if (parseInt(o.dataset.i, 10) === m.correctIndex) o.classList.add('correct'); });
+                        if (!ok) b.classList.add('wrong');
+                        finish(ok);
+                    }));
+                }
+            }
+
+            document.getElementById('mkRvNext').onclick = () => {
+                if (i < queue.length - 1) { i++; show(); return; }
+                close();
+                if (window.Badges) window.Badges.check({ force: true });
+                if (newlyMastered && typeof confetti === 'function') confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                Swal.fire({
+                    icon: right === queue.length ? 'success' : 'info',
+                    title: 'Kết quả buổi ôn',
+                    html: 'Đúng <b>' + right + '/' + queue.length + '</b> câu' +
+                        (newlyMastered ? '<br>🎉 Thuộc thêm <b>' + newlyMastered + '</b> câu!' : '') +
+                        '<br><span style="color:#64748b;font-size:0.9em;">Câu chưa thuộc sẽ được ưu tiên ở buổi ôn sau.</span>',
+                    confirmButtonColor: '#2563eb'
+                });
+            };
+            show();
+        }
+
+        document.getElementById('mkFilters').addEventListener('click', e => {
+            const b = e.target.closest('.mk-chip');
+            if (!b) return;
+            if (b.dataset.status) {
+                filterStatus = b.dataset.status;
+                document.querySelectorAll('.mk-chip[data-status]').forEach(x => x.classList.toggle('active', x === b));
+            } else if (b.dataset.src) {
+                filterSrc = b.dataset.src;
+                document.querySelectorAll('.mk-chip[data-src]').forEach(x => x.classList.toggle('active', x === b));
+            }
+            render();
+        });
+
+        document.getElementById('mkList').addEventListener('click', e => {
+            const b = e.target.closest('[data-act]');
+            if (!b) return;
+            const id = b.dataset.id;
+            if (b.dataset.act === 'toggle') { openDetail[id] = !openDetail[id]; render(); }
+            if (b.dataset.act === 'del') {
+                Swal.fire({ title: 'Xoá câu này khỏi sổ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Xoá',
+                    cancelButtonText: 'Huỷ', confirmButtonColor: '#ef4444' }).then(r => {
+                    if (r.isConfirmed) firebase.firestore().collection('users').doc(uid).collection('mistakes').doc(id).delete();
+                });
+            }
+        });
+
+        firebase.auth().onAuthStateChanged(user => {
+            if (unsub) { unsub(); unsub = null; }
+            if (!user) {
+                document.getElementById('mkLogin').style.display = 'block';
+                document.getElementById('mkMain').style.display = 'none';
+                return;
+            }
+            uid = user.uid;
+            document.getElementById('mkLogin').style.display = 'none';
+            document.getElementById('mkMain').style.display = 'block';
+            unsub = firebase.firestore().collection('users').doc(uid).collection('mistakes').onSnapshot(snap => {
+                all = [];
+                snap.forEach(d => { const m = d.data(); m.id = d.id; all.push(m); });
+                render();
+            }, err => {
+                document.getElementById('mkList').innerHTML = '<div class="mk-card mk-empty"><div>⚠️</div>Không tải được Sổ câu sai: ' + esc(err.message) + '</div>';
+            });
+        });
+
+        window.MK = { startReview };
+    })();
+    </script>
+    <script src="assets/js/badges.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <script src="assets/js/menu.js"></script>
+</body>
+</html>

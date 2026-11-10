@@ -147,6 +147,20 @@ service cloud.firestore {
       match /shared_progress/{docId} {
         allow read, write: if isSignedIn() && request.auth.uid == userId;
       }
+
+      // Sổ câu sai (exam.js / shared-vocab.js ghi, mistakes.html ôn tập) — chỉ chủ sở hữu
+      match /mistakes/{mistakeId} {
+        allow read, delete: if isSignedIn() && request.auth.uid == userId;
+        allow create, update: if isSignedIn() && request.auth.uid == userId
+          && request.resource.data.mastered is bool
+          && request.resource.data.get('options', []) is list
+          && request.resource.data.get('options', []).size() <= 12
+          && strMax(request.resource.data, 'sharedHtml', 20000)
+          && strMax(request.resource.data, 'questionHtml', 8000)
+          && strMax(request.resource.data, 'explanationHtml', 20000)
+          && strMax(request.resource.data, 'refName', 300)
+          && strMax(request.resource.data, 'url', 500);
+      }
     }
 
     // ===== DIỄN ĐÀN =====
@@ -267,6 +281,34 @@ service cloud.firestore {
       allow delete: if isSignedIn() && (request.auth.uid == resource.data.senderId || isAdmin());
     }
 
+    // ===== THI ĐẤU 1-1 (duel.html) =====
+    // Mỗi người chơi chỉ được ghi vào trường trạng thái của chính mình: s_<uid>
+    function duelSelfKey() { return 's_' + request.auth.uid; }
+    match /duels/{duelId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+        && request.resource.data.hostId == request.auth.uid
+        && request.resource.data.status == 'waiting'
+        && request.resource.data.guestId == null
+        && request.resource.data.questions is list
+        && request.resource.data.questions.size() <= 15
+        && strMax(request.resource.data, 'hostName', 60);
+      allow update: if isSignedIn() && (
+        // Khách vào phòng đang chờ
+        (resource.data.status == 'waiting' && resource.data.guestId == null
+          && request.auth.uid != resource.data.hostId
+          && request.resource.data.guestId == request.auth.uid
+          && request.resource.data.status == 'playing'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['guestId', 'guestName', 'status', 'startAt', duelSelfKey()])
+          && strMax(request.resource.data, 'guestName', 60))
+        // Người chơi cập nhật bài làm của mình / kết thúc trận / chủ phòng huỷ
+        || ((request.auth.uid == resource.data.hostId || request.auth.uid == resource.data.guestId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly([duelSelfKey(), 'status', 'endedAt'])
+          && request.resource.data.status in ['waiting', 'playing', 'finished', 'cancelled'])
+      );
+      allow delete: if isSignedIn() && request.auth.uid == resource.data.hostId;
+    }
+
     // ===== THÔNG BÁO =====
     // Chỉ người nhận (userId) đọc/cập nhật được; người gửi phải là chính mình
     match /notifications/{notifId} {
@@ -278,7 +320,8 @@ service cloud.firestore {
         && strMax(request.resource.data, 'fromUserName', 60)
         && strMax(request.resource.data, 'type', 30)
         && strMax(request.resource.data, 'message', 500)
-        && strMax(request.resource.data, 'postTitle', 200);
+        && strMax(request.resource.data, 'postTitle', 200)
+        && strMax(request.resource.data, 'link', 300);
       // Người nhận chỉ được đánh dấu đã đọc
       allow update: if isSignedIn() && (isAdmin() || (request.auth.uid == resource.data.userId
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])));

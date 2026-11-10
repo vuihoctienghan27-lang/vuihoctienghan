@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
         rootPath = depth > 0 ? '../'.repeat(depth) : '';
     }
 
+    window.rootPath = rootPath; // dùng chung cho link trong thông báo (forum.js)
     const isListening = path.includes('/listening/');
     const isReading   = path.includes('/reading/');
     const isWriting   = path.includes('/writing/');
@@ -385,6 +386,14 @@ document.addEventListener('DOMContentLoaded', () => {
         <a href="${rootPath}vocab.html" class="nav-link-side" onclick="toggleDrawer(false)">
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></span>
             <span>Sổ Từ Vựng</span>
+        </a>
+        <a href="${rootPath}mistakes.html" class="nav-link-side" onclick="toggleDrawer(false)">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/><path d="M9 7l6 6M15 7l-6 6"/></svg></span>
+            <span>Sổ Câu Sai</span>
+        </a>
+        <a href="${rootPath}duel.html" class="nav-link-side" onclick="toggleDrawer(false)">
+            <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5L3 6V3h3l11.5 11.5"/><path d="M13 19l6-6"/><path d="M16 16l4 4"/><path d="M19 21l2-2"/><path d="M9.5 6.5L21 18v3h-3"/></svg></span>
+            <span>Thi Đấu 1-1</span>
         </a>
         <a href="${rootPath}dailynews.html" class="nav-link-side" onclick="toggleDrawer(false)">
             <span class="drawer-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="15" height="15" stroke-width="2" stroke-linecap="round"><path d="M4 11a9 9 0 0 1 9 9"/><path d="M4 4a16 16 0 0 1 16 16"/><circle cx="5" cy="19" r="1"/></svg></span>

@@ -2162,6 +2162,7 @@
                     <button class="btn-create-list" onclick="createSharedLessonDialog('${folderId}')" style="padding:6px 14px;font-size:0.82em;flex:0 0 auto;background:#f59e0b;border:none;">+ Tạo Bài học</button>
                     <button class="btn-create-list" onclick="createSharedSubFolderDialog('${folderId}')" style="padding:6px 12px;font-size:0.82em;flex:0 0 auto;background:#8b5cf6;border:none;color:#fff;">+ Giai đoạn</button>
                     <button class="btn-edit" onclick="openStudentsProgressModal('${folderId}', '${safeFName}')" style="padding:6px 14px;font-size:0.82em;flex:0 0 auto;background:#eff6ff;color:#2563eb;border-color:#bfdbfe;">👥 Học viên & Tiến độ</button>
+                    <button class="btn-edit" onclick="window.WeeklyReport && WeeklyReport.openTeacherReport('${folderId}', '${safeFName}')" style="padding:6px 14px;font-size:0.82em;flex:0 0 auto;background:#fff7ed;color:#c2410c;border-color:#fed7aa;">📈 Báo cáo tuần</button>
                 `;
             } else {
                 slot.innerHTML = `<span style="font-size:0.85em;color:#64748b;font-weight:600;">Giáo viên: ${folder.ownerEmail || 'Admin'}</span>`;
@@ -2257,16 +2258,18 @@
                 }
 
                 html += `
-                    <div class="list-card" style="position:relative;cursor:pointer;" onclick="openSharedLesson('${folder.id}', '${safeLName}')">
+                    <div class="list-card" data-sf="${escapeHtml(folder.id)}" data-sl="${escapeHtml(lName)}" style="position:relative;cursor:pointer;" onclick="openSharedLesson('${folder.id}', '${safeLName}')">
                         <div style="flex:1;">
                             <div class="list-title">📖 ${escapeHtml(displayTitle)}</div>
                             <div class="list-count" id="cnt-${menuId}">... thuật ngữ — 🎓 Lớp học</div>
+                            <div class="dl-slot">${lessonDueBadge(folder.id, lName)}</div>
                         </div>
                         ${dotsHtml}
                     </div>
                 `;
             });
             grid.innerHTML = html;
+            if (typeof loadFolderDeadlines === 'function') loadFolderDeadlines(folder.id); // nhãn hạn nộp bài tập
 
             // Đếm số từ trong background (nếu lỗi quota/offline thì không ảnh hưởng hiển thị)
             const db = firebase.firestore();
@@ -2413,16 +2416,18 @@
                 }
 
                 html += `
-                    <div class="list-card" style="position:relative;cursor:pointer;" onclick="openSharedLesson('${folder.id}', '${safeLName}')">
+                    <div class="list-card" data-sf="${escapeHtml(folder.id)}" data-sl="${escapeHtml(lName)}" style="position:relative;cursor:pointer;" onclick="openSharedLesson('${folder.id}', '${safeLName}')">
                         <div style="flex:1;">
                             <div class="list-title">📖 ${escapeHtml(lName)}</div>
                             <div class="list-count" id="cnt-${menuId}">... thuật ngữ — 🎓 Lớp học</div>
+                            <div class="dl-slot">${lessonDueBadge(folder.id, lName)}</div>
                         </div>
                         ${dotsHtml}
                     </div>
                 `;
             });
             grid.innerHTML = html;
+            if (typeof loadFolderDeadlines === 'function') loadFolderDeadlines(folder.id); // nhãn hạn nộp bài tập
 
             // Đếm số từ trong background (nếu lỗi quota/offline thì không ảnh hưởng giao diện)
             const db = firebase.firestore();
@@ -2744,6 +2749,7 @@
         _quizPersist = null;
         // Giáo viên: hiện/ẩn bảng tiến độ bài tập tương tác theo loại đề hiện tại
         if (isTeacher()) renderTeacherQuizProgress();
+        setTimeout(renderDeadlineBar, 0);
 
         const hasPrompt = !!(exerciseData && exerciseData.promptHtml && exerciseData.promptHtml.trim());
         const isInteractive = !!(exerciseData && (
@@ -5036,6 +5042,7 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
     // Render khu vực làm bài & xem kết quả chấm của Học viên
     function renderStudentSubmissionView(subData) {
         window._currentStudentSubData = subData;
+        if (typeof renderDeadlineBar === 'function') renderDeadlineBar();
 
         const badge = document.getElementById('studentExerciseStatusBadge');
         const stickyBadge = document.getElementById('studentStickyStatusBadge');
@@ -5762,6 +5769,7 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
             return tb - ta;
         });
 
+        const subDue = dueMs(window.currentSharedExercise);
         let html = '';
         subs.forEach(s => {
             const name = s.studentName || (s.studentEmail ? s.studentEmail.split('@')[0] : 'Học viên');
@@ -5788,6 +5796,7 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
                     </div>
                     <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
                         ${statusBadge}
+                        ${subDue && s.submittedAt && s.submittedAt.toMillis && s.submittedAt.toMillis() > subDue ? '<span class="tq-badge tq-badge-warn">⏰ Nộp muộn</span>' : ''}
                         <button onclick="openGradeSubmissionModal('${s.studentId}')" class="btn-create-list" style="padding:7px 16px;font-size:0.85em;background:${isGraded ? '#059669' : '#0284c7'};border:none;box-shadow:none;">
                             ${isGraded ? '✏️ Xem & Sửa chấm' : '✍️ Chấm bài (Sửa lỗi như Docs)'}
                         </button>
@@ -7151,6 +7160,10 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
     function initOneQuizSectionVocab(sec, hooks) {
         hooks = hooks || {};
         const notifyChange = function () { if (typeof hooks.onChange === 'function') hooks.onChange(); };
+        // onResult(q, isCorrect, detail): chỉ gọi khi học viên tự trả lời (không gọi khi khôi phục bài cũ)
+        const notifyResult = function (q, ok, detail) {
+            if (typeof hooks.onResult === 'function') { try { hooks.onResult(q, ok, detail || {}); } catch (e) { console.warn(e); } }
+        };
         const allQs = sec.querySelectorAll('.quiz-q');
         let totalQ = allQs.length;
         let correctCount = 0;
@@ -7198,7 +7211,7 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
                 }
                 opts.forEach(function(opt) {
                     opt.addEventListener('click', function() {
-                        if (applyChoice(opt.dataset.v)) notifyChange();
+                        if (applyChoice(opt.dataset.v)) { notifyChange(); notifyResult(q, opt.dataset.v === answer, { chosen: opt.dataset.v }); }
                     });
                 });
                 q._quizApply = function (s) { if (s && s.v != null) applyChoice(String(s.v)); };
@@ -7225,10 +7238,14 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
                     return true;
                 }
 
-                if (checkBtn) checkBtn.addEventListener('click', function () { if (checkFillAnswer()) notifyChange(); });
+                const afterFillCheck = function () {
+                    notifyChange();
+                    notifyResult(q, input.classList.contains('correct'), { text: input.value });
+                };
+                if (checkBtn) checkBtn.addEventListener('click', function () { if (checkFillAnswer()) afterFillCheck(); });
                 if (input) {
                     input.addEventListener('keydown', function(e) {
-                        if (e.key === 'Enter' && checkFillAnswer()) notifyChange();
+                        if (e.key === 'Enter' && checkFillAnswer()) afterFillCheck();
                     });
                     // Lưu cả nội dung đang gõ dở (chưa bấm Kiểm tra)
                     input.addEventListener('input', notifyChange);
@@ -7253,7 +7270,7 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
                 }
                 btns.forEach(function(btn) {
                     btn.addEventListener('click', function() {
-                        if (applyTf(btn.dataset.v)) notifyChange();
+                        if (applyTf(btn.dataset.v)) { notifyChange(); notifyResult(q, btn.dataset.v === answer, { chosen: btn.dataset.v }); }
                     });
                 });
                 q._quizApply = function (s) { if (s && s.v != null) applyTf(String(s.v)); };
@@ -7450,6 +7467,7 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
         const savedAt = Date.now();
         try { localStorage.setItem(p.localKey, JSON.stringify(Object.assign({ savedAt: savedAt }, state))); } catch (e) {}
         renderQuizSaveStatus(p.root, state, savedAt);
+        renderDeadlineBar();
 
         if (p.ref) {
             const user = firebase.auth().currentUser;
@@ -7473,6 +7491,67 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
         p.timer = setTimeout(flushQuizSave, 800);
     }
 
+    // Ghi câu trả lời sai vào Sổ câu sai (users/{uid}/mistakes) · trả lời đúng câu từng sai → cộng chuỗi đúng
+    function recordQuizResult(root, q, ok, detail) {
+        const uid = window.currentUserUid || (firebase.auth().currentUser && firebase.auth().currentUser.uid);
+        const folderId = window.currentSharedFolderId;
+        const exId = window.currentSharedExerciseId;
+        if (!uid || !folderId || !exId) return;
+        const idx = quizItems(root).indexOf(q);
+        if (idx < 0) return;
+        const key = quizItemKey(q, idx);
+        const db = firebase.firestore();
+        const FV = firebase.firestore.FieldValue;
+        const ref = db.collection('users').doc(uid).collection('mistakes').doc('qz_' + quizHashStr(folderId + '|' + exId + '|' + key));
+
+        if (ok) {
+            ref.get().then(doc => {
+                if (!doc.exists || doc.data().mastered) return;
+                const streak = (doc.data().streak || 0) + 1;
+                const upd = { streak: streak, lastReviewAt: FV.serverTimestamp() };
+                if (streak >= 2) { upd.mastered = true; upd.masteredAt = FV.serverTimestamp(); }
+                return ref.update(upd);
+            }).catch(e => console.warn('[Mistakes]', e && e.message));
+            return;
+        }
+
+        const type = q.dataset.type || 'mc';
+        const answer = q.dataset.answer || '';
+        const stemEl = q.querySelector('.quiz-stem');
+        const explainEl = q.querySelector('.quiz-explain');
+        const data = {
+            source: 'quiz', skill: 'quiz', type: type,
+            refId: 'quiz/' + folderId + '/' + exId,
+            refName: ('Bài tập lớp: ' + (window.currentSharedLesson || '')).slice(0, 300),
+            url: 'vocab.html',
+            qNum: String(idx + 1),
+            sharedHtml: '',
+            questionHtml: escapeHtml((stemEl ? stemEl.textContent : '').replace(/^Câu\s*\d+\s*:\s*/, '')).slice(0, 8000),
+            explanationHtml: explainEl ? escapeHtml(explainEl.textContent).slice(0, 20000) : '',
+            wrongCount: FV.increment(1), streak: 0, mastered: false,
+            lastWrongAt: FV.serverTimestamp()
+        };
+        if (type === 'tf') {
+            data.options = ['⭕ Đúng', '❌ Sai'];
+            data.correctIndex = answer === 't' ? 0 : 1;
+            data.userIndex = detail.chosen === 't' ? 0 : 1;
+        } else if (type === 'fill') {
+            data.options = [];
+            data.correctText = answer.slice(0, 500);
+            data.userText = String(detail.text || '').slice(0, 500);
+        } else {
+            const opts = Array.prototype.map.call(q.querySelectorAll('.quiz-opt'), o => o.textContent.trim().slice(0, 500));
+            data.options = opts;
+            data.correctIndex = parseInt(answer, 10) - 1;
+            data.userIndex = parseInt(detail.chosen, 10) - 1;
+        }
+        ref.get().then(doc => {
+            if (!doc.exists) data.createdAt = FV.serverTimestamp();
+            else if (doc.data().mastered) data.masteredAt = FV.delete();
+            return ref.set(data, { merge: true });
+        }).catch(e => console.warn('[Mistakes] Không lưu được câu sai:', e && e.message));
+    }
+
     // Khởi tạo quiz cho HỌC VIÊN: khôi phục bài làm đã lưu + tự động lưu mỗi khi trả lời
     function setupQuizPersistence(root) {
         flushQuizSave();
@@ -7488,7 +7567,10 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
             : null;
 
         _quizPersist = { root: root, ref: ref, localKey: localKey, timer: null, ready: false };
-        initQuizInContainerVocab(root, { onChange: scheduleQuizSave });
+        initQuizInContainerVocab(root, {
+            onChange: scheduleQuizSave,
+            onResult: function (q, ok, detail) { recordQuizResult(root, q, ok, detail); }
+        });
 
         // Ô dịch (translate) không nằm trong engine quiz → tự lắng nghe
         root.querySelectorAll('.quiz-translate-card textarea').forEach(function (ta) {
@@ -7507,6 +7589,7 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
             applyQuizState(root, best);
             _quizPersist.ready = true;
             renderQuizSaveStatus(root, collectQuizState(root), best ? (best.savedAt || remoteAt) : 0);
+            renderDeadlineBar();
             // Bản trên máy mới hơn Firestore (vd. lúc trước mất mạng), hoặc học viên đã thao tác
             // trong lúc đang tải → lưu lại
             if ((best && best === local && ref) || _quizPersist.pending || _quizPersist.timer) {
@@ -7618,7 +7701,22 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
             return;
         }
 
-        box.innerHTML = rows.map(r => {
+        // Hạn nộp + bộ lọc
+        const due = dueMs(window.currentSharedExercise);
+        const now = Date.now();
+        const isDone = r => !!(r.attempt && total && (r.attempt.answered || 0) >= total);
+        const filter = window._tqFilter || 'all';
+        const counts = { all: rows.length, todo: rows.filter(r => !isDone(r)).length, done: rows.filter(isDone).length };
+        const shown = rows.filter(r => filter === 'all' || (filter === 'done' ? isDone(r) : !isDone(r)));
+        const chips = `<div class="tq-filters">${[['all', 'Tất cả'], ['todo', 'Chưa xong'], ['done', 'Hoàn thành']].map(([k, l]) =>
+            `<button class="tq-chip${filter === k ? ' on' : ''}" onclick="window._tqFilter='${k}';renderTeacherQuizProgressPublic()">${l} (${counts[k]})</button>`).join('')}
+            ${due ? `<span class="tq-due">📅 Hạn ${fmtDue(due)}${now > due ? ' · <b style="color:#dc2626;">đã qua hạn</b>' : ''}</span>` : ''}</div>`;
+        if (!shown.length) {
+            box.innerHTML = chips + `<div style="text-align:center;padding:20px;color:#64748b;">Không có học viên nào trong mục này.</div>`;
+            return;
+        }
+
+        box.innerHTML = chips + shown.map(r => {
             const a = r.attempt;
             const name = r.name || (r.email ? String(r.email).split('@')[0] : 'Học viên');
             const initial = String(name).charAt(0).toUpperCase() || 'H';
@@ -7626,9 +7724,11 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
                 return `<div class="tq-row tq-row-empty">
                     <div class="tq-who"><div class="tq-avatar">${escapeHtml(initial)}</div>
                         <div class="tq-name-wrap"><div class="tq-name">${escapeHtml(name)}</div><div class="tq-sub">${escapeHtml(r.email || '')}</div></div></div>
-                    <span class="tq-badge tq-badge-none">Chưa làm</span>
+                    <span class="tq-badge ${due && now > due ? 'tq-badge-late' : 'tq-badge-none'}">${due && now > due ? '⛔ Quá hạn · chưa làm' : 'Chưa làm'}</span>
                 </div>`;
             }
+            const lateNote = due ? (isDone(r) ? (at(r) > due ? '<span class="tq-badge tq-badge-warn">Nộp muộn</span>' : '')
+                : (now > due ? '<span class="tq-badge tq-badge-late">⛔ Quá hạn</span>' : '')) : '';
             const answered = a.answered || 0;
             const correct = a.correct || 0;
             const tot = total || a.total || 0;
@@ -7642,12 +7742,14 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
                     <div class="tq-sub">${escapeHtml(r.email || '')}${at(r) ? ' · ' + quizTimeAgo(at(r)) : ''}</div></div></div>
                 <div class="tq-progress">
                     <div class="tq-bar"><div style="width:${pctDone}%;background:${finished ? '#10b981' : '#3b82f6'};"></div></div>
-                    <div class="tq-stats">${finished ? '✅ Hoàn thành' : `Đã làm ${answered}/${tot}`} · đúng <b style="color:${color};">${correct}/${answered}</b>${answered ? ` (${pctRight}%)` : ''}</div>
+                    <div class="tq-stats">${finished ? '✅ Hoàn thành' : `Đã làm ${answered}/${tot}`} · đúng <b style="color:${color};">${correct}/${answered}</b>${answered ? ` (${pctRight}%)` : ''} ${lateNote}</div>
                 </div>
                 <button class="btn-create-list tq-view-btn" onclick="openStudentQuizAttempt(${escapeHtml(JSON.stringify(String(r.id)))})">👁️ Xem bài làm</button>
             </div>`;
         }).join('');
     }
+
+    window.renderTeacherQuizProgressPublic = function () { renderTeacherQuizProgress(); };
 
     // Popup xem lại bài làm của 1 học viên: đề bài + đáp án học viên đã chọn/điền (chỉ đọc)
     window.openStudentQuizAttempt = function (studentId) {
@@ -7719,6 +7821,281 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
         overlay.querySelector('.tq-close').addEventListener('click', close);
         overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
     };
+
+    // =========================================================================
+    // HẠN NỘP BÀI TẬP (exercises/{id}.dueAt = ms)
+    // =========================================================================
+    const DAY_MS = 86400000;
+    const WEEKDAY_VI = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+
+    function dueMs(ex) {
+        const d = ex && ex.dueAt;
+        if (!d) return 0;
+        if (typeof d === 'number') return d;
+        if (typeof d.toMillis === 'function') return d.toMillis();
+        return 0;
+    }
+    function fmtDue(ms) {
+        const d = new Date(ms);
+        return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ' ' +
+            WEEKDAY_VI[d.getDay()] + ' ' + d.getDate() + '/' + (d.getMonth() + 1);
+    }
+    function fmtLeft(diff) {
+        const a = Math.abs(diff);
+        if (a < 3600000) return Math.max(1, Math.round(a / 60000)) + ' phút';
+        if (a < DAY_MS) return Math.round(a / 3600000) + ' giờ';
+        return Math.round(a / DAY_MS) + ' ngày';
+    }
+    // Trạng thái hạn nộp: { cls, text } — cls: done | late-done | overdue | urgent | normal
+    function dueStatus(ms, completed, completedAt) {
+        if (!ms) return null;
+        const now = Date.now();
+        if (completed) {
+            if (completedAt && completedAt > ms) return { cls: 'late-done', text: '✅ Đã hoàn thành (nộp muộn ' + fmtLeft(completedAt - ms) + ')' };
+            return { cls: 'done', text: '✅ Đã hoàn thành đúng hạn' };
+        }
+        if (now > ms) return { cls: 'overdue', text: '⛔ Quá hạn ' + fmtLeft(now - ms) };
+        if (ms - now < DAY_MS) return { cls: 'urgent', text: '⏳ Còn ' + fmtLeft(ms - now) };
+        return { cls: 'normal', text: '⏰ Còn ' + fmtLeft(ms - now) };
+    }
+
+    // Học viên đã hoàn thành bài hiện tại chưa? (JSON: làm hết câu · Docs: đã nộp)
+    function studentCompletion() {
+        const ex = window.currentSharedExercise;
+        if (isInteractiveExercise(ex)) {
+            if (!_quizPersist || !_quizPersist.root) return { done: false };
+            const st = collectQuizState(_quizPersist.root);
+            return { done: st.total > 0 && st.answered >= st.total, at: Date.now() };
+        }
+        const sub = window._currentStudentSubData;
+        if (sub && (sub.status === 'submitted' || sub.status === 'graded')) {
+            const t = sub.submittedAt && sub.submittedAt.toMillis ? sub.submittedAt.toMillis() : 0;
+            return { done: true, at: t };
+        }
+        return { done: false };
+    }
+
+    function renderDeadlineBar() {
+        const bar = document.getElementById('exerciseDeadlineBar');
+        if (!bar) return;
+        const ex = window.currentSharedExercise;
+        const ms = dueMs(ex);
+        const hasPrompt = !!(ex && ex.promptHtml && ex.promptHtml.trim());
+        if (!hasPrompt) { bar.innerHTML = ''; return; }
+
+        if (isTeacher()) {
+            if (!ms) {
+                bar.innerHTML = `<div class="dl-bar dl-none"><span>📅 Chưa đặt hạn nộp cho bài tập này.</span>
+                    <button class="dl-btn" onclick="setExerciseDeadline()">⏰ Đặt hạn nộp</button></div>`;
+                return;
+            }
+            const st = dueStatus(ms, false);
+            bar.innerHTML = `<div class="dl-bar dl-${st.cls}">
+                <span>📅 Hạn nộp: <b>${fmtDue(ms)}</b> · ${st.text}</span>
+                <span class="dl-actions">
+                    <button class="dl-btn" onclick="remindUnfinishedStudents()">🔔 Nhắc học viên chưa làm</button>
+                    <button class="dl-btn" onclick="setExerciseDeadline()">✏️ Đổi hạn</button>
+                </span></div>`;
+            return;
+        }
+        if (!ms) { bar.innerHTML = ''; return; }
+        const c = studentCompletion();
+        const st = dueStatus(ms, c.done, c.at);
+        bar.innerHTML = `<div class="dl-bar dl-${st.cls}"><span>📅 Hạn nộp: <b>${fmtDue(ms)}</b></span><b>${st.text}</b></div>`;
+    }
+
+    window.setExerciseDeadline = async function () {
+        if (!isTeacher()) return;
+        const ex = window.currentSharedExercise;
+        const cur = dueMs(ex);
+        const def = cur ? new Date(cur) : (() => { const d = new Date(Date.now() + 7 * DAY_MS); d.setHours(21, 0, 0, 0); return d; })();
+        const pad = n => String(n).padStart(2, '0');
+        const val = def.getFullYear() + '-' + pad(def.getMonth() + 1) + '-' + pad(def.getDate()) + 'T' + pad(def.getHours()) + ':' + pad(def.getMinutes());
+        const res = await Swal.fire({
+            title: '⏰ Hạn nộp bài tập',
+            html: `<div style="text-align:left;font-size:0.92em;color:#475569;margin-bottom:8px;">Bài: <b>${escapeHtml(window.currentSharedLesson || '')}</b></div>
+                <input type="datetime-local" id="dlInput" class="swal2-input" style="width:100%;margin:0;" value="${val}">
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;">
+                    ${[['+1 ngày', 1], ['+3 ngày', 3], ['+1 tuần', 7], ['+2 tuần', 14]].map(([l, d]) =>
+                        `<button type="button" class="dl-quick" data-d="${d}" style="border:1px solid #cbd5e1;background:#f8fafc;border-radius:8px;padding:5px 10px;cursor:pointer;font-weight:700;">${l}</button>`).join('')}
+                </div>`,
+            showCancelButton: true,
+            showDenyButton: !!cur,
+            confirmButtonText: 'Lưu hạn nộp',
+            denyButtonText: 'Xoá hạn',
+            cancelButtonText: 'Huỷ',
+            confirmButtonColor: '#2563eb',
+            didOpen: () => {
+                document.querySelectorAll('.dl-quick').forEach(b => b.onclick = () => {
+                    const d = new Date(Date.now() + Number(b.dataset.d) * DAY_MS); d.setHours(21, 0, 0, 0);
+                    document.getElementById('dlInput').value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T21:00';
+                });
+            },
+            preConfirm: () => {
+                const v = document.getElementById('dlInput').value;
+                const t = v ? new Date(v).getTime() : NaN;
+                if (!t || isNaN(t)) { Swal.showValidationMessage('Vui lòng chọn ngày giờ'); return false; }
+                return t;
+            }
+        });
+        if (!res.isConfirmed && !res.isDenied) return;
+        const ref = firebase.firestore().collection('shared_folders').doc(window.currentSharedFolderId)
+            .collection('exercises').doc(window.currentSharedExerciseId);
+        try {
+            await ref.set({ dueAt: res.isDenied ? firebase.firestore.FieldValue.delete() : res.value }, { merge: true });
+            Swal.fire({ icon: 'success', title: res.isDenied ? 'Đã xoá hạn nộp' : 'Đã đặt hạn: ' + fmtDue(res.value), timer: 1600, showConfirmButton: false });
+        } catch (e) { Swal.fire('Lỗi', e.message, 'error'); }
+    };
+
+    // Gửi thông báo nhắc cho học viên trong lớp chưa hoàn thành bài
+    window.remindUnfinishedStudents = async function () {
+        if (!isTeacher()) return;
+        const ex = window.currentSharedExercise;
+        const folderId = window.currentSharedFolderId, exId = window.currentSharedExerciseId;
+        const db = firebase.firestore();
+        const folderRef = db.collection('shared_folders').doc(folderId);
+        try {
+            const [studentsSnap, qaSnap, subSnap] = await Promise.all([
+                folderRef.collection('students').get(),
+                folderRef.collection('exercises').doc(exId).collection('quiz_attempts').get(),
+                folderRef.collection('exercises').doc(exId).collection('submissions').get()
+            ]);
+            const total = currentQuizTotal();
+            const done = {};
+            qaSnap.forEach(d => { if (total && (d.data().answered || 0) >= total) done[d.id] = true; });
+            subSnap.forEach(d => { const s = d.data().status; if (s === 'submitted' || s === 'graded') done[d.id] = true; });
+            const targets = [];
+            studentsSnap.forEach(d => { if (!done[d.id] && d.id !== window.currentUserUid) targets.push({ uid: d.id, name: d.data().displayName || d.data().email || 'Học viên' }); });
+            if (!targets.length) { Swal.fire('Tuyệt vời!', 'Tất cả học viên đã hoàn thành bài này 🎉', 'success'); return; }
+
+            const ok = await Swal.fire({
+                title: '🔔 Nhắc ' + targets.length + ' học viên?',
+                html: '<div style="text-align:left;max-height:180px;overflow:auto;font-size:0.9em;">' + targets.map(t => '• ' + escapeHtml(t.name)).join('<br>') + '</div>',
+                showCancelButton: true, confirmButtonText: 'Gửi nhắc nhở', cancelButtonText: 'Huỷ', confirmButtonColor: '#f59e0b'
+            });
+            if (!ok.isConfirmed) return;
+            const me = firebase.auth().currentUser;
+            const ms = dueMs(ex);
+            const lesson = String(window.currentSharedLesson || '').slice(0, 120);
+            const link = 'vocab.html?sf=' + encodeURIComponent(folderId) + '&sl=' + encodeURIComponent(window.currentSharedLesson || '');
+            const batch = db.batch();
+            targets.forEach(t => {
+                batch.set(db.collection('notifications').doc(), {
+                    userId: t.uid, type: 'deadline', fromUserId: me.uid,
+                    fromUserName: String(me.displayName || 'Giáo viên').slice(0, 60),
+                    message: ('Nhắc làm bài tập "' + lesson + '"' + (ms ? ' — hạn ' + fmtDue(ms) : '')).slice(0, 500),
+                    link: link.slice(0, 300), read: false,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            });
+            await batch.commit();
+            Swal.fire({ icon: 'success', title: 'Đã gửi nhắc nhở cho ' + targets.length + ' học viên', timer: 1800, showConfirmButton: false });
+        } catch (e) { Swal.fire('Lỗi', e.message, 'error'); }
+    };
+
+    // ── Nhãn hạn nộp trên thẻ bài học của thư mục lớp ──
+    window._folderDeadlines = {}; // folderId -> { lessonName: { due, done, at } }
+    function lessonDueBadge(folderId, lessonName) {
+        const info = (window._folderDeadlines[folderId] || {})[lessonName];
+        if (!info) return '';
+        const st = dueStatus(info.due, isTeacher() ? false : info.done, info.at);
+        if (!st) return '';
+        const text = isTeacher() ? '📅 Hạn ' + fmtDue(info.due) : st.text.replace('Đã hoàn thành đúng hạn', 'Đã làm').replace(/ \(nộp muộn.*\)/, ' (muộn)');
+        return `<span class="dl-chip dl-${isTeacher() ? 'normal' : st.cls}">${text}</span>`;
+    }
+    window.lessonDueBadge = lessonDueBadge;
+
+    async function loadFolderDeadlines(folderId) {
+        const db = firebase.firestore();
+        const uid = window.currentUserUid;
+        try {
+            const snap = await db.collection('shared_folders').doc(folderId).collection('exercises')
+                .where('dueAt', '>=', Date.now() - 30 * DAY_MS).get();
+            const map = {};
+            await Promise.all(snap.docs.map(async d => {
+                const ex = d.data();
+                if (!ex.listName) return;
+                const info = { due: dueMs(ex), done: false, at: 0 };
+                if (!isTeacher() && uid) {
+                    const [qa, sub] = await Promise.all([
+                        d.ref.collection('quiz_attempts').doc(uid).get().catch(() => null),
+                        d.ref.collection('submissions').doc(uid).get().catch(() => null)
+                    ]);
+                    if (qa && qa.exists) {
+                        const a = qa.data();
+                        if (a.total && a.answered >= a.total) { info.done = true; info.at = a.updatedAt && a.updatedAt.toMillis ? a.updatedAt.toMillis() : 0; }
+                    }
+                    if (sub && sub.exists && ['submitted', 'graded'].includes(sub.data().status)) {
+                        info.done = true; info.at = sub.data().submittedAt && sub.data().submittedAt.toMillis ? sub.data().submittedAt.toMillis() : 0;
+                    }
+                }
+                map[ex.listName] = info;
+            }));
+            window._folderDeadlines[folderId] = map;
+            // Gắn nhãn vào các thẻ bài học đang hiển thị
+            document.querySelectorAll('.list-card[data-sf="' + folderId + '"]').forEach(card => {
+                const slot = card.querySelector('.dl-slot');
+                if (slot) slot.innerHTML = lessonDueBadge(folderId, card.dataset.sl);
+            });
+        } catch (e) { console.warn('[Deadline] Không tải được hạn nộp:', e && e.message); }
+    }
+    window.loadFolderDeadlines = loadFolderDeadlines;
+
+    // ── Học viên: dải "Bài tập sắp đến hạn" trên đầu Sổ từ vựng (gộp mọi lớp đã tham gia) ──
+    async function loadUpcomingDeadlines() {
+        if (isTeacher()) return;
+        await Promise.all(_studentFolders.map(f => loadFolderDeadlines(f.id)));
+        renderUpcomingDeadlines();
+    }
+    function renderUpcomingDeadlines() {
+        const box = document.getElementById('deadlineStrip');
+        if (!box) return;
+        const now = Date.now();
+        const items = [];
+        _studentFolders.forEach(f => {
+            const map = window._folderDeadlines[f.id] || {};
+            Object.keys(map).forEach(lesson => {
+                const d = map[lesson];
+                // Chưa làm: sắp đến hạn trong 7 ngày, hoặc đã quá hạn trong 7 ngày gần đây
+                if (!d.done && d.due - now < 7 * DAY_MS && now - d.due < 7 * DAY_MS) items.push({ f, lesson, d });
+            });
+        });
+        items.sort((a, b) => a.d.due - b.d.due);
+        if (!items.length) { box.innerHTML = ''; box.style.display = 'none'; return; }
+        box.style.display = 'block';
+        box.innerHTML = `<div class="dl-strip-title">📌 Bài tập cần làm (${items.length})</div>` + items.slice(0, 5).map(x => {
+            const st = dueStatus(x.d.due, false);
+            return `<a class="dl-strip-item dl-${st.cls}" href="vocab.html?sf=${encodeURIComponent(x.f.id)}&sl=${encodeURIComponent(x.lesson)}">
+                <span><b>${escapeHtml(x.lesson)}</b> <span style="color:#64748b;">· ${escapeHtml(x.f.name || 'Lớp học')}</span></span>
+                <span class="dl-strip-due">${st.text} · ${fmtDue(x.d.due)}</span></a>`;
+        }).join('');
+    }
+
+    // Link từ thông báo: vocab.html?sf=<folderId>&sl=<lessonName> → mở thẳng bài tập
+    function handleDeadlineDeepLink() {
+        let qp;
+        try { qp = new URLSearchParams(location.search); } catch (e) { return; }
+        const fid = qp.get('sf'), lname = qp.get('sl');
+        if (!fid || !lname) return;
+        let tries = 0;
+        const t = setInterval(() => {
+            tries++;
+            const ready = window.currentUserUid && typeof window.openSharedLesson === 'function' &&
+                (_teacherFolders.concat(_studentFolders)).some(f => f.id === fid);
+            if (ready) {
+                clearInterval(t);
+                try {
+                    if (typeof window.openSharedFolder === 'function') window.openSharedFolder(fid);
+                    setTimeout(() => {
+                        window.openSharedLesson(fid, lname);
+                        setTimeout(() => { if (typeof window.switchLessonSubTab === 'function') window.switchLessonSubTab('exercise'); }, 400);
+                    }, 300);
+                } catch (e) { console.warn('[Deadline] deep link', e); }
+            } else if (tries > 60) clearInterval(t);
+        }, 250);
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', handleDeadlineDeepLink);
+    else handleDeadlineDeepLink();
 
     // Rời trang / ẩn tab → ghi ngay phần chưa lưu
     document.addEventListener('visibilitychange', function () { if (document.hidden) flushQuizSave(); });
@@ -11097,6 +11474,12 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
 
                     if (typeof window.renderSharedFoldersGrid === 'function' && document.getElementById('listsGrid')) {
                         window.renderSharedFoldersGrid();
+                    }
+                    // Bài tập sắp đến hạn (chỉ tải lại khi danh sách lớp thay đổi — snapshot này chạy mỗi phút)
+                    const unlockKey = unlocked.slice().sort().join('|');
+                    if (unlockKey !== window._lastUnlockKey) {
+                        window._lastUnlockKey = unlockKey;
+                        loadUpcomingDeadlines();
                     }
                 });
 

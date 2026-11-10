@@ -869,6 +869,9 @@
                 } else if (nd.type === 'friend_accept') {
                     var btn = document.querySelector('.forum-tab-btn[data-tab="tab-friends"]');
                     if (btn) btn.click();
+                } else if (nd.link && /^[a-z0-9_\-]+\.html(\?[^\s:]*)?$/i.test(nd.link)) {
+                    // Chỉ cho phép link nội bộ dạng 'trang.html?...' (chống chuyển hướng ra ngoài)
+                    window.location.href = (window.rootPath || '') + nd.link;
                 }
             };
 
@@ -876,6 +879,10 @@
                 div.innerHTML = ''
                     + '<div class="nd-item-title">💬 Có bình luận mới</div>'
                     + '<div class="nd-item-desc"><strong>' + escapeHTML(nd.fromUserName) + '</strong> đã bình luận vào bài viết "' + escapeHTML(nd.postTitle) + '" của bạn.</div>';
+            } else if (nd.type === 'deadline' || nd.type === 'duel') {
+                div.innerHTML = ''
+                    + '<div class="nd-item-title">' + (nd.type === 'duel' ? '⚔️ Lời thách đấu' : '⏰ Nhắc nộp bài tập') + '</div>'
+                    + '<div class="nd-item-desc"><strong>' + escapeHTML(nd.fromUserName) + '</strong>: ' + escapeHTML(nd.message || '') + '</div>';
             } else if (nd.type === 'friend_accept') {
                 div.innerHTML = ''
                     + '<div class="nd-item-title">✅ Bạn bè mới</div>'

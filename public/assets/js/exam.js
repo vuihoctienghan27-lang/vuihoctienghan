@@ -343,6 +343,108 @@ function writeBonusWithRetry(updates) {
     });
 }
 
+// =========================================================================
+// SỔ CÂU SAI — users/{uid}/mistakes/{id}
+// Câu sai: lưu đề + đoạn văn dùng chung + lựa chọn + lời giải để ôn lại ở mistakes.html.
+// Câu đúng mà đã có trong sổ: cộng chuỗi đúng; đúng 2 lần liên tiếp → "đã thuộc".
+// =========================================================================
+function examPageInfo() {
+    const path = window.location.pathname;
+    let skill = 'reading';
+    if (path.includes('/listening/')) skill = 'listening';
+    else if (path.includes('/writing/')) skill = 'writing';
+    const level = path.includes('/topik_i/') ? 'topik_i' : 'topik_ii';
+    const numMatch = path.match(/topik(\d+)\.html/);
+    const examId = `${skill}/${level}/topik${numMatch ? numMatch[1] : 'XX'}`;
+    const headerEl = document.querySelector('.header');
+    return {
+        skill, level, examId,
+        examKey: examId.replace(/[^a-zA-Z0-9_]/g, '_'),
+        examName: headerEl ? headerEl.innerText.trim().slice(0, 200) : examId,
+        url: path.replace(/^\/public\//, '/')
+    };
+}
+
+// Sao chép HTML an toàn để lưu: bỏ script/nút/sự kiện, gỡ thẻ tra từ, ảnh dùng đường dẫn tuyệt đối
+function cleanHtmlForMistake(el, maxLen) {
+    if (!el) return '';
+    const c = el.cloneNode(true);
+    c.querySelectorAll('script, iframe, button, .btn-explain, .review-link, .speaker-icon, .q-number, audio, video').forEach(n => n.remove());
+    c.querySelectorAll('.vocab-word').forEach(n => n.replaceWith(document.createTextNode(n.textContent)));
+    c.querySelectorAll('*').forEach(n => {
+        Array.from(n.attributes).forEach(a => {
+            const name = a.name.toLowerCase();
+            if (name.startsWith('on') || (['href', 'src'].includes(name) && /^\s*javascript:/i.test(a.value))) n.removeAttribute(a.name);
+        });
+        if (n.tagName === 'IMG' && n.getAttribute('src')) n.setAttribute('src', n.src);
+    });
+    let html = c.innerHTML.replace(/\s{2,}/g, ' ').trim();
+    if (html.length > maxLen) html = html.slice(0, maxLen);
+    return html;
+}
+
+// Đoạn văn dùng chung (vd. [19~20]) nằm trước nhóm câu hỏi
+function findSharedText(block) {
+    let p = block.previousElementSibling;
+    while (p) {
+        if (p.classList.contains('shared-text')) return p;
+        if (p.classList.contains('instruction')) return null;
+        if (!p.classList.contains('question-block')) { p = p.previousElementSibling; continue; }
+        p = p.previousElementSibling;
+    }
+    return null;
+}
+
+function recordExamMistakes(items) {
+    if (!items || !items.length || typeof firebase === 'undefined' || !firebase.auth().currentUser) return;
+    const uid = firebase.auth().currentUser.uid;
+    const db = firebase.firestore();
+    const info = examPageInfo();
+    const col = db.collection('users').doc(uid).collection('mistakes');
+    const FV = firebase.firestore.FieldValue;
+
+    col.where('refId', '==', info.examId).get().then(snap => {
+        const existing = {};
+        snap.forEach(d => { existing[d.id] = d.data(); });
+        const batch = db.batch();
+        let writes = 0;
+
+        items.forEach(it => {
+            const id = ('ex_' + info.examKey + '_q' + it.q).replace(/[^a-zA-Z0-9_]/g, '_').slice(0, 150);
+            const ref = col.doc(id);
+            const old = existing[id];
+            if (it.correct) {
+                // Làm đúng câu từng sai → tính vào chuỗi đúng
+                if (old && !old.mastered) {
+                    const streak = (old.streak || 0) + 1;
+                    const upd = { streak: streak, lastReviewAt: FV.serverTimestamp() };
+                    if (streak >= 2) { upd.mastered = true; upd.masteredAt = FV.serverTimestamp(); }
+                    batch.update(ref, upd); writes++;
+                }
+                return;
+            }
+            const block = it.block;
+            const opts = Array.from(block.querySelectorAll('.options .option')).map(o => o.innerText.trim().slice(0, 500));
+            const data = {
+                source: 'exam', skill: info.skill, level: info.level,
+                refId: info.examId, refName: info.examName, url: info.url + '#' + (block.id || ''),
+                qNum: String(it.q), type: 'mc',
+                sharedHtml: cleanHtmlForMistake(findSharedText(block), 20000),
+                questionHtml: cleanHtmlForMistake(block.querySelector('.question-text'), 8000),
+                options: opts,
+                correctIndex: it.correctIndex, userIndex: it.userIndex,
+                explanationHtml: cleanHtmlForMistake(block.querySelector('.explanation-content'), 20000),
+                wrongCount: FV.increment(1), streak: 0, mastered: false,
+                lastWrongAt: FV.serverTimestamp()
+            };
+            if (!old) data.createdAt = FV.serverTimestamp();
+            else if (old.mastered) data.masteredAt = FV.delete(); // sai lại câu đã thuộc → đưa về "cần ôn"
+            batch.set(ref, data, { merge: true }); writes++;
+        });
+        if (writes) return batch.commit();
+    }).catch(e => console.warn('[Mistakes] Không lưu được Sổ câu sai:', e && e.message));
+}
+
 function saveExamResult(score, correctCount, answeredCount, totalQuestions, answeredQuestions, correctQuestions, answers) {
     if (typeof firebase === 'undefined' || !firebase.auth().currentUser) {
         console.warn('[Exam] Không lưu kết quả: chưa đăng nhập hoặc Firebase chưa sẵn sàng.');
@@ -635,6 +737,7 @@ function processSubmitExam() {
     const answeredQuestions = [];
     const correctQuestions = [];
     const answerDetails = [];
+    const mistakeInfo = [];
     const blocks = document.querySelectorAll('.question-block');
 
     blocks.forEach((block, index) => {
@@ -687,8 +790,12 @@ function processSubmitExam() {
 
         // Lưu chi tiết đáp án người dùng đã chọn — CHỈ cho câu thực sự đã trả lời
         if (userChoice && answeredQuestions.includes(String(qText))) {
-            const answerIndex = Array.from(optCont.querySelectorAll('.option')).indexOf(userChoice);
+            const allOpts = Array.from(optCont.querySelectorAll('.option'));
+            const answerIndex = allOpts.indexOf(userChoice);
             answerDetails.push({ q: String(qText), answerIndex: answerIndex, correct: isCor });
+            // Ghi nhận cho Sổ câu sai (mistakes.html)
+            mistakeInfo.push({ block: block, q: String(qText), correct: isCor, userIndex: answerIndex,
+                correctIndex: corOpt ? allOpts.indexOf(corOpt) : -1 });
         }
 
         const actArea = block.querySelector('.action-area');
@@ -703,6 +810,7 @@ function processSubmitExam() {
     // Không lưu lịch sử nếu chưa trả lời câu nào (tránh auto-submit khi hết giờ tạo dữ liệu rác)
     if (answeredCount > 0) {
         saveExamResult(score, correctCount, answeredCount, blocks.length, answeredQuestions, correctQuestions, answerDetails);
+        try { recordExamMistakes(mistakeInfo); } catch (e) { console.warn('[Mistakes]', e); }
     }
     const ccEl = document.getElementById('correctCountText');
     const tcEl = document.getElementById('totalCountText');

@@ -123,6 +123,7 @@ function startStudy(type, list, startIndex) {
     else if (type==='speaking') { document.getElementById('gameSpeakingWrapper').style.display='block'; document.getElementById('studyTitle').innerText="Luyện Nói 🎤"; if(typeof initSpeaking==='function') initSpeaking(currentData); }
 }
 window.closeStudy = function() {
+    window._srsSession = null; // đóng giữa chừng → huỷ buổi ôn hôm nay
     const m = document.getElementById('studyModal'); if(m) m.style.display='none';
     const r = document.getElementById('matchResult'); if(r) r.style.display='none';
     if (typeof window.__bansungStop==='function') { try{ window.__bansungStop(); window.__bansungStop=null; }catch(e){} }
@@ -145,7 +146,23 @@ function fcFlip(){fcFront=!fcFront;document.getElementById('fcCard').classList.t
 function fcMove(step){fcI=(fcI+step+fcGameList.length)%fcGameList.length;drawFc();}
 function fcAssess(st){
     const word=fcGameList[fcI];
-    updateWordStatus(word.id,st);
+    updateWordStatus(word.id,st,'review');
+    // Buổi "Ôn tập hôm nay" (srs.js): thẻ "Chưa thuộc" được đưa lại cuối buổi 1 lần, hết thẻ → tổng kết
+    const ses=window._srsSession;
+    if(ses){
+        ses.reviewed=(ses.reviewed||0)+1;
+        if(st<=1){
+            ses.again=(ses.again||0)+1;
+            ses.requeued=ses.requeued||{};
+            if(word.id&&!ses.requeued[word.id]){ses.requeued[word.id]=true;fcGameList.push(word);}
+        }
+        if(fcI>=fcGameList.length-1){
+            setTimeout(()=>ses.onDone({reviewed:ses.reviewed,again:ses.again||0}),300);
+            return;
+        }
+        setTimeout(()=>{fcI++;drawFc();},300);
+        return;
+    }
     if(fcI<fcGameList.length-1){setTimeout(()=>fcMove(1),300);}
 }
 
@@ -156,7 +173,9 @@ function cycleWordStatus(id, current) {
 }
 
 // ── Update word status in Firestore ──
-function updateWordStatus(id, status) {
+// source = 'review' khi người học tự đánh giá trên flashcard (srs.js tính lịch ôn),
+// còn lại (bấm đổi trạng thái thủ công) → đặt lịch ôn theo trạng thái mới
+function updateWordStatus(id, status, source) {
     if (!id) return; // từ không thuộc Sổ từ vựng (vd: bài báo) -> bỏ qua
     const uid = window.currentUserUid;
     if (!uid || typeof firebase === 'undefined') return;
@@ -171,7 +190,18 @@ function updateWordStatus(id, status) {
         return;
     }
 
-    firebase.firestore().collection("users").doc(uid).collection("vocabulary").doc(id).update({ status: status }).catch(() => {});
+    let srsFields = {};
+    if (window.SRS) {
+        try {
+            if (source === 'review') srsFields = window.SRS.recordReview(id, status) || {};
+            else {
+                const w = (window._allVocabData || []).find(x => x.id === id) || {};
+                srsFields = window.SRS.manualFields(w, status) || {};
+            }
+        } catch (e) { console.warn('[SRS]', e); }
+    }
+    firebase.firestore().collection("users").doc(uid).collection("vocabulary").doc(id)
+        .update(Object.assign({ status: status }, srsFields)).catch(() => {});
 }
 
 // ── Flashcard from grid click: open at correct position with full list ──

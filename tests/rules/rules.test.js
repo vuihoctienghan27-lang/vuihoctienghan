@@ -182,8 +182,66 @@ test('học viên ghi danh lớp (shared-vocab.js) được, tên 1000 ký tự 
   await assertFails(setDoc(ref, { ...base, displayName: 'x'.repeat(1000) }, { merge: true }));
 });
 
-test('app_config (khoá AI cũ) không ai đọc được ngoài admin', async () => {
+test('app_config: chỉ người đã đăng nhập đọc được (tạm thời, chờ Blaze)', async () => {
   await seed('app_config/ai_grader', { geminiKeys: ['secret'] });
   await assertFails(getDoc(doc(anon(), 'app_config', 'ai_grader')));
-  await assertFails(getDoc(doc(db(ALICE), 'app_config', 'ai_grader')));
+  await assertSucceeds(getDoc(doc(db(ALICE), 'app_config', 'ai_grader')));
+  await assertFails(setDoc(doc(db(ALICE), 'app_config', 'ai_grader'), { geminiKeys: [] }));
+});
+
+// ───────── SỔ CÂU SAI / SRS / BÁO CÁO TUẦN ─────────
+test('Sổ câu sai: chủ sở hữu ghi/đọc được, người khác thì không', async () => {
+  const data = { source: 'exam', refId: 'reading/topik_ii/topik102', qNum: '3', options: ['a', 'b', 'c', 'd'],
+    correctIndex: 3, userIndex: 0, questionHtml: '<b>câu hỏi</b>', explanationHtml: 'lời giải', wrongCount: increment(1), streak: 0, mastered: false };
+  await assertSucceeds(setDoc(doc(db(ALICE), 'users', ALICE, 'mistakes', 'ex_q3'), data, { merge: true }));
+  await assertSucceeds(updateDoc(doc(db(ALICE), 'users', ALICE, 'mistakes', 'ex_q3'), { streak: 2, mastered: true }));
+  await assertFails(getDoc(doc(db(BOB), 'users', ALICE, 'mistakes', 'ex_q3')));
+  await assertFails(setDoc(doc(db(BOB), 'users', ALICE, 'mistakes', 'x'), data));
+});
+
+test('Sổ câu sai: chặn HTML quá lớn / thiếu mastered', async () => {
+  const ref = doc(db(ALICE), 'users', ALICE, 'mistakes', 'big');
+  await assertFails(setDoc(ref, { mastered: false, explanationHtml: 'x'.repeat(30000) }));
+  await assertFails(setDoc(ref, { streak: 0 }));
+});
+
+test('SRS: ghi dailyReviewData (đếm thẻ đã ôn) và lịch ôn từ vựng được', async () => {
+  await seed(`users/${ALICE}`, { fullName: 'Alice' });
+  await assertSucceeds(setDoc(doc(db(ALICE), 'users', ALICE), { dailyReviewData: { [today()]: increment(1) } }, { merge: true }));
+  await seed(`users/${ALICE}/vocabulary/w1`, { word: '학교', meaning: 'trường', status: 0 });
+  await assertSucceeds(updateDoc(doc(db(ALICE), 'users', ALICE, 'vocabulary', 'w1'),
+    { status: 3, srsDue: Date.now() + 3 * 86400000, srsInt: 3, srsEase: 2.6, srsReps: 1, srsLapses: 0, srsLastAt: Date.now() }));
+});
+
+test('Báo cáo tuần (giáo viên): admin đọc được tiến độ từ vựng lớp của học viên', async () => {
+  await seed(`shared_folders/f1/students/${ALICE}/progress/w1`, { status: 2, updatedAt: Timestamp.now() });
+  await assertSucceeds(getDoc(doc(db('admin', 'vuihoctienghan27@gmail.com'), `shared_folders/f1/students/${ALICE}/progress/w1`)));
+  await assertFails(getDoc(doc(db(BOB), `shared_folders/f1/students/${ALICE}/progress/w1`)));
+});
+
+// ───────── THI ĐẤU 1-1 / NHẮC NỘP BÀI ─────────
+const duelQs = Array.from({ length: 10 }, (_, i) => ({ w: 'w' + i, o: ['a', 'b', 'c', 'd'], a: 0 }));
+
+test('Thi đấu: tạo phòng, khách vào, mỗi người chỉ ghi phần của mình', async () => {
+  const ref = (u) => doc(db(u), 'duels', 'ABC123');
+  await assertSucceeds(setDoc(ref(ALICE), { hostId: ALICE, hostName: 'Alice', guestId: null, guestName: '', status: 'waiting', open: false, questions: duelQs, ['s_' + ALICE]: { answers: [], score: 0, done: false } }));
+  await assertFails(setDoc(doc(db(BOB), 'duels', 'XYZ999'), { hostId: ALICE, guestId: null, status: 'waiting', questions: duelQs }));
+  await assertSucceeds(updateDoc(ref(BOB), { guestId: BOB, guestName: 'Bob', status: 'playing', startAt: serverTimestamp(), ['s_' + BOB]: { answers: [], score: 0, done: false } }));
+  await assertSucceeds(updateDoc(ref(BOB), { ['s_' + BOB]: { answers: [{ c: 0, ok: true, t: 900 }], score: 145, done: false } }));
+  await assertFails(updateDoc(ref(BOB), { ['s_' + ALICE]: { answers: [], score: 0, done: true } }));   // sửa điểm đối thủ
+  await assertFails(updateDoc(ref('carol'), { guestId: 'carol', status: 'playing' }));                  // người thứ 3
+  await assertSucceeds(updateDoc(ref(ALICE), { status: 'finished', endedAt: serverTimestamp() }));
+});
+
+test('Nhắc nộp bài: link nội bộ hợp lệ, không gửi cho chính mình', async () => {
+  const c = collection(db(ALICE), 'notifications');
+  const base = { type: 'deadline', fromUserId: ALICE, fromUserName: 'Cô Alice', message: 'Nhắc làm bài tập', read: false };
+  await assertSucceeds(addDoc(c, { ...base, userId: BOB, link: 'vocab.html?sf=f1&sl=Bai1' }));
+  await assertFails(addDoc(c, { ...base, userId: ALICE }));
+  await assertFails(addDoc(c, { ...base, userId: BOB, link: 'x'.repeat(400) }));
+});
+
+test('Huy hiệu / thống kê thi đấu / luyện nói: chủ tài khoản ghi được', async () => {
+  await seed(`users/${ALICE}`, { fullName: 'Alice' });
+  await assertSucceeds(setDoc(doc(db(ALICE), 'users', ALICE), { badges: { streak3: Date.now() }, duelPlayed: increment(1), duelWins: increment(1), dailySpeakData: { [today()]: increment(1) } }, { merge: true }));
 });

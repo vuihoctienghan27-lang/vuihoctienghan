@@ -2,6 +2,16 @@
 
 (function() {
 
+    // Nạp badges.js khi cần (để hiện huy hiệu trên hồ sơ) — cùng thư mục với file này
+    var BADGES_SRC = ((document.currentScript && document.currentScript.src) || '').replace(/user-profile-popup\.js.*$/, 'badges.js');
+    function ensureBadges(cb) {
+        if (window.Badges) return cb();
+        if (!BADGES_SRC) return;
+        var sc = document.createElement('script');
+        sc.src = BADGES_SRC; sc.onload = cb;
+        document.head.appendChild(sc);
+    }
+
     function calcTotalExp(d) {
         return Math.max(0, Math.floor((d.totalStudyMinutes || 0) / 10) * 5 + (d.bonusEXP || 0));
     }
@@ -50,6 +60,7 @@
                             <div id="gup-name" style="font-size: 17px; font-weight: 900; color: #ffffff; line-height: 1.2; word-break: break-word;">${String(targetName || 'Đang tải...').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;')}</div>
                             <div id="gup-rank" style="display: inline-block; font-size: 11px; font-weight: 800; color: #fbbf24; background: rgba(120, 53, 15, 0.3); border: 1px solid rgba(180, 83, 9, 0.45); padding: 2px 10px; border-radius: 20px; margin-top: 5px;">🌱 Thường Dân</div>
                             <div id="gup-role" style="font-size: 12px; color: #f87171; font-weight: 600; margin-top: 3px;">Thành viên cộng đồng</div>
+                            <div id="gup-badges" style="margin-top: 4px; font-size: 15px; line-height: 1.2;"></div>
                         </div>
                     </div>
 
@@ -146,6 +157,12 @@
                         const rank = getMemberRank(totalExp);
                         document.getElementById('gup-exp').innerText = totalExp.toLocaleString() + ' EXP';
                         document.getElementById('gup-rank').innerText = rank.icon + ' ' + rank.name;
+                        if (d.badges && Object.keys(d.badges).length) {
+                            ensureBadges(function () {
+                                var el = document.getElementById('gup-badges');
+                                if (el && window.Badges) el.innerHTML = window.Badges.iconsHtml(d.badges, 10);
+                            });
+                        }
                         document.getElementById('gup-role').innerText = d.roleTitle || (d.role === 'admin' ? '👑 Quản Trị Viên (Admin)' : 'Thành viên cộng đồng');
                         document.getElementById('gup-streak').innerText = (d.streakDays || 1) + ' ngày';
                         document.getElementById('gup-total').innerText = formatStudyDuration(d.totalStudyMinutes || 0);

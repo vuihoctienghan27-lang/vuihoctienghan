@@ -15,6 +15,11 @@
             .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
             .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
+    // Số huy hiệu đã đạt (badges.js) — chỉ đếm, không chèn dữ liệu người dùng
+    function badgeCount(u) {
+        const n = u && u.badges && typeof u.badges === 'object' ? Object.keys(u.badges).length : 0;
+        return n ? ' · 🏅 ' + Math.min(n, 99) : '';
+    }
     function arg(v) { return esc(JSON.stringify(v == null ? '' : String(v))); }
     
     function calcExp(data) {
@@ -186,7 +191,7 @@
                     <div class="lb-row-avatar">${getUserAvatar(u._uid)}</div>
                     <div class="lb-name-wrap">
                         <div class="lb-name">${esc(u.fullName || 'Ẩn danh')}</div>
-                        <div class="lb-title">${getLevelName(u._exp)}</div>
+                        <div class="lb-title">${getLevelName(u._exp)}${badgeCount(u)}</div>
                     </div>
                     <div class="lb-score">
                         <div class="exp">${esc(u._exp)} ⭐</div>
