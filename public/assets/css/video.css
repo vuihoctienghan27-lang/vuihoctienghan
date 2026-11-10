@@ -671,3 +671,37 @@ body.dark-mode .card-admin-btn { background:rgba(30,41,59,.85); border-color:rgb
     .video-title-heading { font-size:.88em; }
     .mode-grid-2x2 { gap:5px; }
 }
+
+/* ============================================================
+   HOME PAGE (video/home.html) — CHỈ áp cho trang danh sách video.
+   Ghi đè các rule mobile của trang lesson (vốn khoá scroll body,
+   ép .video-wrapper thành flex) để danh sách cuộn được bình thường.
+   ============================================================ */
+@media (max-width: 768px) {
+    html.video-home {
+        height: auto !important;
+        overflow: visible !important;
+    }
+    body.video-home-page {
+        display: block !important;
+        position: static !important;
+        height: auto !important;
+        max-height: none !important;
+        min-height: 100vh !important;
+        overflow: visible !important;
+        overflow-y: visible !important;
+        flex: none !important;
+    }
+    body.video-home-page .video-wrapper {
+        display: block !important;
+        flex: none !important;
+        min-height: 0 !important;
+        margin: 80px 10px 40px !important;
+        padding: 14px 14px !important;
+        border: 1px solid rgba(255,255,255,.55) !important;
+        border-radius: 20px !important;
+    }
+    body.video-home-page .video-lesson-grid {
+        grid-template-columns: 1fr !important;
+    }
+}

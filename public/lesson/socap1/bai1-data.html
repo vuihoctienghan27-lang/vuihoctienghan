@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 01: 소개 (Giới thiệu) — Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16" href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Bài 01 - Giáo trình Tiếng Hàn Tổng Hợp Sơ cấp 1: từ vựng, ngữ pháp, hội thoại, luyện nghe, luyện đọc.">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/vocab-game.css">
+
+    <style>
+        body {
+            font-family: 'Pretendard', 'Inter', sans-serif;
+            margin: 0;
+            padding: 0 0 40px 0;
+        }
+
+        * { box-sizing: border-box; }
+
+        button, input, select { font-family: 'Pretendard', 'Inter', sans-serif !important; }
+
+        /* ===== WRAPPER KÍNH MỜ ===== */
+        .wrapper {
+            max-width: 900px; margin: 0 auto 20px;
+            background: rgba(255, 255, 255, 0.42);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.55);
+            border-radius: 24px; padding: 18px 22px 34px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.06);
+            width: 100%;
+        }
+        body.dark-mode .wrapper {
+            background: rgba(15, 23, 42, 0.55);
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        @media (max-width: 768px) {
+            .wrapper { margin: 0 10px 20px; padding: 12px 12px 28px; border-radius: 18px; }
+        }
+
+        /* ===== HERO BANNER ===== */
+        .hero-banner {
+            position: relative; overflow: hidden;
+            background: linear-gradient(135deg, rgba(30, 64, 175, 0.92) 0%, rgba(59, 130, 246, 0.88) 100%);
+            border-radius: 22px; padding: 30px 34px; color: #fff;
+            margin-bottom: 22px; box-shadow: 0 18px 40px rgba(37, 99, 235, 0.2);
+        }
+        .hero-banner::before {
+            content: ''; position: absolute; inset: 0;
+            background-image: radial-gradient(rgba(255, 255, 255, .14) 1px, transparent 1px);
+            background-size: 22px 22px; opacity: .5; pointer-events: none;
+        }
+        .hero-eyebrow {
+            position: relative; z-index: 1;
+            display: inline-block; font-size: .78em; font-weight: 800;
+            letter-spacing: .6px; text-transform: uppercase;
+            background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .24);
+            padding: 6px 14px; border-radius: 99px; margin-bottom: 14px;
+        }
+        .hero-banner h1 {
+            position: relative; z-index: 1;
+            font-size: clamp(1.6em, 4vw, 2.3em); font-weight: 900; margin: 0; line-height: 1.15;
+        }
+        .hero-sub {
+            position: relative; z-index: 1;
+            margin: 9px 0 0; font-size: .95em; color: rgba(255, 255, 255, .88); font-weight: 500;
+        }
+        .hero-stats { position: relative; z-index: 1; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+        .hero-stat {
+            background: rgba(255, 255, 255, .15); border: 1px solid rgba(255, 255, 255, .22);
+            border-radius: 12px; padding: 8px 14px; font-size: .8em; font-weight: 600; color: rgba(255, 255, 255, .9);
+        }
+        .hero-stat b { display: block; font-size: 1.5em; font-weight: 800; color: #fff; line-height: 1.2; }
+
+        /* ===== TABS ===== */
+        .tabs {
+            position: sticky; top: 78px; z-index: 900;
+            display: flex; gap: 5px; padding: 6px; margin-bottom: 26px;
+            background: rgba(255, 255, 255, .55);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, .6);
+            border-radius: 14px; overflow-x: auto;
+        }
+        body.dark-mode .tabs { background: rgba(15, 23, 42, .6); border-color: rgba(255, 255, 255, .1); }
+        .tabs button {
+            border: none; background: transparent; cursor: pointer;
+            padding: 10px 18px; border-radius: 10px; white-space: nowrap;
+            font-size: .9em; font-weight: 700; color: var(--text-sub);
+            transition: all .2s ease;
+        }
+        .tabs button:hover { background: rgba(37, 99, 235, .1); color: #2563eb; }
+        .tabs button.active { background: #2563eb; color: #fff; box-shadow: 0 6px 16px rgba(37, 99, 235, .25); }
+        body.dark-mode .tabs button:hover { color: #60a5fa; }
+
+        /* ===== SECTION ===== */
+        section.stage { padding: 30px 0 8px; border-bottom: 1px solid var(--border-color); scroll-margin-top: 150px; }
+        section.stage:last-of-type { border-bottom: none; }
+        .stage-head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 6px; }
+        .stage-head h2 { font-size: 1.45em; font-weight: 800; margin: 0; color: var(--text-main); }
+        .stage-head .kr-tag { font-size: .85em; font-weight: 600; color: var(--text-sub); }
+        .stage-intro { color: var(--text-sub); font-size: .92em; max-width: 680px; margin: 0 0 22px; }
+
+        .group-title { font-size: .95em; font-weight: 800; color: var(--text-main); margin: 24px 0 12px; }
+        .group-title:first-of-type { margin-top: 0; }
+
+        /* ===== SHARED ===== */
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 16px; box-shadow: 0 6px 18px rgba(0, 0, 0, .04);
+        }
+        .mini-speak {
+            width: 30px; height: 30px; border-radius: 50%;
+            border: 1px solid var(--border-color); background: var(--btn-hover);
+            font-size: .8em; cursor: pointer; flex: 0 0 auto;
+            display: inline-flex; align-items: center; justify-content: center;
+            color: var(--text-sub); transition: all .2s ease;
+        }
+        .mini-speak:hover { background: #2563eb; border-color: #2563eb; color: #fff; }
+
+        /* ===== VOCABULARY ===== */
+        .vocab-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+        .vocab-card { overflow: hidden; display: flex; flex-direction: column; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+        .vocab-card:hover { transform: translateY(-3px); box-shadow: 0 10px 24px rgba(0, 0, 0, .1); }
+        .vocab-img {
+            height: 112px; display: flex; align-items: center; justify-content: center;
+            font-size: 3em; background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+        }
+        body.dark-mode .vocab-img { background: linear-gradient(135deg, #1e293b, #273449); }
+        .vocab-img img { width: 100%; height: 100%; object-fit: contain; padding: 10px; }
+        .vocab-body { padding: 13px 15px 15px; }
+        .vocab-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+        .vocab-word { font-size: 1.6em; font-weight: 800; color: var(--text-main); line-height: 1.2; }
+        .vocab-roman { font-size: .82em; color: var(--text-sub); }
+        .vocab-meaning { font-size: .95em; color: var(--primary-text); margin-top: 3px; }
+        .vocab-cat {
+            display: inline-block; margin-top: 9px; font-size: .68em; font-weight: 700;
+            background: var(--btn-hover); color: var(--text-sub);
+            border-radius: 20px; padding: 3px 10px;
+        }
+        .vocab-hanja { font-size: .75em; color: var(--text-sub); margin-top: 6px; }
+        .vocab-example { margin-top: 11px; padding-top: 11px; border-top: 1px dashed var(--border-color); font-size: .8em; }
+        .vocab-example .ko { font-size: 1.05em; color: var(--text-main); }
+        .vocab-example .vi { color: var(--text-sub); }
+
+        /* ===== Toolbar + nút lưu vào Sổ từ vựng ===== */
+        .vocab-toolbar { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+        .vocab-toolbar button {
+            border: none; border-radius: 12px; padding: 11px 18px; font-size: .86em; font-weight: 800;
+            color: #fff; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, .12); transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .vocab-toolbar button:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn-flashcard { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+        .btn-saveall { background: linear-gradient(135deg, #059669, #10b981); }
+        .btn-saveall:disabled { opacity: .6; cursor: default; }
+        .vocab-save {
+            position: absolute; top: 10px; right: 10px; z-index: 2;
+            width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 1.05em;
+            border: 1px solid var(--border-color); background: rgba(255, 255, 255, .92);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .12); transition: all .15s ease;
+        }
+        .vocab-save:hover { transform: scale(1.1); }
+        .vocab-save.saved { background: #f59e0b; border-color: #f59e0b; }
+        body.dark-mode .vocab-save { background: rgba(30, 41, 59, .92); color: #e2e8f0; }
+        body.dark-mode .vocab-save.saved { background: #f59e0b; color: #fff; }
+
+        /* Nút lưu cả bộ từ ở cuối mỗi chủ đề */
+        .group-save-row { margin: 14px 0 4px; }
+        .btn-save-group {
+            border: 1px dashed var(--border-color); border-radius: 12px; padding: 10px 16px;
+            background: var(--bg-card); color: var(--text-sub); font-size: .82em; font-weight: 800;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 7px; transition: all .15s ease;
+        }
+        .btn-save-group:hover:not(:disabled) { border-color: #f59e0b; color: #b45309; }
+        .btn-save-group.saved { border-style: solid; border-color: #f59e0b; background: #fef3c7; color: #b45309; cursor: default; }
+        body.dark-mode .btn-save-group.saved { background: rgba(245, 158, 11, .15); color: #fcd34d; }
+
+        /* Flashcard engine (vocab-game.css): hỗ trợ dark mode */
+        body.dark-mode .modal-box { background: #1e293b; color: #f9fafb; }
+        body.dark-mode .modal-header { border-bottom-color: #334155; }
+        body.dark-mode .modal-title { color: #f9fafb; }
+        body.dark-mode .close-btn { color: #94a3b8; }
+        body.dark-mode .fc-card.flipped { background: linear-gradient(135deg, #1e293b, #334155); color: #f1f5f9; }
+        body.dark-mode .fc-controls-flat button { background: #334155; color: #cbd5e1; }
+
+        /* ===== GRAMMAR ===== */
+        .grammar-card { padding: 22px; margin-bottom: 18px; }
+        .grammar-card h3 { font-size: 1.2em; font-weight: 800; margin: 0 0 12px; color: var(--text-main); }
+        .pattern-chip {
+            display: inline-block; background: linear-gradient(135deg, #1e40af, #3b82f6); color: #fff;
+            border-radius: 10px; padding: 8px 14px; font-size: .95em; font-weight: 700; margin-bottom: 12px;
+        }
+        .grammar-meaning { font-weight: 700; color: #2563eb; margin-bottom: 8px; }
+        body.dark-mode .grammar-meaning { color: #60a5fa; }
+        .grammar-explain { color: var(--text-sub); font-size: .9em; margin-bottom: 16px; }
+        .rule-row {
+            display: flex; gap: 12px; align-items: flex-start; flex-wrap: wrap;
+            padding: 12px 14px; background: var(--btn-hover); border-radius: 12px; margin-bottom: 9px;
+        }
+        .rule-row .cond { flex: 1 1 200px; font-size: .86em; color: var(--primary-text); }
+        .rule-row .affix {
+            font-weight: 800; color: #2563eb; background: rgba(37, 99, 235, .12);
+            border-radius: 8px; padding: 4px 10px; font-size: .86em; white-space: nowrap;
+        }
+        body.dark-mode .rule-row .affix { color: #60a5fa; background: rgba(96, 165, 250, .15); }
+        .rule-example { flex: 1 1 100%; font-size: .85em; }
+        .rule-example .ko { font-size: 1.05em; color: var(--text-main); }
+        .rule-example .vi { color: var(--text-sub); }
+        .lego {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 14px;
+            padding: 16px; background: var(--btn-hover); border-radius: 14px;
+        }
+        .lego .block {
+            background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 10px;
+            padding: 8px 14px; font-size: 1.15em; font-weight: 700; color: var(--text-main);
+        }
+        .lego .block.particle { color: #2563eb; }
+        .lego .block.ending { color: #e53e3e; }
+        .lego .plus { color: var(--text-sub); font-weight: 800; }
+        .lego .translation { flex: 1 1 100%; font-size: .85em; color: var(--text-sub); margin-top: 6px; }
+
+        /* ===== DIALOGUE ===== */
+        .dialogue-card { padding: 20px; margin-bottom: 18px; }
+        .dialogue-card h3 { font-size: 1.1em; font-weight: 800; margin: 0 0 5px; color: var(--text-main); }
+        .dialogue-meta { font-size: .82em; color: var(--text-sub); margin-bottom: 4px; }
+        .culture-note {
+            font-size: .82em; color: #92400e; background: #fef3c7; border-radius: 10px;
+            padding: 10px 12px; margin: 12px 0 16px;
+        }
+        body.dark-mode .culture-note { background: rgba(251, 191, 36, .12); color: #fcd34d; }
+        .dialogue-line { display: flex; gap: 13px; margin-bottom: 15px; align-items: flex-start; }
+        .avatar {
+            flex: 0 0 44px; width: 44px; height: 44px; border-radius: 50%;
+            background: var(--btn-hover); border: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center; font-size: 1.35em;
+        }
+        .line-body { flex: 1; min-width: 0; }
+        .line-speaker { font-size: .82em; font-weight: 800; color: var(--text-main); }
+        .line-speaker span { font-weight: 500; color: var(--text-sub); }
+        .line-ko { font-size: 1.15em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--text-main); }
+        .line-roman { font-size: .8em; color: var(--text-sub); font-style: italic; }
+        .line-vi { font-size: .85em; color: var(--primary-text); }
+
+        /* ===== LISTENING ===== */
+        .track-card { padding: 20px; margin-bottom: 18px; }
+        .track-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+        .track-head-text { min-width: 0; }
+        .track-card h3 { font-size: 1.1em; font-weight: 800; margin: 0 0 4px; color: var(--text-main); }
+        .track-num { font-size: .72em; font-weight: 800; color: #e53e3e; letter-spacing: .04em; text-transform: uppercase; }
+        .track-instr { font-size: .86em; color: var(--text-sub); margin: 10px 0 14px; }
+        .audio-play-btn {
+            display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto;
+            background: linear-gradient(135deg, #1e40af, #3b82f6); color: #fff; border: none;
+            border-radius: 12px; padding: 11px 20px; font-size: .9em; font-weight: 800; cursor: pointer;
+            box-shadow: 0 8px 20px rgba(37, 99, 235, .25); transition: transform .2s ease, box-shadow .2s ease;
+            white-space: nowrap;
+        }
+        .audio-play-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 26px rgba(37, 99, 235, .32); }
+        .audio-play-btn.playing { background: linear-gradient(135deg, #b91c1c, #ef4444); box-shadow: 0 8px 20px rgba(239, 68, 68, .28); }
+        .audio-play-btn .ico { font-size: 1.1em; }
+
+        /* ===== Thanh player ===== */
+        .audio-player {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--btn-hover); border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 8px 12px; margin: 10px 0 16px;
+        }
+        .audio-player .ap-play {
+            width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer;
+            background: linear-gradient(135deg, #1e40af, #3b82f6); color: #fff; font-size: 1.05em;
+            display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+            box-shadow: 0 6px 16px rgba(37, 99, 235, .28);
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .audio-player .ap-play:hover { transform: scale(1.06); }
+        .audio-player.playing .ap-play {
+            background: linear-gradient(135deg, #b91c1c, #ef4444);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, .28);
+        }
+        .audio-player .ap-replay {
+            width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--border-color);
+            background: var(--bg-card); color: var(--text-sub); cursor: pointer; font-size: 1em;
+            display: flex; align-items: center; justify-content: center; flex: 0 0 auto;
+            transition: all .15s ease;
+        }
+        .audio-player .ap-replay:hover { color: #2563eb; border-color: #2563eb; }
+        .audio-player .ap-time {
+            font-size: .78em; color: var(--text-sub); font-variant-numeric: tabular-nums;
+            min-width: 40px; text-align: center; flex: 0 0 auto;
+        }
+        .audio-player .ap-seek {
+            -webkit-appearance: none; appearance: none; flex: 1 1 auto; min-width: 70px;
+            height: 6px; border-radius: 99px; background: #cbd5e1; outline: none; cursor: pointer; margin: 0;
+        }
+        body.dark-mode .audio-player .ap-seek { background: #334155; }
+        .audio-player .ap-seek::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%;
+            background: #2563eb; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, .25); cursor: pointer;
+        }
+        .audio-player .ap-seek::-moz-range-thumb {
+            width: 14px; height: 14px; border-radius: 50%; background: #2563eb; border: 2px solid #fff; cursor: pointer;
+        }
+        .audio-player .ap-seek:disabled { opacity: .45; cursor: not-allowed; }
+        @media (max-width: 520px) {
+            .audio-player { gap: 7px; padding: 7px 9px; }
+            .audio-player .ap-play { width: 40px; height: 40px; }
+            .audio-player .ap-time { min-width: 34px; font-size: .72em; }
+        }
+        .script-toggle {
+            margin-top: 2px; background: var(--btn-hover); border: 1px solid var(--border-color);
+            color: var(--text-sub); border-radius: 10px; padding: 8px 14px;
+            font-size: .82em; font-weight: 700; cursor: pointer; transition: all .2s ease;
+        }
+        .script-toggle:hover { color: #2563eb; border-color: #2563eb; }
+        .script-box { background: var(--btn-hover); border-radius: 12px; padding: 12px 14px; font-size: .85em; color: var(--primary-text); margin: 10px 0 16px; }
+        .script-box[hidden] { display: none; }
+        .script-box .label { font-size: .72em; font-weight: 800; text-transform: uppercase; color: var(--text-sub); display: block; margin-bottom: 4px; }
+        .q-block { margin-bottom: 18px; }
+        .q-prompt { font-size: .92em; font-weight: 700; margin-bottom: 10px; color: var(--text-main); }
+        .options { display: flex; flex-wrap: wrap; gap: 8px; }
+        .opt {
+            border: 1px solid var(--border-color); background: var(--bg-card); border-radius: 10px;
+            padding: 9px 14px; font-size: .86em; cursor: pointer; color: var(--primary-text); transition: all .2s ease;
+        }
+        .opt:hover:not(:disabled) { border-color: #2563eb; background: rgba(37, 99, 235, .08); }
+        .opt.correct { background: var(--correct-bg); border-color: var(--correct-border); color: var(--correct-text); font-weight: 700; }
+        .opt.wrong { background: var(--wrong-bg); border-color: var(--wrong-border); color: var(--wrong-text); }
+        .opt:disabled { cursor: default; }
+        .q-explain { font-size: .82em; color: var(--text-sub); margin-top: 8px; display: none; }
+        .q-explain.show { display: block; }
+
+        /* ===== READING ===== */
+        .reading-card {
+            background: var(--btn-hover); border: 1px solid var(--border-color);
+            border-radius: 16px; padding: 20px; margin-bottom: 16px;
+        }
+        .reading-card h4 { margin: 0 0 4px; font-size: 1em; font-weight: 800; color: var(--text-main); }
+        .reading-card .big-name { font-size: 1.4em; font-weight: 800; margin: 6px 0; color: var(--text-main); }
+        .reading-card .row { font-size: .85em; color: var(--primary-text); }
+        .reading-card .extra { font-size: .8em; color: var(--text-sub); margin-top: 8px; }
+        .passage { padding: 18px; margin-bottom: 14px; }
+        .passage .author { font-weight: 800; font-size: .9em; display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--text-main); }
+        .passage .text-ko { font-size: 1.15em; margin-bottom: 6px; color: var(--text-main); }
+        .passage .text-vi { font-size: .85em; color: var(--text-sub); }
+
+        /* ===== PRONUNCIATION ===== */
+        .pron-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+        .pron-card { padding: 16px; }
+        .pron-card .written { font-size: 1.3em; font-weight: 800; color: var(--text-main); }
+        .pron-card .spoken { font-size: 1.05em; color: #2563eb; font-weight: 700; }
+        body.dark-mode .pron-card .spoken { color: #60a5fa; }
+        .pron-card .meaning { font-size: .8em; color: var(--text-sub); margin-top: 6px; }
+
+        /* ===== CULTURE ===== */
+        .manner-card { display: flex; gap: 15px; align-items: flex-start; padding: 17px; margin-bottom: 13px; }
+        .manner-card .icon { font-size: 2.1em; flex: 0 0 auto; }
+        .manner-card h4 { margin: 0 0 4px; font-size: 1em; font-weight: 800; color: var(--text-main); }
+        .manner-card p { margin: 0; font-size: .86em; color: var(--text-sub); }
+
+        .state-msg { text-align: center; padding: 70px 20px; color: var(--text-sub); font-size: 1em; }
+        .state-msg.error { color: #e53e3e; }
+
+        @media (max-width: 600px) {
+            .tabs { top: 74px; }
+            .hero-banner { padding: 22px 20px; }
+            section.stage { padding: 24px 0 6px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="wrapper">
+    <header class="hero-banner">
+        <span class="hero-eyebrow">Giáo trình Tiếng Hàn Tổng Hợp — Sơ cấp 1</span>
+        <h1 id="lessonTitle">Đang tải bài học…</h1>
+        <p class="hero-sub" id="lessonSubtitle"></p>
+        <div class="hero-stats" id="heroStats"></div>
+    </header>
+
+    <nav class="tabs" id="tabs">
+        <button data-target="stage-vocab" class="active">Từ vựng</button>
+        <button data-target="stage-grammar">Ngữ pháp</button>
+        <button data-target="stage-dialogue">Hội thoại</button>
+        <button data-target="stage-listening">Luyện nghe</button>
+        <button data-target="stage-reading">Luyện đọc</button>
+        <button data-target="stage-pronunciation">Phát âm</button>
+        <button data-target="stage-culture">Văn hóa</button>
+    </nav>
+
+    <main id="app">
+        <div class="state-msg" id="loading">Đang tải dữ liệu bài học…</div>
+    </main>
+</div>
+
+<!-- Player ẩn dùng chung cho mọi link YouTube -->
+<div id="ytHost" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;" aria-hidden="true"></div>
+
+<!-- Nơi engine flashcard (vocab-game.js) bơm modal vào -->
+<div id="gameModalsContainer"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script src="../../assets/js/vocab-game.js"></script>
+<script src="../../assets/js/theme-picker.js"></script>
+<script src="../../assets/js/navbar.js"></script>
+<script src="../../assets/js/menu.js"></script>
+<script src="../../assets/js/theme.js"></script>
+
+<script>
+/* ================= Speech / Media ================= */
+let currentAudio = null;
+let playToken = 0;
+
+/* ----- Nhận diện & tiện ích YouTube ----- */
+function getYouTubeId(url){
+  if(!url) return null;
+  const m = String(url).match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/|live\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+  return m ? m[1] : null;
+}
+function parseTimeValue(v){
+  if(v === null || v === undefined) return 0;
+  v = String(v).trim();
+  if(!v) return 0;
+  if(/^\d+(\.\d+)?$/.test(v)) return parseFloat(v);
+  const m = v.match(/^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+(?:\.\d+)?)s)?$/);
+  if(m && (m[1] || m[2] || m[3])){
+    return (parseInt(m[1] || 0, 10) * 3600) + (parseInt(m[2] || 0, 10) * 60) + parseFloat(m[3] || 0);
+  }
+  return 0;
+}
+function getYouTubeStart(url){
+  try{
+    const u = new URL(url, location.href);
+    const t = u.searchParams.get('start') || u.searchParams.get('t') || u.hash.replace(/^#t=?/, '');
+    return parseTimeValue(t);
+  }catch(e){ return 0; }
+}
+function getYouTubeEnd(url){
+  try{
+    const u = new URL(url, location.href);
+    return parseTimeValue(u.searchParams.get('end') || u.searchParams.get('audioEnd'));
+  }catch(e){ return 0; }
+}
+
+/* ----- Google Drive ----- */
+function getGoogleDriveId(url){
+  if(!url) return null;
+  try{
+    const u = new URL(String(url), location.href);
+    const host = u.hostname;
+    const isDriveHost = /(^|\.)(drive|docs)\.google\.com$/.test(host)
+                     || /(^|\.)drive\.usercontent\.google\.com$/.test(host);
+    if(!isDriveHost) return null;
+    const pm = u.pathname.match(/\/file\/d\/([A-Za-z0-9_-]{10,})/);
+    if(pm) return pm[1];
+    const id = u.searchParams.get('id');
+    if(id && /^[A-Za-z0-9_-]{10,}$/.test(id)) return id;
+  }catch(e){}
+  return null;
+}
+function driveStreamCandidates(id){
+  return [
+    'https://drive.usercontent.google.com/download?id=' + id + '&export=download',
+    'https://drive.google.com/uc?export=download&id=' + id,
+    'https://docs.google.com/uc?export=download&id=' + id
+  ];
+}
+function openDrivePlayer(id){
+  const preview = 'https://drive.google.com/file/d/' + id + '/preview';
+  const view = 'https://drive.google.com/file/d/' + id + '/view';
+  if(typeof Swal === 'undefined'){ window.open(view, '_blank'); return; }
+  Swal.fire({
+    title: 'Trình phát Google Drive',
+    html: '<div style="position:relative;padding-top:62%;">'
+        + '<iframe src="' + preview + '" allow="autoplay" allowfullscreen '
+        + 'style="position:absolute;inset:0;width:100%;height:100%;border:0;border-radius:12px;"></iframe></div>',
+    width: 680,
+    showConfirmButton: false,
+    showCloseButton: true
+  });
+}
+/* Thử stream trực tiếp từ Drive; nếu mọi cách đều lỗi thì gọi onFail */
+function playDriveAudio(id, onEnd, onFail){
+  const candidates = driveStreamCandidates(id);
+  const token = playToken;
+  let idx = 0, started = false, finished = false;
+  const finish = ()=>{ if(finished) return; finished = true; if(onEnd) onEnd(); };
+  function attempt(){
+    if(token !== playToken) return;
+    if(idx >= candidates.length){ if(onFail) onFail(); return; }
+    const audio = new Audio();
+    currentAudio = audio;
+    let settled = false;
+    const nextAttempt = ()=>{ if(settled) return; settled = true; attempt(); };
+    const fail = ()=>{ if(settled) return; settled = true; if(onFail) onFail(); };
+    audio.addEventListener('playing', ()=>{ started = true; });
+    audio.addEventListener('ended', finish);
+    audio.addEventListener('error', ()=>{
+      if(token !== playToken) return;
+      if(started) fail(); else nextAttempt();
+    });
+    audio.src = candidates[idx++];
+    audio.play().catch(()=>{ if(token === playToken){ if(started) fail(); else nextAttempt(); } });
+  }
+  attempt();
+}
+
+/* ----- YouTube IFrame API (player ẩn dùng chung) ----- */
+let ytApiReady = false;
+let ytPlayer = null;
+let ytPlayerReady = false;
+let ytPending = null;    // { videoId, start, end }
+let ytCallbacks = null;  // { onEnd, onError }
+let ytEndTime = 0;       // mốc kết thúc đoạn (giây), 0 = phát hết
+let ytPoller = null;
+
+function loadYouTubeAPI(){
+  if(window.YT && window.YT.Player){ ytApiReady = true; return; }
+  if(document.getElementById('yt-iframe-api')) return;
+  const tag = document.createElement('script');
+  tag.id = 'yt-iframe-api';
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+}
+window.onYouTubeIframeAPIReady = function(){
+  ytApiReady = true;
+  createYtPlayer();
+};
+function createYtPlayer(){
+  if(ytPlayer || !ytApiReady) return;
+  const host = document.getElementById('ytHost');
+  if(!host || typeof YT === 'undefined' || !YT.Player) return;
+  ytPlayer = new YT.Player('ytHost', {
+    height: '1', width: '1',
+    playerVars: { autoplay: 0, controls: 0, playsinline: 1, rel: 0 },
+    events: {
+      onReady: function(){ ytPlayerReady = true; runYtPending(); },
+      onStateChange: function(e){
+        if(e.data === YT.PlayerState.PLAYING){
+          startYtPoller();
+        } else if(e.data === YT.PlayerState.ENDED){
+          stopYtPoller();
+          fireYtEnd();
+        } else if(e.data === YT.PlayerState.PAUSED){
+          stopYtPoller();
+        }
+      },
+      onError: function(){
+        stopYtPoller();
+        if(ytCallbacks && ytCallbacks.onError){ const fn = ytCallbacks.onError; ytCallbacks = null; fn(); }
+      }
+    }
+  });
+}
+function fireYtEnd(){
+  if(ytCallbacks && ytCallbacks.onEnd){ const fn = ytCallbacks.onEnd; ytCallbacks = null; fn(); }
+}
+function startYtPoller(){
+  stopYtPoller();
+  if(!ytEndTime || ytEndTime <= 0) return;
+  ytPoller = setInterval(function(){
+    if(!ytPlayer || !ytPlayer.getCurrentTime) return;
+    let state = 1;
+    try{ state = ytPlayer.getPlayerState(); }catch(e){}
+    if(state !== 1) return;
+    if(ytPlayer.getCurrentTime() >= ytEndTime - 0.12){
+      stopYtPoller();
+      try{ ytPlayer.pauseVideo(); }catch(e){}
+      fireYtEnd();
+    }
+  }, 120);
+}
+function stopYtPoller(){
+  if(ytPoller){ clearInterval(ytPoller); ytPoller = null; }
+}
+function runYtPending(){
+  if(!ytPlayerReady || !ytPlayer || !ytPending) return;
+  const p = ytPending; ytPending = null;
+  ytEndTime = p.end || 0;
+  try{
+    ytPlayer.loadVideoById({ videoId: p.videoId, startSeconds: p.start || 0 });
+    ytPlayer.playVideo();
+    startYtPoller();
+  }catch(e){
+    if(ytCallbacks && ytCallbacks.onError){ const fn = ytCallbacks.onError; ytCallbacks = null; fn(); }
+  }
+}
+function playYouTube(videoId, start, end, onEnd, onError){
+  ytCallbacks = { onEnd: onEnd, onError: onError };
+  ytPending = { videoId: videoId, start: start || 0, end: end || 0 };
+  if(!ytApiReady){ loadYouTubeAPI(); return; }
+  createYtPlayer();
+  if(ytPlayerReady) runYtPending();
+}
+
+/* ----- Điều khiển chung ----- */
+function stopAllAudio(){
+  playToken++;
+  if(currentAudio){ currentAudio.pause(); currentAudio = null; }
+  stopYtPoller();
+  if(ytPlayer && ytPlayer.pauseVideo){ try{ ytPlayer.pauseVideo(); }catch(e){} }
+  ytPending = null;
+  ytCallbacks = null;
+  ytEndTime = 0;
+  if('speechSynthesis' in window){ speechSynthesis.cancel(); }
+  apReset();
+}
+
+/* File audio trực tiếp; hỗ trợ đoạn bằng media fragment: audio.mp3#t=45,90 */
+function playDirectAudio(url, onEnd, onError){
+  const audio = new Audio(url);
+  currentAudio = audio;
+  const frag = String(url).match(/#t=(\d+(?:\.\d+)?)(?:,(\d+(?:\.\d+)?))?/);
+  const start = frag ? parseFloat(frag[1]) : 0;
+  const end = (frag && frag[2]) ? parseFloat(frag[2]) : 0;
+  let finished = false;
+  const finish = ()=>{ if(finished) return; finished = true; if(onEnd) onEnd(); };
+  if(end > 0){
+    audio.addEventListener('timeupdate', ()=>{
+      if(audio.currentTime >= end){ audio.pause(); finish(); }
+    });
+  }
+  audio.addEventListener('ended', finish);
+  if(onError) audio.addEventListener('error', onError);
+  if(start > 0){
+    audio.addEventListener('loadedmetadata', ()=>{ try{ audio.currentTime = start; }catch(e){} });
+  }
+  audio.play().catch(()=>{ if(onError) onError(); });
+  return audio;
+}
+
+function playAudioUrl(url, {onEnd, onError} = {}){
+  return playDirectAudio(url, onEnd, onError);
+}
+
+function speakBrowserFallback(text, onEnd){
+  if(!('speechSynthesis' in window)){ if(onEnd) onEnd(); return; }
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.rate = 0.82;
+  const voices = speechSynthesis.getVoices();
+  const kv = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ko'));
+  if(kv) u.voice = kv;
+  if(onEnd) u.onend = onEnd;
+  speechSynthesis.speak(u);
+}
+
+function speak(text){
+  if(!text) return;
+  stopAllAudio();
+  const url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=tw-ob&q=' + encodeURIComponent(text);
+  playAudioUrl(url, {onError: ()=> speakBrowserFallback(text)});
+}
+
+/* Phát media thống nhất.
+   - YouTube: nhận start/end từ query (t/start, end) hoặc từ opts.start/opts.end
+   - Google Drive: thử stream trực tiếp, lỗi thì mở trình phát Drive
+   - File audio: phát trực tiếp, đoạn dùng #t=start,end
+   - Trống: đọc bằng TTS */
+function playMedia(url, script, opts){
+  opts = opts || {};
+  const onEnd = opts.onEnd, onError = opts.onError;
+  const ytId = getYouTubeId(url);
+  const driveId = getGoogleDriveId(url);
+  if(ytId){
+    const hasStart = opts.start !== undefined && opts.start !== null && opts.start !== '';
+    const hasEnd = opts.end !== undefined && opts.end !== null && opts.end !== '';
+    const start = hasStart ? parseTimeValue(opts.start) : getYouTubeStart(url);
+    const end = hasEnd ? parseTimeValue(opts.end) : getYouTubeEnd(url);
+    playYouTube(ytId, start, end, onEnd, onError);
+  } else if(driveId){
+    playDriveAudio(driveId, onEnd, ()=>{ openDrivePlayer(driveId); if(onEnd) onEnd(); });
+  } else if(url){
+    playDirectAudio(url, onEnd, onError);
+  } else if(script){
+    speakBrowserFallback(script, onEnd);
+  } else if(onEnd){
+    onEnd();
+  }
+}
+
+if('speechSynthesis' in window){ speechSynthesis.getVoices(); }
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function speakBtn(text, audioUrl, audioStart, audioEnd){
+  return `<button class="mini-speak" title="Nghe phát âm" data-speak="${esc(text)}" data-audio="${esc(audioUrl || '')}" data-audio-start="${esc(audioStart == null ? '' : audioStart)}" data-audio-end="${esc(audioEnd == null ? '' : audioEnd)}">🔊</button>`;
+}
+document.addEventListener('click', (e)=>{
+  const b = e.target.closest('[data-speak]');
+  if(!b) return;
+  const url = b.getAttribute('data-audio');
+  const text = b.getAttribute('data-speak');
+  if(url){
+    stopAllAudio();
+    playMedia(url, text, {
+      start: b.getAttribute('data-audio-start'),
+      end: b.getAttribute('data-audio-end'),
+      onError: ()=> speakBrowserFallback(text)
+    });
+  } else speak(text);
+});
+
+/* ================= Load JSON ================= */
+const SOURCES = [
+  '../../data/socap1/bai.json',
+  '/data/socap1/bai.json',
+  '/data/socap1/bai1.json'
+];
+
+async function loadLesson(){
+  let lastErr;
+  for(const url of SOURCES){
+    try{
+      const res = await fetch(url, {cache:'no-store'});
+      if(!res.ok) throw new Error('HTTP ' + res.status);
+      return await res.json();
+    }catch(err){ lastErr = err; }
+  }
+  throw lastErr || new Error('Không tải được dữ liệu');
+}
+
+/* ================= Renderers ================= */
+function renderHero(data){
+  document.getElementById('lessonTitle').textContent = data.lessonTitle || 'Bài học';
+  document.getElementById('lessonSubtitle').textContent = data.lessonSubtitle || '';
+  const stats = [
+    ['Từ vựng', (data.vocabularies||[]).length],
+    ['Ngữ pháp', (data.grammars||[]).length],
+    ['Hội thoại', (data.dialogues||[]).length],
+    ['Bài nghe', (data.listeningTracks||[]).length]
+  ];
+  document.getElementById('heroStats').innerHTML = stats
+    .map(([label, n]) => `<div class="hero-stat"><b>${n}</b>${esc(label)}</div>`).join('');
+}
+
+function stage(id, title, krTag, intro, bodyHtml){
+  return `
+  <section class="stage" id="${id}">
+    <div class="stage-head"><h2>${esc(title)}</h2>${krTag ? `<span class="kr-tag">${esc(krTag)}</span>` : ''}</div>
+    ${intro ? `<p class="stage-intro">${esc(intro)}</p>` : ''}
+    ${bodyHtml}
+  </section>`;
+}
+
+function renderVocab(list){
+  if(!list || !list.length) return '';
+  window.__lessonVocab = list;
+  list.forEach((v, i) => { v.__idx = i; });
+  const groups = {};
+  list.forEach(v => { (groups[v.category || 'Khác'] = groups[v.category || 'Khác'] || []).push(v); });
+  const toolbar = `
+    <div class="vocab-toolbar">
+      <button type="button" class="btn-flashcard" data-flashcard-all>🎴 Ôn flashcard</button>
+      <button type="button" class="btn-saveall" data-save-all>💾 Lưu tất cả vào sổ</button>
+    </div>`;
+  const inner = toolbar + Object.entries(groups).map(([cat, items]) => `
+    <div class="group-title">${esc(cat)} · ${items.length} từ</div>
+    <div class="vocab-grid">
+      ${items.map(v => {
+        const media = v.imageUrl
+          ? `<img src="${esc(v.imageUrl)}" alt="${esc(v.korean)}" loading="lazy">`
+          : (v.flag || '📘');
+        return `
+        <div class="vocab-card card" data-open-word="${v.__idx}" title="Mở flashcard">
+          <button class="vocab-save" type="button" data-save-word="${v.__idx}" data-word="${esc(v.korean)}" title="Lưu từ này vào sổ">☆</button>
+          <div class="vocab-img">${media}</div>
+          <div class="vocab-body">
+            <div class="vocab-top">
+              <div>
+                <div class="vocab-word">${esc(v.korean)}</div>
+                <div class="vocab-roman">${esc(v.romaja)}</div>
+              </div>
+              ${speakBtn(v.korean, v.audioUrl, v.audioStart, v.audioEnd)}
+            </div>
+            <div class="vocab-meaning">${esc(v.vietnamese)}</div>
+            ${v.hanja ? `<div class="vocab-hanja">Hán tự: ${esc(v.hanja)}</div>` : ''}
+            <span class="vocab-cat">${esc(v.category || '')}</span>
+            ${v.exampleKo ? `
+            <div class="vocab-example">
+              <div class="ko">${esc(v.exampleKo)} ${speakBtn(v.exampleKo)}</div>
+              <div class="vi">${esc(v.exampleVi)}</div>
+            </div>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="group-save-row">
+      <button class="btn-save-group" type="button" data-save-group="${esc(cat)}">☆ Lưu bộ từ vựng này (${items.length} từ)</button>
+    </div>`).join('');
+  return stage('stage-vocab', 'Từ vựng', '단어', 'Chạm vào thẻ để mở flashcard, bấm ☆ để lưu từng từ vào Sổ từ vựng, hoặc lưu cả bộ ở cuối mỗi chủ đề.', inner);
+}
+
+function renderGrammar(list){
+  if(!list || !list.length) return '';
+  const inner = list.map(g => `
+    <div class="grammar-card card">
+      <h3>${esc(g.title)}</h3>
+      ${g.pattern ? `<div class="pattern-chip">${esc(g.pattern)}</div>` : ''}
+      ${g.meaning ? `<div class="grammar-meaning">${esc(g.meaning)}</div>` : ''}
+      ${g.explanation ? `<div class="grammar-explain">${esc(g.explanation)}</div>` : ''}
+      ${(g.rules||[]).map(r => `
+        <div class="rule-row">
+          <div class="cond">${esc(r.condition)}</div>
+          <div class="affix">${esc(r.affix)}</div>
+          <div class="rule-example">
+            <div class="ko">${esc(r.exampleKo)} ${speakBtn(r.exampleKo, r.audioUrl, r.audioStart, r.audioEnd)}</div>
+            <div class="vi">${esc(r.exampleVi)}</div>
+          </div>
+        </div>`).join('')}
+      ${g.legoBlocks ? `
+        <div class="lego">
+          <span class="block">${esc(g.legoBlocks.subject)}</span><span class="plus">+</span>
+          <span class="block particle">${esc(g.legoBlocks.particle)}</span><span class="plus">+</span>
+          <span class="block">${esc(g.legoBlocks.noun)}</span><span class="plus">+</span>
+          <span class="block ending">${esc(g.legoBlocks.ending)}</span>
+          ${speakBtn([g.legoBlocks.subject, g.legoBlocks.particle, g.legoBlocks.noun, g.legoBlocks.ending].join(' '))}
+          <div class="translation">${esc(g.legoBlocks.translation)}</div>
+        </div>` : ''}
+    </div>`).join('');
+  return stage('stage-grammar', 'Ngữ pháp', '문법', 'Cấu trúc, quy tắc chia và ví dụ minh họa cho từng điểm ngữ pháp.', inner);
+}
+
+function renderDialogue(list){
+  if(!list || !list.length) return '';
+  const inner = list.map(d => {
+    const fullScript = (d.lines || []).map(l => l.korean).join(' ');
+    const audioBtn = d.fullAudioUrl
+      ? `<button class="audio-play-btn" type="button"
+                 data-media-url="${esc(d.fullAudioUrl)}"
+                 data-media-start="${esc(d.audioStart == null ? '' : d.audioStart)}"
+                 data-media-end="${esc(d.audioEnd == null ? '' : d.audioEnd)}"
+                 data-media-script="${esc(fullScript)}">
+           <span class="ico">🔊</span><span class="txt">Nghe cả đoạn</span>
+         </button>`
+      : '';
+    return `
+    <div class="dialogue-card card">
+      <div class="track-head">
+        <div class="track-head-text">
+          <h3>${esc(d.title)}</h3>
+          ${d.situation ? `<div class="dialogue-meta">${esc(d.situation)}</div>` : ''}
+        </div>
+        ${audioBtn}
+      </div>
+      ${d.culturalNote ? `<div class="culture-note">💡 ${esc(d.culturalNote)}</div>` : ''}
+      ${(d.lines||[]).map(l => `
+        <div class="dialogue-line">
+          <div class="avatar">${esc(l.avatar || '🗣️')}</div>
+          <div class="line-body">
+            <div class="line-speaker">${esc(l.speaker)} <span>· ${esc(l.speakerRole)}</span></div>
+            <div class="line-ko">${esc(l.korean)} ${speakBtn(l.korean, l.audioUrl, l.audioStart, l.audioEnd)}</div>
+            <div class="line-roman">${esc(l.romaja)}</div>
+            <div class="line-vi">${esc(l.vietnamese)}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+  return stage('stage-dialogue', 'Hội thoại', '대화', 'Các đoạn hội thoại mẫu kèm phiên âm La-tinh và bản dịch tiếng Việt.', inner);
+}
+
+function renderListening(list){
+  if(!list || !list.length) return '';
+  const inner = list.map(t => `
+    <div class="track-card card">
+      <div class="track-head">
+        <div class="track-head-text">
+          <div class="track-num">${esc(t.trackNumber)}</div>
+          <h3>${esc(t.title)}</h3>
+        </div>
+      </div>
+      <div class="track-instr">${esc(t.instructions)}</div>
+      <div class="audio-player"
+           data-media-url="${esc(t.audioUrl || '')}"
+           data-media-start="${esc(t.audioStart == null ? '' : t.audioStart)}"
+           data-media-end="${esc(t.audioEnd == null ? '' : t.audioEnd)}"
+           data-media-script="${esc(t.audioScript || '')}">
+        <button class="ap-play" type="button" title="Phát / Tạm dừng">▶</button>
+        <span class="ap-cur ap-time">00:00</span>
+        <input class="ap-seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Tua">
+        <span class="ap-dur ap-time">00:00</span>
+        <button class="ap-replay" type="button" title="Phát lại từ đầu">↺</button>
+      </div>
+      ${t.audioScript ? `
+        <button class="script-toggle" type="button">📄 Xem lời thoại</button>
+        <div class="script-box" hidden><span class="label">Audio script</span>${esc(t.audioScript)}</div>` : ''}
+      ${(t.questions||[]).map(q => `
+        <div class="q-block" data-answer="${esc(q.correctAnswer)}">
+          <div class="q-prompt">${esc(q.prompt)}</div>
+          <div class="options">
+            ${(q.options||[]).map(o => `<button class="opt" data-opt="${esc(o)}">${esc(o)}</button>`).join('')}
+          </div>
+          <div class="q-explain">${esc(q.explanation)}</div>
+        </div>`).join('')}
+    </div>`).join('');
+  return stage('stage-listening', 'Luyện nghe', '듣기', 'Dùng thanh phát để nghe bài (có thể tạm dừng, tua, phát lại), sau đó chọn đáp án đúng. Đáp án sẽ được chấm ngay khi bạn chọn.', inner);
+}
+
+function renderReading(data){
+  const cards = data.readingCards || [];
+  const passages = data.readingPassages || [];
+  if(!cards.length && !passages.length) return '';
+  const cardsHtml = cards.map(c => `
+    <div class="reading-card">
+      <h4>${esc(c.title)}</h4>
+      <div class="big-name">${esc(c.nameKo)}</div>
+      <div class="row">${esc(c.nameVi)}</div>
+      <div class="row">${esc(c.organizationKo)}</div>
+      <div class="row">${esc(c.organizationVi)}</div>
+      <div class="row">${esc(c.departmentKo)}</div>
+      <div class="row">${esc(c.departmentVi)}</div>
+      <div class="extra">${esc(c.extraInfo)}</div>
+    </div>`).join('');
+  const passHtml = passages.map(p => `
+    <div class="passage card">
+      <div class="author">${esc(p.avatar || '👤')} ${esc(p.author)} ${speakBtn(p.textKo, p.audioUrl, p.audioStart, p.audioEnd)}</div>
+      <div class="text-ko">${esc(p.textKo)}</div>
+      <div class="text-vi">${esc(p.textVi)}</div>
+    </div>`).join('');
+  return stage('stage-reading', 'Luyện đọc', '읽기', 'Đọc thẻ thông tin và đoạn văn ngắn, chạm loa để nghe cả đoạn.', cardsHtml + passHtml);
+}
+
+function renderPronunciation(p){
+  if(!p) return '';
+  const inner = `
+    <div class="grammar-explain" style="margin-bottom:18px;"><b>${esc(p.title)}</b><br>${esc(p.description)}</div>
+    <div class="pron-grid">
+      ${(p.examples||[]).map(e => `
+        <div class="pron-card card">
+          <div class="written">${esc(e.written)} ${speakBtn(e.written, e.audioUrl, e.audioStart, e.audioEnd)}</div>
+          <div class="spoken">${esc(e.spoken)}</div>
+          <div class="meaning">${esc(e.meaning)}</div>
+        </div>`).join('')}
+    </div>`;
+  return stage('stage-pronunciation', 'Phát âm', '발음', 'Quy tắc phát âm trọng tâm của bài.', inner);
+}
+
+function renderCulture(c){
+  if(!c) return '';
+  const inner = `
+    <div class="grammar-explain" style="margin-bottom:18px;">${esc(c.description)}</div>
+    ${(c.manners||[]).map(m => `
+      <div class="manner-card card">
+        <div class="icon">${esc(m.icon || '📌')}</div>
+        <div>
+          <h4>${esc(m.type)}</h4>
+          <p>${esc(m.description)}</p>
+        </div>
+      </div>`).join('')}`;
+  return stage('stage-culture', c.title || 'Văn hóa', '문화', '', inner);
+}
+
+/* ================= Interactions ================= */
+function setupTabs(){
+  const tabButtons = document.querySelectorAll('.tabs button');
+  tabButtons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const el = document.getElementById(btn.dataset.target);
+      if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+  });
+  const sections = [...tabButtons].map(b=>document.getElementById(b.dataset.target)).filter(Boolean);
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        tabButtons.forEach(b=> b.classList.toggle('active', b.dataset.target===entry.target.id));
+      }
+    });
+  }, {rootMargin:'-40% 0px -50% 0px'});
+  sections.forEach(s=> io.observe(s));
+}
+
+/* ================= Listening audio ================= */
+let currentTrackBtn = null;
+function resetTrackBtn(btn){
+  if(!btn) return;
+  btn.classList.remove('playing');
+  const ico = btn.querySelector('.ico');
+  const txt = btn.querySelector('.txt');
+  if(ico) ico.textContent = '🔊';
+  if(txt) txt.textContent = 'Nghe';
+}
+function playTrack(btn){
+  const url = btn.getAttribute('data-media-url');
+  const script = btn.getAttribute('data-media-script');
+  if(btn.classList.contains('playing')){
+    stopAllAudio();
+    resetTrackBtn(btn);
+    if(currentTrackBtn === btn) currentTrackBtn = null;
+    return;
+  }
+  stopAllAudio();
+  if(currentTrackBtn) resetTrackBtn(currentTrackBtn);
+  currentTrackBtn = btn;
+  btn.classList.add('playing');
+  const ico = btn.querySelector('.ico');
+  const txt = btn.querySelector('.txt');
+  if(ico) ico.textContent = '⏸';
+  if(txt) txt.textContent = 'Dừng';
+  const myToken = playToken;
+  const done = ()=>{
+    if(myToken !== playToken) return;
+    resetTrackBtn(btn);
+    if(currentTrackBtn === btn) currentTrackBtn = null;
+  };
+  playMedia(url, script, {
+    start: btn.getAttribute('data-media-start'),
+    end: btn.getAttribute('data-media-end'),
+    onEnd: done,
+    onError: ()=> speakBrowserFallback(script, done)
+  });
+}
+/* ================= Thanh player (Luyện nghe) ================= */
+let apEl = null, apKind = null, apStart = 0, apEnd = 0, apPaused = false, apTimer = null;
+
+function apFormat(sec){
+  if(!sec || isNaN(sec) || sec < 0) return '00:00';
+  sec = Math.floor(sec);
+  const m = Math.floor(sec / 60), s = sec % 60;
+  return (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+}
+function apDuration(){
+  let d = 0;
+  if(apKind === 'yt'){ try{ d = (ytPlayer && ytPlayer.getDuration) ? (ytPlayer.getDuration() || 0) : 0; }catch(e){ d = 0; } }
+  else if(apKind === 'audio'){ d = currentAudio ? (currentAudio.duration || 0) : 0; }
+  if(apEnd > apStart) return apEnd - apStart;
+  return Math.max(0, d - apStart);
+}
+function apCurrent(){
+  let cur = 0;
+  if(apKind === 'yt'){ try{ cur = (ytPlayer && ytPlayer.getCurrentTime) ? (ytPlayer.getCurrentTime() || 0) : 0; }catch(e){ cur = 0; } }
+  else if(apKind === 'audio'){ cur = currentAudio ? (currentAudio.currentTime || 0) : 0; }
+  return Math.max(0, cur - apStart);
+}
+function apIsPlaying(){
+  if(apKind === 'yt'){ try{ return !!(ytPlayer && ytPlayer.getPlayerState && ytPlayer.getPlayerState() === 1); }catch(e){ return false; } }
+  if(apKind === 'audio'){ return !!(currentAudio && !currentAudio.paused && !currentAudio.ended); }
+  if(apKind === 'tts'){ return ('speechSynthesis' in window) && speechSynthesis.speaking && !speechSynthesis.paused; }
+  return false;
+}
+function apUpdateUI(){
+  if(!apEl) return;
+  const dur = apDuration(), cur = apCurrent(), playing = apIsPlaying();
+  const curEl = apEl.querySelector('.ap-cur');
+  const durEl = apEl.querySelector('.ap-dur');
+  const seek = apEl.querySelector('.ap-seek');
+  const playBtn = apEl.querySelector('.ap-play');
+  if(curEl) curEl.textContent = apFormat(cur);
+  if(durEl) durEl.textContent = apFormat(dur);
+  if(seek){
+    if(apKind === 'tts' || dur <= 0){ seek.disabled = true; seek.value = 0; }
+    else { seek.disabled = false; seek.value = Math.round(Math.min(1, cur / dur) * 1000); }
+  }
+  if(playBtn) playBtn.textContent = playing ? '⏸' : '▶';
+  apEl.classList.toggle('playing', playing);
+}
+function apStartTimer(){ apStopTimer(); apTimer = setInterval(apUpdateUI, 200); }
+function apStopTimer(){ if(apTimer){ clearInterval(apTimer); apTimer = null; } }
+function apReset(){
+  apStopTimer();
+  if(apEl) apUpdateUI();
+  apEl = null; apKind = null; apPaused = false; apStart = 0; apEnd = 0;
+}
+function apPlay(bar){
+  const url = bar.getAttribute('data-media-url');
+  const script = bar.getAttribute('data-media-script');
+  const startAttr = parseTimeValue(bar.getAttribute('data-media-start'));
+  const endAttr = parseTimeValue(bar.getAttribute('data-media-end'));
+  const ytId = getYouTubeId(url);
+  const driveId = getGoogleDriveId(url);
+
+  stopAllAudio();
+  const token = playToken;
+  apEl = bar; apPaused = false; apStart = 0; apEnd = 0;
+  const done = ()=>{ if(token !== playToken) return; apUpdateUI(); };
+
+  if(ytId){
+    apKind = 'yt';
+    apStart = startAttr || getYouTubeStart(url);
+    apEnd = endAttr || getYouTubeEnd(url);
+    playYouTube(ytId, apStart, apEnd, done, ()=> speakBrowserFallback(script, done));
+  } else if(driveId){
+    apKind = 'audio';
+    playDriveAudio(driveId, done, ()=>{ openDrivePlayer(driveId); if(token === playToken) apUpdateUI(); });
+  } else if(url){
+    apKind = 'audio';
+    const frag = String(url).match(/#t=(\d+(?:\.\d+)?)(?:,(\d+(?:\.\d+)?))?/);
+    apStart = frag ? (parseFloat(frag[1]) || 0) : 0;
+    apEnd = (frag && frag[2]) ? parseFloat(frag[2]) : 0;
+    playDirectAudio(url, done, ()=> speakBrowserFallback(script, done));
+  } else {
+    apKind = 'tts';
+    speakBrowserFallback(script, done);
+  }
+  apStartTimer();
+  setTimeout(apUpdateUI, 60);
+}
+function apPause(){
+  if(apKind === 'yt'){ try{ ytPlayer.pauseVideo(); }catch(e){} }
+  else if(apKind === 'audio'){ if(currentAudio) currentAudio.pause(); }
+  else if(apKind === 'tts'){ if('speechSynthesis' in window) speechSynthesis.pause(); }
+  apPaused = true;
+  apUpdateUI();
+}
+function apResume(){
+  if(apKind === 'yt'){ try{ ytPlayer.playVideo(); }catch(e){} }
+  else if(apKind === 'audio'){ if(currentAudio) currentAudio.play().catch(()=>{}); }
+  else if(apKind === 'tts'){ if('speechSynthesis' in window) speechSynthesis.resume(); }
+  apPaused = false;
+  apUpdateUI();
+}
+function apToggle(bar){
+  if(apEl === bar){
+    if(apIsPlaying()){ apPause(); return; }
+    if(apPaused && apKind){ apResume(); return; }
+  }
+  apPlay(bar);
+}
+function apReplay(bar){
+  if(apEl !== bar){ apPlay(bar); return; }
+  apPaused = false;
+  if(apKind === 'yt'){ try{ ytPlayer.seekTo(apStart, true); ytPlayer.playVideo(); }catch(e){} }
+  else if(apKind === 'audio'){ if(currentAudio){ try{ currentAudio.currentTime = apStart; }catch(e){} currentAudio.play().catch(()=>{}); } }
+  else { apPlay(bar); return; }
+  apUpdateUI();
+}
+function apSeekTo(bar, rel){
+  if(apEl !== bar || !apKind) return;
+  const abs = apStart + rel;
+  if(apKind === 'yt'){ try{ ytPlayer.seekTo(abs, true); }catch(e){} }
+  else if(apKind === 'audio'){ if(currentAudio){ try{ currentAudio.currentTime = abs; }catch(e){} } }
+  apUpdateUI();
+}
+
+document.addEventListener('click', (e)=>{
+  const play = e.target.closest('.audio-play-btn');
+  if(play){ playTrack(play); return; }
+  const bar = e.target.closest('.audio-player');
+  if(bar){
+    if(e.target.closest('.ap-play')){ apToggle(bar); return; }
+    if(e.target.closest('.ap-replay')){ apReplay(bar); return; }
+  }
+  const toggle = e.target.closest('.script-toggle');
+  if(toggle){
+    const box = toggle.parentElement.querySelector('.script-box');
+    if(!box) return;
+    if(box.hasAttribute('hidden')){
+      box.removeAttribute('hidden');
+      toggle.textContent = '📄 Ẩn lời thoại';
+    } else {
+      box.setAttribute('hidden', '');
+      toggle.textContent = '📄 Xem lời thoại';
+    }
+  }
+});
+document.addEventListener('input', (e)=>{
+  const seek = e.target.closest('.ap-seek');
+  if(!seek) return;
+  const bar = seek.closest('.audio-player');
+  if(bar !== apEl) return;
+  const curEl = bar.querySelector('.ap-cur');
+  if(curEl) curEl.textContent = apFormat((seek.value / 1000) * apDuration());
+});
+document.addEventListener('change', (e)=>{
+  const seek = e.target.closest('.ap-seek');
+  if(!seek) return;
+  const bar = seek.closest('.audio-player');
+  if(bar !== apEl) return;
+  apSeekTo(bar, (seek.value / 1000) * apDuration());
+});
+
+/* ================= Sổ từ vựng (Firestore) ================= */
+let lessonData = null;
+let savedWords = new Set();
+let savingAll = false;
+
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU",
+  authDomain: "vuihoctienghan2027.firebaseapp.com",
+  projectId: "vuihoctienghan2027",
+  storageBucket: "vuihoctienghan2027.firebasestorage.app",
+  messagingSenderId: "346757373399",
+  appId: "1:346757373399:web:526625b339fc9a1a523f92",
+  measurementId: "G-JHCHNDDY1S"
+};
+if(typeof firebase !== 'undefined' && !firebase.apps.length){
+  firebase.initializeApp(FIREBASE_CONFIG);
+}
+window.currentUserUid = null;
+if(typeof firebase !== 'undefined' && firebase.auth){
+  firebase.auth().onAuthStateChanged(user => {
+    window.currentUserUid = user ? user.uid : null;
+    if(lessonData) loadSavedSet(); else updateSaveButtons();
+  });
+}
+
+function notebookListName(){
+  const title = (lessonData && lessonData.lessonTitle) ? lessonData.lessonTitle : 'Bài học';
+  return 'Đã lưu/' + title;
+}
+function vocabDocId(v){
+  return notebookListName().replace(/[/\s]/g, '_') + '_' + v.korean;
+}
+function vocabToStudyList(list){
+  return list.map(v => ({
+    id: vocabDocId(v),
+    word: v.korean,
+    meaning: v.vietnamese,
+    ex_kr: v.exampleKo || '',
+    ex_vn: v.exampleVi || '',
+    definition: v.hanja ? ('Hán tự: ' + v.hanja) : ''
+  }));
+}
+function vocabDocPayload(v, order){
+  return {
+    word: v.korean,
+    meaning: v.vietnamese,
+    listName: notebookListName(),
+    status: 0,
+    order: order,
+    ex_kr: v.exampleKo || '',
+    ex_vn: v.exampleVi || '',
+    definition: v.hanja ? ('Hán tự: ' + v.hanja) : '',
+    savedAt: firebase.firestore.FieldValue.serverTimestamp()
+  };
+}
+
+async function ensureLogin(){
+  if(window.currentUserUid) return window.currentUserUid;
+  if(typeof firebase === 'undefined' || !firebase.auth){
+    Swal.fire('Lỗi', 'Chưa tải được Firebase, vui lòng thử lại.', 'error');
+    return null;
+  }
+  const res = await Swal.fire({
+    title: 'Đăng nhập để lưu từ',
+    text: 'Bạn cần đăng nhập Google để lưu từ vựng vào Sổ từ vựng.',
+    icon: 'info', showCancelButton: true,
+    confirmButtonText: 'Đăng nhập Google', cancelButtonText: 'Hủy',
+    confirmButtonColor: '#2563eb'
+  });
+  if(!res.isConfirmed) return null;
+  try{
+    const provider = new firebase.auth.GoogleAuthProvider();
+    const result = await firebase.auth().signInWithPopup(provider);
+    window.currentUserUid = result.user.uid;
+    return result.user.uid;
+  }catch(e){
+    Swal.fire('Lỗi đăng nhập', e.message, 'error');
+    return null;
+  }
+}
+
+async function loadSavedSet(){
+  savedWords = new Set();
+  const uid = window.currentUserUid;
+  if(uid && typeof firebase !== 'undefined'){
+    try{
+      const snap = await firebase.firestore().collection('users').doc(uid).collection('vocabulary')
+        .where('listName', '==', notebookListName()).get();
+      snap.forEach(d => {
+        const w = d.data().word;
+        if(w && w !== '__folder_marker__') savedWords.add(w);
+      });
+    }catch(e){ console.warn('Không tải được sổ từ vựng:', e); }
+  }
+  updateSaveButtons();
+}
+
+function updateSaveButtons(){
+  document.querySelectorAll('.vocab-save').forEach(btn => {
+    const w = btn.getAttribute('data-word');
+    const isSaved = savedWords.has(w);
+    btn.classList.toggle('saved', isSaved);
+    btn.textContent = isSaved ? '⭐' : '☆';
+    btn.title = isSaved ? 'Đã lưu — bấm để bỏ lưu' : 'Lưu từ này vào sổ';
+  });
+  const all = window.__lessonVocab || [];
+  document.querySelectorAll('[data-save-group]').forEach(btn => {
+    const cat = btn.getAttribute('data-save-group');
+    const items = all.filter(v => (v.category || 'Khác') === cat);
+    const done = items.length > 0 && items.every(v => savedWords.has(v.korean));
+    btn.classList.toggle('saved', done);
+    btn.disabled = done;
+    btn.textContent = done ? '✓ Đã lưu bộ từ vựng này' : ('☆ Lưu bộ từ vựng này (' + items.length + ' từ)');
+  });
+  const allBtn = document.querySelector('[data-save-all]');
+  if(allBtn){
+    const savedCount = all.filter(v => savedWords.has(v.korean)).length;
+    const done = all.length > 0 && savedCount === all.length;
+    allBtn.disabled = savingAll || done;
+    allBtn.textContent = done ? '✓ Đã lưu tất cả' : '💾 Lưu tất cả vào sổ';
+  }
+}
+
+async function saveWord(idx){
+  const list = window.__lessonVocab || [];
+  const v = list[idx];
+  if(!v) return;
+  const uid = await ensureLogin();
+  if(!uid) return;
+  try{
+    await firebase.firestore().collection('users').doc(uid).collection('vocabulary')
+      .doc(vocabDocId(v)).set(vocabDocPayload(v, idx));
+    savedWords.add(v.korean);
+    updateSaveButtons();
+    Swal.fire({ toast: true, position: 'bottom-end', icon: 'success',
+      title: 'Đã lưu "' + v.korean + '"', showConfirmButton: false, timer: 1600 });
+  }catch(e){ Swal.fire('Lỗi', e.message, 'error'); }
+}
+
+async function removeWord(idx){
+  const list = window.__lessonVocab || [];
+  const v = list[idx];
+  if(!v) return;
+  const uid = window.currentUserUid;
+  if(!uid) return;
+  const res = await Swal.fire({
+    title: 'Bỏ lưu từ này?', text: v.korean + ' — ' + v.vietnamese,
+    icon: 'warning', showCancelButton: true, confirmButtonText: 'Bỏ lưu',
+    confirmButtonColor: '#ef4444'
+  });
+  if(!res.isConfirmed) return;
+  try{
+    await firebase.firestore().collection('users').doc(uid).collection('vocabulary')
+      .doc(vocabDocId(v)).delete();
+    savedWords.delete(v.korean);
+    updateSaveButtons();
+  }catch(e){ Swal.fire('Lỗi', e.message, 'error'); }
+}
+
+function toggleSaveWord(idx){
+  const list = window.__lessonVocab || [];
+  const v = list[idx];
+  if(!v) return;
+  if(savedWords.has(v.korean)) removeWord(idx);
+  else saveWord(idx);
+}
+
+async function saveAllWords(){
+  const list = window.__lessonVocab || [];
+  if(!list.length) return;
+  const uid = await ensureLogin();
+  if(!uid) return;
+  savingAll = true;
+  updateSaveButtons();
+  try{
+    const col = firebase.firestore().collection('users').doc(uid).collection('vocabulary');
+    const batch = firebase.firestore().batch();
+    list.forEach((v, i) => batch.set(col.doc(vocabDocId(v)), vocabDocPayload(v, i)));
+    await batch.commit();
+    list.forEach(v => savedWords.add(v.korean));
+    Swal.fire({ title: 'Đã lưu!', text: 'Đã lưu ' + list.length + ' từ vào Sổ từ vựng.', icon: 'success', timer: 2200, showConfirmButton: false });
+  }catch(e){
+    Swal.fire('Lỗi', e.message, 'error');
+  }finally{
+    savingAll = false;
+    updateSaveButtons();
+  }
+}
+
+async function saveGroup(cat){
+  const list = (window.__lessonVocab || []).filter(v => (v.category || 'Khác') === cat);
+  if(!list.length) return;
+  const uid = await ensureLogin();
+  if(!uid) return;
+  try{
+    const col = firebase.firestore().collection('users').doc(uid).collection('vocabulary');
+    const batch = firebase.firestore().batch();
+    list.forEach(v => batch.set(col.doc(vocabDocId(v)), vocabDocPayload(v, v.__idx)));
+    await batch.commit();
+    list.forEach(v => savedWords.add(v.korean));
+    updateSaveButtons();
+    Swal.fire({ title: 'Đã lưu!', text: 'Đã lưu ' + list.length + ' từ chủ đề "' + cat + '" vào sổ.', icon: 'success', timer: 2200, showConfirmButton: false });
+  }catch(e){
+    Swal.fire('Lỗi', e.message, 'error');
+  }
+}
+
+function openFlashcardAt(idx){
+  const list = window.__lessonVocab || [];
+  if(!list.length) return;
+  if(typeof startStudy !== 'function'){
+    Swal.fire('Thông báo', 'Chưa tải được trình flashcard.', 'info');
+    return;
+  }
+  startStudy('flashcard', vocabToStudyList(list), idx);
+}
+function openFlashcard(){ openFlashcardAt(0); }
+
+document.addEventListener('click', (e) => {
+  const saveBtn = e.target.closest('[data-save-word]');
+  if(saveBtn){ toggleSaveWord(parseInt(saveBtn.getAttribute('data-save-word'), 10)); return; }
+  const groupBtn = e.target.closest('[data-save-group]');
+  if(groupBtn){ saveGroup(groupBtn.getAttribute('data-save-group')); return; }
+  if(e.target.closest('[data-save-all]')){ saveAllWords(); return; }
+  if(e.target.closest('[data-flashcard-all]')){ openFlashcard(); return; }
+  if(e.target.closest('[data-speak]')) return;
+  const card = e.target.closest('[data-open-word]');
+  if(card){ openFlashcardAt(parseInt(card.getAttribute('data-open-word'), 10)); return; }
+});
+
+function setupQuiz(){
+  document.querySelectorAll('.q-block').forEach(block=>{
+    const answer = block.getAttribute('data-answer');
+    const opts = block.querySelectorAll('.opt');
+    opts.forEach(opt=>{
+      opt.addEventListener('click', ()=>{
+        const chosen = opt.getAttribute('data-opt');
+        opts.forEach(o=>{
+          o.disabled = true;
+          if(o.getAttribute('data-opt') === answer) o.classList.add('correct');
+        });
+        if(chosen !== answer) opt.classList.add('wrong');
+        const ex = block.querySelector('.q-explain');
+        if(ex) ex.classList.add('show');
+        speak(chosen.replace(/\s*\(.*\)\s*$/, ''));
+      });
+    });
+  });
+}
+
+/* ================= Boot ================= */
+(async function init(){
+  const app = document.getElementById('app');
+  try{
+    const data = await loadLesson();
+    lessonData = data;
+    renderHero(data);
+    app.innerHTML =
+      renderVocab(data.vocabularies) +
+      renderGrammar(data.grammars) +
+      renderDialogue(data.dialogues) +
+      renderListening(data.listeningTracks) +
+      renderReading(data) +
+      renderPronunciation(data.pronunciationRule) +
+      renderCulture(data.cultureSection);
+    setupTabs();
+    setupQuiz();
+    updateSaveButtons();
+    if(window.currentUserUid) loadSavedSet();
+    if(location.hash){
+      const target = document.querySelector(location.hash);
+      if(target) setTimeout(()=> target.scrollIntoView({block:'start'}), 60);
+    }
+    console.log('Dữ liệu bài học:', data);
+  }catch(err){
+    app.innerHTML = `<div class="state-msg error">Không tải được dữ liệu bài học.<br>${esc(err.message)}<br><br>Kiểm tra lại đường dẫn <b>data/socap1/bai.json</b>.</div>`;
+    console.error(err);
+  }
+})();
+</script>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" class="video-home">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -82,7 +82,7 @@
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body>
+<body class="video-home-page">
 
 <div class="video-wrapper" style="margin-top:80px;margin-bottom:40px;">
 
@@ -431,6 +431,10 @@
         }).then(function(result) {
             if (!result.isConfirmed) return;
             Swal.fire({title: 'Đang xóa...', allowOutsideClick: false, didOpen: function() { Swal.showLoading(); }});
+            // Gỡ khỏi danh sách local (bài hardcode trong video-lessons.js) — trước đây chỉ xóa Firestore nên bài local luôn hiện lại
+            if (Array.isArray(window.VideoLessons)) {
+                window.VideoLessons = window.VideoLessons.filter(function(L) { return L.id !== id; });
+            }
             firebase.firestore().collection('video_lessons').doc(id).delete().then(function() {
                 Swal.fire('Đã xóa!', '', 'success');
                 loadLessons();

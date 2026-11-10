@@ -245,6 +245,7 @@ document.addEventListener('DOMContentLoaded', () => {
         /* RESPONSIVE — Navbar + Wrapper/Container width sync */
         @media(min-width:769px){
             .container,.wrapper{max-width:900px!important;margin-left:auto!important;margin-right:auto!important;width:auto!important}
+            .global-footer{max-width:900px!important;margin-left:auto!important;margin-right:auto!important}
         }
         @media(max-width:768px){
             .global-nav{margin-left:4px!important;margin-right:4px!important;width:auto!important;border-radius:16px;}
@@ -572,7 +573,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Global logic & Vocab scripts
-    ['user-profile-popup.js', 'vocab-external.js','vocab-dictionary.js','hover-lookup.js','vocab-stats.js'].forEach(f => {
+    ['auth-guard.js', 'user-profile-popup.js', 'vocab-external.js','vocab-dictionary.js','hover-lookup.js','vocab-stats.js'].forEach(f => {
         if (!document.querySelector(`script[src*="${f}"]`)) {
             const s = document.createElement('script');
             s.src = `${rootPath}assets/js/${f}`; s.async = false;

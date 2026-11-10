@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thiệp chúc mừng Ngày Doanh nhân Việt Nam</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,500&family=Be+Vietnam+Pro:wght@300;400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0a0e1a;--gold:#e8c675;--txt:#f6efe0;box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font-family:'Be Vietnam Pro',system-ui,sans-serif;overflow:hidden}
+canvas{display:block;touch-action:none;cursor:grab}
+#vig{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55));z-index:2}
+#intro{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:radial-gradient(circle at 50% 35%,#1d2a4d,#0a0e1a 72%);z-index:6;transition:opacity 1.2s}
+#intro .s{letter-spacing:.35em;font-size:12px;text-transform:uppercase;color:var(--gold)}
+#intro .o{width:90px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:22px 0}
+#intro h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(30px,6.5vw,62px);margin:0;color:var(--gold);font-weight:600;line-height:1.15}
+#intro h2{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:500;font-size:clamp(16px,2.6vw,22px);margin:14px 0 0;opacity:.9}
+#intro p{max-width:500px;line-height:1.8;opacity:.8;font-weight:300;margin:18px 0 0}
+button{font:inherit;color:var(--txt);cursor:pointer}
+#enter{margin-top:28px;padding:14px 38px;border:1px solid var(--gold);background:transparent;border-radius:40px;letter-spacing:.12em;transition:.3s}
+#enter:hover{background:var(--gold);color:#222}
+#ui{position:fixed;left:0;right:0;bottom:0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:center;gap:12px;pointer-events:none;z-index:3}
+#cap{max-width:580px;text-align:center;background:rgba(10,14,26,.74);backdrop-filter:blur(10px);border:1px solid rgba(232,198,117,.35);padding:14px 22px;border-radius:14px;opacity:0;transform:translateY(8px);transition:.6s;line-height:1.55}
+#cap b{display:block;font-family:'Playfair Display',Georgia,serif;color:var(--gold);font-size:18px;margin-bottom:4px}
+#cap span{font-weight:300;font-size:15px}
+#cap.on{opacity:1;transform:none}
+#cap.banner{max-width:min(94vw,880px);padding:24px 36px;background:linear-gradient(135deg,rgba(60,40,10,.82),rgba(10,14,26,.85));border-color:var(--gold);box-shadow:0 0 50px rgba(232,198,117,.35)}
+#cap.banner b{font-size:clamp(26px,5.5vw,48px);letter-spacing:.04em;margin-bottom:10px}
+#cap.banner span{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-size:clamp(18px,3.6vw,32px);line-height:1.4}
+#fw{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
+#nav{display:flex;gap:10px;pointer-events:auto}
+#nav button,#mus{background:rgba(10,14,26,.7);border:1px solid rgba(232,198,117,.45);border-radius:30px;padding:9px 18px;font-size:14px;backdrop-filter:blur(6px)}
+#top{position:fixed;top:0;right:0;padding:calc(14px + env(safe-area-inset-top,0px)) 14px 0;z-index:3}
+#hint{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));left:18px;font-size:12px;opacity:.55;z-index:3;max-width:55%;transition:opacity 1s}
+</style>
+</head>
+<body>
+<div id="vig"></div>
+<canvas id="fw"></canvas>
+<div id="intro">
+  <div class="s">13 · 10 · Ngày Doanh nhân Việt Nam</div>
+  <div class="o"></div>
+  <h1 id="to">Gửi anh - Lê Đỗ Duy Ân</h1>
+  <h2>Một phòng triển lãm nhỏ, dành riêng cho anh</h2>
+  <p>Mỗi hành trình khởi nghiệp là một tác phẩm. Em treo lên đây vài khoảnh khắc đẹp để chúc anh một ngày thật rực rỡ.</p>
+  <button id="enter">Bước vào triển lãm</button>
+</div>
+<div id="hint">Kéo để nhìn quanh 360° · cuộn / chụm để phóng to · chạm vào tranh để lại gần</div>
+<div id="top"><button id="mus">♪ Nhạc: bật</button></div>
+<div id="ui"><div id="cap"></div><div id="nav"><button id="prev">‹ Trước</button><button id="next">Tiếp ›</button></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ================= TÙY CHỈNH =================
+// Dán link ảnh vào 10 ô dưới đây (theo thứ tự khung 1 → 10).
+const IMAGES = [
+  "https://scontent.fhan4-4.fna.fbcdn.net/v/t39.30808-6/783589719_2938388496514187_5142377988665706821_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeG3IZpj-fhHdTzi8hOhTvP3wpHJ-O9n_v7Ckcn472f-_m5Q-lvx33LVl07Q67-V6OU7rwDn8ZW49QBh9l2zpgUK&_nc_ohc=-CNI3a6XH5IQ7kNvwEQ-ari&_nc_oc=Ado5pjL4AIbma-3r9IV9aq_uxN9a5aUmB6ULJO2lkrcf12QRly0ObZc2Yb02ia0jzgY&_nc_zt=23&_nc_ht=scontent.fhan4-4.fna&_nc_gid=eck1QfQLS_GwHO21K_FGag&_nc_ss=7b2a8&oh=00_AQP9rLVI41IMO9WKcRv29WNfkDIZheCxvDQsOmMDpBNMVA&oe=6AD3DBC3", // 1
+  "https://scontent.fhan4-1.fna.fbcdn.net/v/t39.30808-6/779895881_2936662050020165_6621741727278084606_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=101&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFDuX9MR-NtSezOY9NGN1l4FTG_g1Gpn7sVMb-DUamfu1qlLC-GKijQmWWSLcQQB4T7By9DxSxfRMolxM_AdPPD&_nc_ohc=2fJW6gg-eHoQ7kNvwGqi7Lc&_nc_oc=AdqMK36arURNfT8MzRcJiTNDjmm-p-h89GRFYmxDcnH_HBLPo5fHwzwvUlFr-PnQaI8&_nc_zt=23&_nc_ht=scontent.fhan4-1.fna&_nc_gid=WzruMejfvizlq0hwEkEbqQ&_nc_ss=7b2a8&oh=00_AQPPzZb9ivSk_Ip74JHImqlMyD1ArSF6lVV7txXE0PWUEA&oe=6AD3EAA3", // 2
+  "https://scontent.fhan4-2.fna.fbcdn.net/v/t39.30808-6/776222607_2929588400727530_5386241278526259659_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx960x720&ctp=s960x720&_nc_cat=102&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHo9Tv2GnT-TTUGw0Z3K0CLzE-DUceDMpnMT4NRx4MymV3cwBCJZbGj-3c8c9vFPEYLypmpwy9EzqVA1QhvzBdX&_nc_ohc=jn6AMt2mGJEQ7kNvwHhS2YZ&_nc_oc=AdrX_a3E4GoqEzPZs3bnWcO5SNYmiB9ExRGbN4pNfJ-IEEf-jXlsX-EEH4OKq_vD-0E&_nc_zt=23&_nc_ht=scontent.fhan4-2.fna&_nc_gid=X4jTD4909437BKqVj4fHZw&_nc_ss=7b2a8&oh=00_AQMDWqibyITNsaKSka1JYutOFlevNOb0tGJCj41F-mUYYQ&oe=6AD3EBC5", // 3
+  "https://scontent.fhan4-2.fna.fbcdn.net/v/t39.30808-6/772854027_2927440624275641_6955432526611614894_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx960x720&ctp=s960x720&_nc_cat=107&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeH20NuoCf_Si7mXHZvzFqBGPx2xUpsxWyc_HbFSmzFbJ3CACIw61yhU2hjxc6uhJDTDuEqqjzOMKZ1YTFr15Kk8&_nc_ohc=PfCMLEwoGpYQ7kNvwE19ehR&_nc_oc=AdpyOKe6bJxM_5TmgRXpPgkKf9Z19VL8K5-2V4R_TZZjlJIfGKNFkQ2AiEBYTYNYqyQ&_nc_zt=23&_nc_ht=scontent.fhan4-2.fna&_nc_gid=ffU11mkbLpJ07azDN3e00A&_nc_ss=7b2a8&oh=00_AQP4PtAI2dedggNh-TMtDWNirVgBlqVm_WtXLpa7j1rgbg&oe=6AD3EF2F", // 4
+  "https://scontent.fhan4-1.fna.fbcdn.net/v/t39.30808-6/772036463_2925378597815177_6126488034206594113_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx960x720&ctp=s960x720&_nc_cat=103&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeG6tX4mjPnqLjusB1_MV3IT7ioW9-ENMtjuKhb34Q0y2OWEkmnaz5W0aQYUWtz7C0eGu7BWScSztlymQkRtSGSl&_nc_ohc=kqHaoawUWbYQ7kNvwEr6k1I&_nc_oc=AdoOy7si3WhTZoKUbiSWPgb9RQM_cuYU3JhQB07DPCBCRpZTuVetP_XiivPybRfpbBI&_nc_zt=23&_nc_ht=scontent.fhan4-1.fna&_nc_gid=7tzLuQQ1uvqP3xHm_DmR7g&_nc_ss=7b2a8&oh=00_AQN9JSpw8C6HeRgLpSYP27EcU8x9ES-rPuYN_xHGfZB7yQ&oe=6AD3EB6B", // 5
+  "https://scontent.fhan4-4.fna.fbcdn.net/v/t39.30808-6/763374515_2918436695176034_3231062145712461138_n.jpg?stp=dst-jpg_tt6&cstp=mx1272x720&ctp=s1272x720&_nc_cat=105&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGT87gyiwg_y3iMmts_shm8FNMqPprwnS8U0yo-mvCdL_93bXj9DFhVJ4-ts0B39U6g0aR-X9V2W-VkgdeJArYL&_nc_ohc=A5M714uwdBMQ7kNvwGVpPKi&_nc_oc=AdrFdrm8hQSrCOB0abgOyNxe_IGsY_hpCy3hC0VRT9rmI43SPD0PPFEuR7Z8oHcs_ec&_nc_zt=23&_nc_ht=scontent.fhan4-4.fna&_nc_gid=xF_81Pb3qg0WG2oNOHrpiQ&_nc_ss=7b2a8&oh=00_AQMAhpCKGQVFqD5SKFu3UaRt1krb6zbqAmvIjLQz9hfgfw&oe=6AD3E487", // 6
+  "https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-6/759932381_2913103082376062_2806376350099460099_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=111&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHClxqV3fRpJC_YQWqJzbxkq1qH2GTQCJSrWofYZNAIlAxwUBmec1Uw-pgs8V7QJUsG3iCGW484om-BqEv4X6PZ&_nc_ohc=Iq8YeOJHzk8Q7kNvwHiZdQm&_nc_oc=AdqnRVaCUn9YeBrVz_wexF0B7OlGDevtDFuJeGcIerbgAJC6fpqhj6UFSWTKMjpz_oc&_nc_zt=23&_nc_ht=scontent.fhan3-4.fna&_nc_gid=aXXSL4heaeAw6ULMBvsD9Q&_nc_ss=7b2a8&oh=00_AQPHgq32aE0dnLd2iPmzHtUAfSfMWGvpyBGrikSkFdKr_w&oe=6AD3ED81", // 7
+  "https://scontent.fhan3-5.fna.fbcdn.net/v/t39.30808-6/749652241_2906556503030720_7888092315565219047_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=107&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHs_iicLTvAg3FwK9DTuMEqVfni0fEMeo1V-eLR8Qx6jdxFW_Q73XRgvQbMovMff0FCCN_gCl2TTXM_lr3FrmjQ&_nc_ohc=astLHmy7Qh8Q7kNvwHx6xTy&_nc_oc=AdqljAizKnycDK4Duv6EwDnLEaE9E1FaQecUlFiDZXGQYSQYwZdETbMmwpZpsfmWFr0&_nc_zt=23&_nc_ht=scontent.fhan3-5.fna&_nc_gid=37AZJrA0ziOF0ifDMTg6yA&_nc_ss=7b2a8&oh=00_AQMirB0j1PTtm06QjmAUVmmEVfmXW7lIhg4E1WG1KYoY8A&oe=6AD3F9FD", // 8
+  "https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-6/750033949_2900877900265247_5238849789590152579_n.jpg?stp=cp6_dst-jpg_tt6&cstp=mx636x594&ctp=s636x594&_nc_cat=108&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeEd1RuMRNYf67AVHQPI-OPcGd1O63jK8KcZ3U7reMrwp2fXz1LLzrvXgvu8i3LNGUnoqXgp11h5Db9XB5fthJU6&_nc_ohc=wGPBQQSET80Q7kNvwGh1wyh&_nc_oc=AdqsLbUM85Ov-xCY-XrSQWzcT67Q0zHZ65XyvQ7kYdKq2EO5IP0aQnOWhEFi-ow8vSQ&_nc_zt=23&_nc_ht=scontent.fhan3-4.fna&_nc_gid=1ehqq097jZ3yzZ5Q4Punnw&_nc_ss=7b2a8&oh=00_AQMKCXtqiAyY62ZZotF2KhrRe3lPXzMGTCmAo2_jW7TouA&oe=6AD3EFED", // 9
+  "https://scontent.fhan3-4.fna.fbcdn.net/v/t39.30808-6/739487086_2890486834637687_370436080516226183_n.jpg?stp=dst-jpg_tt6&cstp=mx1536x2048&ctp=s1536x2048&_nc_cat=103&_nc_map=urlgen_bucketless&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGTbG2lf0ZTCPzyvWfT2Kya4ndldrO15Y3id2V2s7XljXYVrrH1XRHLjfTNkofnhbYl9Ham_5r3KV3J1vww6Qia&_nc_ohc=J794pVYvUWIQ7kNvwHGu5Tq&_nc_oc=AdoxR-T-TIn13fsGzYLe4gU_JFJwLZHFS6RlykHCmHn4ijjdvvBjXJWG3PbM5zbBjIw&_nc_zt=23&_nc_ht=scontent.fhan3-4.fna&_nc_gid=MBuv1F9KtKW6kzGdfCvN_g&_nc_ss=7b2a8&oh=00_AQMEIv9gqadu84MB6Fs5y8rKjZShGNPxsXOvhgMAb-PC9A&oe=6AD3D88D"  // 10
+];
+const TO_NAME = "Gửi anh - Lê Đỗ Duy Ân";
+const FROM = "— Minh Hiếu";
+const TITLES = ["Khởi nguồn","Bản lĩnh","Tầm nhìn","Đồng hành","Quyết định","Cân bằng","Ước mơ","Sức khỏe","Niềm vui","Chúc mừng 13/10"];
+const WISHES = [
+ "Chúc anh luôn giữ lửa đam mê như ngày đầu khởi nghiệp.",
+ "Chúc anh vững tay lái trước mọi sóng gió thị trường.",
+ "Chúc doanh nghiệp của anh ngày càng lớn mạnh.",
+ "Chúc anh có những đối tác tin cậy và đồng đội tuyệt vời.",
+ "Chúc mỗi quyết định của anh đều sáng suốt và đúng thời điểm.",
+ "Chúc anh thành công mà vẫn còn thời gian cho gia đình.",
+ "Chúc những dự định lớn của anh sớm thành hiện thực.",
+ "Chúc anh luôn khỏe mạnh để đi đường dài.",
+ "Chúc anh nhiều niềm vui trên từng chặng đường.",
+ "Chúc mừng Ngày Doanh nhân Việt Nam! " + FROM
+];
+document.getElementById('to').textContent = TO_NAME;
+
+// ================= HẠ TẦNG =================
+const N=10, R=9, STEP=Math.PI*2/N, APO=R+.1, RW=APO/Math.cos(Math.PI/10), SRGB=THREE.sRGBEncoding;
+const rd=new THREE.WebGLRenderer({antialias:true});
+rd.setPixelRatio(Math.min(devicePixelRatio,1.75)); rd.setSize(innerWidth,innerHeight);
+rd.outputEncoding=SRGB; rd.toneMapping=THREE.ACESFilmicToneMapping; rd.toneMappingExposure=1.1;
+document.body.prepend(rd.domElement);
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x0a0e1a); scene.fog=new THREE.Fog(0x0a0e1a,14,32);
+const cam=new THREE.PerspectiveCamera(70,innerWidth/innerHeight,.1,60); cam.rotation.order='YXZ';
+const aniso=rd.capabilities.getMaxAnisotropy();
+function cv(w,h,fn,rep){const c=document.createElement('canvas');c.width=w;c.height=h;fn(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=SRGB;t.anisotropy=aniso;if(rep){t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep[0],rep[1])}return t}
+
+// Môi trường phản chiếu (để vàng, kính và sàn trông thật)
+const pm=new THREE.PMREMGenerator(rd), es=new THREE.Scene();
+es.add(new THREE.Mesh(new THREE.SphereGeometry(20,24,16),new THREE.MeshBasicMaterial({side:THREE.BackSide,map:cv(2,256,(g,w,h)=>{const r=g.createLinearGradient(0,0,0,h);r.addColorStop(0,'#fff0d0');r.addColorStop(.5,'#6b5a48');r.addColorStop(1,'#15110d');g.fillStyle=r;g.fillRect(0,0,w,h)})})));
+[[0,9,0,-Math.PI/2,0],[12,4,0,0,-Math.PI/2],[-12,4,0,0,Math.PI/2],[0,4,12,0,Math.PI]].forEach(p=>{const b=new THREE.Mesh(new THREE.PlaneGeometry(7,5),new THREE.MeshBasicMaterial({color:new THREE.Color(7,6,4.5),side:THREE.DoubleSide}));b.position.set(p[0],p[1],p[2]);b.rotation.set(p[3],p[4],0);es.add(b)});
+scene.environment=pm.fromScene(es,.04).texture;
+
+// ================= PHÒNG TRIỂN LÃM (đa giác 10 cạnh) =================
+scene.add(new THREE.HemisphereLight(0xfff0d8,0x2a1d14,.35));
+const pl=new THREE.PointLight(0xffe0b0,.8,24,1.6); pl.position.set(0,5.2,0); scene.add(pl);
+
+const wallTex=cv(512,512,(g,w,h)=>{g.fillStyle='#1d2b3d';g.fillRect(0,0,w,h);for(let i=0;i<5000;i++){g.fillStyle=`rgba(${Math.random()>.5?255:0},${Math.random()>.5?255:0},255,${Math.random()*.035})`;g.fillRect(Math.random()*w,Math.random()*h,2+Math.random()*3,2+Math.random()*3)}},[10,2]);
+const shell=(ap,h,y,mat)=>{const r=ap/Math.cos(Math.PI/10),m=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,10,1,true),mat);m.rotation.y=Math.PI/10;m.position.y=y;scene.add(m)};
+const trim=new THREE.MeshStandardMaterial({color:0xd8ccb2,roughness:.55,side:THREE.BackSide});
+shell(APO,6,3,new THREE.MeshStandardMaterial({map:wallTex,roughness:.9,side:THREE.BackSide,envMapIntensity:.25}));
+shell(R+.04,.45,.225,trim); shell(R+.06,.3,5.85,trim); shell(R+.05,.06,.5,new THREE.MeshStandardMaterial({color:0xc9a24a,metalness:1,roughness:.3,side:THREE.BackSide}));
+
+const floorTex=cv(1024,1024,(g,w,h)=>{for(let x=0;x<w;x+=128){let y=-Math.random()*300;while(y<h){const l=200+Math.random()*320,L=17+Math.random()*9;g.fillStyle=`hsl(${24+Math.random()*8},38%,${L}%)`;g.fillRect(x,y,126,l-2);for(let k=0;k<26;k++){g.strokeStyle=`rgba(0,0,0,${Math.random()*.1})`;g.beginPath();const gx=x+Math.random()*126;g.moveTo(gx,y);g.lineTo(gx+(Math.random()-.5)*6,y+l);g.stroke()}y+=l}}},[5,5]);
+const floor=new THREE.Mesh(new THREE.CircleGeometry(RW,10),new THREE.MeshStandardMaterial({map:floorTex,roughness:.3,metalness:.05,envMapIntensity:.7}));
+floor.rotation.x=-Math.PI/2; scene.add(floor);
+const med=new THREE.Mesh(new THREE.CircleGeometry(2.7,64),new THREE.MeshStandardMaterial({transparent:true,roughness:.6,map:cv(512,512,(g,w)=>{g.translate(256,256);g.fillStyle='#5e1622';g.beginPath();g.arc(0,0,250,0,7);g.fill();g.strokeStyle='#e8c675';g.lineWidth=5;[236,216].forEach(r=>{g.beginPath();g.arc(0,0,r,0,7);g.stroke()});g.fillStyle='#e8c675';g.textAlign='center';g.font='600 96px Georgia,serif';g.fillText('13 · 10',0,10);g.font='italic 24px Georgia,serif';g.fillText('Ngày Doanh nhân Việt Nam',0,60)})}));
+med.rotation.x=-Math.PI/2; med.position.y=.012; scene.add(med);
+
+const ceil=new THREE.Mesh(new THREE.CircleGeometry(RW,10),new THREE.MeshStandardMaterial({color:0x151c33,roughness:.9}));
+ceil.rotation.x=Math.PI/2; ceil.position.y=6; scene.add(ceil);
+const glow=new THREE.Mesh(new THREE.CircleGeometry(2.3,48),new THREE.MeshBasicMaterial({color:0xffe6b8})); glow.rotation.x=Math.PI/2; glow.position.y=5.98; scene.add(glow);
+const gr=new THREE.Mesh(new THREE.TorusGeometry(2.3,.07,10,64),new THREE.MeshStandardMaterial({color:0xc9a24a,metalness:1,roughness:.25})); gr.rotation.x=Math.PI/2; gr.position.y=5.95; scene.add(gr);
+
+const pg=new THREE.BufferGeometry(),pp=[];
+for(let i=0;i<180;i++){const a=Math.random()*6.28,r=Math.random()*R*.95;pp.push(Math.sin(a)*r,Math.random()*5.6,-Math.cos(a)*r)}
+pg.setAttribute('position',new THREE.Float32BufferAttribute(pp,3));
+const dust=new THREE.Points(pg,new THREE.PointsMaterial({color:0xffd98a,size:.035,transparent:true,opacity:.55,depthWrite:false})); scene.add(dust);
+
+// ================= KHUNG TRANH =================
+const PW=2.2, PH=2.9, gold=new THREE.MeshStandardMaterial({color:0xc9a24a,metalness:1,roughness:.28,envMapIntensity:1.2});
+const pics=[];
+function placeholder(i){return cv(440,580,(g,w,h)=>{const gr=g.createLinearGradient(0,0,w,h),H=(i*34+210)%360;gr.addColorStop(0,`hsl(${H},35%,26%)`);gr.addColorStop(1,`hsl(${H+30},40%,10%)`);g.fillStyle=gr;g.fillRect(0,0,w,h);g.strokeStyle='rgba(232,198,117,.45)';g.lineWidth=2;g.strokeRect(22,22,w-44,h-44);g.fillStyle='#e8c675';g.textAlign='center';g.font='600 130px Georgia,serif';g.fillText(String(i+1).padStart(2,'0'),w/2,h/2+30)})}
+for(let i=0;i<N;i++){
+  const a=i*STEP, g=new THREE.Group(); g.position.set(Math.sin(a)*R,2.3,-Math.cos(a)*R); g.rotation.y=-a;
+  const add=(geo,mat,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);g.add(m);return m};
+  add(new THREE.BoxGeometry(2.9,3.6,.12),gold,0,0,0);
+  add(new THREE.BoxGeometry(2.72,3.42,.14),new THREE.MeshStandardMaterial({color:0x8a6a2a,metalness:.9,roughness:.4}),0,0,.01);
+  add(new THREE.PlaneGeometry(2.58,3.28),new THREE.MeshStandardMaterial({color:0xf1ebdd,roughness:.95}),0,0,.085);
+  const pic=add(new THREE.PlaneGeometry(PW,PH),new THREE.MeshBasicMaterial({map:placeholder(i),toneMapped:false}),0,0,.09); pic.userData.i=i; pics.push(pic);
+  add(new THREE.PlaneGeometry(2.58,3.28),new THREE.MeshStandardMaterial({color:0xffffff,transparent:true,opacity:.06,roughness:.02,metalness:.9,envMapIntensity:1.6,depthWrite:false}),0,0,.1);
+  add(new THREE.BoxGeometry(1.2,.07,.07),gold,0,2.0,.34); add(new THREE.BoxGeometry(.04,.04,.28),gold,0,1.9,.2);
+  add(new THREE.BoxGeometry(1.15,.26,.03),new THREE.MeshStandardMaterial({roughness:.4,metalness:.5,map:cv(256,58,(c,w,h)=>{c.fillStyle='#2a2116';c.fillRect(0,0,w,h);c.strokeStyle='#c9a24a';c.strokeRect(3,3,w-6,h-6);c.fillStyle='#e8c675';c.textAlign='center';c.font='italic 22px Georgia,serif';c.fillText(String(i+1).padStart(2,'0')+' · '+TITLES[i],w/2,37)})}),0,-2.15,.04);
+  const sp=new THREE.SpotLight(0xffe6c0,1.7,9,.62,.75,1.4); sp.position.set(0,1.98,.4); sp.target=pic; g.add(sp);
+  scene.add(g);
+}
+function loadPhoto(i,url){
+  if(!url)return; const im=new Image(); im.crossOrigin='anonymous';
+  im.onload=()=>{const t=new THREE.Texture(im);t.encoding=SRGB;t.anisotropy=aniso;t.needsUpdate=true;const k=Math.min(PW/im.width,PH/im.height);pics[i].material.map=t;pics[i].material.needsUpdate=true;pics[i].scale.set(im.width*k/PW,im.height*k/PH,1)};
+  im.src=url;
+}
+IMAGES.forEach((u,i)=>loadPhoto(i,u));
+
+// ================= ĐIỀU KHIỂN =================
+let yaw=0,pitch=0,vy=0,fov=70,tFov=70,tYaw=null,idx=-1,fa=0,d=0,tD=0,down=false,moved=0,started=false,idleT=0;
+const cap=document.getElementById('cap');
+function goTo(i){
+  idx=(i+N)%N; fa=idx*STEP; let t=-fa; while(t-yaw>Math.PI)t-=2*Math.PI; while(t-yaw<-Math.PI)t+=2*Math.PI;
+  tYaw=t; tFov=52; tD=4.2; vy=0; pitch*=.3;
+  clearTimeout(ft); finale(false); if(idx===N-1)ft=setTimeout(()=>finale(true),2000);
+  cap.innerHTML=`<b>${String(idx+1).padStart(2,'0')} · ${TITLES[idx]}</b><span>${WISHES[idx]}</span>`; cap.classList.add('on');
+}
+function release(){tYaw=null;tFov=70;tD=0;cap.classList.remove('on');clearTimeout(ft);finale(false)}
+const el=rd.domElement, ptrs=new Map(); let pinch=0;
+el.addEventListener('pointerdown',e=>{el.setPointerCapture(e.pointerId);ptrs.set(e.pointerId,e);down=true;moved=0;vy=0;el.style.cursor='grabbing'});
+el.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId))return;
+  const p=ptrs.get(e.pointerId),dx=e.clientX-p.clientX,dy=e.clientY-p.clientY; ptrs.set(e.pointerId,e);
+  if(ptrs.size==2){const [a,b]=[...ptrs.values()],dd=Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY);if(pinch){tFov=Math.max(32,Math.min(90,tFov-(dd-pinch)*.12))}pinch=dd;return}
+  moved+=Math.abs(dx)+Math.abs(dy); if(moved>4&&tYaw!==null)release();
+  const s=fov/70*.0045; vy=-dx*s; yaw+=vy; pitch=Math.max(-.9,Math.min(.8,pitch-dy*s));
+});
+el.addEventListener('pointerup',e=>{
+  ptrs.delete(e.pointerId);pinch=0;down=false;el.style.cursor='grab';idleT=performance.now();
+  if(moved<5){const rc=new THREE.Raycaster();rc.setFromCamera(new THREE.Vector2(e.clientX/innerWidth*2-1,-(e.clientY/innerHeight)*2+1),cam);const h=rc.intersectObjects(pics)[0];if(h)goTo(h.object.userData.i)}
+});
+el.addEventListener('wheel',e=>{e.preventDefault();tFov=Math.max(32,Math.min(90,tFov+e.deltaY*.04))},{passive:false});
+document.getElementById('next').onclick=()=>goTo(idx<0?0:idx+1);
+document.getElementById('prev').onclick=()=>goTo(idx<0?N-1:idx-1);
+addEventListener('keydown',e=>{if(e.key==='ArrowRight')goTo(idx+1);if(e.key==='ArrowLeft')goTo(idx-1);if(e.key==='Escape')release()});
+addEventListener('resize',()=>{cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix();rd.setSize(innerWidth,innerHeight)});
+
+function loop(t){
+  requestAnimationFrame(loop);
+  if(tYaw!==null)yaw+=(tYaw-yaw)*.05;
+  else if(!down){yaw+=vy;vy*=.93; if(started&&t-idleT>5000&&Math.abs(vy)<.0005&&tD===0)yaw-=.0011}
+  d+=(tD-d)*.04; fov+=(tFov-fov)*.07; cam.fov=fov; cam.updateProjectionMatrix();
+  cam.position.set(Math.sin(fa)*d,1.7+Math.sin(t*.0012)*.012,-Math.cos(fa)*d);
+  cam.rotation.set(pitch,yaw,0); dust.rotation.y=t*.00003; rd.render(scene,cam);
+}
+requestAnimationFrame(loop);
+
+// ================= PHÁO HOA + BANNER (khung 10) =================
+const fc=document.getElementById('fw'),fx=fc.getContext('2d');let fp=[],fwOn=false,fwRun=false,ft,nextL=0;
+function fwSize(){fc.width=innerWidth;fc.height=innerHeight}fwSize();addEventListener('resize',fwSize);
+function burst(x,y){const h=Math.random()*360,n=70+Math.random()*40;for(let i=0;i<n;i++){const a=Math.random()*6.283,s=Math.random()*5+1.5;fp.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,l:1,c:`hsl(${h+Math.random()*40},100%,${60+Math.random()*15}%)`})}}
+function fwLoop(t){
+  if(!fwOn&&!fp.length){fwRun=false;fx.clearRect(0,0,fc.width,fc.height);return}
+  requestAnimationFrame(fwLoop);
+  if(fwOn&&t>nextL){burst(fc.width*(.15+Math.random()*.7),fc.height*(.12+Math.random()*.4));nextL=t+350+Math.random()*450}
+  fx.globalCompositeOperation='destination-out';fx.fillStyle='rgba(0,0,0,.2)';fx.fillRect(0,0,fc.width,fc.height);
+  fx.globalCompositeOperation='lighter';
+  fp=fp.filter(p=>p.l>0);
+  fp.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vx*=.985;p.vy=p.vy*.985+.06;p.l-=.011;fx.globalAlpha=Math.max(p.l,0);fx.fillStyle=p.c;fx.beginPath();fx.arc(p.x,p.y,2.2,0,6.283);fx.fill()});
+  fx.globalAlpha=1;
+}
+function finale(on){fwOn=on;cap.classList.toggle('banner',on);if(on&&!fwRun){fwRun=true;nextL=0;requestAnimationFrame(fwLoop)}}
+
+// ================= ÂM NHẠC (tạo trực tiếp, êm dịu) =================
+let ac,master,on=true;
+const SC=[261.63,293.66,329.63,392,440,523.25,587.33,659.25,783.99];
+function note(f,t,du,v,ty){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.03);g.gain.exponentialRampToValueAtTime(.0001,t+du);o.connect(g);g.connect(master);o.start(t);o.stop(t+du+.1)}
+function startMusic(){
+  ac=new (window.AudioContext||window.webkitAudioContext)();
+  master=ac.createBiquadFilter(); master.type='lowpass'; master.frequency.value=2200;
+  const dl=ac.createDelay(1),fb=ac.createGain(); dl.delayTime.value=.44; fb.gain.value=.4; dl.connect(fb); fb.connect(dl);
+  master.connect(ac.destination); master.connect(dl); dl.connect(ac.destination);
+  const ch=[[0,2,4],[3,5,7],[4,6,8],[0,2,5]]; let s=0;
+  setInterval(()=>{if(!on)return;const t=ac.currentTime+.05,c=ch[Math.floor(s/8)%4];
+    if(s%8===0)c.forEach(k=>note(SC[k]/2,t,3.6,.08,'sine'));
+    note(SC[Math.min(8,c[s%3]+(s%2?2:0))],t,1.5,.1,'triangle'); s++},440);
+}
+const mus=document.getElementById('mus');
+mus.onclick=()=>{on=!on;mus.textContent='♪ Nhạc: '+(on?'bật':'tắt');if(ac){on?ac.resume():ac.suspend()}};
+document.getElementById('enter').onclick=()=>{
+  try{startMusic()}catch(e){}
+  const i=document.getElementById('intro'); i.style.opacity=0; setTimeout(()=>i.remove(),1200);
+  started=true; idleT=performance.now(); setTimeout(()=>goTo(0),1400);
+  setTimeout(()=>document.getElementById('hint').style.opacity=0,9000);
+};
+</script>
+</body>
+</html>

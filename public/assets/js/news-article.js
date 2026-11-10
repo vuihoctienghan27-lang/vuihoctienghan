@@ -116,11 +116,16 @@
 
     // ── Sentence splitter for Korean ──────────────────────────────────
     function splitKrSentences(text) {
+        text = String(text || '');
+        // Bảo vệ dấu chấm thập phân (vd: 0.27%) để không bị nhận nhầm là cuối câu
+        var PH = '\uE000';
+        var protectedText = text.replace(/(\d)\.(?=\d)/g, '$1' + PH);
         var sentences = [];
-        var regex = /([^.!?\n]+[.!?]+)/g;
+        var regex = /([^.!?\n]+[.!?]*)/g;
         var match;
-        while ((match = regex.exec(text)) !== null) {
-            sentences.push(match[1].trim());
+        while ((match = regex.exec(protectedText)) !== null) {
+            var s = match[1].split(PH).join('.').trim();
+            if (s) sentences.push(s);
         }
         if (sentences.length === 0 && text.trim()) {
             sentences = text.split('\n').filter(function(l) { return l.trim(); }).map(function(l) { return l.trim(); });
@@ -185,10 +190,10 @@
                 } catch(e) {}
                 if (!translated) {
                     try {
-                        var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=vi&dt=t&q=' + encodeURIComponent(text);
+                        var url = 'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=ko&tl=vi&q=' + encodeURIComponent(text);
                         var resp = await fetch(url);
                         var data = await resp.json();
-                        translated = (data[0] || []).map(function(s) { return s[0]; }).join('') || '';
+                        translated = Array.isArray(data) ? data.map(function(seg){ return Array.isArray(seg) ? (seg[0]||'') : (typeof seg==='string'?seg:''); }).join('') : (typeof data === 'string' ? data : '');
                     } catch(e2) {}
                 }
                 translations[idx] = translated || '';
@@ -232,10 +237,10 @@
                 } catch (e) { /* ignore */ }
                 if (!translated) {
                     try {
-                        var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=vi&dt=t&q=' + encodeURIComponent(text);
+                        var url = 'https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=ko&tl=vi&q=' + encodeURIComponent(text);
                         var resp = await fetch(url);
                         var data = await resp.json();
-                        translated = (data[0] || []).map(function(s) { return s[0]; }).join('') || '';
+                        translated = Array.isArray(data) ? data.map(function(seg){ return Array.isArray(seg) ? (seg[0]||'') : (typeof seg==='string'?seg:''); }).join('') : (typeof data === 'string' ? data : '');
                     } catch (e2) { /* ignore */ }
                 }
                 translations[idx] = translated || '';
@@ -429,9 +434,9 @@
         async function translateKoVi(text) {
             if (!text) return '';
             try {
-                var resp = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=vi&dt=t&q=' + encodeURIComponent(text));
+                var resp = await fetch('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=ko&tl=vi&q=' + encodeURIComponent(text));
                 var data = await resp.json();
-                return (data[0] || []).map(function(s) { return s[0]; }).join('') || '';
+                return Array.isArray(data) ? data.map(function(seg){ return Array.isArray(seg) ? (seg[0]||'') : (typeof seg==='string'?seg:''); }).join('') : (typeof data === 'string' ? data : '');
             } catch(_) { return ''; }
         }
 
@@ -733,7 +738,7 @@
             grammarHtml = '<div class="na-grammar-list" id="naGrammarList">';
             blocks.forEach(function(block, idx) {
                 var pipeIdx = block.indexOf('|');
-                var isFirst = (idx === 0) ? ' open' : '';
+                var isFirst = '';
                 if (pipeIdx !== -1) {
                     var gmBody = block.substring(pipeIdx + 1).trim();
                     var bodyHtml;
@@ -760,7 +765,19 @@
             list.querySelectorAll('.gm-title').forEach(function(title) {
                 title.addEventListener('click', function() {
                     var card = title.parentElement;
-                    card.classList.toggle('open');
+                    var body = card.querySelector('.gm-body');
+                    if (!body) { card.classList.toggle('open'); return; }
+                    if (card.classList.contains('open')) {
+                        // Đóng: đặt chiều cao hiện tại rồi thu về 0 (để có animation)
+                        body.style.maxHeight = body.scrollHeight + 'px';
+                        void body.offsetHeight;
+                        card.classList.remove('open');
+                        body.style.maxHeight = '';
+                    } else {
+                        // Mở: giới hạn đúng bằng chiều cao nội dung → không cắt nội dung dài
+                        card.classList.add('open');
+                        body.style.maxHeight = body.scrollHeight + 'px';
+                    }
                 });
             });
         }
@@ -1161,15 +1178,10 @@
             });
         }).catch(function() {});
     }
-    // ── Full study engine (flashcard + match + type + dictation + speaking) ──
-    var naGameList = [], naFcIdx = 0, naFcFront = true, naFcAuto = false, naFcMuted = false, naFcTimer1 = null, naFcTimer2 = null;
-    var naMatchFirst = null, naMatchScore = 0, naMatchPairs = 0;
-    var naTypeMode = 'kr2vn', naTypeIdx = 0;
-    var naDictIdx = 0;
-    var naSpeakIdx = 0, naSpeakRec = null;
+    // ── Shared vocab game engine bridge ──────────────────────────
+    // Engine thật nằm ở assets/js/vocab-game.js (dùng chung với Sổ từ vựng).
+    var naGameList = [];
     var _naVocabDataCache = null; // cached vocab list for cross-tab game access
-
-    function naSpeak(text) { if (!naFcMuted && 'speechSynthesis' in window) { speechSynthesis.cancel(); var u = new SpeechSynthesisUtterance(text); u.lang = 'ko-KR'; u.rate = 0.85; speechSynthesis.speak(u); } }
 
     // ── Shared: build game list from DOM ─────────────────────────
     function naBuildGameList() {
@@ -1201,274 +1213,26 @@
         return [];
     }
 
-    // ── FAB toggle + open study ──────────────────────────────────
+    // ── FAB toggle + open shared study ───────────────────────────
     window.naToggleFab = function() {
         document.getElementById('naFabContainer').classList.toggle('open');
     };
     window.naOpenStudy = function(mode) {
         document.getElementById('naFabContainer').classList.remove('open');
-        if (naGameList.length === 0) naGameList = naBuildGameList();
-        if (naGameList.length === 0) return;
-        document.getElementById('naFcOverlay').style.display = 'flex';
-        window._naGameMode = mode;
-        document.getElementById('naFcBox').classList.remove('large');
-        ['naFcFlashcard','naFcMatch','naFcType','naFcDictation','naFcSpeaking'].forEach(function(id) {
-            var el = document.getElementById(id);
-            if (el) { el.style.display = (id === 'naFc' + mode.charAt(0).toUpperCase() + mode.slice(1)) ? (mode === 'match' ? 'flex' : 'block') : 'none'; }
-        });
-        if (mode === 'match') document.getElementById('naFcBox').classList.add('large');
-        if (mode === 'flashcard') { /* keep naFcIdx as-is */ naFcDraw(); }
-        else if (mode === 'match') { naFcIdx = 0; naInitMatch(); }
-        else {
-            naFcIdx = 0;
-            if (mode === 'type') { var btns = document.querySelectorAll('#naFcType .na-fc-mode-btn'); Array.from(btns).forEach(function(b){b.style.background='';b.style.color='';}); btns[0].style.background='#1f2937'; btns[0].style.color='#fff'; naSetupType('kr2vn', btns[0]); }
-            else if (mode === 'dictation') naInitDictation();
-            else if (mode === 'speaking') naInitSpeaking();
-        }
+        var list = naBuildGameList();
+        if (!list || list.length === 0) return;
+        if (typeof startStudy === 'function') startStudy(mode, list);
     };
 
-    // ── Flashcard ──────────────────────────────────────────────────
-    function naFcDraw() {
-        naFcFront = true; naFcAuto = false; clearTimeout(naFcTimer1); clearTimeout(naFcTimer2);
-        document.getElementById('naBtnPlay').style.color = '';
-        var w = naGameList[naFcIdx];
-        document.getElementById('naFcCard').classList.remove('flipped');
-        document.getElementById('naFcCount').innerText = (naFcIdx + 1) + '/' + naGameList.length;
-        var el = document.getElementById('naFcTxt');
-        el.innerHTML = ''; el.innerText = w.word; el.style.cssText = '';
-        document.getElementById('naFcHint').style.display = '';
-        document.getElementById('naFcHint').innerText = naFcIdx === 0 ? 'Chạm hoặc Space để lật' : '';
-        naSpeak(w.word);
-    }
-    window.naFcFlip = function() {
-        naFcFront = !naFcFront;
-        document.getElementById('naFcCard').classList.toggle('flipped');
-        var w = naGameList[naFcIdx], el = document.getElementById('naFcTxt');
-        if (naFcFront) {
-            el.innerHTML = ''; el.innerText = w.word; el.style.cssText = '';
-            document.getElementById('naFcHint').style.display = '';
-            naSpeak(w.word);
-        } else {
-            document.getElementById('naFcHint').style.display = 'none';
-            el.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 16px;width:100%;height:100%;backface-visibility:hidden;';
-            el.style.setProperty('font-weight', '400', 'important');
-            var h = '<div style="font-size:24px;font-weight:400;color:#1e40af;margin-bottom:6px;">' + escapeHtml(w.meaning) + '</div>';
-            if (w.definition) h += '<div style="font-size:15px;font-weight:400;color:#64748b;line-height:1.5;margin-bottom:8px;text-align:center;max-width:320px;">' + escapeHtml(w.definition) + '</div>';
-            if (w.ex_kr) { h += '<div style="font-size:16px;font-weight:400;color:#374151;line-height:1.6;margin-bottom:4px;text-align:center;">' + escapeHtml(w.ex_kr) + '</div>';
-                h += '<div style="font-size:15px;font-weight:400;color:#6b7280;font-style:italic;line-height:1.5;">→ ' + escapeHtml(w.ex_vn || '') + '</div>'; }
-            el.innerHTML = h;
-        }
-    };
-    window.naFcMove = function(step) { naFcIdx = (naFcIdx + step + naGameList.length) % naGameList.length; naFcDraw(); };
-    window.naFcShuffle = function() { naGameList.sort(function() { return Math.random() - 0.5; }); naFcIdx = 0; naFcDraw(); };
-    window.naFcTogglePlay = function() {
-        naFcAuto = !naFcAuto;
-        document.getElementById('naBtnPlay').style.color = naFcAuto ? '#3b82f6' : '';
-        if (naFcAuto) { (function loop() { if (!naFcAuto) return; naFcTimer1 = setTimeout(function() { window.naFcFlip(); naFcTimer2 = setTimeout(function() { window.naFcMove(1); loop(); }, 2000); }, 2000); })(); }
-        else { clearTimeout(naFcTimer1); clearTimeout(naFcTimer2); }
-    };
-    window.naFcToggleAudio = function() { naFcMuted = !naFcMuted; document.getElementById('naBtnAudio').style.color = naFcMuted ? '#ef4444' : ''; };
-
-    // ── Match ──────────────────────────────────────────────────────
-    function naInitMatch() {
-        if (naGameList.length < 2) { Swal.fire('Lỗi','Cần ít nhất 2 từ để chơi!','error'); return; }
-        naMatchScore = 0; naMatchFirst = null; naMatchPairs = naGameList.length;
-        document.getElementById('naFcResult').style.display = 'none';
-        var grid = document.getElementById('naFcMatchGrid'); grid.innerHTML = '';
-        var arr = [];
-        naGameList.forEach(function(w) { arr.push({ i: w.word, t: 'kr', tx: w.word }); arr.push({ i: w.word, t: 'vn', tx: w.meaning }); });
-        arr.sort(function() { return Math.random() - 0.5; });
-        arr.forEach(function(c) {
-            var d = document.createElement('div'); d.className = 'mc' + (c.t === 'kr' ? ' kr' : ' vn');
-            d.innerText = c.tx;
-            d.onclick = function() {
-                if (d.classList.contains('sel') || d.classList.contains('done')) return;
-                d.classList.add('sel');
-                if (c.t === 'kr') naSpeak(c.tx);
-                if (!naMatchFirst) { naMatchFirst = { el: d, id: c.i, t: c.t }; }
-                else {
-                    var e1 = naMatchFirst.el, e2 = d;
-                    if (naMatchFirst.id === c.i && naMatchFirst.t !== c.t) {
-                        naMatchScore++;
-                        naSpeak(c.t === 'kr' ? c.tx : e1.innerText);
-                        naMatchFirst = null;
-                        setTimeout(function() { e1.classList.add('done'); e2.classList.add('done'); naMatchPairs--; if (!naMatchPairs) naShowWin(); }, 300);
-                    } else {
-                        e1.classList.remove('sel'); e2.classList.remove('sel');
-                        e1.classList.add('err'); e2.classList.add('err');
-                        naMatchFirst = null;
-                        setTimeout(function() { e1.classList.remove('err'); e2.classList.remove('err'); }, 600);
-                    }
-                }
-            };
-            grid.appendChild(d);
-        });
-    }
-
-    // ── Type ───────────────────────────────────────────────────────
-    window.naSetupType = function(mode, btn) {
-        naTypeMode = mode; naTypeIdx = 0;
-        var parent = btn.parentElement;
-        Array.from(parent.children).forEach(function(b) { b.style.background = ''; b.style.color = ''; });
-        btn.style.background = '#1f2937'; btn.style.color = '#fff';
-        naNextType();
-    };
-    function naNextType() {
-        if (naTypeIdx >= naGameList.length) { naShowWin(); return; }
-        var w = naGameList[naTypeIdx];
-        var isKr = naTypeMode === 'kr2vn' ? true : (naTypeMode === 'vn2kr' ? false : Math.random() > 0.5);
-        document.getElementById('naTypeCount').innerText = (naTypeIdx + 1) + '/' + naGameList.length;
-        document.getElementById('naTypeWord').innerText = isKr ? w.word : w.meaning;
-        document.getElementById('naTypeWord').dataset.iskr = isKr;
-        document.getElementById('naTypeInput').value = ''; document.getElementById('naTypeInput').focus();
-        document.getElementById('naTypeRes').innerText = '';
-        if (isKr) naSpeak(w.word);
-    }
-    function naRemoveTones(s) {
-        s = s.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a").replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e").replace(/ì|í|ị|ỉ|ĩ/g,"i").replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o").replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u").replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y").replace(/đ/g,"d");
-        return s;
-    }
-    window.naCheckType = function() {
-        var inp = document.getElementById('naTypeInput').value.trim().toLowerCase();
-        if (!inp) return;
-        var w = naGameList[naTypeIdx];
-        var isKr = document.getElementById('naTypeWord').dataset.iskr === 'true';
-        var ans = isKr ? w.meaning.toLowerCase() : w.word.toLowerCase();
-        var res = document.getElementById('naTypeRes');
-        if (naRemoveTones(inp) === naRemoveTones(ans)) {
-            res.innerText = '✅ Chính xác!'; res.style.color = '#10b981';
-            if (!isKr) naSpeak(w.word);
-            setTimeout(function() { naTypeIdx++; naNextType(); }, 1000);
-        } else {
-            res.innerText = '❌ Sai. Đáp án: ' + (isKr ? w.meaning : w.word); res.style.color = '#ef4444';
-            document.getElementById('naTypeInput').value = '';
-        }
-    };
-
-    // ── Dictation ──────────────────────────────────────────────────
-    function naInitDictation() {
-        naDictIdx = 0;
-        naGameList.sort(function() { return Math.random() - 0.5; });
-        naNextDict();
-    }
-    function naNextDict() {
-        if (naDictIdx >= naGameList.length) { naShowWin(); return; }
-        document.getElementById('naDictCount').innerText = (naDictIdx + 1) + '/' + naGameList.length;
-        document.getElementById('naDictInput').value = '';
-        document.getElementById('naDictRes').innerText = '';
-        document.getElementById('naDictHint').innerText = '';
-        setTimeout(function() { naPlayDictAudio(); }, 300);
-    }
-    window.naPlayDictAudio = function() { naSpeak(naGameList[naDictIdx].word); };
-    window.naShowDictHint = function() { document.getElementById('naDictHint').innerText = naGameList[naDictIdx].meaning; };
-    window.naCheckDict = function() {
-        var inp = document.getElementById('naDictInput').value.trim().toLowerCase();
-        if (!inp) return;
-        var ans = naGameList[naDictIdx].word.toLowerCase();
-        var res = document.getElementById('naDictRes');
-        if (inp === ans) {
-            res.innerText = '✅ Chính xác!'; res.style.color = '#10b981';
-            setTimeout(function() { naDictIdx++; naNextDict(); }, 1000);
-        } else {
-            res.innerText = '❌ Sai. Đáp án: ' + naGameList[naDictIdx].word; res.style.color = '#ef4444';
-            document.getElementById('naDictInput').value = '';
-        }
-    };
-
-    // ── Speaking ───────────────────────────────────────────────────
-    function naInitSpeaking() {
-        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-            Swal.fire('Không hỗ trợ','Trình duyệt không hỗ trợ nhận diện giọng nói.','error'); return;
-        }
-        naSpeakIdx = 0;
-        naGameList.sort(function() { return Math.random() - 0.5; });
-        var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-        naSpeakRec = new SR();
-        naSpeakRec.lang = 'ko-KR'; naSpeakRec.continuous = false; naSpeakRec.interimResults = false;
-        naSpeakRec.onstart = function() { document.getElementById('naFcMicBtn').style.transform = 'scale(1.1)'; document.getElementById('naFcMicBtn').style.background = '#fee2e2'; };
-        naSpeakRec.onresult = function(event) {
-            var transcript = event.results[0][0].transcript.trim();
-            naEvalSpeak(transcript);
-            document.getElementById('naFcMicBtn').style.transform = ''; document.getElementById('naFcMicBtn').style.background = '';
-        };
-        naSpeakRec.onerror = function() {
-            document.getElementById('naSpeakScore').innerText = 'Không nghe rõ. Thử lại!';
-            document.getElementById('naSpeakScore').style.color = '#ef4444';
-            document.getElementById('naFcMicBtn').style.transform = ''; document.getElementById('naFcMicBtn').style.background = '';
-        };
-        naSpeakRec.onend = function() { document.getElementById('naFcMicBtn').style.transform = ''; document.getElementById('naFcMicBtn').style.background = ''; };
-        naNextSpeak();
-    }
-    function naNextSpeak() {
-        if (naSpeakIdx >= naGameList.length) { naShowWin(); return; }
-        document.getElementById('naSpeakCount').innerText = (naSpeakIdx + 1) + '/' + naGameList.length;
-        document.getElementById('naSpeakWord').innerText = naGameList[naSpeakIdx].word;
-        document.getElementById('naSpeakMeaning').innerText = naGameList[naSpeakIdx].meaning;
-        document.getElementById('naSpeakTranscript').innerHTML = '';
-        document.getElementById('naSpeakScore').innerText = '';
-    }
-    window.naSkipSpeak = function() { naSpeakIdx++; naNextSpeak(); };
-    window.naToggleMic = function() {
-        if (naSpeakRec) { try { naSpeakRec.start(); } catch(e) { naSpeakRec.stop(); } }
-    };
-    function naEvalSpeak(transcript) {
-        var target = naGameList[naSpeakIdx].word;
-        var tChars = target.replace(/\s+/g,'').split('');
-        var rChars = transcript.replace(/\s+/g,'').split('');
-        var html = '', correct = 0;
-        for (var i = 0; i < tChars.length; i++) {
-            var expected = tChars[i], actual = rChars[i] || '';
-            var color = '#ef4444';
-            if (expected === actual) { color = '#10b981'; correct++; }
-            else if (expected.charCodeAt(0) >= 44032 && expected.charCodeAt(0) <= 55203 && actual.charCodeAt(0) >= 44032 && actual.charCodeAt(0) <= 55203) {
-                if (Math.floor((expected.charCodeAt(0)-44032)/28) === Math.floor((actual.charCodeAt(0)-44032)/28)) { color = '#3b82f6'; correct += 0.5; }
-            }
-            html += '<span style="color:' + color + ';margin:0 1px;">' + escapeHtml(actual || expected) + '</span>';
-        }
-        document.getElementById('naSpeakTranscript').innerHTML = html + '<span style="width:100%;text-align:center;font-size:0.5em;color:#64748b;font-weight:normal;margin-top:8px;">(Bạn đọc: ' + escapeHtml(transcript) + ')</span>';
-        var score = Math.round((correct / tChars.length) * 100);
-        var scoreEl = document.getElementById('naSpeakScore');
-        scoreEl.innerText = 'Điểm: ' + score + '/100';
-        if (score >= 80) { scoreEl.style.color = '#10b981'; setTimeout(function() { naSpeakIdx++; naNextSpeak(); }, 2000); }
-        else { scoreEl.style.color = '#ef4444'; scoreEl.innerText += ' - Thử lại!'; }
-    }
-
-    // ── Result ─────────────────────────────────────────────────────
-    function naShowWin() {
-        document.getElementById('naFcResult').style.display = 'flex';
-    }
-
-    // ── Close ──────────────────────────────────────────────────────
-    window.naCloseStudy = function() {
-        document.getElementById('naFcOverlay').style.display = 'none';
-        document.getElementById('naFcResult').style.display = 'none';
-        clearTimeout(naFcTimer1); clearTimeout(naFcTimer2); naFcAuto = false;
-        document.getElementById('naBtnPlay').style.color = '';
-        if (naSpeakRec) { try { naSpeakRec.stop(); } catch(e) {} }
-    };
-
-    // ── Open from vocab card ───────────────────────────────────────
+    // ── Open shared flashcard from a vocab card click ────────────
     window.naOpenFlashcard = function(cardEl) {
-        naGameList = naBuildGameList();
-        if (naGameList.length === 0) return;
+        var list = naBuildGameList();
+        if (!list || list.length === 0) return;
         var cards = document.getElementById('naContent').querySelectorAll('.na-vocab-card');
-        naFcIdx = 0;
-        for (var i = 0; i < cards.length; i++) { if (cards[i] === cardEl) { naFcIdx = i; break; } }
-        naOpenStudy('flashcard');
+        var idx = 0;
+        for (var i = 0; i < cards.length; i++) { if (cards[i] === cardEl) { idx = i; break; } }
+        if (typeof startStudy === 'function') startStudy('flashcard', list, idx);
     };
-
-    // ── Keyboard ───────────────────────────────────────────────────
-    document.addEventListener('keydown', function(e) {
-        var ov = document.getElementById('naFcOverlay');
-        if (!ov || ov.style.display !== 'flex') return;
-        var fc = document.getElementById('naFcFlashcard');
-        if (fc && fc.style.display !== 'none') {
-            if (e.code === 'Space') { e.preventDefault(); window.naFcFlip(); }
-            else if (e.code === 'ArrowLeft') window.naFcMove(-1);
-            else if (e.code === 'ArrowRight') window.naFcMove(1);
-            else if (e.code === 'Escape') window.naCloseStudy();
-        } else if (e.code === 'Escape') { window.naCloseStudy(); }
-    });
 
     // ── Delegated: edit translation button (survives innerHTML changes) ──
     document.addEventListener('click', function(ev) {

@@ -320,45 +320,9 @@
     </footer>
 
     <script>
-        // ===== DỮ LIỆU =====
-        const EXAM_DATA_T2 = [35, 36, 91, 102]; // Đã có file
-        const EXAM_DATA_T1 = []; // Sắp bổ sung
-
-        const TYPE_DATA_T2 = [
-            { range: '1_3',   label: 'Câu 1 - 3',   desc: 'Chọn hình ảnh đúng' },
-            { range: '4_8',   label: 'Câu 4 - 8',   desc: 'Chủ đề & Điều tiếp theo' },
-            { range: '9_12',  label: 'Câu 9 - 12',  desc: 'Hội thoại điền từ' },
-            { range: '13_16', label: 'Câu 13 - 16', desc: 'Điền câu tiếp theo' },
-            { range: '17_20', label: 'Câu 17 - 20', desc: 'Chủ đề bản tin' },
-            { range: '21_22', label: 'Câu 21 - 22', desc: 'Ý kiến người nói' },
-            { range: '23_24', label: 'Câu 23 - 24', desc: 'Đoán ngữ cảnh' },
-            { range: '25_26', label: 'Câu 25 - 26', desc: 'Chủ đề phỏng vấn' },
-            { range: '27_28', label: 'Câu 27 - 28', desc: 'Mục đích & Nội dung đúng' },
-            { range: '29_30', label: 'Câu 29 - 30', desc: 'Cơ sở & Hành động' },
-            { range: '31_32', label: 'Câu 31 - 32', desc: 'Thái độ & Tư duy' },
-            { range: '33_34', label: 'Câu 33 - 34', desc: 'Điền từ & Nội dung đúng' },
-            { range: '35_36', label: 'Câu 35 - 36', desc: 'Điền từ & Nội dung đúng' },
-            { range: '37_38', label: 'Câu 37 - 38', desc: 'Điền từ & Nội dung đúng' },
-            { range: '39_40', label: 'Câu 39 - 40', desc: 'Thái độ & Nội dung đúng' },
-            { range: '41_42', label: 'Câu 41 - 42', desc: 'Thái độ & Nội dung đúng' },
-            { range: '43_44', label: 'Câu 43 - 44', desc: 'Chủ đề & Nội dung đúng' },
-            { range: '45_46', label: 'Câu 45 - 46', desc: 'Thái độ & Nội dung đúng' },
-            { range: '47_48', label: 'Câu 47 - 48', desc: 'Mục đích & Nội dung đúng' },
-            { range: '49_50', label: 'Câu 49 - 50', desc: 'Chủ đề & Nội dung đúng' },
-        ];
-
-        const TYPE_DATA_T1 = [
-            { range: '1_4',   label: 'Câu 1 - 4',   desc: 'Chọn hình ảnh đúng' },
-            { range: '5_6',   label: 'Câu 5 - 6',   desc: 'Điều tiếp theo' },
-            { range: '7_10',  label: 'Câu 7 - 10',  desc: 'Điền câu tiếp theo' },
-            { range: '11_14', label: 'Câu 11 - 14', desc: 'Nội dung đúng' },
-            { range: '15_16', label: 'Câu 15 - 16', desc: 'Chủ đề trung tâm' },
-            { range: '17_21', label: 'Câu 17 - 21', desc: 'Điền câu tiếp theo' },
-            { range: '22_24', label: 'Câu 22 - 24', desc: 'Nội dung đúng' },
-            { range: '25_26', label: 'Câu 25 - 26', desc: 'Chủ đề bản tin' },
-            { range: '27_28', label: 'Câu 27 - 28', desc: 'Chủ đề & Nội dung đúng' },
-            { range: '29_30', label: 'Câu 29 - 30', desc: 'Nội dung đúng' },
-        ];
+        // ===== DỮ LIỆU ĐỀ THI ĐANG CÓ =====
+        const EXAM_DATA_T2 = [35, 36, 37, 41, 47, 52, 60, 64, 83, 91, 96, 102]; // TOPIK II
+        const EXAM_DATA_T1 = [35, 36, 37, 41, 47, 52, 60, 64, 83, 91, 96, 102]; // TOPIK I
 
         let state = { level: 2, mode: 'exam' };
 
@@ -401,53 +365,44 @@
         function renderGrid() {
             const grid = document.getElementById('cardGrid');
             const isTopik1 = state.level === 1;
-            const folder = isTopik1 ? 'topik_i' : 'topik_ii';
 
-            let data;
-            if (state.mode === 'exam') data = isTopik1 ? EXAM_DATA_T1 : EXAM_DATA_T2;
-            else data = isTopik1 ? TYPE_DATA_T1 : TYPE_DATA_T2;
-            const origLen = data.length;
-
-            if (data.length === 0) {
-                if (origLen === 0 && state.mode === 'exam') {
-                    grid.innerHTML = `
-                        <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub);">
-                            <div style="font-size:2.5rem; margin-bottom:10px;">🚧</div>
-                            <div style="font-weight:700; font-size:1.1rem;">Sắp ra mắt!</div>
-                            <div style="font-size:0.9rem; margin-top:5px;">Các đề TOPIK I đang được chuẩn bị...</div>
-                        </div>`;
-                } else {
-                    grid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub); font-weight:700;">Không tìm thấy đề phù hợp 🔍</div>`;
-                }
+            // Dạng câu: tạm khóa (chưa phân loại)
+            if (state.mode === 'type') {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub);">
+                        <div style="font-size:2.5rem; margin-bottom:10px;">🚧</div>
+                        <div style="font-weight:700; font-size:1.1rem;">Sắp ra mắt!</div>
+                        <div style="font-size:0.9rem; margin-top:5px;">Dạng câu đang được phân loại.</div>
+                    </div>`;
                 return;
             }
 
-            if (state.mode === 'exam') {
-                const total = isTopik1 ? 30 : 50;
-                grid.innerHTML = data.map((num, idx) => {
-                    const exam = window.HomeProgress.getExam(window.HomeProgress.keyFor('listening', folder, num));
-                    return window.HomeProgress.buildExamCard({
-                        href: `${folder}/topik${num}.html`,
-                        title: `Đề nghe ${num}`,
-                        sub: isTopik1 ? 'TOPIK I · ' + total + ' câu' : 'TOPIK II · ' + total + ' câu',
-                        coverNum: num,
-                        exam: exam,
-                        total: total,
-                        index: idx
-                    });
-                }).join('');
-            } else {
-                grid.innerHTML = data.map((t, idx) => {
-                    return window.HomeProgress.buildTypeCard({
-                        href: `${folder}/type_${t.range}.html`,
-                        title: t.label,
-                        sub: t.desc,
-                        coverText: '🎧',
-                        index: idx,
-                        comingSoon: isTopik1
-                    });
-                }).join('');
+            const folder = isTopik1 ? 'topik_i' : 'topik_ii';
+            const data = isTopik1 ? EXAM_DATA_T1 : EXAM_DATA_T2;
+            const total = isTopik1 ? 30 : 50;
+
+            if (data.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-sub);">
+                        <div style="font-size:2.5rem; margin-bottom:10px;">🚧</div>
+                        <div style="font-weight:700; font-size:1.1rem;">Sắp ra mắt!</div>
+                        <div style="font-size:0.9rem; margin-top:5px;">Các đề đang được chuẩn bị...</div>
+                    </div>`;
+                return;
             }
+
+            grid.innerHTML = data.map((num, idx) => {
+                const exam = window.HomeProgress.getExam(window.HomeProgress.keyFor('listening', folder, num));
+                return window.HomeProgress.buildExamCard({
+                    href: `${folder}/topik${num}.html`,
+                    title: `Đề nghe ${num}`,
+                    sub: (isTopik1 ? 'TOPIK I' : 'TOPIK II') + ' · ' + total + ' câu',
+                    coverNum: num,
+                    exam: exam,
+                    total: total,
+                    index: idx
+                });
+            }).join('');
         }
 
         if (window.HomeProgress) {
@@ -458,12 +413,10 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Khôi phục trạng thái đã lưu
             const savedLevel = parseInt(sessionStorage.getItem('listenLevel')) || 2;
             const savedMode  = sessionStorage.getItem('listenMode') || 'exam';
             state.level = savedLevel;
             state.mode  = savedMode;
-
             document.getElementById('tabTopik1').classList.toggle('active', savedLevel === 1);
             document.getElementById('tabTopik2').classList.toggle('active', savedLevel === 2);
             if (savedMode === 'type') {

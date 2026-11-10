@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📚 Thư viện Ngữ pháp Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  <script src="../assets/js/grammar-library.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --bg2: #1e293b;
+      --bg3: #334155;
+      --card: rgba(30, 41, 59, 0.85);
+      --border: rgba(148, 163, 184, 0.15);
+      --text: #f1f5f9;
+      --text2: #94a3b8;
+      --accent: #3b82f6;
+      --accent2: #6366f1;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --sc1: #3b82f6;
+      --sc2: #06b6d4;
+      --tc3: #f97316;
+      --tc4: #ef4444;
+      --cc5: #8b5cf6;
+      --cc6: #ec4899;
+      --topik: #14b8a6;
+      --sidebar-w: 220px;
+      --navbar-h: 60px;
+    }
+
+    body {
+      font-family: 'Pretendard', 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== NAVBAR ===== */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--navbar-h);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+    .navbar-brand {
+      font-size: 1.1rem; font-weight: 700;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .navbar-actions { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      padding: 8px 16px; border-radius: 8px; border: none;
+      font-size: 0.875rem; font-weight: 600; cursor: pointer;
+      transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-secondary { background: var(--bg3); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #475569; }
+    .btn-success { background: linear-gradient(135deg, #059669, #10b981); color: #fff; }
+    .btn-success:hover { opacity: 0.9; }
+    .btn-danger { background: var(--danger); color: #fff; }
+    .btn-danger:hover { opacity: 0.85; }
+    .btn-sm { padding: 5px 10px; font-size: 0.8rem; }
+
+    /* ===== LAYOUT ===== */
+    .layout {
+      display: flex;
+      margin-top: var(--navbar-h);
+      min-height: calc(100vh - var(--navbar-h));
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: var(--sidebar-w); min-width: var(--sidebar-w);
+      background: rgba(15, 23, 42, 0.8);
+      border-right: 1px solid var(--border);
+      padding: 20px 12px;
+      position: sticky; top: var(--navbar-h);
+      height: calc(100vh - var(--navbar-h));
+      overflow-y: auto;
+    }
+    .sidebar-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text2); margin-bottom: 8px; padding: 0 8px; }
+    .sidebar-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      font-size: 0.875rem; font-weight: 500; color: var(--text2);
+      transition: all 0.15s; margin-bottom: 2px; border: 1px solid transparent;
+    }
+    .sidebar-item:hover { background: var(--bg2); color: var(--text); }
+    .sidebar-item.active { background: rgba(59, 130, 246, 0.15); color: var(--accent); border-color: rgba(59,130,246,0.3); }
+    .sidebar-badge {
+      font-size: 0.7rem; background: var(--bg3);
+      padding: 2px 6px; border-radius: 10px; color: var(--text2);
+    }
+    .sidebar-item.active .sidebar-badge { background: rgba(59,130,246,0.3); color: var(--accent); }
+    .level-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px;
+    }
+
+    /* ===== MAIN CONTENT ===== */
+    .main { flex: 1; padding: 24px; overflow-y: auto; }
+
+    .main-header {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 24px; flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1; min-width: 220px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 16px;
+      color: var(--text); font-size: 0.9rem; outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box:focus { border-color: var(--accent); }
+    .search-box::placeholder { color: var(--text2); }
+
+    .section-title {
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.06em; color: var(--text2); margin-bottom: 14px;
+      padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+
+    /* ===== CARDS GRID ===== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .grammar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px; padding: 16px;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .grammar-card:hover { border-color: rgba(148,163,184,0.35); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+    .card-badge {
+      display: inline-block; font-size: 0.65rem; font-weight: 700;
+      padding: 3px 8px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.05em;
+      width: fit-content;
+    }
+    .badge-sc1 { background: rgba(59,130,246,0.2); color: #60a5fa; border: 1px solid rgba(59,130,246,0.35); }
+    .badge-sc2 { background: rgba(6,182,212,0.2); color: #22d3ee; border: 1px solid rgba(6,182,212,0.35); }
+    .badge-tc3 { background: rgba(249,115,22,0.2); color: #fb923c; border: 1px solid rgba(249,115,22,0.35); }
+    .badge-tc4 { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.35); }
+    .badge-cc5 { background: rgba(139,92,246,0.2); color: #a78bfa; border: 1px solid rgba(139,92,246,0.35); }
+    .badge-cc6 { background: rgba(236,72,153,0.2); color: #f472b6; border: 1px solid rgba(236,72,153,0.35); }
+    .badge-topik { background: rgba(20,184,166,0.2); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.35); }
+
+    .card-korean { font-size: 1.05rem; font-weight: 700; color: var(--text); line-height: 1.3; }
+    .card-viet { font-size: 0.8rem; color: var(--text2); line-height: 1.4; }
+    .card-id { font-size: 0.7rem; color: #475569; font-family: monospace; }
+    .card-actions { display: flex; gap: 8px; margin-top: 4px; }
+
+    /* ===== EMPTY STATE ===== */
+    .empty-state {
+      text-align: center; padding: 60px 20px; color: var(--text2);
+    }
+    .empty-state-icon { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
+
+    /* ===== AUTH OVERLAY ===== */
+    #authOverlay {
+      position: fixed; inset: 0; background: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999; flex-direction: column; gap: 20px;
+    }
+    .auth-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 40px; text-align: center;
+      max-width: 400px; backdrop-filter: blur(16px);
+    }
+    .auth-card h2 { font-size: 1.4rem; margin-bottom: 8px; }
+    .auth-card p { color: var(--text2); margin-bottom: 24px; font-size: 0.9rem; }
+    .btn-google {
+      background: #fff; color: #1a1a1a; border: none;
+      padding: 12px 24px; border-radius: 10px; font-size: 0.95rem;
+      font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 10px;
+      margin: 0 auto; transition: all 0.2s;
+    }
+    .btn-google:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.3); transform: translateY(-1px); }
+    .btn-google svg { width: 20px; height: 20px; }
+
+    /* ===== EDIT MODAL ===== */
+    #editModal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      display: none; align-items: flex-start; justify-content: center;
+      z-index: 500; overflow-y: auto; padding: 20px;
+    }
+    #editModal.open { display: flex; }
+    .modal-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; width: 100%; max-width: 860px;
+      margin: auto; overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+    .modal-header {
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-header h2 { font-size: 1.1rem; font-weight: 700; }
+    .modal-close {
+      background: none; border: none; color: var(--text2); cursor: pointer;
+      font-size: 1.4rem; line-height: 1; padding: 4px; transition: color 0.2s;
+    }
+    .modal-close:hover { color: var(--text); }
+    .modal-body { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-input {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; color: var(--text);
+      font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .form-input:focus { border-color: var(--accent); }
+    .level-group { display: flex; flex-direction: column; gap: 6px; }
+    .level-radios { display: flex; gap: 8px; flex-wrap: wrap; }
+    .level-radio { display: none; }
+    .level-label {
+      padding: 7px 14px; border-radius: 8px; cursor: pointer;
+      font-size: 0.8rem; font-weight: 700; border: 2px solid var(--border);
+      color: var(--text2); transition: all 0.15s; user-select: none;
+    }
+    .level-radio:checked + .level-label { color: #fff; border-color: transparent; }
+    #rl1:checked + label { background: var(--sc1); }
+    #rl2:checked + label { background: var(--sc2); }
+    #rl3:checked + label { background: var(--tc3); }
+    #rl4:checked + label { background: var(--tc4); }
+    #rl5:checked + label { background: var(--cc5); }
+    #rl6:checked + label { background: var(--cc6); }
+    #rl7:checked + label { background: var(--topik); }
+
+    /* ===== RICH TEXT TOOLBAR ===== */
+    .editor-wrapper { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    .toolbar {
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      padding: 8px 10px; display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+    }
+    .toolbar-sep { width: 1px; height: 22px; background: var(--border); margin: 0 2px; }
+    .tb-btn {
+      background: none; border: 1px solid transparent; color: var(--text2);
+      padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;
+      min-width: 28px; transition: all 0.15s; font-family: inherit;
+    }
+    .tb-btn:hover { background: var(--bg2); color: var(--text); border-color: var(--border); }
+    .tb-btn.active { background: rgba(59,130,246,0.2); color: var(--accent); border-color: rgba(59,130,246,0.4); }
+    .tb-select {
+      background: var(--bg); border: 1px solid var(--border); color: var(--text);
+      padding: 4px 6px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; outline: none;
+      font-family: inherit;
+    }
+    .tb-color { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; padding: 2px; background: var(--bg); }
+    .content-area {
+      min-height: 280px; padding: 20px; outline: none;
+      color: var(--text); font-size: 1.05rem; line-height: 1.75;
+      background: var(--bg);
+    }
+    .content-area[contenteditable=true]:empty::before {
+      content: 'Nhập nội dung ngữ pháp ở đây...';
+      color: #475569; pointer-events: none;
+    }
+
+    /* ===== GRAMMAR CONTENT STYLES (shared with home.html viewer) ===== */
+    /* Áp dụng khi preview trong admin hoặc khi render ở trang học viên */
+    .grammar-content { font-size: 1.25em; line-height: 1.9; color: #334155; }
+    .grammar-content h3 {
+      font-size: 1.25em; font-weight: 800; color: #1e3a5f;
+      margin: 24px 0 12px 0; padding: 10px 18px;
+      background: linear-gradient(90deg, #eff6ff, transparent);
+      border-left: 4px solid #2563eb; border-radius: 0 6px 6px 0;
+    }
+    .grammar-content h3:first-child { margin-top: 0; }
+    .grammar-content p { margin: 12px 0; font-size: 1.08em; line-height: 1.9; }
+    .grammar-content ul, .grammar-content ol {
+      margin: 10px 0 12px 24px; padding: 0; line-height: 2.0; font-size: 1.08em;
+    }
+    .grammar-content li { margin: 8px 0; }
+    .grammar-content li strong,
+    .grammar-content p > strong:first-child {
+      color: #0f172a;
+      font-weight: 800;
+    }
+    .grammar-content strong { color: #1d4ed8; font-weight: 800; }
+    .grammar-content table {
+      width: 100%; border-collapse: collapse; margin: 18px 0;
+      font-size: 1.08em; border-radius: 10px; overflow: hidden;
+    }
+    .grammar-content th {
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff; padding: 12px 18px; text-align: left; font-weight: 700;
+      font-size: 1.05em;
+    }
+    .grammar-content td {
+      padding: 12px 18px; border-bottom: 1px solid #e2e8f0; color: #334155;
+      font-size: 1.05em; line-height: 1.8;
+    }
+    .grammar-content tr:nth-child(even) td { background: #f8fafc; }
+    .grammar-content tr:last-child td { border-bottom: none; }
+
+    /* Khung ví dụ — class-based, 5 màu */
+    .grammar-content .ex-box {
+      margin: 16px 0; padding: 16px 20px;
+      border-radius: 12px; border: 1px solid #cbd5e1; border-left-width: 5px;
+      color: #1e293b; font-size: 1em;
+    }
+    .grammar-content .ex-box .ex-label {
+      font-weight: 800; font-size: 0.92em;
+      margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+    }
+    .grammar-content .ex-box .ex-text { line-height: 1.8; font-size: 1.06em; }
+    .grammar-content .ex-box .ex-trans { color: #64748b; font-size: 0.96em; margin-top: 4px; display: inline-block; }
+    .grammar-content .ex-box               { background: #f8fafc; border-left-color: #4f46e5; }
+    .grammar-content .ex-box .ex-label      { color: #4f46e5; }
+    .grammar-content .ex-box.blue          { background: #f0f9ff; border-left-color: #0284c7; }
+    .grammar-content .ex-box.blue .ex-label { color: #0284c7; }
+    .grammar-content .ex-box.green         { background: #ecfdf5; border-left-color: #059669; }
+    .grammar-content .ex-box.green .ex-label { color: #059669; }
+    .grammar-content .ex-box.orange        { background: #fffbeb; border-left-color: #d97706; }
+    .grammar-content .ex-box.orange .ex-label { color: #b45309; }
+    .grammar-content .ex-box.red           { background: #fef2f2; border-left-color: #dc2626; }
+    .grammar-content .ex-box.red .ex-label  { color: #b91c1c; }
+
+    /* Tag phân loại ngữ pháp */
+    .grammar-content .g-tag {
+      display: inline-block; padding: 4px 12px; border-radius: 99px;
+      font-size: 0.92em; font-weight: 700; margin: 0 4px 3px 0;
+      background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;
+    }
+    .grammar-content .g-tag.red    { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+    .grammar-content .g-tag.green  { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+    .grammar-content .g-tag.orange { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+    .grammar-content .g-tag.purple { background: #f5f3ff; color: #5b21b6; border-color: #ddd6fe; }
+
+    /* ===== QUIZ PREVIEW (admin — chỉ hiển thị, không tương tác) ===== */
+    .grammar-content .quiz-section { margin-top: 28px; padding-top: 20px; border-top: 2px dashed #cbd5e1; }
+    .grammar-content .quiz-section > h3 { background: linear-gradient(90deg, #fef3c7, transparent) !important; border-left-color: #f59e0b !important; color: #92400e !important; }
+    .grammar-content .quiz-q { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 20px; margin: 14px 0; }
+    .grammar-content .quiz-stem { font-weight: 700; font-size: 1.05em; color: #1e293b; margin-bottom: 12px; line-height: 1.6; }
+    .grammar-content .quiz-stem .quiz-blank { display: inline-block; min-width: 60px; border-bottom: 2px solid #2563eb; text-align: center; font-weight: 800; color: #2563eb; margin: 0 2px; padding: 0 4px; }
+    .grammar-content .quiz-opts { display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0; }
+    .grammar-content .quiz-opt { padding: 9px 18px; border-radius: 8px; border: 2px solid #e2e8f0; background: #fff; font-size: 1em; font-weight: 600; color: #334155; }
+    .grammar-content .quiz-fill { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+    .grammar-content .quiz-fill input { padding: 9px 14px; border-radius: 8px; border: 2px solid #e2e8f0; background: #fff; font-size: 1.05em; font-weight: 700; color: #1e293b; width: 200px; }
+    .grammar-content .quiz-fill .quiz-check-btn { padding: 9px 16px; border-radius: 8px; border: none; background: #2563eb; color: #fff; font-weight: 700; font-size: 0.95em; }
+    .grammar-content .quiz-tf { display: flex; gap: 10px; margin: 10px 0; }
+    .grammar-content .quiz-tf button { padding: 9px 22px; border-radius: 8px; border: 2px solid #e2e8f0; background: #fff; font-size: 1em; font-weight: 700; color: #334155; }
+    .grammar-content .quiz-match { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+    .grammar-content .quiz-match-item { padding: 11px 16px; border-radius: 8px; border: 2px solid #e2e8f0; background: #fff; font-size: 0.98em; font-weight: 600; color: #334155; text-align: center; }
+    .grammar-content .quiz-explain { display: none; margin-top: 10px; padding: 10px 14px; background: #eff6ff; border-radius: 8px; border-left: 3px solid #2563eb; font-size: 0.95em; color: #1e40af; line-height: 1.6; }
+    .grammar-content .quiz-feedback { display: none; }
+    .grammar-content .quiz-score { display: none; }
+
+    .modal-footer {
+      padding: 16px 24px; border-top: 1px solid var(--border);
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+
+    /* ===== EXPORT MODAL ===== */
+    #exportModal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      display: none; align-items: center; justify-content: center;
+      z-index: 500; padding: 20px;
+    }
+    #exportModal.open { display: flex; }
+    .export-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; width: 100%; max-width: 700px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+    .export-body { padding: 20px 24px; }
+    .export-hint { font-size: 0.85rem; color: var(--text2); margin-bottom: 14px; }
+    .export-hint code { background: var(--bg3); padding: 2px 6px; border-radius: 4px; font-size: 0.82rem; color: #60a5fa; }
+    .export-textarea {
+      width: 100%; height: 320px; background: #0a0f1a;
+      border: 1px solid var(--border); border-radius: 8px;
+      color: #a5f3fc; font-family: 'Fira Mono', 'Consolas', monospace;
+      font-size: 0.78rem; padding: 14px; resize: none; outline: none;
+    }
+    .export-actions { display: flex; gap: 10px; margin-top: 12px; }
+
+    /* ===== BULK IMPORT MODAL ===== */
+    #bulkImportModal {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+      display: none; align-items: flex-start; justify-content: center;
+      z-index: 500; overflow-y: auto; padding: 20px;
+    }
+    #bulkImportModal.open { display: flex; }
+    .bulk-box {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; width: 100%; max-width: 960px;
+      margin: auto; overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    }
+    .bulk-body { padding: 24px; display: flex; flex-direction: column; gap: 18px; }
+    .bulk-raw-textarea {
+      width: 100%; min-height: 220px; background: #0a0f1a;
+      border: 1px solid var(--border); border-radius: 8px;
+      color: #a5f3fc; font-family: 'Fira Mono', 'Consolas', monospace;
+      font-size: 0.85rem; padding: 14px; resize: vertical; outline: none;
+      line-height: 1.5;
+    }
+    .bulk-raw-textarea:focus { border-color: var(--accent); }
+    .bulk-item-card {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 10px; padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
+      transition: border-color 0.15s;
+    }
+    .bulk-item-card:hover { border-color: #475569; }
+    .bulk-match-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 0.75rem; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+    }
+    .bulk-match-exact { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .bulk-match-partial { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .bulk-match-new { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.35); }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+    /* ===== LOADING ===== */
+    #appContent { display: none; }
+  </style>
+</head>
+<body>
+
+<!-- Auth Overlay -->
+<div id="authOverlay">
+  <div class="auth-card">
+    <div style="font-size:2.5rem;margin-bottom:12px;">📚</div>
+    <h2>Grammar Admin</h2>
+    <p id="authMessage">Đang kiểm tra đăng nhập...</p>
+    <button class="btn-google" id="googleSignInBtn" style="display:none;">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+      </svg>
+      Đăng nhập với Google
+    </button>
+  </div>
+</div>
+
+<!-- App (shown after auth) -->
+<div id="appContent">
+
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="navbar-brand">📚 Thư viện Ngữ pháp Admin</div>
+    <div class="navbar-actions">
+      <button class="btn btn-secondary" onclick="window.open('home.html','_blank')">👁 Xem trang công khai</button>
+      <button class="btn btn-secondary" onclick="resetToLibraryDefault()" title="Khôi phục lại dữ liệu gốc từ grammar-library.js">↺ Tải lại gốc</button>
+      <button class="btn btn-success" onclick="openExportModal()">📤 Xuất JSON</button>
+      <button class="btn btn-secondary" id="logoutBtn" onclick="handleLogout()">🚪 Đăng xuất</button>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-title">Cấp độ</div>
+      <div class="sidebar-item active" data-level="all" onclick="filterLevel('all', this)">
+        📂 Tất cả
+        <span class="sidebar-badge" id="count-all">0</span>
+      </div>
+      <div class="sidebar-item" data-level="1" onclick="filterLevel(1, this)">
+        <span><span class="level-dot" style="background:var(--sc1)"></span>SC1 Sơ cấp 1</span>
+        <span class="sidebar-badge" id="count-1">0</span>
+      </div>
+      <div class="sidebar-item" data-level="2" onclick="filterLevel(2, this)">
+        <span><span class="level-dot" style="background:var(--sc2)"></span>SC2 Sơ cấp 2</span>
+        <span class="sidebar-badge" id="count-2">0</span>
+      </div>
+      <div class="sidebar-item" data-level="3" onclick="filterLevel(3, this)">
+        <span><span class="level-dot" style="background:var(--tc3)"></span>TC3 Trung cấp 3</span>
+        <span class="sidebar-badge" id="count-3">0</span>
+      </div>
+      <div class="sidebar-item" data-level="4" onclick="filterLevel(4, this)">
+        <span><span class="level-dot" style="background:var(--tc4)"></span>TC4 Trung cấp 4</span>
+        <span class="sidebar-badge" id="count-4">0</span>
+      </div>
+      <div class="sidebar-item" data-level="5" onclick="filterLevel(5, this)">
+        <span><span class="level-dot" style="background:var(--cc5)"></span>CC5 Cao cấp 5</span>
+        <span class="sidebar-badge" id="count-5">0</span>
+      </div>
+      <div class="sidebar-item" data-level="6" onclick="filterLevel(6, this)">
+        <span><span class="level-dot" style="background:var(--cc6)"></span>CC6 Cao cấp 6</span>
+        <span class="sidebar-badge" id="count-6">0</span>
+      </div>
+      <div class="sidebar-item" data-level="7" onclick="filterLevel(7, this)">
+        <span><span class="level-dot" style="background:var(--topik)"></span>TOPIK</span>
+        <span class="sidebar-badge" id="count-7">0</span>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="main">
+      <div class="main-header">
+        <div style="display:flex;gap:10px;flex:1;min-width:300px;align-items:center;flex-wrap:wrap;">
+          <input type="text" class="search-box" id="searchInput" placeholder="🔍 Tìm kiếm ngữ pháp..." oninput="renderCards()" />
+          <select id="searchScope" class="tb-select" style="padding:10px 12px;border-radius:10px;font-size:0.85rem;background:var(--bg2);color:var(--text);border:1px solid var(--border);" onchange="renderCards()">
+            <option value="both">🔍 Tìm: Cả hai (Tiêu đề + Nội dung)</option>
+            <option value="title">📌 Tìm: Chỉ Tiêu đề</option>
+            <option value="content">📝 Tìm: Chỉ Nội dung</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;">
+          <button class="btn" onclick="openBulkImportModal()" style="background:linear-gradient(135deg, #6366f1, #4f46e5);color:#fff;display:flex;align-items:center;gap:6px;font-weight:600;box-shadow:0 2px 8px rgba(99,102,241,0.35);">
+            ⚡ Dán hàng loạt (5-10 mục)
+          </button>
+          <button class="btn btn-primary" onclick="openEditModal(null)">+ Thêm mới</button>
+        </div>
+      </div>
+      <div class="section-title" id="sectionTitle">Tất cả ngữ pháp</div>
+      <div class="cards-grid" id="cardsGrid"></div>
+    </main>
+
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h2 id="modalTitle">Thêm ngữ pháp mới</h2>
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Tiêu đề tiếng Hàn</label>
+          <input type="text" class="form-input" id="fKorean" placeholder="ví dụ: 은/는" oninput="autoGenId()" />
+        </div>
+        <div class="form-group">
+          <label>Mô tả ngắn tiếng Việt</label>
+          <input type="text" class="form-input" id="fVietnamese" placeholder="ví dụ: Tiểu từ chủ đề" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>ID (slug)</label>
+          <input type="text" class="form-input" id="fId" placeholder="tự động tạo từ tiêu đề" style="font-family:monospace;" />
+        </div>
+        <div class="form-group level-group">
+          <label>Cấp độ</label>
+          <div class="level-radios">
+            <input type="radio" class="level-radio" name="levelR" id="rl1" value="1" />
+            <label class="level-label" for="rl1">SC1</label>
+            <input type="radio" class="level-radio" name="levelR" id="rl2" value="2" />
+            <label class="level-label" for="rl2">SC2</label>
+            <input type="radio" class="level-radio" name="levelR" id="rl3" value="3" />
+            <label class="level-label" for="rl3">TC3</label>
+            <input type="radio" class="level-radio" name="levelR" id="rl4" value="4" />
+            <label class="level-label" for="rl4">TC4</label>
+            <input type="radio" class="level-radio" name="levelR" id="rl5" value="5" />
+            <label class="level-label" for="rl5">CC5</label>
+            <input type="radio" class="level-radio" name="levelR" id="rl6" value="6" />
+            <label class="level-label" for="rl6">CC6</label>
+            <input type="radio" class="level-radio" name="levelR" id="rl7" value="7" />
+            <label class="level-label" for="rl7">TOPIK</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rich Text Editor -->
+      <div class="form-group">
+        <label>Nội dung</label>
+        <div class="editor-wrapper">
+          <div class="toolbar" id="editorToolbar">
+            <!-- History -->
+            <button class="tb-btn" title="Undo" onclick="execCmd('undo')">↩</button>
+            <button class="tb-btn" title="Redo" onclick="execCmd('redo')">↪</button>
+            <div class="toolbar-sep"></div>
+            <!-- Format -->
+            <select class="tb-select" onchange="execCmd('fontName', this.value)" title="Font">
+              <option value="">Font</option>
+              <option value="Pretendard, Inter, sans-serif">Pretendard</option>
+              <option value="'Noto Sans KR', sans-serif">Noto Sans KR</option>
+              <option value="Georgia, serif">Georgia</option>
+              <option value="monospace">Monospace</option>
+            </select>
+            <select class="tb-select" onchange="execCmd('fontSize', this.value)" title="Cỡ chữ">
+              <option value="">Cỡ</option>
+              <option value="1">Nhỏ</option>
+              <option value="3">Vừa</option>
+              <option value="4">Lớn</option>
+              <option value="5">Rất lớn</option>
+              <option value="6">To nhất</option>
+            </select>
+            <div class="toolbar-sep"></div>
+            <!-- Text Style -->
+            <button class="tb-btn" title="Bold" onclick="execCmd('bold')"><b>B</b></button>
+            <button class="tb-btn" title="Italic" onclick="execCmd('italic')"><i>I</i></button>
+            <button class="tb-btn" title="Underline" onclick="execCmd('underline')"><u>U</u></button>
+            <button class="tb-btn" title="Strikethrough" onclick="execCmd('strikeThrough')"><s>S</s></button>
+            <div class="toolbar-sep"></div>
+            <!-- Align -->
+            <button class="tb-btn" title="Căn trái" onclick="execCmd('justifyLeft')">⬅</button>
+            <button class="tb-btn" title="Căn giữa" onclick="execCmd('justifyCenter')">☰</button>
+            <button class="tb-btn" title="Căn phải" onclick="execCmd('justifyRight')">➡</button>
+            <div class="toolbar-sep"></div>
+            <!-- Lists -->
+            <button class="tb-btn" title="Danh sách" onclick="execCmd('insertUnorderedList')">• —</button>
+            <button class="tb-btn" title="Danh sách số" onclick="execCmd('insertOrderedList')">1.</button>
+            <div class="toolbar-sep"></div>
+            <!-- Color -->
+            <label title="Màu chữ" style="cursor:pointer;display:flex;align-items:center;gap:3px;font-size:0.75rem;color:var(--text2);">
+              A <input type="color" class="tb-color" id="fgColor" value="#f1f5f9" onchange="execCmd('foreColor', this.value)" />
+            </label>
+            <label title="Highlight" style="cursor:pointer;display:flex;align-items:center;gap:3px;font-size:0.75rem;color:var(--text2);">
+              🖍 <input type="color" class="tb-color" id="bgColor" value="#fbbf24" onchange="execCmd('hiliteColor', this.value)" />
+            </label>
+            <div class="toolbar-sep"></div>
+            <!-- Ô ví dụ -->
+            <button class="tb-btn" type="button" id="adminInsertExampleBtn" title="Chèn Ô ví dụ ngang cho học sinh dễ nhìn" style="background:#4338ca;color:#fff;font-weight:700;padding:4px 10px;border-radius:6px;">💡 Ô ví dụ</button>
+            <div class="toolbar-sep"></div>
+            <button class="tb-btn" title="Xóa định dạng" onclick="execCmd('removeFormat')">✕ fmt</button>
+          </div>
+          <div class="content-area grammar-content" id="contentEditor" contenteditable="true"></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeEditModal()">Hủy</button>
+      <button class="btn btn-primary" onclick="saveEntry()">💾 Lưu</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export Modal -->
+<div id="exportModal">
+  <div class="export-box">
+    <div class="modal-header">
+      <h2>📤 Xuất Grammar Library</h2>
+      <button class="modal-close" onclick="closeExportModal()">✕</button>
+    </div>
+    <div class="export-body">
+      <p class="export-hint">
+        Copy đoạn code bên dưới và paste đè vào file
+        <code>public/assets/js/grammar-library.js</code> rồi deploy.
+      </p>
+      <div class="export-actions">
+        <button class="btn btn-primary btn-sm" id="copyBtn" onclick="copyExport()">📋 Copy vào Clipboard</button>
+        <span id="copySuccess" style="color:var(--success);font-size:0.85rem;display:none;">✅ Đã copy!</span>
+      </div>
+      <br />
+      <textarea class="export-textarea" id="exportTextarea" readonly></textarea>
+    </div>
+    <div class="modal-footer" style="padding-top:8px;">
+      <button class="btn btn-secondary" onclick="closeExportModal()">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bulk Import Modal -->
+<div id="bulkImportModal">
+  <div class="bulk-box">
+    <div class="modal-header">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:1.4rem;">⚡</span>
+        <div>
+          <h2 style="font-size:1.15rem;font-weight:700;margin:0;">Nạp hàng loạt ngữ pháp (Tự động nhận diện & ghép vị trí)</h2>
+          <div style="font-size:0.8rem;color:var(--text2);margin-top:2px;">Dán 5–10 ngữ pháp (JSON mảng từ Gemini hoặc văn bản đánh số) để hệ thống tự phân tách và khớp vào Thư viện.</div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeBulkImportModal()">✕</button>
+    </div>
+    
+    <div class="bulk-body">
+      <!-- Step 1: Input -->
+      <div id="bulkStepInput">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:8px;">
+          <label style="font-size:0.85rem;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.05em;">
+            Dán dữ liệu ngữ pháp vào đây:
+          </label>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="copyGeminiPromptTemplate()" style="font-size:0.78rem;">
+              📋 Copy Prompt chuẩn cho Gemini
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="loadSampleBulkData()" style="font-size:0.78rem;">
+              📝 Dán thử dữ liệu mẫu
+            </button>
+          </div>
+        </div>
+
+        <textarea class="bulk-raw-textarea" id="bulkRawInput" placeholder='Dán mã JSON mảng từ Gemini:
+[
+  {
+    "korean": "은/는",
+    "vietnamese": "Tiểu từ chủ đề",
+    "level": 1,
+    "content": "<h3>1. Ý nghĩa & Cách dùng</h3>..."
+  },
+  {
+    "korean": "이/가",
+    "vietnamese": "Tiểu từ chủ ngữ",
+    "level": 1,
+    "content": "<h3>1. Ý nghĩa & Cách dùng</h3>..."
+  }
+]
+
+HOẶC dán văn bản có đánh số / ngăn cách:
+1. 은/는 - Tiểu từ chủ đề (SC1)
+Nội dung bài học...
+---
+2. 이/가 - Tiểu từ chủ ngữ (SC1)
+Nội dung bài học...'></textarea>
+
+        <div style="margin-top:12px;background:var(--bg3);border-radius:8px;padding:12px 14px;border:1px solid var(--border);font-size:0.82rem;color:var(--text2);line-height:1.6;">
+          <strong style="color:var(--text);">💡 Cơ chế hoạt động thông minh:</strong>
+          <ul style="margin:4px 0 0 18px;padding:0;">
+            <li>Hệ thống tự động quét tiêu đề tiếng Hàn (ví dụ <code>은/는</code>, <code>(으)ㄹ 수 있다</code>, <code>에서</code>) để so khớp với toàn bộ thẻ trong Thư viện.</li>
+            <li>Nếu thẻ đã có sẵn trong Thư viện, hệ thống đề xuất <strong>cập nhật nội dung</strong> vào đúng thẻ đó mà không tạo trùng lặp.</li>
+            <li>Nếu là ngữ pháp mới chưa có, hệ thống đề xuất <strong>thêm mới</strong> vào cấp độ tương ứng. Bạn có thể tự chọn lại vị trí trước khi xác nhận.</li>
+          </ul>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeBulkImportModal()">Hủy</button>
+          <button type="button" class="btn btn-primary" onclick="triggerBulkParse()" style="background:linear-gradient(135deg, #6366f1, #4f46e5);border:none;">
+            🔍 Phân tích & Tự động ghép vị trí
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Review & Alignment -->
+      <div id="bulkStepReview" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:10px;">
+          <div>
+            <div id="bulkReviewCount" style="font-weight:700;color:var(--text);font-size:0.95rem;">Đã nhận diện: 0 ngữ pháp</div>
+            <div style="font-size:0.8rem;color:var(--text2);">Kiểm tra và tùy chỉnh ghép vị trí bên dưới trước khi lưu vào Thư viện:</div>
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="backToBulkInput()">
+            ↩ Dán lại dữ liệu khác
+          </button>
+        </div>
+
+        <div id="bulkReviewList" style="display:flex;flex-direction:column;gap:12px;max-height:480px;overflow-y:auto;padding-right:4px;">
+          <!-- Item cards rendered dynamically -->
+        </div>
+
+        <div class="modal-footer" style="padding:16px 0 0 0;margin-top:12px;">
+          <button type="button" class="btn btn-secondary" onclick="closeBulkImportModal()">Hủy</button>
+          <button type="button" class="btn btn-primary" id="bulkConfirmApplyBtn" onclick="confirmBulkApply()" style="background:linear-gradient(135deg, #10b981, #059669);border:none;">
+            💾 Xác nhận nạp vào Thư viện
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// =============================================
+// FIREBASE CONFIG & AUTH
+// =============================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU",
+  authDomain: "vuihoctienghan2027.firebaseapp.com",
+  projectId: "vuihoctienghan2027",
+  storageBucket: "vuihoctienghan2027.firebasestorage.app",
+  messagingSenderId: "346757373399",
+  appId: "1:346757373399:web:526625b339fc9a1a523f92",
+  measurementId: "G-JHCHNDDY1S"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// Teacher check: only Google-authenticated users allowed (expand whitelist if needed)
+const TEACHER_EMAILS = window.TEACHER_EMAILS || [];
+
+function isTeacher(user) {
+  if (!user) return false;
+  if (TEACHER_EMAILS.length > 0) return TEACHER_EMAILS.includes(user.email);
+  // If no whitelist configured, allow any authenticated user (adjust as needed)
+  return true;
+}
+
+document.getElementById('googleSignInBtn').addEventListener('click', () => {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  auth.signInWithPopup(provider).catch(err => {
+    document.getElementById('authMessage').textContent = '❌ ' + err.message;
+  });
+});
+
+auth.onAuthStateChanged(user => {
+  if (user && isTeacher(user)) {
+    document.getElementById('authOverlay').style.display = 'none';
+    document.getElementById('appContent').style.display = 'block';
+    initApp();
+  } else if (user && !isTeacher(user)) {
+    document.getElementById('authMessage').textContent = '⛔ Tài khoản ' + user.email + ' không có quyền truy cập.';
+    document.getElementById('googleSignInBtn').style.display = 'flex';
+    auth.signOut();
+  } else {
+    document.getElementById('authMessage').textContent = 'Vui lòng đăng nhập với tài khoản giáo viên';
+    document.getElementById('googleSignInBtn').style.display = 'flex';
+  }
+});
+
+function handleLogout() {
+  auth.signOut().then(() => {
+    document.getElementById('authOverlay').style.display = 'flex';
+    document.getElementById('appContent').style.display = 'none';
+    document.getElementById('authMessage').textContent = 'Đã đăng xuất. Vui lòng đăng nhập lại.';
+    document.getElementById('googleSignInBtn').style.display = 'flex';
+  });
+}
+
+// =============================================
+// APP STATE
+// =============================================
+let grammarData = [];
+let currentLevel = 'all';
+let editingIndex = null; // null = new entry
+
+function initApp() {
+  const localSaved = localStorage.getItem('admin_grammar_data');
+  if (localSaved) {
+    try {
+      grammarData = JSON.parse(localSaved);
+    } catch(e) {
+      grammarData = (window.GrammarLibrary || []).map(g => Object.assign({}, g));
+    }
+  } else {
+    // Deep clone from window.GrammarLibrary
+    grammarData = (window.GrammarLibrary || []).map(g => Object.assign({}, g));
+  }
+  updateCounts();
+  renderCards();
+}
+
+function resetToLibraryDefault() {
+  const doReset = () => {
+    localStorage.removeItem('admin_grammar_data');
+    grammarData = (window.GrammarLibrary || []).map(g => Object.assign({}, g));
+    updateCounts();
+    renderCards();
+    showToast('✅ Đã khôi phục dữ liệu gốc từ thư viện!');
+  };
+
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      title: 'Khôi phục dữ liệu gốc?',
+      text: 'Thao tác này sẽ tải lại dữ liệu từ grammar-library.js và xóa các thay đổi chưa xuất JSON trong trình duyệt.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Khôi phục gốc',
+      cancelButtonText: 'Hủy',
+      background: '#1e293b',
+      color: '#f1f5f9'
+    }).then(r => {
+      if (r.isConfirmed) doReset();
+    });
+  } else {
+    if (confirm('Khôi phục dữ liệu gốc từ grammar-library.js?')) doReset();
+  }
+}
+
+// =============================================
+// LEVEL HELPERS
+// =============================================
+const LEVEL_NAMES = { 1: 'SC1', 2: 'SC2', 3: 'TC3', 4: 'TC4', 5: 'CC5', 6: 'CC6', 7: 'TOPIK' };
+const LEVEL_FULL  = { 1: 'Sơ cấp 1', 2: 'Sơ cấp 2', 3: 'Trung cấp 3', 4: 'Trung cấp 4', 5: 'Cao cấp 5', 6: 'Cao cấp 6', 7: 'TOPIK' };
+
+function badgeClass(level) { return 'badge-' + LEVEL_NAMES[level].toLowerCase(); }
+
+function matchSearch(g, q, scope) {
+  if (!q) return true;
+  const inTitle = (g.korean || '').toLowerCase().includes(q) || (g.vietnamese || '').toLowerCase().includes(q);
+  const inContent = (g.content || '').toLowerCase().includes(q);
+  if (scope === 'title') return inTitle;
+  if (scope === 'content') return inContent;
+  return inTitle || inContent;
+}
+
+function updateCounts() {
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const scope = (document.getElementById('searchScope') && document.getElementById('searchScope').value) || 'both';
+  const filtered = q ? grammarData.filter(g => matchSearch(g, q, scope)) : grammarData;
+  document.getElementById('count-all').textContent = filtered.length;
+  for (let l = 1; l <= 7; l++) {
+    document.getElementById('count-' + l).textContent = filtered.filter(g => g.level === l).length;
+  }
+}
+
+function filterLevel(level, el) {
+  currentLevel = level;
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  const title = level === 'all' ? 'Tất cả ngữ pháp' : (LEVEL_NAMES[level] === LEVEL_FULL[level] ? LEVEL_FULL[level] : (LEVEL_NAMES[level] + ' — ' + LEVEL_FULL[level]));
+  document.getElementById('sectionTitle').textContent = title;
+  renderCards();
+}
+
+// =============================================
+// RENDER CARDS
+// =============================================
+function renderCards() {
+  updateCounts();
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  const scope = (document.getElementById('searchScope') && document.getElementById('searchScope').value) || 'both';
+  let list = grammarData;
+  if (currentLevel !== 'all') list = list.filter(g => g.level === Number(currentLevel));
+  if (q) list = list.filter(g => matchSearch(g, q, scope));
+
+  const grid = document.getElementById('cardsGrid');
+
+  if (list.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <div class="empty-state-icon">🔍</div>
+      <h3>Không tìm thấy kết quả</h3>
+      <p>Thử tìm với từ khóa khác hoặc thêm mục mới.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(g => {
+    const realIdx = grammarData.indexOf(g);
+    const badge = LEVEL_NAMES[g.level];
+    const badgeCls = badgeClass(g.level);
+    return `
+      <div class="grammar-card">
+        <span class="card-badge ${badgeCls}">${badge}</span>
+        <div class="card-korean">${escHtml(g.korean)}</div>
+        <div class="card-viet">${escHtml(g.vietnamese)}</div>
+        <div class="card-id">#${escHtml(g.id)}</div>
+        <div class="card-actions">
+          <button class="btn btn-secondary btn-sm" onclick="openEditModal(${realIdx})">✏ Sửa</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteEntry(${realIdx})">🗑</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// =============================================
+// ID GENERATION
+// =============================================
+function genId(korean) {
+  return korean
+    .replace(/[\/\(\)\+\s]/g, '-')
+    .replace(/[^\w\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF\u3040-\u309F\u30A0-\u30FF-]/g, '')
+    .replace(/-{2,}/g, '-')
+    .replace(/^-|-$/g, '')
+    .toLowerCase();
+}
+
+function autoGenId() {
+  const korean = document.getElementById('fKorean').value;
+  document.getElementById('fId').value = genId(korean);
+}
+
+// =============================================
+// EDIT MODAL
+// =============================================
+function openEditModal(index) {
+  editingIndex = index;
+  const modal = document.getElementById('editModal');
+  const editor = document.getElementById('contentEditor');
+
+  if (index === null) {
+    // New entry
+    document.getElementById('modalTitle').textContent = 'Thêm ngữ pháp mới';
+    document.getElementById('fKorean').value = '';
+    document.getElementById('fVietnamese').value = '';
+    document.getElementById('fId').value = '';
+    document.getElementById('rl1').checked = true;
+    editor.innerHTML = '';
+  } else {
+    const g = grammarData[index];
+    document.getElementById('modalTitle').textContent = 'Chỉnh sửa: ' + g.korean;
+    document.getElementById('fKorean').value = g.korean;
+    document.getElementById('fVietnamese').value = g.vietnamese;
+    document.getElementById('fId').value = g.id;
+    const radio = document.getElementById('rl' + g.level);
+    if (radio) radio.checked = true;
+    editor.innerHTML = g.content || '';
+  }
+
+  modal.classList.add('open');
+  setTimeout(() => document.getElementById('fKorean').focus(), 100);
+}
+
+function closeEditModal() {
+  document.getElementById('editModal').classList.remove('open');
+  editingIndex = null;
+}
+
+function saveEntry() {
+  const korean = document.getElementById('fKorean').value.trim();
+  const vietnamese = document.getElementById('fVietnamese').value.trim();
+  const id = document.getElementById('fId').value.trim();
+  const levelRadio = document.querySelector('input[name="levelR"]:checked');
+  const content = document.getElementById('contentEditor').innerHTML;
+
+  if (!korean) { showToast('⚠️ Vui lòng nhập tiêu đề tiếng Hàn', 'warning'); return; }
+  if (!id) { showToast('⚠️ ID không được để trống', 'warning'); return; }
+  if (!levelRadio) { showToast('⚠️ Vui lòng chọn cấp độ', 'warning'); return; }
+
+  const level = Number(levelRadio.value);
+  const entry = { id, korean, vietnamese, level, content };
+
+  if (editingIndex === null) {
+    grammarData.push(entry);
+    showToast('✅ Đã thêm: ' + korean);
+  } else {
+    grammarData[editingIndex] = entry;
+    showToast('✅ Đã cập nhật: ' + korean);
+  }
+
+  try { localStorage.setItem('admin_grammar_data', JSON.stringify(grammarData)); } catch(e){}
+  closeEditModal();
+  updateCounts();
+  renderCards();
+}
+
+// =============================================
+// DELETE
+// =============================================
+function deleteEntry(index) {
+  const g = grammarData[index];
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      title: 'Xóa ngữ pháp?',
+      html: `Bạn có chắc muốn xóa <strong>${g.korean}</strong>?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: '🗑 Xóa',
+      cancelButtonText: 'Hủy',
+      background: '#1e293b',
+      color: '#f1f5f9'
+    }).then(r => {
+      if (r.isConfirmed) {
+        grammarData.splice(index, 1);
+        try { localStorage.setItem('admin_grammar_data', JSON.stringify(grammarData)); } catch(e){}
+        updateCounts();
+        renderCards();
+        showToast('🗑 Đã xóa: ' + g.korean);
+      }
+    });
+  } else {
+    if (confirm('Xóa "' + g.korean + '"?')) {
+      grammarData.splice(index, 1);
+      try { localStorage.setItem('admin_grammar_data', JSON.stringify(grammarData)); } catch(e){}
+      updateCounts();
+      renderCards();
+    }
+  }
+}
+
+// =============================================
+// BULK IMPORT & PARSER LOGIC
+// =============================================
+let parsedBulkItems = [];
+
+function openBulkImportModal() {
+  document.getElementById('bulkStepInput').style.display = 'block';
+  document.getElementById('bulkStepReview').style.display = 'none';
+  document.getElementById('bulkImportModal').classList.add('open');
+  setTimeout(() => document.getElementById('bulkRawInput').focus(), 100);
+}
+
+function closeBulkImportModal() {
+  document.getElementById('bulkImportModal').classList.remove('open');
+}
+
+function backToBulkInput() {
+  document.getElementById('bulkStepInput').style.display = 'block';
+  document.getElementById('bulkStepReview').style.display = 'none';
+}
+
+// Helper: Sửa lỗi newline thật bên trong chuỗi JSON (khi paste từ contenteditable)
+function fixNewlinesInsideJsonStringsAdmin(jsonStr) {
+  var result = '';
+  var inString = false;
+  var escaped = false;
+  for (var i = 0; i < jsonStr.length; i++) {
+    var ch = jsonStr[i];
+    if (escaped) { result += ch; escaped = false; continue; }
+    if (ch === '\\' && inString) { result += ch; escaped = true; continue; }
+    if (ch === '"') { inString = !inString; result += ch; continue; }
+    if (inString && (ch === '\n' || ch === '\r')) {
+      if (ch === '\r' && jsonStr[i + 1] === '\n') i++;
+      result += '\\n';
+      continue;
+    }
+    if (inString && ch === '\t') { result += '\\t'; continue; }
+    result += ch;
+  }
+  return result;
+}
+
+function cleanJsonString(str) {
+  if (!str) return '';
+  let s = str.trim();
+  s = s.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/i, '');
+  const firstBracket = s.indexOf('[');
+  const lastBracket = s.lastIndexOf(']');
+  if (firstBracket !== -1 && lastBracket !== -1 && lastBracket > firstBracket) {
+    s = s.substring(firstBracket, lastBracket + 1);
+  } else {
+    const firstBrace = s.indexOf('{');
+    const lastBrace = s.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+      s = s.substring(firstBrace, lastBrace + 1);
+    }
+  }
+  // 0. Sửa newline thật bên trong chuỗi JSON (contenteditable paste)
+  s = fixNewlinesInsideJsonStringsAdmin(s);
+  // Tự động sửa lỗi phổ biến của Gemini/LLM:
+  // 1. Ký tự escape sai chuẩn JSON: \' -> '
+  s = s.replace(/\\+'+/g, "'");
+  // 2. Trailing commas trước dấu đóng ] hoặc }
+  s = s.replace(/,\s*([\]\}])/g, '$1');
+  return s;
+}
+
+function normalizeKoreanTitle(t) {
+  if (!t) return '';
+  return t
+    .toLowerCase()
+    .replace(/\([a-zA-Zà-ỹ\s\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]{2,}\)/gi, '')
+    .replace(/\(으\)/g, '')
+    .replace(/\(이\)/g, '')
+    .replace(/[\s\(\)\[\]\/\-~_~:,\.]/g, '')
+    .replace(/^[van]\s*/i, '')
+    .trim();
+}
+
+function formatLineTitleAdmin(rawText) {
+  if (!rawText) return '';
+  let s = rawText.trim();
+  if (s.includes('**')) {
+    return s.replace(/\*\*(.*?)\*\*/g, (m, p) => '<strong>' + escHtml(p) + '</strong>');
+  }
+  const colonIdx = s.indexOf(':');
+  if (colonIdx > 0 && colonIdx <= 55) {
+    const titlePart = s.substring(0, colonIdx).trim();
+    const restPart = s.substring(colonIdx + 1);
+    return '<strong>' + escHtml(titlePart) + ':</strong> ' + escHtml(restPart.trim());
+  }
+  return escHtml(s);
+}
+
+function formatTextBlockAdmin(str) {
+  if (!str) return '';
+  const lines = String(str).split('\n').map(l => l.trim()).filter(Boolean);
+  let out = '';
+  let inList = false;
+  lines.forEach(l => {
+    if (l.startsWith('- ') || l.startsWith('• ') || l.startsWith('* ')) {
+      if (!inList) { out += '<ul style="margin:6px 0 10px 22px;padding:0;line-height:1.8;">'; inList = true; }
+      out += `<li>${formatLineTitleAdmin(l.substring(2))}</li>`;
+    } else {
+      if (inList) { out += '</ul>'; inList = false; }
+      out += `<p style="margin:8px 0;line-height:1.8;">${formatLineTitleAdmin(l)}</p>`;
+    }
+  });
+  if (inList) out += '</ul>';
+  return out || `<p>${escHtml(str)}</p>`;
+}
+
+function buildHtmlFromStructuredData(item) {
+  let html = '';
+
+  // 1. Ý nghĩa & Cách dùng
+  const meaning = item.meaning || item.desc || item.definition || '';
+  if (meaning) {
+    html += `<h3>1. Ý nghĩa &amp; Cách dùng</h3>${formatTextBlockAdmin(meaning)}`;
+  }
+
+  // 2. Quy tắc chia
+  const rules = item.rules || item.combinations || item.grammar_rules || [];
+  if (Array.isArray(rules) && rules.length > 0) {
+    html += `<h3>2. Quy tắc chia / Kết hợp</h3>`;
+    html += `<table><tr><th>Trường hợp</th><th>Dạng kết hợp</th><th>Ví dụ</th></tr>`;
+    rules.forEach((r, idx) => {
+      const tagCls = idx % 2 === 0 ? 'g-tag' : 'g-tag green';
+      const cond = r.condition || r.type || r.case || '';
+      const form = r.combine || r.form || r.suffix || '';
+      const ex = r.example || r.sample || '';
+      html += `<tr><td><span class="${tagCls}">${escHtml(cond)}</span></td><td><strong>${escHtml(form)}</strong></td><td>${escHtml(ex)}</td></tr>`;
+    });
+    html += `</table>`;
+  }
+
+  // 3. Ví dụ minh họa (xoay vòng màu: tím, blue, green, orange, red)
+  const colors = ['', 'blue', 'green', 'orange', 'red'];
+  const examples = item.examples || item.samples || [];
+  if (Array.isArray(examples) && examples.length > 0) {
+    html += `<h3>3. Ví dụ minh họa</h3>`;
+    examples.forEach((ex, idx) => {
+      const c = colors[idx % colors.length];
+      const cls = c ? `ex-box ${c}` : 'ex-box';
+      let kr = '';
+      let vi = '';
+      if (typeof ex === 'string') {
+        const parts = ex.split(/\s*[-–—:]\s*|\n/);
+        kr = parts[0] || '';
+        vi = parts.slice(1).join(' - ') || '';
+      } else {
+        kr = ex.kr || ex.korean || ex.sentence || '';
+        vi = ex.vi || ex.vietnamese || ex.trans || ex.meaning || '';
+      }
+      html += `<div class="${cls}"><div class="ex-label">💡 Ví dụ:</div><div class="ex-text"><strong>${escHtml(kr)}</strong><br><span class="ex-trans">${escHtml(vi)}</span></div></div>`;
+    });
+  }
+
+  // 4. Lưu ý & So sánh
+  const notes = item.notes || item.note || item.compare || '';
+  if (notes) {
+    html += `<h3>4. Lưu ý &amp; So sánh</h3>${formatTextBlockAdmin(notes)}`;
+  }
+
+  // 5. Quiz
+  const quiz = item.quiz || item.quizzes || item.exercises || [];
+  if (Array.isArray(quiz) && quiz.length > 0) {
+    html += `<div class="quiz-section"><h3>📝 Bài tập kiểm tra</h3>`;
+    quiz.forEach((q, idx) => {
+      const qNum = idx + 1;
+      const type = q.type || 'mc';
+
+      if (type === 'mc') {
+        const opts = q.options || q.opts || [];
+        const ans = q.answer || 1;
+        html += `<div class="quiz-q" data-type="mc" data-answer="${ans}">`;
+        html += `<div class="quiz-stem">Câu ${qNum}: ${escHtml(q.question || '')}</div>`;
+        html += `<div class="quiz-opts">`;
+        opts.forEach((opt, oIdx) => {
+          html += `<button class="quiz-opt" data-v="${oIdx + 1}">${escHtml(opt)}</button>`;
+        });
+        html += `</div>`;
+        if (q.explain) html += `<div class="quiz-explain">${escHtml(q.explain)}</div>`;
+        html += `<div class="quiz-feedback"></div></div>`;
+      } else if (type === 'fill') {
+        const ans = q.answer || '';
+        html += `<div class="quiz-q" data-type="fill" data-answer="${escHtml(String(ans))}">`;
+        html += `<div class="quiz-stem">Câu ${qNum}: ${escHtml(q.question || '')}</div>`;
+        html += `<div class="quiz-fill"><input type="text" placeholder="Nhập đáp án..."><button class="quiz-check-btn">Kiểm tra</button></div>`;
+        if (q.explain) html += `<div class="quiz-explain">${escHtml(q.explain)}</div>`;
+        html += `<div class="quiz-feedback"></div></div>`;
+      } else if (type === 'tf') {
+        const ans = (q.answer === true || q.answer === 't' || q.answer === 'đúng' || q.answer === 'T') ? 't' : 'f';
+        html += `<div class="quiz-q" data-type="tf" data-answer="${ans}">`;
+        html += `<div class="quiz-stem">Câu ${qNum}: ${escHtml(q.question || '')}</div>`;
+        html += `<div class="quiz-tf"><button data-v="t">⭕ Đúng</button><button data-v="f">❌ Sai</button></div>`;
+        if (q.explain) html += `<div class="quiz-explain">${escHtml(q.explain)}</div>`;
+        html += `<div class="quiz-feedback"></div></div>`;
+      } else if (type === 'match') {
+        const pairs = q.pairs || [];
+        html += `<div class="quiz-q" data-type="match">`;
+        html += `<div class="quiz-stem">Câu ${qNum}: ${escHtml(q.question || 'Nối cặp tương ứng:')}</div>`;
+        html += `<div class="quiz-match">`;
+        const rights = pairs.map((p, pIdx) => ({ text: p.right, pair: pIdx + 1 }));
+        if (rights.length > 1) {
+          const temp = rights[0];
+          rights[0] = rights[rights.length - 1];
+          rights[rights.length - 1] = temp;
+        }
+        pairs.forEach((p, pIdx) => {
+          html += `<div class="quiz-match-item" data-side="l" data-pair="${pIdx + 1}">${escHtml(p.left)}</div>`;
+          const r = rights[pIdx];
+          html += `<div class="quiz-match-item" data-side="r" data-pair="${r.pair}">${escHtml(r.text)}</div>`;
+        });
+        html += `</div>`;
+        if (q.explain) html += `<div class="quiz-explain">${escHtml(q.explain)}</div>`;
+        html += `<div class="quiz-feedback"></div></div>`;
+      }
+    });
+    html += `<div class="quiz-score"></div></div>`;
+  }
+
+  return html;
+}
+
+function autoRepairBrokenGeminiHtml(str) {
+  if (!str) return '';
+  let s = str.trim();
+
+  // 1. Tự động bóc tách nếu chuỗi content bị dính header JSON e.g. { "korean": ..., "content": "..." }
+  if (s.includes('"korean"') && s.includes('"content"')) {
+    const idx = s.indexOf('"content":');
+    if (idx !== -1) {
+      const after = s.substring(idx + 10).trim();
+      const startQuote = after.indexOf('"');
+      if (startQuote !== -1) {
+        s = after.substring(startQuote + 1);
+        s = s.replace(/"\s*\}?\s*\]?$/, '').replace(/\\"/g, '"');
+      }
+    }
+  }
+
+  // 2. Tự động sửa lỗi thẻ unclosed ex-box của Gemini khiến các hộp bị lồng vào nhau
+  if (s.includes('class="ex-box') || s.includes("class='ex-box'")) {
+    const openDivCount = (s.match(/<div\b/g) || []).length;
+    const closeDivCount = (s.match(/<\/div>/g) || []).length;
+
+    if (openDivCount > closeDivCount) {
+      let isFirst = true;
+      s = s.replace(/<div\s+class=["']ex-box([^"']*)["']>/g, (match) => {
+        if (isFirst) {
+          isFirst = false;
+          return match;
+        }
+        return `</div></div>${match}`;
+      });
+      if (s.includes('<div class="quiz-section">') || s.includes("<div class='quiz-section'>")) {
+        s = s.replace(/<div\s+class=["']quiz-section["']>/, '</div></div><div class="quiz-section">');
+      } else {
+        s += '</div></div>';
+      }
+    }
+  }
+
+  return s;
+}
+
+function parseBulkInput(raw) {
+  if (!raw || !raw.trim()) return [];
+  const text = raw.trim();
+
+  // 1. Try JSON Array first
+  try {
+    const cleaned = cleanJsonString(text);
+    let parsed = null;
+    try {
+      parsed = JSON.parse(cleaned);
+    } catch(err1) {
+      // Tự động sửa lỗi phổ biến của Gemini: thuộc tính HTML dùng dấu ngoặc kép không escape class="..."
+      const fixedQuotes = cleaned.replace(/<([^>]+)>/g, function(tag) {
+        return tag.replace(/(\w+)\s*=\s*"([^"]*)"/g, '$1=\'$2\'');
+      });
+      parsed = JSON.parse(fixedQuotes);
+    }
+
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed.map((item, idx) => {
+        let content = '';
+        // Ưu tiên 1: Dữ liệu JSON có cấu trúc sạch (meaning, rules, examples, quiz)
+        if (item.meaning || item.rules || item.examples || item.quiz) {
+          content = buildHtmlFromStructuredData(item);
+        } else {
+          content = (item.content || item.html || item.body || '').trim();
+          content = autoRepairBrokenGeminiHtml(content);
+        }
+
+        return {
+          index: idx,
+          korean: (item.korean || item.title || item.name || '').trim(),
+          vietnamese: (item.vietnamese || item.meaning_short || item.desc || '').trim(),
+          level: Number(item.level) || 1,
+          content: content
+        };
+      }).filter(it => it.korean || it.content);
+    }
+  } catch (e) {
+    // Not valid JSON, proceed to text parsing
+  }
+
+  // 2. Structured text / markdown parser
+  let chunks = [];
+  if (text.includes('\n---') || text.includes('\n===')) {
+    chunks = text.split(/\n\s*[-=]{3,}\s*\n/).filter(c => c.trim());
+  } else {
+    const splitRegex = /\n(?=(?:###\s*)?(?:\[\d+\]|\d+[\.\)]|(?:Ngữ pháp|Cấu trúc)\s*\d+[:\.]?)\s+)/i;
+    chunks = text.split(splitRegex).filter(c => c.trim());
+  }
+
+  if (chunks.length <= 1 && !text.match(/^(?:###\s*)?(?:\[\d+\]|\d+[\.\)]|(?:Ngữ pháp|Cấu trúc)\s*\d+[:\.]?)\s+/i)) {
+    chunks = [text];
+  }
+
+  const results = [];
+  chunks.forEach((chunk, idx) => {
+    const lines = chunk.trim().split('\n');
+    let firstLine = lines[0].trim();
+    firstLine = firstLine.replace(/^(?:###\s*)?(?:\[\d+\]|\d+[\.\)]|(?:Ngữ pháp|Cấu trúc)\s*\d+[:\.]?)\s*/i, '').trim();
+
+    let korean = '';
+    let vietnamese = '';
+    let level = 1;
+
+    const lvlMatch = firstLine.match(/\b(?:SC|TC|CC|Cấp|Level|TOPIK)?\s*([1-6])\b/i);
+    if (lvlMatch) {
+      level = parseInt(lvlMatch[1], 10);
+    }
+
+    const cleanLine = firstLine.replace(/[\(\[\{]\s*(?:SC|TC|CC|Cấp|Level|TOPIK)?\s*[1-6]\s*[\)\]\}]/ig, '').trim();
+
+    if (cleanLine.includes(' - ')) {
+      const parts = cleanLine.split(' - ');
+      korean = parts[0].trim();
+      vietnamese = parts.slice(1).join(' - ').trim();
+    } else if (cleanLine.includes(' : ') || cleanLine.includes(':')) {
+      const parts = cleanLine.split(':');
+      korean = parts[0].trim();
+      vietnamese = parts.slice(1).join(':').trim();
+    } else if (cleanLine.includes('(') && cleanLine.includes(')')) {
+      const m = cleanLine.match(/^(.*?)\((.*?)\)$/);
+      if (m) {
+        korean = m[1].trim();
+        vietnamese = m[2].trim();
+      } else {
+        korean = cleanLine;
+      }
+    } else {
+      korean = cleanLine;
+    }
+
+    const contentLines = lines.slice(1).join('\n').trim();
+    let htmlContent = contentLines;
+    if (htmlContent && !htmlContent.includes('<p>') && !htmlContent.includes('<div>') && !htmlContent.includes('<br>')) {
+      htmlContent = htmlContent.split(/\n\s*\n/).map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
+    }
+
+    if (korean || htmlContent) {
+      results.push({
+        index: idx,
+        korean,
+        vietnamese,
+        level,
+        content: htmlContent
+      });
+    }
+  });
+
+  return results;
+}
+
+function findBestMatchEnhanced(item, list) {
+  if (!item.korean || !list || !list.length) return null;
+  const targetRaw = item.korean.trim().toLowerCase();
+  const targetNorm = normalizeKoreanTitle(item.korean);
+
+  let bestMatch = null;
+  let bestScore = 0;
+
+  for (let i = 0; i < list.length; i++) {
+    const g = list[i];
+    const gRaw = (g.korean || '').trim().toLowerCase();
+    const gNorm = normalizeKoreanTitle(g.korean);
+
+    let score = 0;
+    if (gRaw === targetRaw) {
+      score = 100;
+    } else if (gNorm && targetNorm && gNorm === targetNorm) {
+      score = 90;
+    } else if (gNorm && targetNorm && (gNorm.includes(targetNorm) || targetNorm.includes(gNorm))) {
+      const minLen = Math.min(gNorm.length, targetNorm.length);
+      const maxLen = Math.max(gNorm.length, targetNorm.length);
+      score = 65 + (minLen / maxLen) * 20;
+    }
+
+    if (item.vietnamese && g.vietnamese) {
+      const vTarget = item.vietnamese.toLowerCase();
+      const vG = g.vietnamese.toLowerCase();
+      if (vG.includes(vTarget) || vTarget.includes(vG)) {
+        score += 10;
+      }
+    }
+
+    if (score > 0) {
+      if (item.level && g.level === item.level) {
+        score += 15;
+      }
+      if (score > bestScore) {
+        bestScore = score;
+        bestMatch = { index: i, entry: g, score };
+      }
+    }
+  }
+
+  return bestScore >= 60 ? bestMatch : null;
+}
+
+function triggerBulkParse() {
+  const raw = document.getElementById('bulkRawInput').value.trim();
+  if (!raw) {
+    showToast('⚠️ Vui lòng dán dữ liệu ngữ pháp trước khi phân tích', 'warning');
+    return;
+  }
+
+  const items = parseBulkInput(raw);
+  if (!items || !items.length) {
+    showToast('❌ Không nhận diện được ngữ pháp nào. Vui lòng kiểm tra lại định dạng.', 'error');
+    return;
+  }
+
+  parsedBulkItems = items.map((item, idx) => {
+    const match = findBestMatchEnhanced(item, grammarData);
+    let targetAction = '';
+    if (match && match.score >= 60) {
+      targetAction = `update:${match.index}`;
+    } else {
+      targetAction = `new:${item.level || 1}`;
+    }
+    return {
+      ...item,
+      autoMatch: match,
+      targetAction
+    };
+  });
+
+  document.getElementById('bulkStepInput').style.display = 'none';
+  document.getElementById('bulkStepReview').style.display = 'block';
+  document.getElementById('bulkReviewCount').textContent = `🎉 Đã nhận diện: ${parsedBulkItems.length} ngữ pháp`;
+  document.getElementById('bulkConfirmApplyBtn').textContent = `💾 Xác nhận nạp ${parsedBulkItems.length} ngữ pháp vào Thư viện`;
+  renderBulkReviewList();
+}
+
+function renderBulkReviewList() {
+  const container = document.getElementById('bulkReviewList');
+  if (!parsedBulkItems.length) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text2);padding:30px;">Không có mục nào được tìm thấy.</div>';
+    return;
+  }
+
+  const levelGroups = { 1: [], 2: [], 3: [], 4: [], 5: [], 6: [], 7: [] };
+  grammarData.forEach((g, idx) => {
+    if (levelGroups[g.level]) {
+      levelGroups[g.level].push({ idx, g });
+    }
+  });
+
+  container.innerHTML = parsedBulkItems.map((item, i) => {
+    const match = item.autoMatch;
+
+    let matchBadgeHtml = '';
+    if (match && match.score >= 90) {
+      matchBadgeHtml = `<span class="bulk-match-badge bulk-match-exact">🟢 Khớp chuẩn: ${escHtml(match.entry.korean)} (#${escHtml(match.entry.id)})</span>`;
+    } else if (match && match.score >= 60) {
+      matchBadgeHtml = `<span class="bulk-match-badge bulk-match-partial">🟡 Khớp gần đúng: ${escHtml(match.entry.korean)}</span>`;
+    } else {
+      matchBadgeHtml = `<span class="bulk-match-badge bulk-match-new">➕ Mục mới (Chưa có trong Thư viện)</span>`;
+    }
+
+    const levelBadgeClass = badgeClass(item.level || 1);
+    const levelName = LEVEL_NAMES[item.level || 1] || 'SC1';
+
+    return `
+      <div class="bulk-item-card" id="bulkCard_${i}">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-weight:700;font-size:0.85rem;color:var(--accent);">#${i + 1}</span>
+            <span class="card-badge ${levelBadgeClass}" style="font-size:0.72rem;padding:2px 8px;">${levelName}</span>
+            <strong style="color:var(--text);font-size:1.05rem;">${escHtml(item.korean)}</strong>
+            <span style="color:var(--text2);font-size:0.88rem;">${escHtml(item.vietnamese || '')}</span>
+          </div>
+          <div>${matchBadgeHtml}</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;">
+          <div class="form-group">
+            <label style="font-size:0.75rem;font-weight:600;color:var(--text2);text-transform:uppercase;">Tiêu đề tiếng Hàn / Tiếng Việt:</label>
+            <div style="display:flex;gap:6px;">
+              <input type="text" class="form-input" style="padding:6px 10px;font-size:0.85rem;flex:1;" value="${escHtml(item.korean)}" oninput="updateParsedItem(${i}, 'korean', this.value)" placeholder="Tiếng Hàn" />
+              <input type="text" class="form-input" style="padding:6px 10px;font-size:0.85rem;flex:1;" value="${escHtml(item.vietnamese)}" oninput="updateParsedItem(${i}, 'vietnamese', this.value)" placeholder="Tiếng Việt" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size:0.75rem;font-weight:600;color:var(--accent);text-transform:uppercase;">🎯 Vị trí đưa vào Thư viện:</label>
+            <select class="form-input" style="padding:6px 10px;font-size:0.85rem;font-weight:600;background:var(--bg2);" onchange="updateParsedItem(${i}, 'targetAction', this.value)">
+              ${renderTargetOptions(item, levelGroups)}
+            </select>
+          </div>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;border-top:1px dashed var(--border);padding-top:8px;">
+          <div style="font-size:0.78rem;color:var(--text2);">
+            📝 Độ dài nội dung: <strong>${(item.content || '').length}</strong> ký tự | ${((item.content || '').match(/class=["']h-example-box["']/g) || []).length} khung ví dụ
+          </div>
+          <button type="button" class="btn btn-secondary btn-sm" style="font-size:0.75rem;padding:3px 8px;" onclick="toggleItemContentPreview(${i})">
+            👁 Xem trước / Thu gọn
+          </button>
+        </div>
+
+        <div id="bulkItemPreview_${i}" class="grammar-content" style="display:none;margin-top:8px;padding:12px 14px;background:#fff;border:1px solid #e2e8f0;border-radius:8px;max-height:280px;overflow-y:auto;">
+          ${item.content || '<em style="color:#94a3b8;">Không có nội dung</em>'}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTargetOptions(item, levelGroups) {
+  let opts = [];
+  
+  if (item.autoMatch && item.autoMatch.entry) {
+    const m = item.autoMatch;
+    const isSelected = item.targetAction === `update:${m.index}`;
+    opts.push(`<optgroup label="✨ Gợi ý tự động khớp">`);
+    opts.push(`<option value="update:${m.index}" ${isSelected ? 'selected' : ''}>🔄 [CẬP NHẬT] [${LEVEL_NAMES[m.entry.level]}] ${escHtml(m.entry.korean)} - ${escHtml(m.entry.vietnamese)}</option>`);
+    opts.push(`</optgroup>`);
+  }
+
+  const targetLevel = item.level || 1;
+  opts.push(`<optgroup label="➕ Thêm mới vào Thư viện">`);
+  for (let l = 1; l <= 7; l++) {
+    const val = `new:${l}`;
+    const sel = (item.targetAction === val || (!item.autoMatch && item.targetAction.startsWith('new') && l === targetLevel));
+    opts.push(`<option value="${val}" ${sel ? 'selected' : ''}>➕ Thêm mới vào: [${LEVEL_NAMES[l]}] ${LEVEL_FULL[l]}</option>`);
+  }
+  opts.push(`</optgroup>`);
+
+  const isSkipSelected = item.targetAction === 'skip';
+  opts.push(`<optgroup label="⏭ Bỏ qua">`);
+  opts.push(`<option value="skip" ${isSkipSelected ? 'selected' : ''}>⏭ Bỏ qua mục này (Không nạp)</option>`);
+  opts.push(`</optgroup>`);
+
+  opts.push(`<optgroup label="📋 Ghép thủ công vào mục có sẵn khác">`);
+  for (let l = 1; l <= 7; l++) {
+    const itemsInLevel = levelGroups[l] || [];
+    if (itemsInLevel.length) {
+      itemsInLevel.forEach(obj => {
+        if (item.autoMatch && item.autoMatch.index === obj.idx) return;
+        const val = `update:${obj.idx}`;
+        const sel = item.targetAction === val;
+        opts.push(`<option value="${val}" ${sel ? 'selected' : ''}>[${LEVEL_NAMES[l]}] ${escHtml(obj.g.korean)} - ${escHtml(obj.g.vietnamese)}</option>`);
+      });
+    }
+  }
+  opts.push(`</optgroup>`);
+
+  return opts.join('');
+}
+
+function updateParsedItem(index, key, val) {
+  if (parsedBulkItems[index]) {
+    parsedBulkItems[index][key] = val;
+  }
+}
+
+function toggleItemContentPreview(index) {
+  const el = document.getElementById('bulkItemPreview_' + index);
+  if (el) {
+    el.style.display = (el.style.display === 'none' || !el.style.display) ? 'block' : 'none';
+  }
+}
+
+function confirmBulkApply() {
+  if (!parsedBulkItems.length) return;
+
+  let updatedCount = 0;
+  let addedCount = 0;
+  let skippedCount = 0;
+
+  parsedBulkItems.forEach(item => {
+    if (!item.targetAction || item.targetAction === 'skip') {
+      skippedCount++;
+      return;
+    }
+
+    if (item.targetAction.startsWith('update:')) {
+      const targetIdx = parseInt(item.targetAction.split(':')[1], 10);
+      if (grammarData[targetIdx]) {
+        grammarData[targetIdx].content = item.content;
+        if (item.vietnamese && (!grammarData[targetIdx].vietnamese || grammarData[targetIdx].vietnamese.trim() === '')) {
+          grammarData[targetIdx].vietnamese = item.vietnamese;
+        }
+        updatedCount++;
+      }
+    } else if (item.targetAction.startsWith('new:')) {
+      const lvl = parseInt(item.targetAction.split(':')[1], 10) || item.level || 1;
+      const newId = genId(item.korean) || ('grammar-' + Date.now() + '-' + Math.floor(Math.random() * 1000));
+      grammarData.push({
+        id: newId,
+        korean: item.korean,
+        vietnamese: item.vietnamese || '',
+        level: lvl,
+        content: item.content
+      });
+      addedCount++;
+    }
+  });
+
+  try {
+    localStorage.setItem('admin_grammar_data', JSON.stringify(grammarData));
+  } catch(e) {
+    console.warn('LocalStorage save failed:', e);
+  }
+
+  updateCounts();
+  renderCards();
+  closeBulkImportModal();
+
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      icon: 'success',
+      title: 'Nạp ngữ pháp thành công!',
+      html: `
+        <div style="font-size:0.95rem;text-align:left;line-height:1.8;padding:8px 12px;background:#0f172a;border-radius:8px;border:1px solid #334155;color:#f1f5f9;">
+          <div>🔄 <strong>Cập nhật thẻ có sẵn:</strong> ${updatedCount} mục</div>
+          <div>➕ <strong>Thêm mới vào thư viện:</strong> ${addedCount} mục</div>
+          ${skippedCount > 0 ? `<div>⏭ <strong>Bỏ qua:</strong> ${skippedCount} mục</div>` : ''}
+          <div style="margin-top:10px;font-size:0.85rem;color:#38bdf8;">
+            💡 Đừng quên ấn <strong>"Xuất JSON"</strong> trên thanh điều hướng để copy cập nhật vào mã nguồn khi hoàn tất!
+          </div>
+        </div>
+      `,
+      confirmButtonText: 'Đã hiểu',
+      background: '#1e293b',
+      color: '#f1f5f9'
+    });
+  } else {
+    alert(`Đã nạp thành công: Cập nhật ${updatedCount} mục, thêm mới ${addedCount} mục.`);
+  }
+}
+
+function copyGeminiPromptTemplate() {
+  const prompt = `Bạn là chuyên gia ngữ pháp tiếng Hàn, biên soạn tài liệu học TOPIK cho học viên Việt Nam.
+
+Hãy tạo nội dung chi tiết và bài tập cho các cấu trúc ngữ pháp sau:
+[Điền danh sách ngữ pháp, ví dụ: 은/는, 이/가, 을/를, 에 있다, 고 싶다]
+
+=== YÊU CẦU ĐẦU RA ===
+Xuất ra DUY NHẤT một mảng JSON thuần túy (JSON Array), KHÔNG viết bất kỳ mã HTML hay lời dẫn nào ngoài JSON:
+[
+  {
+    "korean": "Tên ngữ pháp tiếng Hàn (ví dụ: 은/는)",
+    "vietnamese": "Ý nghĩa ngắn gọn (ví dụ: Tiểu từ chủ đề)",
+    "level": 1, // 1: SC1, 2: SC2, 3: TC3, 4: TC4, 5: CC5, 6: CC6
+    "meaning": "Giải thích chi tiết ý nghĩa và cách dùng bằng tiếng Việt...",
+    "rules": [
+      { "condition": "Danh từ có patchim", "combine": "+ 은", "example": "선생님 → 선생님은" },
+      { "condition": "Danh từ không patchim", "combine": "+ 는", "example": "저 → 저는" }
+    ],
+    "examples": [
+      { "kr": "저는 베트남 사람입니다.", "vi": "Tôi là người Việt Nam." },
+      { "kr": "이것은 책상입니다.", "vi": "Cái này là cái bàn." },
+      { "kr": "오늘은 날씨가 좋아요.", "vi": "Hôm nay thời tiết đẹp." },
+      { "kr": "사과는 비쌉니다. 수박은 쌉니다.", "vi": "Táo thì đắt, dưa hấu thì rẻ (so sánh)." }
+    ],
+    "notes": "Lưu ý quan trọng hoặc so sánh phân biệt với ngữ pháp tương tự...",
+    "quiz": [
+      {
+        "type": "mc",
+        "question": "동생___ 밥을 먹습니다.",
+        "options": ["는", "은", "이", "가"],
+        "answer": 2,
+        "explain": "'동생' có patchim ㅇ nên đi với 은."
+      },
+      {
+        "type": "fill",
+        "question": "Điền tiểu từ thích hợp: 제 직업___ 의사입니다.",
+        "answer": "은",
+        "explain": "'직업' có patchim ㅂ nên đi với 은."
+      },
+      {
+        "type": "tf",
+        "question": "'저은 학생입니다.' — Câu này đúng hay sai?",
+        "answer": "f",
+        "explain": "Sai! '저' không có patchim nên phải dùng 는 → 저는."
+      },
+      {
+        "type": "match",
+        "question": "Nối danh từ với tiểu từ đúng:",
+        "pairs": [
+          { "left": "의자 (Cái ghế)", "right": "는" },
+          { "left": "선생님 (Giáo viên)", "right": "은" }
+        ],
+        "explain": "'의자' không patchim đi với 는, '선생님' có patchim đi với 은."
+      }
+    ]
+  }
+]`;
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(prompt).then(() => {
+      showToast('📋 Đã copy Prompt mẫu cho Gemini vào Clipboard!');
+    });
+  } else {
+    showToast('📋 Vui lòng sao chép prompt từ hướng dẫn.');
+  }
+}
+
+function loadSampleBulkData() {
+  const sample = `[
+  {
+    "korean": "은/는",
+    "vietnamese": "Tiểu từ chủ đề",
+    "level": 1,
+    "meaning": "은/는 là tiểu từ đứng ngay sau danh từ để chỉ định danh từ đó là chủ đề của câu, hoặc được dùng để nhấn mạnh, so sánh và đối chiếu hai đối tượng.",
+    "rules": [
+      { "condition": "Danh từ có patchim", "combine": "+ 은", "example": "선생님 → 선생님은" },
+      { "condition": "Danh từ không patchim", "combine": "+ 는", "example": "저 → 저는" }
+    ],
+    "examples": [
+      { "kr": "저는 베트남 사람입니다.", "vi": "Tôi là người Việt Nam." },
+      { "kr": "이것은 책상입니다.", "vi": "Cái này là cái bàn." },
+      { "kr": "제 동생은 학생입니다.", "vi": "Em trai tôi là học sinh." },
+      { "kr": "사과는 비쌉니다. 수박은 쌉니다.", "vi": "Táo thì đắt. Dưa hấu thì rẻ (so sánh)." }
+    ],
+    "notes": "Khác với 이/가 (nhấn mạnh chủ ngữ đơn thuần hoặc thông tin mới), 은/는 thường dùng cho thông tin cũ đã được nhắc đến, hoặc mang ý nghĩa so sánh, tương phản rõ rệt giữa hai hay nhiều đối tượng.",
+    "quiz": [
+      {
+        "type": "mc",
+        "question": "동생___ 밥을 먹습니다.",
+        "options": ["는", "은", "이", "가"],
+        "answer": 2,
+        "explain": "'동생' có patchim ㅇ nên đi với 은."
+      },
+      {
+        "type": "fill",
+        "question": "Điền tiểu từ thích hợp: 제 직업___ 의사입니다.",
+        "answer": "은",
+        "explain": "'직업' có patchim ㅂ nên đi với 은."
+      },
+      {
+        "type": "tf",
+        "question": "'저은 학생입니다.' — Câu này đúng hay sai?",
+        "answer": "f",
+        "explain": "Sai! '저' không có patchim nên phải dùng 는 → 저는."
+      },
+      {
+        "type": "match",
+        "question": "Nối danh từ với tiểu từ đúng:",
+        "pairs": [
+          { "left": "의자 (Cái ghế)", "right": "는" },
+          { "left": "선생님 (Giáo viên)", "right": "은" }
+        ],
+        "explain": "'의자' không patchim đi với 는, '선생님' có patchim đi với 은."
+      }
+    ]
+  }
+]`;
+  document.getElementById('bulkRawInput').value = sample;
+  showToast('Đã dán dữ liệu mẫu!');
+}
+
+// =============================================
+// EXPORT MODAL
+// =============================================
+function openExportModal() {
+  const lines = [];
+  lines.push('/**');
+  lines.push(' * Grammar Library — Thư viện Ngữ pháp Dùng chung');
+  lines.push(' * Chỉnh sửa tại: /grammar/admin.html');
+  lines.push(' * Sau khi chỉnh sửa, Export JSON và paste đè vào file này, rồi deploy.');
+  lines.push(' */');
+  lines.push('window.GrammarLibrary = [');
+
+  const levels = [1,2,3,4,5,6,7];
+  const levelComments = {
+    1: '  // ===== SƠ CẤP 1 =====',
+    2: '  // ===== SƠ CẤP 2 =====',
+    3: '  // ===== TRUNG CẤP 3 =====',
+    4: '  // ===== TRUNG CẤP 4 ===== (trống)',
+    5: '  // ===== CAO CẤP 5 ===== (trống)',
+    6: '  // ===== CAO CẤP 6 ===== (trống)',
+    7: '  // ===== TOPIK ===== (trống)',
+  };
+
+  for (const lvl of levels) {
+    lines.push('');
+    lines.push(levelComments[lvl]);
+    const entries = grammarData.filter(g => g.level === lvl);
+    for (const g of entries) {
+      const content = (g.content || '').replace(/\\/g,'\\\\').replace(/`/g,'\\`').replace(/\${/g,'\\${');
+      lines.push(`  { id: ${JSON.stringify(g.id)}, korean: ${JSON.stringify(g.korean)}, vietnamese: ${JSON.stringify(g.vietnamese)}, level: ${g.level}, content: \`${content}\` },`);
+    }
+  }
+
+  lines.push('];');
+  const code = lines.join('\n');
+  document.getElementById('exportTextarea').value = code;
+  document.getElementById('copySuccess').style.display = 'none';
+  document.getElementById('exportModal').classList.add('open');
+}
+
+function closeExportModal() {
+  document.getElementById('exportModal').classList.remove('open');
+}
+
+function copyExport() {
+  const ta = document.getElementById('exportTextarea');
+  ta.select();
+  try {
+    navigator.clipboard.writeText(ta.value).then(() => {
+      document.getElementById('copySuccess').style.display = 'inline';
+      setTimeout(() => { document.getElementById('copySuccess').style.display = 'none'; }, 3000);
+    });
+  } catch(e) {
+    document.execCommand('copy');
+    document.getElementById('copySuccess').style.display = 'inline';
+    setTimeout(() => { document.getElementById('copySuccess').style.display = 'none'; }, 3000);
+  }
+}
+
+// =============================================
+// RICH TEXT EXEC COMMAND & EXAMPLE BOX
+// =============================================
+function execCmd(cmd, value) {
+  document.getElementById('contentEditor').focus();
+  document.execCommand(cmd, false, value || null);
+}
+
+// Chèn Ô ví dụ ngang
+const exampleColors = [
+  { border: '#4f46e5', bg: '#f8fafc', badge: '#4f46e5', name: 'Tím chàm' },
+  { border: '#0284c7', bg: '#f0f9ff', badge: '#0284c7', name: 'Xanh dương' },
+  { border: '#059669', bg: '#ecfdf5', badge: '#059669', name: 'Xanh lá' },
+  { border: '#d97706', bg: '#fffbeb', badge: '#b45309', name: 'Vàng cam' },
+  { border: '#dc2626', bg: '#fef2f2', badge: '#b91c1c', name: 'Đỏ hồng' }
+];
+let currentExColorIdx = 0;
+
+function insertExampleBox() {
+  const editor = document.getElementById('contentEditor');
+  editor.focus();
+  const sel = window.getSelection();
+  let selectedText = '';
+  let range = null;
+
+  if (sel.rangeCount > 0 && editor.contains(sel.anchorNode)) {
+    range = sel.getRangeAt(0);
+    selectedText = range.toString().trim();
+  }
+
+  const c = exampleColors[currentExColorIdx % exampleColors.length];
+
+  // Nếu có bôi đen, giữ nguyên xuống dòng
+  let contentHtml = '';
+  if (selectedText) {
+    contentHtml = selectedText.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+  } else {
+    contentHtml = 'Nhập câu ví dụ tiếng Hàn và dịch nghĩa ở đây...';
+  }
+
+  const boxHtml = `
+    <div class="h-example-box" style="margin:14px 0;padding:12px 16px;background:${c.bg};border:1px solid #cbd5e1;border-left:5px solid ${c.border};border-radius:8px;color:#1e293b;" contenteditable="true">
+      <div style="font-weight:700;color:${c.badge};font-size:0.85em;margin-bottom:6px;display:flex;align-items:center;gap:6px;" contenteditable="false">
+        <span>💡 Ví dụ:</span>
+        <button type="button" onclick="changeBoxColor(this)" style="font-size:0.75rem;padding:1px 6px;border-radius:4px;border:1px solid #cbd5e1;background:#fff;cursor:pointer;color:#475569;" title="Đổi màu khung">🎨 Đổi màu</button>
+      </div>
+      <div class="h-example-text" style="line-height:1.7;">${contentHtml}</div>
+    </div>
+    <p><br></p>
+  `;
+
+  document.execCommand('insertHTML', false, boxHtml);
+}
+
+function changeBoxColor(btn) {
+  const box = btn.closest('.h-example-box');
+  if (!box) return;
+  currentExColorIdx = (currentExColorIdx + 1) % exampleColors.length;
+  const c = exampleColors[currentExColorIdx];
+  box.style.background = c.bg;
+  box.style.borderLeftColor = c.border;
+  const badge = box.querySelector('span');
+  if (badge) badge.style.color = c.badge;
+}
+
+const exBtn = document.getElementById('adminInsertExampleBtn');
+if (exBtn) {
+  exBtn.addEventListener('click', insertExampleBox);
+}
+
+// =============================================
+// TOAST
+// =============================================
+function showToast(msg, type) {
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      toast: true, position: 'top-end', icon: type || 'success',
+      title: msg, showConfirmButton: false, timer: 2200,
+      background: '#1e293b', color: '#f1f5f9'
+    });
+  }
+}
+
+// =============================================
+// KEYBOARD SHORTCUTS
+// =============================================
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeEditModal();
+    closeExportModal();
+    closeBulkImportModal();
+  }
+});
+
+// Close modals on backdrop click
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
+document.getElementById('exportModal').addEventListener('click', function(e) {
+  if (e.target === this) closeExportModal();
+});
+document.getElementById('bulkImportModal').addEventListener('click', function(e) {
+  if (e.target === this) closeBulkImportModal();
+});
+</script>
+</body>
+</html>

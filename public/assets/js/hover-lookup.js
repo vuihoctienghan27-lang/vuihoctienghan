@@ -34,7 +34,7 @@
     // ── Panel ──
     var panel = document.createElement('div');
     panel.id = 'hover-vocab-panel';
-    panel.style.cssText = 'display:none;position:fixed;z-index:99999;right:16px;bottom:16px;width:380px;min-width:280px;max-width:90vw;max-height:80vh;overflow:auto;background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);font-family:Pretendard,sans-serif;font-size:0.92em;';
+    panel.style.cssText = 'display:none;flex-direction:column;position:fixed;z-index:99999;right:16px;bottom:16px;width:280px;height:80vh;min-width:280px;max-width:90vw;max-height:80vh;overflow:hidden;background:#fff;border:1px solid #e2e8f0;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.08);font-family:Pretendard,sans-serif;font-size:0.92em;';
     panel.innerHTML = '<div id="hv-hdr" style="padding:10px 14px;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:6px;position:sticky;top:0;background:#fff;z-index:10;border-radius:16px 16px 0 0;cursor:grab;user-select:none;">'+
         '<img src="'+rootPath+'assets/img/logo-navbar.png" style="width:22px;height:22px;flex-shrink:0;" alt="">'+
         '<span id="hv-word" style="font-weight:700;font-size:1.05em;color:#1e293b;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</span>'+
@@ -44,7 +44,8 @@
         '<button id="hv-expand" title="Mở rộng" style="display:none;background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0;border-radius:6px;">'+svgExpand+'</button>'+
         '<button id="hv-pin" title="Ghim panel" style="background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0;border-radius:6px;">'+svgPinOff+'</button>'+
         '<button id="hv-close" title="Đóng" style="background:none;border:none;cursor:pointer;padding:4px;flex-shrink:0;border-radius:6px;">'+svgClose+'</button>'+
-        '</div><div style="padding:10px 16px 14px 16px;" id="hv-body"></div>'+
+        '</div><div id="hv-body" style="padding:10px 16px 14px 16px;flex:1 1 auto;overflow:auto;min-height:0;"></div>'+
+        '<div id="hv-foot" style="flex:0 0 auto;background:#fff;border-top:1px solid #f1f5f9;padding:8px 14px;text-align:center;font-size:0.8em;font-weight:600;color:#dc2626;border-radius:0 0 16px 16px;">✋ Hãy kéo thả để thay đổi kích cỡ và vị trí</div>'+
         '<div class="hv-resize-top"></div><div class="hv-resize-bottom"></div><div class="hv-resize-left"></div><div class="hv-resize-right"></div>';
     document.body.appendChild(panel);
 
@@ -102,6 +103,36 @@
         document.getElementById('hv-speak').style.display='';
     }
 
+    // ── Panel geometry persistence (chỉ đổi khi người dùng kéo thả) ──
+    var HV_GEOM='hoverPanelGeom';
+    var _userSized=false;
+    function savePanelGeom(){
+        if(window.innerWidth<=768) return;
+        _userSized=true;
+        try{
+            localStorage.setItem(HV_GEOM,JSON.stringify({
+                w:panel.offsetWidth,h:panel.offsetHeight,
+                left:panel.style.left||'',top:panel.style.top||'',
+                right:panel.style.right||'',bottom:panel.style.bottom||''
+            }));
+        }catch(_){}
+    }
+    function loadPanelGeom(){
+        if(window.innerWidth<=768) return false;
+        var raw=null;try{raw=localStorage.getItem(HV_GEOM);}catch(_){}
+        if(!raw) return false;
+        try{
+            var g=JSON.parse(raw);
+            if(g.w)panel.style.width=g.w+'px';
+            if(g.h)panel.style.height=g.h+'px';
+            if(g.left){panel.style.left=g.left;panel.style.right=g.right||'auto';}
+            if(g.top){panel.style.top=g.top;panel.style.bottom=g.bottom||'auto';}
+            _userSized=true;
+            return true;
+        }catch(_){return false;}
+    }
+    loadPanelGeom();
+
     // ── Drag (desktop) ──
     var dragInfo=null;
     document.getElementById('hv-hdr').addEventListener('mousedown',function(e){
@@ -116,7 +147,7 @@
         panel.style.left=(dragInfo.l+e.clientX-dragInfo.sx)+'px';
         panel.style.top=(dragInfo.t+e.clientY-dragInfo.sy)+'px';
     });
-    document.addEventListener('mouseup',function(){dragInfo=null;});
+    document.addEventListener('mouseup',function(){ if(dragInfo){dragInfo=null;savePanelGeom();} });
 
     // ── Pin button ──
     var hvPinned = false;
@@ -173,7 +204,7 @@
             panel.style.top = (ri.t + ri.h - nh) + 'px';
         }
     });
-    document.addEventListener('mouseup',function(){resizeInfo=null;});
+    document.addEventListener('mouseup',function(){ if(resizeInfo){resizeInfo=null;savePanelGeom();} });
 
     // Don't propagate mousedown from resize handles
     panel.addEventListener('mousedown',function(e){
@@ -385,7 +416,16 @@
             '으실게요','으실래요','으실까요','으시지요','으시죠','으시네요','으시군요','으시잖아요',
         ];
         for(var i=0;i<V.length;i++){var v=V[i];if(word.endsWith(v)&&word.length>v.length){var stem=word.slice(0,-v.length);set.push(stem+'다');set.push(stem);}}
-        
+
+        // 하다-động từ: X합니다/X합니까/... → X하다 (KHÔNG dùng quy tắc +다 thông thường)
+        var HADA=['합니다','합니까','했습니다','했습니까','하십니다','하십니까','하시고','하시는','하실','하신','하시면','하셔서','하시며','하시니','하시니까','하겠습니다','하겠어요'];
+        for(var i=0;i<HADA.length;i++){var h=HADA[i];if(word.endsWith(h)&&word.length>h.length){var hs=word.slice(0,-h.length);set.push(hs+'하다');set.push(hs+'하');}}
+        // 가다/오다: X가서/X갑니다/X갈/X와서/... → X가다 / X오다 (động từ ghép & trợ động từ)
+        var GADA=['갑니다','갑니까','갔습니다','갔습니까','갔어요','갔어','갔다','갔','가서','가고','가면','가니','가니까','가는','갈','가요','간','갔던','가도록','가지','가거나','가든지','가야','가죠','가세요','가십니다','가십니까','가시','가셔','가신','가실','가'];
+        var ODA=['옵니다','옵니까','왔습니다','왔습니까','왔어요','왔어','왔다','왔','와서','오고','오면','오니','오니까','오는','올','와요','온','왔던','오도록','오지','오거나','오든지','와야','오죠','오세요','오십니다','오십니까','오시','오셔','오신','오실','와','오'];
+        for(var i=0;i<GADA.length;i++){var g=GADA[i];if(word.endsWith(g)&&word.length>g.length){var gs=word.slice(0,-g.length);set.push(gs+'가다');set.push(gs+'가');}}
+        for(var i=0;i<ODA.length;i++){var o=ODA[i];if(word.endsWith(o)&&word.length>o.length){var os=word.slice(0,-o.length);set.push(os+'오다');set.push(os+'오');}}
+
         // Auxiliary verb patterns: 아/어 + 가다/오다/보다/주다/놓다/두다/버리다/내다/쌓다 etc.
         // These are stripped in two steps: first the auxiliary, then the 아/어 connector
         var Aux=[
@@ -531,6 +571,105 @@
         return null;
     }
 
+    // ── Sense splitting + context matching ──
+    // KRDict gộp nhiều nghĩa trong 1 field `m` ngăn bằng ';' → tách thành từng nghĩa.
+    function splitSenses(entry){
+        if(!entry) return [];
+        var mParts=String(entry.m||'').split(';').map(function(s){return s.trim();}).filter(Boolean);
+        var sArr=Array.isArray(entry.s)?entry.s:[];
+        if(!mParts.length) return sArr.slice();
+        if(!sArr.length) return mParts.map(function(p){return {m:p,d:entry.d||'',x:entry.x||[]};});
+        var byM={};sArr.forEach(function(s){byM[normVi(s.m)]=s;});
+        return mParts.map(function(p){return byM[normVi(p)]||{m:p,d:'',x:[]};});
+    }
+    // Chuẩn hoá tiếng Việt để so khớp (bỏ dấu, bỏ ký tự đặc biệt)
+    function normVi(s){
+        return String(s||'').toLowerCase()
+            .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+            .replace(/đ/g,'d')
+            .replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();
+    }
+    // Điểm khớp giữa nghĩa ngữ cảnh và 1 nghĩa từ điển
+    function scoreSense(ctxNorm,senseNorm){
+        if(!ctxNorm||!senseNorm) return 0;
+        var score=0;
+        if(senseNorm===ctxNorm) score+=10;
+        if(senseNorm.indexOf(ctxNorm)!==-1||ctxNorm.indexOf(senseNorm)!==-1) score+=4;
+        var ctxTokens=ctxNorm.split(' ').filter(function(t){return t.length>1;});
+        var senseTokens=senseNorm.split(' ').filter(function(t){return t.length>1;});
+        for(var i=0;i<senseTokens.length;i++){ if(ctxTokens.indexOf(senseTokens[i])!==-1) score+=1; }
+        return score;
+    }
+    // Tạo kết quả panel ưu tiên nghĩa theo ngữ cảnh (data-meaning của .vocab-word),
+    // các nghĩa từ điển xếp sau, nghĩa khớp ngữ cảnh lên trước.
+    function buildContextResult(base,ctx,exs,entry,ctxText){
+        var ctxNorm=normVi(ctx);
+        var rankNorm=ctxNorm||normVi(ctxText);
+        var dictSenses=(entry&&entry.base)?[{m:entry.meaning||'',x:entry.examples||[]}]:(entry?splitSenses(entry):[]);
+        dictSenses.forEach(function(s){ s._sc=scoreSense(rankNorm,normVi(s.m)); });
+        // Chỉ đổi thứ tự khi có 1 nghĩa khớp nổi bật (tránh nhiễu)
+        var max=0,cnt=0;
+        dictSenses.forEach(function(s){ var v=s._sc||0; if(v>max){max=v;cnt=1;}else if(v===max&&max>0){cnt++;} });
+        if(max>0&&cnt===1) dictSenses.sort(function(a,b){ return (b._sc||0)-(a._sc||0); });
+        if(ctxNorm) dictSenses=dictSenses.filter(function(s){
+            var sm=normVi(s.m);
+            return sm!==ctxNorm; // chỉ bỏ nghĩa trùng khít, giữ mọi nghĩa khác
+        });
+        var senses=[];
+        if(ctx) senses.push({m:ctx,x:exs||[],ctx:true});
+        senses=senses.concat(dictSenses);
+        if(!senses.length&&base) senses=[{m:'(chưa có nghĩa)',x:[]}];
+        return {
+            w:base||'',
+            s:senses,
+            t:entry?(entry.t||''):'',
+            k:entry?(entry.k||''):'',
+            src:ctx?'📚 Theo bài + KRDict':(entry?'📚 KRDict':'📚 Theo bài')
+        };
+    }
+    // Lấy bản dịch (phần đáp án) gần nhất để làm ngữ cảnh xếp hạng
+    function contextTextFor(el){
+        try{
+            var qb=el&&el.closest?el.closest('.question-block'):null;
+            if(!qb) return '';
+            var tr=qb.querySelector('.explanation-content .trans-content')||qb.querySelector('.trans-content');
+            return tr?tr.textContent:'';
+        }catch(_){return '';}
+    }
+    // Lấy nghĩa từ 1 entry fullMap (hỗ trợ cả entry tay lẫn KRDict)
+    function entryMeaning(e){
+        if(!e) return '';
+        return e.base?(e.meaning||''):(e.m||'');
+    }
+    // Tách danh từ ghép không dấu cách thành các từ có trong từ điển (greedy longest-match)
+    function segmentWord(word){
+        if(!fullMap||!word) return null;
+        var n=word.length,res=[],i=0;
+        while(i<n){
+            var matched=null,maxLen=Math.min(n-i,10);
+            for(var len=maxLen;len>=2;len--){ // mỗi phần tối thiểu 2 ký tự (tránh tách vụn)
+                var sub=word.slice(i,i+len);
+                if(fullMap.has(sub)){matched=sub;break;}
+            }
+            if(!matched) return null; // không tách được trọn vẹn
+            res.push(matched);i+=matched.length;
+        }
+        return res.length>1?res:null;
+    }
+    // Google Dịch (endpoint công khai có CORS, không cần API key)
+    async function googleTranslate(text){
+        try{
+            var resp=await fetch('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=ko&tl=vi&q='+encodeURIComponent(text));
+            var data=await resp.json();
+            if(Array.isArray(data)) return data.filter(function(x){return typeof x==='string';}).join(' ').trim();
+            return typeof data==='string'?data:'';
+        }catch(_){return '';}
+    }
+    function escHtml(s){return String(s||'').replace(/[&<>"']/g,function(t){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[t];});}
+    function speakWord(w){if(!w||!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(w);u.lang='ko-KR';u.rate=0.85;window.speechSynthesis.speak(u);}
+    // Khung từ điển nhúng trong navigator (chỉ desktop)
+    function embeddedDictBody(){return (window.innerWidth>768)?document.getElementById('nav-dict-body'):null;}
+
     var _lastClickY=0;
     function scrollForMobile(){
         if(window.innerWidth>768) return;
@@ -543,6 +682,7 @@
 
     // ── Show panel ──
     var curData=null;
+    var activeRoot=null;
     function showPanel(data){
         var senses=[],src='📚 KRDict';
         if(data.base){
@@ -558,20 +698,18 @@
                 data={w:data.base,m:data.meaning,t:'',x:data.examples||[],s:null,k:'',src:'📚 TOPIK'};
             }
         }else{
-            senses=data.s||[{m:data.m,d:data.d,x:data.x}];
+            senses=(data.s&&data.s.length)?data.s:splitSenses(data);
         }
         curData=data;
-        document.getElementById('hv-word').textContent=data.w;
-        resetSearchUI();
-        var body=document.getElementById('hv-body');
         var html='';
         for(var i=0;i<senses.length;i++){
             var sp=senses[i];
             var sk=data.w+'::'+sp.m;
             var saved=window.savedVocabSet&&(window.savedVocabSet.has(sk)||window.savedVocabSet.has(data.w));
-            html+='<div style="margin-bottom:8px;padding:10px 12px;background:#f8fafc;border:1px solid #f1f5f9;border-radius:10px;">';
+            var isCtx=!!sp.ctx;
+            html+='<div style="margin-bottom:8px;padding:10px 12px;background:'+(isCtx?'#ecfdf5':'#f8fafc')+';border:1px solid '+(isCtx?'#a7f3d0':'#f1f5f9')+';border-radius:10px;">';
             html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;">';
-            html+='<div style="flex:1;"><div style="font-size:0.7em;color:#94a3b8;font-weight:600;margin-bottom:2px;">NGHĨA '+(i+1)+'</div>';
+            html+='<div style="flex:1;"><div style="font-size:0.7em;color:'+(isCtx?'#059669':'#94a3b8')+';font-weight:600;margin-bottom:2px;">'+(isCtx?'NGHĨA TRONG BÀI':'NGHĨA '+(i+1))+'</div>';
             html+='<div style="color:#0f172a;font-weight:500;">'+sp.m+'</div>';
             if(sp.d)html+='<div style="color:#64748b;font-size:0.85em;line-height:1.45;margin-top:2px;">'+sp.d+'</div>';
             html+='</div>';
@@ -582,14 +720,29 @@
         }
         if(data.t)html+='<span style="display:inline-block;margin-top:4px;padding:2px 10px;background:#eff6ff;color:#2563eb;border-radius:6px;font-size:0.75em;">'+data.t+'</span>';
         if(data.k)html+='<div style="margin-top:10px;padding:8px 12px;background:#fffbeb;border:1px solid #fef3c7;border-radius:10px;"><div style="font-size:0.7em;color:#92400e;font-weight:600;margin-bottom:2px;">한국어 정의</div><div style="color:#78350f;font-size:0.85em;line-height:1.5;">'+data.k+'</div></div>';
-        html+='<div style="font-size:0.6em;color:#cbd5e1;margin-top:8px;text-align:right;">'+(data.src||'📚 KRDict')+'</div>';
-        body.innerHTML=html;
-        if(window.innerWidth<=768){panel.style.left='';panel.style.right='';panel.style.top='';panel.style.bottom='';panel.style.height='';panel.style.maxHeight='';panel.style.transform='';}
-        panel.style.display='block';
-        // Scroll on mobile after display
-        scrollForMobile();
+        var embBody=embeddedDictBody();
+        if(embBody){
+            // Nhúng vào khung từ điển của navigator (desktop trang đề)
+            embBody.innerHTML='<div class="nav-dict-word">'+escHtml(data.w)+' <button class="nav-dict-speak" title="Phát âm">🔊</button></div>'+html;
+            activeRoot=embBody;
+            embBody.scrollTop=0;
+            var spk=embBody.querySelector('.nav-dict-speak');
+            if(spk)spk.addEventListener('click',function(ev){ev.stopPropagation();speakWord(data.w);});
+            var np=document.getElementById('question-nav-panel');
+            if(np&&!np.classList.contains('open')&&typeof window._navToggle==='function')window._navToggle();
+        }else{
+            document.getElementById('hv-word').textContent=data.w;
+            resetSearchUI();
+            var body=document.getElementById('hv-body');
+            body.innerHTML=html;
+            activeRoot=body;
+            body.scrollTop=0;
+            if(window.innerWidth<=768){panel.style.left='';panel.style.right='';panel.style.top='';panel.style.bottom='';panel.style.height='';panel.style.maxHeight='';panel.style.transform='';}
+            panel.style.display='flex';
+            scrollForMobile();
+        }
         // Save buttons
-        body.querySelectorAll('.hv-sv').forEach(function(btn){
+        activeRoot.querySelectorAll('.hv-sv').forEach(function(btn){
             btn.addEventListener('click',function(e){e.stopPropagation();handleSave(this.dataset.word,this.dataset.mean,this.dataset.key,+this.dataset.sidx,this);});
         });
         // Auto-translate
@@ -600,15 +753,15 @@
 
     // ── Auto-translate examples ──
     async function autoTranslate(){
-        var divs=panel.querySelectorAll('.hv-ex');
+        var divs=(activeRoot||panel).querySelectorAll('.hv-ex');
         for(var i=0;i<divs.length;i++){
             var d=divs[i];
             if(d.querySelector('.hv-vi')) continue;
             var t=d.textContent.trim();if(!t) continue;
             try{
-                var resp=await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=ko&tl=vi&dt=t&q='+encodeURIComponent(t));
+                var resp=await fetch('https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=ko&tl=vi&q='+encodeURIComponent(t));
                 var data=await resp.json();
-                var vi=data[0]&&data[0].map(function(s){return s[0];}).filter(Boolean).join('')||'';
+                var vi=Array.isArray(data)?data.filter(function(x){return typeof x==='string';}).join(' ').trim():(typeof data==='string'?data:'');
                 if(vi){var s=document.createElement('span');s.className='hv-vi';s.style.cssText='display:block;color:#16a34a;font-size:0.9em;margin-top:2px;';s.textContent=vi;d.appendChild(s);}
             }catch(_){}
         }
@@ -637,7 +790,7 @@
         if(curData){
             var senses=curData.s||[{m:curData.m,d:curData.d,x:curData.x}];
             var sense=senses[sIdx];
-            if(sense){senseDef=sense.d||'';if(sense.x){sense.x.forEach(function(ex,j){var ko=typeof ex==='string'?ex:(ex.ko||'');if(!ko)return;var vi='';var d=panel.querySelector('.hv-ex[data-idx="'+sIdx+'-'+j+'"]');if(d){var vs=d.querySelector('.hv-vi');if(vs)vi=vs.textContent.replace(/^ → /,'').trim();}senseExamples.push({ko:ko,vi:vi});});}}
+            if(sense){senseDef=sense.d||'';if(sense.x){sense.x.forEach(function(ex,j){var ko=typeof ex==='string'?ex:(ex.ko||'');if(!ko)return;var vi='';var d=(activeRoot||panel).querySelector('.hv-ex[data-idx="'+sIdx+'-'+j+'"]');if(d){var vs=d.querySelector('.hv-vi');if(vs)vi=vs.textContent.replace(/^ → /,'').trim();}senseExamples.push({ko:ko,vi:vi});});}}
             if(senseExamples.length>1)senseExamples=[senseExamples[Math.floor(Math.random()*senseExamples.length)]];
         }
         // Folder picker — 2-level hierarchy
@@ -788,6 +941,22 @@
                 return;
             }
         }
+        // Ưu tiên nghĩa theo ngữ cảnh khi bấm vào từ đã gắn nhãn (.vocab-word)
+        var vw = e.target.closest ? e.target.closest('.vocab-word') : null;
+        if(vw){
+            var vbase=vw.getAttribute('data-base')||getWord(e);
+            if(vbase){
+                var vctx=vw.getAttribute('data-meaning')||'';
+                var vexs=[];
+                try{vexs=JSON.parse(decodeURIComponent(vw.getAttribute('data-examples')||'[]'));}catch(_){}
+                var surface=(getWord(e)||vw.textContent||'').trim();
+                var centry=lookup(vbase)||(surface&&surface!==vbase?lookup(surface):null);
+                if(!centry&&!fullLoaded){await loadDict();centry=lookup(vbase)||(surface&&surface!==vbase?lookup(surface):null);}
+                _lastClickY=e.clientY;
+                showPanel(buildContextResult(vbase,vctx,vexs,centry));
+                return;
+            }
+        }
         _lastClickY=e.clientY;
         var word=getWord(e);
         if(!word){
@@ -795,10 +964,20 @@
             return;
         }
         var result=lookup(word);
-        if(result){showPanel(result);return;}
-        if(!fullLoaded){await loadDict();result=lookup(word);if(result){showPanel(result);return;}}
-        // API fallback
+        if(result){showPanel(buildContextResult(result.w||result.base||word,'',[],result,contextTextFor(e.target)));return;}
+        if(!fullLoaded){await loadDict();result=lookup(word);if(result){showPanel(buildContextResult(result.w||result.base||word,'',[],result,contextTextFor(e.target)));return;}}
+        // Tách danh từ ghép không dấu cách (tên cơ quan, danh từ riêng...)
+        var seg=segmentWord(word);
+        if(seg){
+            var segSenses=seg.map(function(p){var m=entryMeaning(fullMap.get(p));return {m:p+(m?' — '+m:'')};});
+            showPanel({w:word,s:segSenses,t:'',k:'',src:'🔎 Tách từ ghép'});
+            return;
+        }
+        // API fallback (Naver)
         if(typeof VocabExternal!=='undefined'){try{var res=await VocabExternal.fetchExamples(word,word);if(res&&res.length>0){showPanel({w:word,m:res[0].viMeaning||res[0].meaning||'',t:res[0].pos||'',x:(res[0].examples||res).slice(0,3).map(function(r){return r.ko||'';}),k:'',src:'📚 KRDict'});return;}}catch(_){}}
+        // Google Dịch fallback
+        var gt=await googleTranslate(word);
+        if(gt){showPanel({w:word,s:[{m:gt}],t:'',k:'',src:'🌐 Google Dịch'});return;}
         if(!hvPinned) panel.style.display='none';
     });
 
