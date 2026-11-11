@@ -212,6 +212,7 @@
                     <option value="study_desc">Học nhiều nhất</option>
                 </select>
                 <button class="btn-refresh" onclick="loadData()">⟳ Làm mới</button>
+                <button class="btn-refresh" id="btnMigrateEmail" onclick="migrateEmails()" style="display:none;"></button>
             </div>
             <div class="table-scroll">
                 <table>
@@ -285,6 +286,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-functions-compat.js"></script>
 <script src="assets/js/menu.js"></script>
 
 <script>
@@ -343,17 +345,123 @@
         document.getElementById('userTableBody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-sub);">Đang tải dữ liệu...</td></tr>';
         try {
             const db = firebase.firestore();
-            const snap = await db.collection('users').get();
+            const [snap, authList, privSnap] = await Promise.all([
+                db.collection('users').get(), loadAuthUsers(),
+                db.collection('user_private').get().catch(() => null)
+            ]);
             allUsers = [];
+            const byUid = {};
             snap.docs.forEach(doc => {
-                const d = doc.data(); d._uid = doc.id; d._exp = calcExp(d); allUsers.push(d);
+                const d = doc.data(); d._uid = doc.id; d._exp = calcExp(d); allUsers.push(d); byUid[doc.id] = d;
             });
+            // Email riêng tư (user_private — chỉ admin đọc được)
+            if (privSnap) privSnap.forEach(p => { const d = byUid[p.id]; if (d && !d.email && p.data().email) d.email = p.data().email; });
+            usersWithPublicEmail = snap.docs.filter(doc => doc.data().email).map(doc => ({ uid: doc.id, email: doc.data().email }));
+            lastAuthList = authList;
+            updateMigrateBtn();
+            // Gộp danh sách tài khoản đăng nhập (Cloud Function listAuthUsers): bổ sung email thiếu
+            // + thêm những tài khoản chưa có dữ liệu học trong Firestore
+            if (authList) {
+                authList.forEach(a => {
+                    const d = byUid[a.uid];
+                    if (d) {
+                        if (!d.email) d.email = a.email;
+                        if (!d.fullName) d._authName = a.displayName;
+                        if (!d.lastLoginAt) d.lastLoginAt = a.lastSignInAt;
+                    } else {
+                        allUsers.push({ _uid: a.uid, _exp: 0, _authOnly: true, email: a.email, _authName: a.displayName,
+                            lastLoginAt: a.lastSignInAt, joinDate: a.createdAt ? a.createdAt.slice(0, 10) : '' });
+                    }
+                });
+            }
+            renderAuthNote(authList);
             renderStats();
             renderTable();
             renderStudyChart();
             renderExpChart();
         } catch (e) {
             document.getElementById('userTableBody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:#ef4444;">⚠️ ${e.message}</td></tr>`;
+        }
+    }
+
+    // ===== Chuyển email ra khỏi hồ sơ công khai (users) → user_private + email_index =====
+    let usersWithPublicEmail = [], lastAuthList = null;
+    function updateMigrateBtn() {
+        const b = document.getElementById('btnMigrateEmail');
+        if (!b) return;
+        b.style.display = usersWithPublicEmail.length || lastAuthList ? '' : 'none';
+        b.textContent = usersWithPublicEmail.length
+            ? '🔒 Ẩn ' + usersWithPublicEmail.length + ' email công khai'
+            : '🔒 Đồng bộ chỉ mục email';
+    }
+    async function migrateEmails() {
+        const db = firebase.firestore();
+        const map = {};
+        (lastAuthList || []).forEach(a => { if (a.email) map[a.uid] = a.email; });
+        usersWithPublicEmail.forEach(u => { if (!map[u.uid]) map[u.uid] = u.email; });
+        const uids = Object.keys(map);
+        if (!uids.length) return Swal.fire('Không có gì để chuyển', 'Không tìm thấy email nào.', 'info');
+        const ok = await Swal.fire({
+            icon: 'question', title: 'Chuyển email sang vùng riêng tư?',
+            html: 'Sẽ lưu <b>' + uids.length + '</b> email vào <code>user_private</code> (chỉ admin + chính chủ đọc) và chỉ mục kết bạn,<br>rồi <b>xoá ' + usersWithPublicEmail.length + '</b> email khỏi hồ sơ công khai <code>users</code>.',
+            showCancelButton: true, confirmButtonText: 'Chuyển', cancelButtonText: 'Huỷ', confirmButtonColor: '#2563eb'
+        });
+        if (!ok.isConfirmed) return;
+        const publicSet = new Set(usersWithPublicEmail.map(u => u.uid));
+        const ops = [];
+        uids.forEach(uid => {
+            const email = String(map[uid]);
+            ops.push(b => b.set(db.collection('user_private').doc(uid), { email, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }));
+            ops.push(b => b.set(db.collection('email_index').doc(email.toLowerCase()), { uid }));
+            if (publicSet.has(uid)) ops.push(b => b.update(db.collection('users').doc(uid), { email: firebase.firestore.FieldValue.delete() }));
+        });
+        Swal.fire({ title: 'Đang chuyển…', html: '0 / ' + ops.length, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+        try {
+            for (let i = 0; i < ops.length; i += 450) {
+                const batch = db.batch();
+                ops.slice(i, i + 450).forEach(f => f(batch));
+                await batch.commit();
+                Swal.update({ html: Math.min(i + 450, ops.length) + ' / ' + ops.length });
+            }
+            await Swal.fire({ icon: 'success', title: 'Xong', text: 'Đã chuyển ' + uids.length + ' email sang vùng riêng tư.', confirmButtonColor: '#2563eb' });
+            loadData();
+        } catch (e) {
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: e.message + ' — hãy chắc chắn đã deploy firestore.rules mới.', confirmButtonColor: '#2563eb' });
+        }
+    }
+
+    // Gọi Cloud Function lấy toàn bộ tài khoản Firebase Authentication (chỉ admin)
+    let authLoadError = '';
+    async function loadAuthUsers() {
+        authLoadError = '';
+        try {
+            if (!firebase.functions) throw new Error('Chưa tải Firebase Functions SDK');
+            const call = firebase.app().functions('asia-southeast1').httpsCallable('listAuthUsers');
+            const res = await call();
+            return (res && res.data && res.data.users) || [];
+        } catch (e) {
+            console.warn('[Admin] listAuthUsers', e);
+            authLoadError = (e && e.message) || 'Không gọi được Cloud Function';
+            return null;
+        }
+    }
+    function renderAuthNote(authList) {
+        let el = document.getElementById('authNote');
+        if (!el) {
+            el = document.createElement('div');
+            el.id = 'authNote';
+            el.style.cssText = 'margin:0 0 12px;padding:10px 14px;border-radius:12px;font-size:.88em;font-weight:600;';
+            const tbl = document.getElementById('userTableBody');
+            const host = tbl && tbl.closest('table');
+            if (host && host.parentNode) host.parentNode.insertBefore(el, host);
+        }
+        if (authList) {
+            const extra = allUsers.filter(u => u._authOnly).length;
+            el.style.background = '#ecfdf5'; el.style.color = '#047857'; el.style.border = '1px solid #a7f3d0';
+            el.textContent = 'Đã gộp ' + authList.length + ' tài khoản đăng nhập (Firebase Authentication)' + (extra ? ' — ' + extra + ' tài khoản chưa có dữ liệu học, đánh dấu "Chưa học".' : '.');
+        } else {
+            el.style.background = '#fffbeb'; el.style.color = '#92400e'; el.style.border = '1px solid #fde68a';
+            el.textContent = 'Chưa lấy được danh sách tài khoản đăng nhập (' + authLoadError + '). Đang chỉ hiện dữ liệu Firestore — hãy deploy Cloud Function listAuthUsers.';
         }
     }
 
@@ -387,7 +495,7 @@
         const tbody = document.getElementById('userTableBody');
         let list = allUsers.filter(u => {
             if (!q) return true;
-            return (u.email||'').toLowerCase().includes(q) || (u.fullName||'').toLowerCase().includes(q);
+            return (u.email||'').toLowerCase().includes(q) || (u.fullName||u._authName||'').toLowerCase().includes(q);
         });
         list.sort((a, b) => {
             switch(sort) {
@@ -404,11 +512,11 @@
         tbody.innerHTML = list.map((u, i) => {
             const tm = (u.dailyStudyData&&u.dailyStudyData[today])||0;
             const email = u.email || '';
-            const name = u.fullName || '';
+            const name = u.fullName || u._authName || '';
             return `<tr>
                 <td class="col-rank" style="color:var(--text-sub);font-weight:700;">${i+1}</td>
                 <td class="col-email user-email" title="${esc(email)}">${esc(email || '—')}</td>
-                <td class="col-name" style="font-weight:600;" title="${esc(name)}">${esc(name || '—')}</td>
+                <td class="col-name" style="font-weight:600;" title="${esc(name)}">${esc(name || '—')}${u._authOnly ? ' <span class="badge" style="background:#f1f5f9;color:#64748b;font-size:.75em;">Chưa học</span>' : ''}</td>
                 <td class="col-streak"><span class="badge ${(u.streakDays||0)>=7?'badge-green':'badge-yellow'}">${esc(u.streakDays||0)}🔥</span></td>
                 <td class="col-today">${esc(tm)}p</td>
                 <td class="col-total">${esc(fmtMins(u.totalStudyMinutes))}</td>

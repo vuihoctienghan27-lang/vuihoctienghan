@@ -122,30 +122,6 @@
         }
 
         /* SỔ TỪ VỰNG CSS */
-        .vocab-stats-box {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(4px);
-            border-radius: 16px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.9);
-            margin-bottom: 25px;
-        }
-
-        .progress-bar {
-            display: flex;
-            height: 16px;
-            border-radius: 8px;
-            overflow: hidden;
-            background: rgba(0, 0, 0, 0.05);
-            margin-bottom: 20px;
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
-        }
-
-        .prog-seg {
-            height: 100%;
-            transition: width 0.5s ease;
-        }
-
         .bg-moi {
             background-color: var(--c-moi) !important;
         }
@@ -160,55 +136,6 @@
 
         .bg-thanh {
             background-color: var(--c-thanh) !important;
-        }
-
-        .legend-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            text-align: center;
-        }
-
-        .legend-item {
-            cursor: pointer;
-            padding: 10px 5px;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            transition: 0.2s;
-            user-select: none;
-        }
-
-        .legend-item:hover {
-            background: rgba(248, 250, 252, 0.8);
-        }
-
-        .legend-item.filter-active {
-            border-color: #cbd5e1;
-            background: rgba(241, 245, 249, 0.9);
-            transform: scale(1.02);
-        }
-
-        .l-val {
-            font-size: 1.4em;
-            font-weight: 900;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            color: var(--text-main);
-        }
-
-        .l-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .l-lbl {
-            font-size: 0.85em;
-            font-weight: 600;
-            color: var(--text-sub);
-            margin-top: 4px;
         }
 
         .list-grid {
@@ -890,38 +817,64 @@
         .tq-badge-late { background: #fee2e2; color: #b91c1c; }
         .tq-badge-warn { background: #fef3c7; color: #92400e; font-size: 0.78em; padding: 2px 8px; border-radius: 10px; font-weight: 700; }
 
-        /* Ôn tập hôm nay (srs.js) */
-        .study-hub {
-            background: linear-gradient(135deg, #eef2ff 0%, #f0f9ff 100%);
-            border: 1px solid #c7d2fe; border-radius: 18px; padding: 18px 20px; margin-bottom: 18px;
-            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.08);
-        }
-        .sh-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
-        .sh-title { font-size: 1.15em; font-weight: 900; color: #1e1b4b; }
-        .sh-sub { font-size: 0.86em; color: #475569; margin-top: 3px; }
-        .sh-start {
-            background: linear-gradient(135deg, #4f46e5, #2563eb); color: #fff; border: none; border-radius: 12px;
-            padding: 11px 22px; font-weight: 800; font-size: 0.98em; cursor: pointer; white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: transform 0.15s ease;
-        }
-        .sh-start:hover:not(:disabled) { transform: translateY(-1px); }
-        .sh-start:disabled { background: #10b981; box-shadow: none; cursor: default; }
-        .sh-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
-        .sh-stat {
-            background: rgba(255, 255, 255, 0.85); border-radius: 12px; padding: 10px 8px; text-align: center;
-            display: flex; flex-direction: column; gap: 2px; text-decoration: none; border: 1px solid rgba(199, 210, 254, 0.6);
-        }
-        .sh-stat b { font-size: 1.45em; font-weight: 900; line-height: 1.1; }
-        .sh-stat span { font-size: 0.76em; color: #64748b; font-weight: 600; }
-        .sh-due { color: #2563eb; } .sh-new { color: #8b5cf6; } .sh-done { color: #10b981; } .sh-mis { color: #ef4444; }
-        .sh-link:hover { border-color: #fca5a5; background: #fff; }
-        body.dark-mode .study-hub { background: rgba(30, 41, 59, 0.9); border-color: rgba(255,255,255,0.1); }
-        body.dark-mode .sh-title { color: #e0e7ff; } body.dark-mode .sh-sub { color: #94a3b8; }
-        body.dark-mode .sh-stat { background: rgba(15, 23, 42, 0.6); border-color: rgba(255,255,255,0.08); }
+        /* Ôn tập hôm nay + Thống kê ghi nhớ — cùng kiểu thẻ với MyPage */
+        .vh-card { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 22px; margin-bottom: 20px; font-family: 'Pretendard','Inter',sans-serif; }
+        .vh-today { padding-bottom: 20px; margin-bottom: 18px; border-bottom: 1px dashed var(--border); }
+        .vh-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .vh-head-l { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1 1 260px; }
+        .vh-title { font-size: 1.15em; font-weight: 800; color: var(--text-main); }
+        .vh-sub { font-size: .86em; color: var(--text-sub); font-weight: 500; margin-top: 2px; line-height: 1.45; }
+        .vh-start { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 12px; padding: 11px 20px; font: inherit; font-weight: 800; font-size: .95em; cursor: pointer; white-space: nowrap;
+            color: #fff; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 6px 16px -4px rgba(37,99,235,.45); transition: .2s; }
+        .vh-start:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 10px 20px -6px rgba(37,99,235,.55); }
+        .vh-start svg { width: 16px; height: 16px; }
+        .vh-start .vh-n { background: rgba(255,255,255,.22); border-radius: 999px; padding: 1px 8px; font-size: .85em; }
+        .vh-start:disabled { background: #ecfdf5; color: #059669; box-shadow: none; cursor: default; border: 1px solid #a7f3d0; }
+        .vh-prog { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: .8em; color: var(--text-sub); font-weight: 700; }
+        .vh-prog-track { flex: 1; height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
+        .vh-prog-track > div { height: 100%; border-radius: 999px; background: linear-gradient(90deg, #34d399, #059669); transition: width .5s ease; }
+        .vh-prog b { color: #059669; }
+        .vh-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+        .vh-stat { display: flex; align-items: center; gap: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; min-width: 0; text-decoration: none; color: inherit; }
+        .vh-stat b { display: block; font-size: 1.25em; font-weight: 900; line-height: 1.1; font-variant-numeric: tabular-nums; }
+        .vh-stat span.vh-l { font-size: .76em; color: var(--text-sub); font-weight: 600; }
+        .vh-stat .c-blue { color: #1d4ed8; } .vh-stat .c-violet { color: #7c3aed; } .vh-stat .c-green { color: #059669; } .vh-stat .c-red { color: #e11d48; }
+        a.vh-stat { transition: .2s; }
+        a.vh-stat:hover { border-color: #fda4af; background: #fff1f2; }
+
+        .vh-mem-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .vh-mem-t { display: inline-flex; align-items: center; gap: 8px; font-size: .98em; font-weight: 800; color: var(--text-main); min-width: 0; }
+        .vh-mem-t svg { width: 18px; height: 18px; color: #2563eb; flex-shrink: 0; }
+        .vh-total { font-size: .82em; font-weight: 600; color: var(--text-sub); background: #f1f5f9; border-radius: 999px; padding: 2px 10px; }
+        .vh-total b { color: var(--text-main); font-weight: 800; }
+        .vh-clear { background: #fff1f2; color: #e11d48; border: 1px solid #fecdd3; padding: 5px 12px; border-radius: 999px; font: inherit; font-weight: 700; font-size: .8em; cursor: pointer; }
+        .vh-bar { display: flex; height: 12px; border-radius: 999px; overflow: hidden; background: #f1f5f9; gap: 2px; }
+        .vh-bar .prog-seg { height: 100%; transition: width .5s ease; }
+        .vh-bar .prog-seg:first-child { border-radius: 999px 0 0 999px; }
+        .vh-legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+        .vh-legend .legend-item { display: flex; align-items: center; gap: 10px; text-align: left; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; cursor: pointer; font: inherit; color: inherit; transition: .2s; user-select: none; min-width: 0; }
+        .vh-legend .legend-item:hover { border-color: #93c5fd; box-shadow: 0 6px 16px rgba(37,99,235,.08); transform: translateY(-1px); }
+        .vh-legend .legend-item.filter-active { border-color: #3b82f6; background: #eff6ff; box-shadow: 0 0 0 3px rgba(59,130,246,.15); }
+        .vh-legend .l-dot { width: 10px; height: 28px; border-radius: 6px; flex-shrink: 0; }
+        .vh-legend .l-txt { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+        .vh-legend .l-lbl { font-size: .76em; font-weight: 700; color: var(--text-sub); white-space: nowrap; }
+        .vh-legend .l-txt b { font-size: 1.25em; font-weight: 900; color: var(--text-main); line-height: 1.15; font-variant-numeric: tabular-nums; }
+        .vh-legend .l-pct { font-size: .74em; font-weight: 700; color: #94a3b8; font-variant-numeric: tabular-nums; }
+        .vh-hint { font-size: .76em; color: #94a3b8; margin-top: 10px; }
+
+        body.dark-mode .vh-card { background: #1e293b; border-color: #334155; }
+        body.dark-mode .vh-today { border-color: #334155; }
+        body.dark-mode .vh-title, body.dark-mode .vh-mem-t, body.dark-mode .vh-legend .l-txt b, body.dark-mode .vh-total b { color: #f1f5f9; }
+        body.dark-mode .vh-sub, body.dark-mode .vh-stat span.vh-l, body.dark-mode .vh-legend .l-lbl { color: #94a3b8; }
+        body.dark-mode .vh-stat, body.dark-mode .vh-legend .legend-item { background: #0f172a; border-color: #334155; }
+        body.dark-mode .vh-legend .legend-item.filter-active { background: #172554; border-color: #3b82f6; }
+        body.dark-mode .vh-bar, body.dark-mode .vh-prog-track, body.dark-mode .vh-total { background: #0f172a; }
+        body.dark-mode .vh-start:disabled { background: #052e22; border-color: #065f46; color: #34d399; }
         @media (max-width: 640px) {
-            .study-hub { padding: 14px; }
-            .sh-start { flex: 1 1 100%; }
-            .sh-stats { grid-template-columns: repeat(2, 1fr); }
+            .vh-card { padding: 16px 12px; }
+            .vh-start { flex: 1 1 100%; }
+            .vh-stats, .vh-legend { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .vh-hint { display: none; }
         }
 
         /* Giáo viên: tiến độ bài tập tương tác (shared-vocab.js → renderTeacherQuizProgress) */
@@ -1702,50 +1655,35 @@
         <!-- Bài tập lớp sắp đến hạn (shared-vocab.js → renderUpcomingDeadlines) -->
         <div id="deadlineStrip" class="dl-strip" style="display:none;"></div>
 
-        <!-- Ôn tập hôm nay (srs.js) -->
-        <div id="studyHubCard" class="study-hub" style="display:none;"></div>
-
-        <div id="vocabStatsArea">
-            <div class="vocab-stats-box">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 style="margin: 0; font-size: 1.1em; color: var(--text-main)" id="statTotalTitle">Thống kê ghi
-                        nhớ</h3>
-                    <button id="clearFilterBtn" onclick="filterByStatus(null)"
-                        style="display: none; background: #fef2f2; color: #ef4444; border: none; padding: 5px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9em;">Hủy
-                        lọc</button>
+        <!-- Ôn tập hôm nay (srs.js) + Thống kê ghi nhớ (mypage-vocab.js → updateStatsUI) -->
+        <div class="vh-card" id="vocabHub">
+            <div id="studyHubCard" class="vh-today" style="display:none;"></div>
+            <div id="vocabStatsArea" class="vh-mem">
+                <div class="vh-mem-head">
+                    <div class="vh-mem-t"><i data-ic="layers"></i><span id="statTotalTitle">Thống kê ghi nhớ</span><span class="vh-total"><b id="vhTotal">0</b> từ</span></div>
+                    <button id="clearFilterBtn" class="vh-clear" onclick="filterByStatus(null)" style="display: none;">Hủy lọc ✕</button>
                 </div>
-                <div class="progress-bar">
+                <div class="vh-bar">
                     <div id="bar0" class="prog-seg bg-moi" style="width: 0%;"></div>
                     <div id="bar1" class="prog-seg bg-hoc" style="width: 0%;"></div>
                     <div id="bar2" class="prog-seg bg-on" style="width: 0%;"></div>
                     <div id="bar3" class="prog-seg bg-thanh" style="width: 0%;"></div>
                 </div>
-                <div class="legend-grid">
-                    <div class="legend-item" id="leg0" onclick="filterByStatus(0)">
-                        <div class="l-val">
-                            <div class="l-dot bg-moi"></div><span id="c0">0</span>
-                        </div>
-                        <div class="l-lbl">Mới</div>
-                    </div>
-                    <div class="legend-item" id="leg1" onclick="filterByStatus(1)">
-                        <div class="l-val">
-                            <div class="l-dot bg-hoc"></div><span id="c1">0</span>
-                        </div>
-                        <div class="l-lbl">Đang học</div>
-                    </div>
-                    <div class="legend-item" id="leg2" onclick="filterByStatus(2)">
-                        <div class="l-val">
-                            <div class="l-dot bg-on"></div><span id="c2">0</span>
-                        </div>
-                        <div class="l-lbl">Đang ôn</div>
-                    </div>
-                    <div class="legend-item" id="leg3" onclick="filterByStatus(3)">
-                        <div class="l-val">
-                            <div class="l-dot bg-thanh"></div><span id="c3">0</span>
-                        </div>
-                        <div class="l-lbl">Thành thạo</div>
-                    </div>
+                <div class="vh-legend">
+                    <button type="button" class="legend-item" id="leg0" onclick="filterByStatus(0)">
+                        <span class="l-dot bg-moi"></span><span class="l-txt"><span class="l-lbl">Mới</span><b id="c0">0</b></span><span class="l-pct" id="p0"></span>
+                    </button>
+                    <button type="button" class="legend-item" id="leg1" onclick="filterByStatus(1)">
+                        <span class="l-dot bg-hoc"></span><span class="l-txt"><span class="l-lbl">Đang học</span><b id="c1">0</b></span><span class="l-pct" id="p1"></span>
+                    </button>
+                    <button type="button" class="legend-item" id="leg2" onclick="filterByStatus(2)">
+                        <span class="l-dot bg-on"></span><span class="l-txt"><span class="l-lbl">Đang ôn</span><b id="c2">0</b></span><span class="l-pct" id="p2"></span>
+                    </button>
+                    <button type="button" class="legend-item" id="leg3" onclick="filterByStatus(3)">
+                        <span class="l-dot bg-thanh"></span><span class="l-txt"><span class="l-lbl">Thành thạo</span><b id="c3">0</b></span><span class="l-pct" id="p3"></span>
+                    </button>
                 </div>
+                <div class="vh-hint">Bấm vào một mức để lọc danh sách từ bên dưới.</div>
             </div>
         </div>
 
@@ -2131,6 +2069,8 @@
     <script src="assets/js/shared-vocab.js"></script>
     <script src="assets/js/vocab-game.js"></script>
     <script src="assets/js/srs.js"></script>
+    <script src="assets/js/ui-icons.js"></script>
+    <script>window.UIIcons && UIIcons.hydrate(document.getElementById('vocabHub'));</script>
     <script src="assets/js/weekly-report.js"></script>
     <script src="assets/js/badges.js"></script>
     <script src="assets/js/game-bansung-vocab.js"></script>

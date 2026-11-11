@@ -39,46 +39,59 @@
                 color: #e2e8f0 !important;
                 box-shadow: -4px 0 30px rgba(0, 0, 0, 0.5) !important;
             }
-            body.dark-mode .nav-panel-header {
-                background: rgba(30, 41, 59, 0.95) !important;
-                border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+            /* ===== GIAO DIỆN BẢNG CÂU HỎI (đồng bộ với popup kết quả) ===== */
+            #question-nav-panel { font-family: 'Pretendard','Inter',sans-serif; background: #fff; border-left: 1px solid #e5e7eb; box-shadow: -12px 0 40px -12px rgba(15,23,42,.25); }
+            #question-nav-panel .nav-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 14px 14px 16px;
+                background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%); border-bottom: 1px solid #e5e7eb; flex-shrink: 0; }
+            #question-nav-panel .nav-head-l { display: flex; align-items: center; gap: 10px; min-width: 0; }
+            #question-nav-panel .nav-head-ic { width: 36px; height: 36px; border-radius: 11px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #fff;
+                background: linear-gradient(135deg, #60a5fa, #2563eb); box-shadow: 0 4px 10px -3px rgba(37,99,235,.55), inset 0 1px 0 rgba(255,255,255,.35); }
+            #question-nav-panel .nav-head-ic svg { width: 18px; height: 18px; }
+            #question-nav-panel .nav-panel-title { display: block; font-weight: 800; font-size: .95em; color: #1f2937; }
+            #question-nav-panel .nav-panel-sub { display: block; font-size: .74em; color: #6b7280; font-weight: 600; margin-top: 2px; }
+            #question-nav-panel .nav-panel-close { width: 32px; height: 32px; padding: 0; border: 0; border-radius: 10px; background: rgba(255,255,255,.9); color: #64748b; font-size: 1em;
+                display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 3px rgba(15,23,42,.12); flex-shrink: 0; cursor: pointer; }
+            #question-nav-panel .nav-panel-close:hover { background: #fff1f2; color: #e11d48; }
+            #question-nav-panel .nav-legend { display: flex; flex-wrap: wrap; gap: 4px; padding: 12px 14px 0; flex-shrink: 0; }
+            #question-nav-panel .nav-legend:empty { display: none; }
+            #question-nav-panel .nav-pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 3px 8px; font-size: .7em; font-weight: 700; white-space: nowrap;
+                background: #fff; border: 1px solid #e5e7eb; color: #4b5563; }
+            #question-nav-panel .nav-pill b { font-weight: 900; font-variant-numeric: tabular-nums; }
+            #question-nav-panel .nav-pill i { width: 7px; height: 7px; border-radius: 50%; }
+            #question-nav-panel .nav-pill.ok b { color: #059669; } #question-nav-panel .nav-pill.ok i { background: #10b981; }
+            #question-nav-panel .nav-pill.bad b { color: #e11d48; } #question-nav-panel .nav-pill.bad i { background: #f43f5e; }
+            #question-nav-panel .nav-pill.ans b { color: #1d4ed8; } #question-nav-panel .nav-pill.ans i { background: #3b82f6; }
+            #question-nav-panel .nav-pill.skip b { color: #64748b; } #question-nav-panel .nav-pill.skip i { background: #cbd5e1; }
+            #question-nav-panel .nav-grid { padding: 12px 14px 14px; gap: 6px; }
+            #question-nav-panel .nav-q-btn { border: 1px solid #e2e8f0; border-radius: 9px; background: #fff; color: #64748b; font-size: .8em; font-weight: 800;
+                font-variant-numeric: tabular-nums; font-family: inherit; transition: transform .12s, border-color .15s, background .15s; }
+            #question-nav-panel .nav-q-btn:hover { transform: translateY(-1px); border-color: #93c5fd; color: #1d4ed8; background: #fff; }
+            #question-nav-panel .nav-q-btn.nav-q-answered { background: #eff6ff; border-color: #bfdbfe; color: #1d4ed8; }
+            #question-nav-panel .nav-q-btn.nav-q-correct { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
+            #question-nav-panel .nav-q-btn.nav-q-wrong { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+            #question-nav-panel .nav-q-btn.nav-q-skipped { background: #f8fafc; border-color: #e2e8f0; color: #94a3b8; }
+            #question-nav-panel .nav-dict-head { background: #f8fafc; }
+            #nav-toggle-btn.nav-toggle-btn { background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 14px; box-shadow: 0 10px 22px -8px rgba(37,99,235,.65); font-family: 'Pretendard','Inter',sans-serif; }
+            #nav-toggle-btn.nav-toggle-btn:hover { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+            #nav-toggle-btn.nav-toggle-btn.active { background: linear-gradient(135deg, #1e3a8a, #312e81); }
+            @media (max-width: 767px) {
+                body.nav-open #nav-toggle-btn { display: none !important; }
+                #question-nav-panel .nav-panel-header { padding: 14px 14px 12px 16px; }
+                #question-nav-panel .nav-legend { padding: 12px 16px 0; }
+                #question-nav-panel .nav-grid { padding: 12px 16px 16px; gap: 8px; }
+                #question-nav-panel .nav-q-btn { border-radius: 10px; font-size: .88em; }
             }
-            body.dark-mode .nav-panel-title {
-                color: #93c5fd !important;
-            }
-            body.dark-mode .nav-panel-close {
-                background: rgba(255, 255, 255, 0.08) !important;
-                color: #94a3b8 !important;
-                border-color: rgba(255, 255, 255, 0.1) !important;
-            }
-            body.dark-mode .nav-panel-close:hover {
-                background: rgba(255, 255, 255, 0.15) !important;
-                color: #f1f5f9 !important;
-            }
-            body.dark-mode .nav-q-btn {
-                background: rgba(30, 41, 59, 0.8) !important;
-                color: #cbd5e1 !important;
-                border-color: rgba(255, 255, 255, 0.1) !important;
-            }
-            body.dark-mode .nav-q-btn:hover {
-                background: rgba(51, 65, 85, 0.9) !important;
-                color: #f1f5f9 !important;
-            }
-            body.dark-mode .nav-q-btn.nav-q-correct {
-                background: rgba(16, 185, 129, 0.25) !important;
-                border-color: #10b981 !important;
-                color: #6ee7b7 !important;
-            }
-            body.dark-mode .nav-q-btn.nav-q-wrong {
-                background: rgba(239, 68, 68, 0.25) !important;
-                border-color: #ef4444 !important;
-                color: #fca5a5 !important;
-            }
-            body.dark-mode .nav-q-btn.nav-q-answered {
-                background: rgba(59, 130, 246, 0.25) !important;
-                border-color: #3b82f6 !important;
-                color: #93c5fd !important;
-            }
+            body.dark-mode #question-nav-panel { background: #1e293b !important; border-color: #334155 !important; }
+            body.dark-mode #question-nav-panel .nav-panel-header { background: linear-gradient(135deg, #172554, #2e1065); border-color: #334155; }
+            body.dark-mode #question-nav-panel .nav-panel-title { color: #f1f5f9; }
+            body.dark-mode #question-nav-panel .nav-panel-sub { color: #94a3b8; }
+            body.dark-mode #question-nav-panel .nav-panel-close { background: rgba(255,255,255,.08); color: #94a3b8; box-shadow: none; }
+            body.dark-mode #question-nav-panel .nav-pill { background: #0f172a; border-color: #334155; color: #cbd5e1; }
+            body.dark-mode #question-nav-panel .nav-q-btn { background: #0f172a; border-color: #334155; color: #94a3b8; }
+            body.dark-mode #question-nav-panel .nav-q-btn.nav-q-answered { background: rgba(59,130,246,.18); border-color: rgba(59,130,246,.45); color: #93c5fd; }
+            body.dark-mode #question-nav-panel .nav-q-btn.nav-q-correct { background: rgba(16,185,129,.16); border-color: rgba(16,185,129,.45); color: #6ee7b7; }
+            body.dark-mode #question-nav-panel .nav-q-btn.nav-q-wrong { background: rgba(244,63,94,.16); border-color: rgba(244,63,94,.45); color: #fda4af; }
+            body.dark-mode #question-nav-panel .nav-q-btn.nav-q-skipped { background: #0f172a; border-color: #334155; color: #64748b; }
             body.dark-mode .nav-toggle-btn {
                 background: rgba(15, 23, 42, 0.9) !important;
                 color: #93c5fd !important;
@@ -161,9 +174,13 @@
         navPanel.className = 'question-nav-panel';
         navPanel.innerHTML =
             `<div class="nav-panel-header">
-                <span class="nav-panel-title">📋 Danh sách câu hỏi</span>
-                <button class="nav-panel-close" id="nav-close-btn" title="Đóng">✕</button>
+                <div class="nav-head-l">
+                    <span class="nav-head-ic"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="7.5" height="7.5" rx="2" opacity=".45"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2" opacity=".45"/></svg></span>
+                    <div><span class="nav-panel-title">Danh sách câu hỏi</span><span class="nav-panel-sub" id="nav-panel-sub"></span></div>
+                </div>
+                <button class="nav-panel-close" id="nav-close-btn" title="Đóng" aria-label="Đóng">✕</button>
             </div>
+            <div class="nav-legend" id="nav-legend"></div>
             <div class="nav-grid" id="nav-grid-content"></div>
             <div class="nav-splitter" id="nav-splitter" title="Kéo để điều chỉnh chiều cao danh sách câu hỏi"></div>
             <div class="nav-dict" id="nav-dict">
@@ -181,6 +198,7 @@
 
         document.getElementById('nav-close-btn').addEventListener('click', closePanel);
         window._navToggle = togglePanel;
+        window._navClose = closePanel;
 
         // Thanh kéo phân cách: điều chỉnh chiều cao lưới câu hỏi (tối thiểu 2 dòng = 10 câu)
         (function () {
@@ -283,7 +301,9 @@
             const n = allBlocks.length;
             // Chiều cao khả dụng = màn hình - header panel (~58px) - padding (~28px)
             const panelH    = window.innerHeight;
-            const headerH   = 58;
+            const hdEl      = document.querySelector('#question-nav-panel .nav-panel-header');
+            const lgEl      = document.getElementById('nav-legend');
+            const headerH   = (hdEl ? hdEl.offsetHeight : 64) + (lgEl ? 40 : 0);
             const paddingH  = 28;
             const availH    = panelH - headerH - paddingH;
             const gap       = 8;
@@ -348,6 +368,8 @@
             grid.appendChild(btn);
         });
 
+        updateSummary();
+
         // Chiều cao lưới (desktop): khôi phục đã lưu hoặc mặc định ~40%
         if (!isMobile) {
             var btn0 = grid.querySelector('.nav-q-btn');
@@ -360,6 +382,26 @@
             grid.style.height = h + 'px';
         } else {
             grid.style.height = '';
+        }
+    }
+
+    // ===== TỔNG KẾT (dòng phụ + chú thích màu) =====
+    function updateSummary() {
+        const grid = document.getElementById('nav-grid-content');
+        const sub = document.getElementById('nav-panel-sub');
+        const lg = document.getElementById('nav-legend');
+        if (!grid || !sub || !lg) return;
+        const n = cls => grid.querySelectorAll('.nav-q-btn.' + cls).length;
+        const total = grid.querySelectorAll('.nav-q-btn').length;
+        const ok = n('nav-q-correct'), bad = n('nav-q-wrong'), ans = n('nav-q-answered');
+        const pill = (c, label, v) => '<span class="nav-pill ' + c + '"><i></i>' + label + ' <b>' + v + '</b></span>';
+        if (isExamFinishedNav) {
+            sub.textContent = 'Bấm số câu để xem lại';
+            lg.innerHTML = pill('ok', 'Đúng', ok) + pill('bad', 'Sai', bad) + pill('skip', 'Bỏ qua', n('nav-q-skipped'));
+        } else {
+            const done = ok + bad + ans;
+            sub.textContent = 'Đã làm ' + done + '/' + total + ' câu';
+            lg.innerHTML = (ok || bad ? pill('ok', 'Đúng', ok) + pill('bad', 'Sai', bad) : '') + (ans ? pill('ans', 'Đã chọn', ans) : '') + pill('skip', 'Chưa làm', total - done);
         }
     }
 
@@ -435,6 +477,7 @@
             const block = document.getElementById(btn.dataset.blockId);
             if (block) updateBtnState(btn, block);
         });
+        updateSummary();
     }
 
     // ===== HOOK CLICK ĐÁP ÁN =====

@@ -35,6 +35,20 @@ function getLocalYYYYMMDD() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
+// Email lưu ở vùng riêng tư (user_private: chỉ chủ + admin đọc) + chỉ mục tra cứu kết bạn (email_index).
+// Mỗi thiết bị chỉ ghi 1 lần cho mỗi tài khoản.
+function syncPrivateEmail(user) {
+    if (!user || !user.email) return Promise.resolve();
+    const key = 'emailSync_v1_' + user.uid;
+    try { if (localStorage.getItem(key) === user.email) return Promise.resolve(); } catch (e) {}
+    return Promise.all([
+        window.db.collection('user_private').doc(user.uid).set({ email: user.email, updatedAt: firebase.firestore.FieldValue.serverTimestamp() }, { merge: true }),
+        window.db.collection('email_index').doc(user.email.toLowerCase()).set({ uid: user.uid })
+    ]).then(() => { try { localStorage.setItem(key, user.email); } catch (e) {} })
+      .catch(e => console.warn('[Email] Không lưu được email riêng tư:', e && e.message));
+}
+window.syncPrivateEmail = syncPrivateEmail;
+
 if(navLoginBtn) navLoginBtn.addEventListener('click', () => { if(authModal) authModal.style.display = 'flex'; });
 
 if (googleAuthBtn) {
@@ -47,7 +61,6 @@ if (googleAuthBtn) {
 
             const userRef = window.db.collection("users").doc(user.uid);
             await userRef.set({
-                email: user.email,
                 fullName: user.displayName || "",
                 lastLoginAt: new Date().toISOString()
             }, { merge: true });
@@ -73,9 +86,22 @@ window.auth.onAuthStateChanged(async (user) => {
 
         const userRef = window.db.collection("users").doc(user.uid);
         
+        syncPrivateEmail(user);
         const docSnap = await userRef.get();
         if (docSnap.exists) {
             let data = docSnap.data();
+
+            // Tài liệu cũ / tạo tự động (đăng nhập ở trang đề, ghi thời gian học…) có thể thiếu tên
+            // → lấy tên tài khoản Google điền vào chỗ trống, KHÔNG ghi đè tên người dùng đã tự đặt.
+            // (Email không chép vào đây vì collection users đọc công khai — Admin xem email qua Cloud Function listAuthUsers.)
+            if (!data.fullName && user.displayName) {
+                userRef.set({ fullName: String(user.displayName).slice(0, 60) }, { merge: true }).catch(() => {});
+            }
+            // Tài liệu cũ còn email công khai → chuyển sang vùng riêng tư rồi xoá khỏi users
+            if (data.email) {
+                try { localStorage.removeItem('emailSync_v1_' + user.uid); } catch (e) {}
+                syncPrivateEmail(user).then(() => userRef.update({ email: firebase.firestore.FieldValue.delete() })).catch(() => {});
+            }
             let today = getLocalYYYYMMDD();
             let lastDate = data.lastLoginDate || "";
 

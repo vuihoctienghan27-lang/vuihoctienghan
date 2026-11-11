@@ -59,7 +59,7 @@ service cloud.firestore {
       return strMax(d, 'fullName', 60) && strMax(d, 'name', 60) && strMax(d, 'bio', 200)
         && strMax(d, 'dob', 20) && strMax(d, 'studyPurpose', 200) && strMax(d, 'studyDuration', 50)
         && (!('avatar' in d) || (d.avatar is string && d.avatar.size() <= 1000 && d.avatar.matches('^https://.*')))
-        && (!('email' in d) || d.email == request.auth.token.email)
+        && !('email' in d)   // email KHÔNG lưu trong users (đọc công khai) → user_private
         && (!('role' in d) || d.role == 'member')
         && (!('roleTitle' in d) || d.roleTitle in ['Thành viên mới', 'Thành viên cộng đồng'])
         && (!('bonusEXPAt' in d) || d.bonusEXPAt is timestamp)
@@ -115,7 +115,7 @@ service cloud.firestore {
         && (!uChanged('studyPurpose') || strMax(d, 'studyPurpose', 200))
         && (!uChanged('studyDuration') || strMax(d, 'studyDuration', 50))
         && (!uChanged('avatar') || (d.avatar is string && d.avatar.size() <= 1000 && d.avatar.matches('^https://.*')))
-        && (!uChanged('email') || d.email == request.auth.token.email)
+        && (!uChanged('email') || !('email' in d))   // chỉ được XOÁ email cũ, không ghi mới
         && (!uChanged('role') || d.role == 'member')
         && (!uChanged('roleTitle') || d.roleTitle in ['Thành viên mới', 'Thành viên cộng đồng'])
         && (!uChanged('bonusEXPAt') || d.bonusEXPAt == request.time)
@@ -161,6 +161,25 @@ service cloud.firestore {
           && strMax(request.resource.data, 'refName', 300)
           && strMax(request.resource.data, 'url', 500);
       }
+    }
+
+    // ===== EMAIL RIÊNG TƯ =====
+    // Email của người dùng: chỉ chính chủ + admin đọc (collection users đọc công khai nên không để email ở đó)
+    match /user_private/{userId} {
+      allow read, write: if isAdmin();
+      allow read, delete: if isSignedIn() && request.auth.uid == userId;
+      allow create, update: if isSignedIn() && request.auth.uid == userId
+        && request.resource.data.keys().hasOnly(['email', 'updatedAt'])
+        && request.resource.data.email == request.auth.token.email;
+    }
+    // Tra cứu kết bạn theo email (forum.js): chỉ GET đúng 1 email đã biết → không liệt kê được danh sách email
+    match /email_index/{emailKey} {
+      allow read, write: if isAdmin();
+      allow get: if isSignedIn();
+      allow create, update: if isSignedIn()
+        && emailKey == request.auth.token.email.lower()
+        && request.resource.data.keys().hasOnly(['uid'])
+        && request.resource.data.uid == request.auth.uid;
     }
 
     // ===== DIỄN ĐÀN =====

@@ -163,31 +163,163 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // ===== TỰ ĐỘNG TẠO BẢNG ĐIỂM (MODAL KẾT QUẢ) VÀO CUỐI TRANG =====
+// Gọn trong 1 màn hình (không cuộn trang): kích thước co theo chiều cao thiết bị
+const ER_CSS = `
+#examResultModal.er-ov { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; padding: 12px; box-sizing: border-box;
+    background: rgba(15,23,42,.62); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 100000; font-family: 'Pretendard','Inter',sans-serif; }
+#examResultModal .er-box { position: relative; width: 100%; max-width: 560px; max-height: calc(100vh - 24px); max-height: calc(100dvh - 24px);
+    display: flex; flex-direction: column; background: #fff; border-radius: 22px; box-shadow: 0 25px 60px -12px rgba(15,23,42,.45); overflow: hidden; box-sizing: border-box; animation: erIn .25s ease; }
+@keyframes erIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
+#examResultModal .er-x { position: absolute; top: 10px; right: 10px; width: 34px; height: 34px; border: 0; border-radius: 10px; background: rgba(255,255,255,.85); color: #64748b; font-size: 22px; line-height: 1; cursor: pointer; z-index: 2; }
+#examResultModal .er-x:hover { background: #fff1f2; color: #e11d48; }
+#examResultModal .er-top { flex-shrink: 0; display: flex; align-items: center; gap: clamp(12px, 3vh, 22px); padding: clamp(14px, 3vh, 24px) 22px clamp(12px, 2.4vh, 18px);
+    background: linear-gradient(135deg, #eff6ff 0%, #f5f3ff 100%); border-bottom: 1px solid #e5e7eb; }
+#examResultModal .er-ring { --p: 0; --c: #2563eb; position: relative; flex-shrink: 0; width: clamp(72px, min(17vh, 24vw), 124px); height: clamp(72px, min(17vh, 24vw), 124px); border-radius: 50%;
+    background: conic-gradient(var(--c) calc(var(--p) * 1%), #e2e8f0 0); display: flex; align-items: center; justify-content: center; }
+#examResultModal .er-ring::before { content: ''; position: absolute; inset: clamp(7px, 1.3vh, 10px); border-radius: 50%; background: #fff; }
+#examResultModal .er-ring-in { position: relative; display: flex; flex-direction: column; align-items: center; line-height: 1; }
+#examResultModal .er-score { font-size: clamp(1.7em, 5vh, 2.5em); font-weight: 900; color: #1f2937; font-variant-numeric: tabular-nums; }
+#examResultModal .er-score-sub { font-size: .8em; color: #94a3b8; font-weight: 700; margin-top: 3px; }
+#examResultModal .er-good { --c: #059669; } #examResultModal .er-mid { --c: #d97706; } #examResultModal .er-low { --c: #e11d48; }
+#examResultModal .er-info { min-width: 0; flex: 1; text-align: left; }
+#examResultModal .er-eyebrow { display: inline-block; font-size: .72em; font-weight: 800; letter-spacing: .5px; text-transform: uppercase; color: #2563eb; background: #dbeafe; border-radius: 999px; padding: 3px 10px; }
+#examResultModal .er-title { margin: 6px 0 2px; font-size: clamp(1.05em, 2.6vh, 1.3em); font-weight: 800; color: #1f2937; line-height: 1.3; }
+#examResultModal .er-msg { font-size: .86em; color: #6b7280; font-weight: 500; }
+#examResultModal .er-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: clamp(8px, 1.6vh, 12px); }
+#examResultModal .er-pill { display: inline-flex; align-items: center; gap: 5px; border-radius: 999px; padding: 4px 10px; font-size: .8em; font-weight: 700; background: #fff; border: 1px solid #e5e7eb; color: #4b5563; }
+#examResultModal .er-pill b { font-weight: 900; font-variant-numeric: tabular-nums; }
+#examResultModal .er-dot { width: 8px; height: 8px; border-radius: 50%; }
+#examResultModal .er-pill.ok b { color: #059669; } #examResultModal .er-pill.ok .er-dot { background: #10b981; }
+#examResultModal .er-pill.bad b { color: #e11d48; } #examResultModal .er-pill.bad .er-dot { background: #f43f5e; }
+#examResultModal .er-pill.skip b { color: #64748b; } #examResultModal .er-pill.skip .er-dot { background: #cbd5e1; }
+#examResultModal .er-mid-sec { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; padding: clamp(10px, 2vh, 16px) 22px 0; }
+#examResultModal .er-sec-h { flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: .84em; font-weight: 800; color: #1f2937; }
+#examResultModal .er-sec-h span { font-weight: 600; color: #94a3b8; font-size: .9em; }
+#examResultModal #questionStatusGrid { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: clamp(3px, .8vh, 6px); margin: 0; min-height: 0; overflow-y: auto; padding: 2px; }
+#examResultModal .q-status-item { height: clamp(22px, 4.4vh, 32px); display: flex; align-items: center; justify-content: center; padding: 0; border-radius: 8px;
+    font-size: clamp(.68em, 1.6vh, .84em); font-weight: 800; cursor: pointer; transition: transform .12s; font-variant-numeric: tabular-nums; border: 1px solid transparent; }
+#examResultModal .q-status-item:hover { transform: translateY(-1px); }
+#examResultModal .q-status-item.q-correct { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+#examResultModal .q-status-item.q-wrong { background: #fff1f2; color: #be123c; border-color: #fecdd3; }
+#examResultModal .q-status-item.q-skipped { background: #f8fafc; color: #94a3b8; border-color: #e2e8f0; }
+#examResultModal .er-note { color: #94a3b8; font-size: .86em; padding: 10px; grid-column: 1 / -1; text-align: center; }
+#examResultModal .er-foot { flex-shrink: 0; padding: clamp(10px, 2vh, 16px) 22px clamp(14px, 2.4vh, 20px); }
+#examResultModal .er-btn { width: 100%; border: 0; border-radius: 12px; padding: clamp(10px, 1.8vh, 13px); font: inherit; font-weight: 800; font-size: .98em; color: #fff; cursor: pointer;
+    background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 8px 18px -6px rgba(37,99,235,.55); transition: .2s; }
+#examResultModal .er-btn:hover { transform: translateY(-1px); }
+#examResultModal .er-hint { text-align: center; font-size: .74em; color: #94a3b8; margin-top: 6px; }
+body.dark-mode #examResultModal .er-box { background: #1e293b; }
+body.dark-mode #examResultModal .er-top { background: linear-gradient(135deg, #172554, #2e1065); border-color: #334155; }
+body.dark-mode #examResultModal .er-ring::before { background: #1e293b; }
+body.dark-mode #examResultModal .er-score, body.dark-mode #examResultModal .er-title, body.dark-mode #examResultModal .er-sec-h { color: #f1f5f9; }
+body.dark-mode #examResultModal .er-pill { background: #0f172a; border-color: #334155; color: #cbd5e1; }
+body.dark-mode #examResultModal .q-status-item.q-skipped { background: #0f172a; border-color: #334155; }
+@media (max-width: 480px) {
+    #examResultModal .er-top { padding-left: 16px; padding-right: 48px; }
+    #examResultModal .er-mid-sec, #examResultModal .er-foot { padding-left: 14px; padding-right: 14px; }
+    #examResultModal .er-msg { display: none; }
+}
+@media (max-height: 520px) {
+    #examResultModal .er-msg, #examResultModal .er-hint, #examResultModal .er-eyebrow, #examResultModal .er-sec-h span { display: none; }
+    #examResultModal .er-box { max-width: 640px; }
+    #examResultModal .er-top { padding-top: 10px; padding-bottom: 10px; }
+    #examResultModal .er-ring { width: 62px; height: 62px; }
+    #examResultModal .er-ring::before { inset: 6px; }
+    #examResultModal .er-score { font-size: 1.45em; }
+    #examResultModal .er-score-sub { display: none; }
+    #examResultModal .er-title { margin: 0 0 2px; font-size: 1em; }
+    #examResultModal .er-pills { margin-top: 4px; }
+    #examResultModal .er-mid-sec { padding-top: 8px; }
+    #examResultModal .er-sec-h { margin-bottom: 5px; }
+    #examResultModal .q-status-item { height: 21px; font-size: .68em; border-radius: 6px; }
+    #examResultModal .er-foot { padding-top: 8px; padding-bottom: 10px; }
+    #examResultModal .er-btn { padding: 8px; }
+}
+`;
+
 document.addEventListener("DOMContentLoaded", function() {
+    if (!document.getElementById('er-css')) {
+        const st = document.createElement('style');
+        st.id = 'er-css';
+        st.textContent = ER_CSS;
+        document.head.appendChild(st);
+    }
     if (!document.getElementById('examResultModal')) {
         const resultModalHTML = `
-        <div id="examResultModal" class="modal-overlay" style="z-index: 100000; display: none;">
-            <div class="modal-content" style="text-align: center; min-height: auto; max-height: 95vh; padding: 35px 20px; justify-content: flex-start; max-width: 600px; overflow-y: auto; background: #fff; border-radius: 16px; position: relative;">
-                <h2 id="resultTitleText" style="color: #2b6cb0; margin-top: 0; margin-bottom: 15px; font-size: 1.6em; font-weight: 800;">KẾT QUẢ BÀI LÀM!</h2>
-                
-                <div class="score-circle">
-                    <div class="score-circle-content">
-                        <span class="score-text" id="finalScoreText">0</span>
-                        <span class="score-sub">/ 100</span>
+        <div id="examResultModal" class="er-ov" role="dialog" aria-modal="true" aria-labelledby="resultTitleText">
+            <div class="er-box">
+                <button type="button" class="er-x" aria-label="Đóng" onclick="closeResultAndReview()">×</button>
+                <div class="er-top">
+                    <div class="er-ring" id="erRing"><div class="er-ring-in"><span class="er-score" id="finalScoreText">0</span><span class="er-score-sub">/100</span></div></div>
+                    <div class="er-info">
+                        <span class="er-eyebrow" id="erEyebrow">Kết quả bài làm</span>
+                        <h2 class="er-title" id="resultTitleText">Bạn đã hoàn thành bài thi</h2>
+                        <div class="er-msg" id="erMsg"></div>
+                        <div class="er-pills">
+                            <span class="er-pill ok"><i class="er-dot"></i>Đúng <b><span id="correctCountText">0</span>/<span id="totalCountText">0</span></b></span>
+                            <span class="er-pill bad"><i class="er-dot"></i>Sai <b id="erWrong">0</b></span>
+                            <span class="er-pill skip"><i class="er-dot"></i>Bỏ qua <b id="erSkip">0</b></span>
+                        </div>
                     </div>
                 </div>
-                
-                <p style="font-size: 1.1em; color: #4a5568; font-weight: bold; margin-top: 0; margin-bottom: 25px;">
-                    Bạn làm đúng <span id="correctCountText" style="color: #e53e3e; font-size: 1.2em;">0</span> / <span id="totalCountText">50</span> câu.
-                </p>
-                <div id="questionStatusGrid"></div>
-                <button class="btn-submit" style="background: #48bb78; color: white; width: 100%; max-width: 250px; margin: 0 auto; padding: 12px; border-radius: 10px; border: none; font-weight: 800; cursor: pointer; font-size: 1.05em; transition: 0.2s;" onclick="closeResultAndReview()" onmouseover="this.style.filter='brightness(0.9)'" onmouseout="this.style.filter='brightness(1)'">👀 XEM ĐÁP ÁN CHI TIẾT</button>
+                <div class="er-mid-sec">
+                    <div class="er-sec-h">Bảng câu hỏi<span>Bấm vào số câu để xem lại</span></div>
+                    <div id="questionStatusGrid"></div>
+                </div>
+                <div class="er-foot">
+                    <button type="button" class="er-btn" onclick="closeResultAndReview()">Xem đáp án chi tiết</button>
+                </div>
             </div>
         </div>
         `;
         document.body.insertAdjacentHTML('beforeend', resultModalHTML);
+        // Bấm vào ô câu hỏi → đóng bảng điểm và cuộn tới câu đó
+        document.getElementById('examResultModal').addEventListener('click', function (e) {
+            if (e.target === this) { closeResultAndReview(); return; }
+            const cell = e.target.closest('.q-status-item');
+            if (!cell) return;
+            const num = cell.textContent.trim();
+            const target = Array.from(document.querySelectorAll('.question-block')).find(bl => {
+                const q = bl.querySelector('.q-number');
+                return q && q.innerText.replace('.', '').trim() === num;
+            });
+            this.style.display = 'none';
+            // Bảng 'Câu hỏi' (navigator) đè lên nội dung khi màn hình hẹp → đóng lại để thấy câu vừa chọn
+            if (window.innerWidth < 1160 && typeof window._navClose === 'function') window._navClose();
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
     }
 });
+
+// Điền phần tổng kết (vòng điểm, số câu sai/bỏ qua, lời nhắn) — dùng chung cho nộp bài & xem lại
+function finalizeResultModal(score, opts) {
+    opts = opts || {};
+    const grid = document.getElementById('questionStatusGrid');
+    const n = cls => grid ? grid.querySelectorAll('.q-status-item.' + cls).length : 0;
+    const total = Number(opts.total) || 0, correct = Number(opts.correct) || 0;
+    const hasGrid = grid && grid.querySelector('.q-status-item');
+    const wrong = hasGrid ? n('q-wrong') : Math.max(0, (Number(opts.answered) || 0) - correct);
+    const skip = hasGrid ? n('q-skipped') : Math.max(0, total - (Number(opts.answered) || total));
+    const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+    set('erWrong', wrong); set('erSkip', skip);
+    set('erEyebrow', opts.review ? 'Xem lại bài làm' : 'Kết quả bài làm');
+    const title = score >= 80 ? 'Xuất sắc! 🎉' : score >= 60 ? 'Làm tốt lắm!' : score >= 40 ? 'Cố gắng thêm chút nữa nhé' : 'Đừng nản, ôn lại câu sai nhé';
+    set('resultTitleText', opts.titleOverride || title);
+    set('erMsg', opts.review && opts.when ? 'Nộp bài lúc ' + opts.when : (wrong ? 'Xem lại ' + wrong + ' câu sai để không mắc lại lần sau.' : 'Bạn không sai câu nào!'));
+    const ring = document.getElementById('erRing') || document.querySelector('.score-circle');
+    if (!ring) return;
+    ring.classList.remove('er-good', 'er-mid', 'er-low');
+    ring.classList.add(score >= 70 ? 'er-good' : score >= 50 ? 'er-mid' : 'er-low');
+    const prop = ring.id === 'erRing' ? '--p' : '--progress';
+    const fmt = v => prop === '--p' ? String(v) : v + '%';
+    if (opts.animate && score > 0) {
+        let p = 0;
+        ring.style.setProperty(prop, fmt(0));
+        const iv = setInterval(() => { p = Math.min(score, p + 2); ring.style.setProperty(prop, fmt(p)); if (p >= score) clearInterval(iv); }, 15);
+    } else {
+        ring.style.setProperty(prop, fmt(Math.max(0, Math.min(100, score))));
+    }
+}
 
 let isExamMode = false, isExamSubmitted = false, timeLeft = 70 * 60, examTimer = null;
 let globalExamSeconds = 0, globalExamInterval = null;
@@ -204,7 +336,13 @@ window.doExamGoogleLogin = function() {
     }
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider)
-        .then(() => {
+        .then((res) => {
+            // Lưu tên hiển thị (chỉ khi còn trống) để bảng xếp hạng không hiện "Học viên #…"
+            const u = res && res.user;
+            if (u && u.displayName) {
+                const ref = firebase.firestore().collection('users').doc(u.uid);
+                ref.get().then(d => { if (!d.exists || !d.data().fullName) ref.set({ fullName: String(u.displayName).slice(0, 60) }, { merge: true }); }).catch(() => {});
+            }
             // onAuthStateChanged sẽ tự động gọi showExamModeButtons()
         })
         .catch(err => {
@@ -821,17 +959,7 @@ function processSubmitExam() {
     if (fsEl) fsEl.innerText = score;
     if (qsEl) qsEl.innerHTML = gridHTML;
 
-    const circle = document.querySelector('.score-circle');
-    if (circle) {
-        circle.style.setProperty('--progress', '0%');
-        if (score > 0) {
-            let p = 0;
-            const iv = setInterval(() => {
-                if (p >= score) clearInterval(iv);
-                else { p++; circle.style.setProperty('--progress', p + '%'); }
-            }, 15);
-        }
-    }
+    finalizeResultModal(score, { animate: true, total: blocks.length, correct: correctCount, answered: answeredCount });
 
     const rm = document.getElementById('examResultModal');
     if (rm) rm.style.display = 'flex';
@@ -895,7 +1023,9 @@ window.applyReview = async function (attemptId) {
     const answersMap = {};
     (a.answers || []).forEach(x => { answersMap[String(x.q)] = x; });
     // Bài làm cũ (trước khi có tính năng) không lưu chi tiết từng câu
-    const hasDetail = Array.isArray(a.correct) && a.correct.length > 0;
+    // Có chi tiết khi lưu được danh sách câu đã làm / đáp án (kể cả trường hợp sai hết, correct = [])
+    const answeredSet = new Set((a.answered || []).map(String));
+    const hasDetail = answeredSet.size > 0 || (Array.isArray(a.answers) && a.answers.length > 0) || (Array.isArray(a.correct) && a.correct.length > 0);
 
     let gridHTML = '';
     document.querySelectorAll('.question-block').forEach(block => {
@@ -922,7 +1052,7 @@ window.applyReview = async function (attemptId) {
         // (tô xám, giữ bí mật để người dùng có thể làm lại đề sau này)
 
         if (hasDetail) {
-            const answered = !!answersMap[qText];
+            const answered = !!answersMap[qText] || answeredSet.has(qText);
             const stateCls = isCor ? 'q-correct' : (answered ? 'q-wrong' : 'q-skipped');
             gridHTML += `<div class="q-status-item ${stateCls}">${qText}</div>`;
         }
@@ -938,7 +1068,15 @@ window.applyReview = async function (attemptId) {
     if (fsEl) fsEl.innerText = a.score || 0;
     if (qsEl) qsEl.innerHTML = hasDetail
         ? gridHTML
-        : '<div style="color:#94a3b8; font-size:0.9em; padding:10px;">⚠️ Bài làm cũ chưa lưu chi tiết từng câu nên không hiển thị ôn lại được.</div>';
+        : '<div class="er-note">Bài làm cũ chưa lưu chi tiết từng câu nên không hiển thị bảng câu hỏi.</div>';
+    const subAt = a.submittedAt && a.submittedAt.toDate ? a.submittedAt.toDate() : null;
+    finalizeResultModal(Number(a.score) || 0, {
+        review: true,
+        total: a.totalQuestions || document.querySelectorAll('.question-block').length,
+        correct: a.correctCount || correctSet.size,
+        answered: a.answeredCount || 0,
+        when: subAt ? subAt.getDate() + '/' + (subAt.getMonth() + 1) + '/' + subAt.getFullYear() + ' ' + String(subAt.getHours()).padStart(2, '0') + ':' + String(subAt.getMinutes()).padStart(2, '0') : ''
+    });
 
     const rm = document.getElementById('examResultModal');
     if (rm) rm.style.display = 'flex';
@@ -957,5 +1095,7 @@ window.applyReview = async function (attemptId) {
 
 window.closeResultAndReview = () => {
     document.getElementById('examResultModal').style.display = 'none';
+    // Điện thoại: bảng "Câu hỏi" phủ kín màn hình → đóng để thấy ngay đáp án
+    if (window.innerWidth < 768 && typeof window._navClose === 'function') window._navClose();
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };

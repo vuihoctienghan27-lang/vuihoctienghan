@@ -604,14 +604,20 @@
                 }
 
                 try {
-                    var userQuery = await window.db.collection('users').where('email', '==', targetEmail).limit(1).get();
-                    if (userQuery.empty) {
-                        return Swal.fire('Không tìm thấy', 'Email này chưa đăng ký tài khoản.', 'error');
+                    // Tra email qua chỉ mục riêng (email_index) — email không còn nằm trong users công khai
+                    var targetUid = null;
+                    var idxDoc = await window.db.collection('email_index').doc(targetEmail).get();
+                    if (idxDoc.exists) targetUid = idxDoc.data().uid;
+                    if (!targetUid) {
+                        // Tài khoản cũ chưa chuyển email (chưa đăng nhập lại) → thử cách cũ
+                        var userQuery = await window.db.collection('users').where('email', '==', targetEmail).limit(1).get();
+                        if (!userQuery.empty) targetUid = userQuery.docs[0].id;
                     }
-
-                    var targetUser = userQuery.docs[0];
-                    var targetUid = targetUser.id;
-                    var targetData = targetUser.data();
+                    if (!targetUid) {
+                        return Swal.fire('Không tìm thấy', 'Email này chưa đăng ký tài khoản (hoặc người đó chưa đăng nhập lại kể từ lần cập nhật gần đây).', 'error');
+                    }
+                    var targetSnap = await window.db.collection('users').doc(targetUid).get();
+                    var targetData = targetSnap.exists ? targetSnap.data() : {};
                     var myName = currentUser.displayName || currentUser.email.split('@')[0];
                     var targetName = targetData.fullName || targetEmail.split('@')[0];
 

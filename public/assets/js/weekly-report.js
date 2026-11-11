@@ -53,13 +53,24 @@
         const f = d => d.getDate() + '/' + (d.getMonth() + 1);
         return f(start) + ' – ' + f(end);
     }
+    // Icon nét (24×24)
+    // Icon duotone dùng chung (assets/js/ui-icons.js)
+    const IC_ALIAS = { focus: 'target', book: 'notebook' };
+    function ic(n) { return window.UIIcons ? window.UIIcons.svg(IC_ALIAS[n] || n, 'wr-i') : ''; }
+    function tile(n, tone, size) { return window.UIIcons ? window.UIIcons.tile(IC_ALIAS[n] || n, tone, size) : ''; }
+    function fmtRangeLong(start) {
+        const end = new Date(start); end.setDate(start.getDate() + 6);
+        return start.getMonth() === end.getMonth()
+            ? start.getDate() + ' – ' + end.getDate() + ' tháng ' + (end.getMonth() + 1)
+            : start.getDate() + '/' + (start.getMonth() + 1) + ' – ' + end.getDate() + '/' + (end.getMonth() + 1);
+    }
     // Chênh lệch so với tuần trước
     function delta(cur, prev, unit) {
         if (!prev && !cur) return '<span class="wr-d wr-flat">—</span>';
-        if (!prev) return '<span class="wr-d wr-up">mới</span>';
+        if (!prev) return '<span class="wr-d wr-up">' + ic('up') + 'Mới</span>';
         const p = Math.round((cur - prev) / prev * 100);
-        if (Math.abs(p) < 5) return '<span class="wr-d wr-flat">≈ tuần trước</span>';
-        return '<span class="wr-d ' + (p > 0 ? 'wr-up' : 'wr-down') + '">' + (p > 0 ? '▲ ' : '▼ ') + Math.abs(p) + '%' + (unit || '') + '</span>';
+        if (Math.abs(p) < 5) return '<span class="wr-d wr-flat">' + ic('flat') + 'Không đổi</span>';
+        return '<span class="wr-d ' + (p > 0 ? 'wr-up' : 'wr-down') + '">' + ic(p > 0 ? 'up' : 'down') + Math.abs(p) + '%' + (unit || '') + '</span>';
     }
     function pct(c, a) { return a ? Math.round(c / a * 100) : null; }
     // Số ngày đã qua của tuần này (T2 = 1 … CN = 7) → so sánh CÙNG KỲ với tuần trước
@@ -72,12 +83,14 @@
     // =====================================================================
     // HỌC VIÊN
     // =====================================================================
-    async function loadStudentData(uid) {
+    async function loadStudentData(uid, onUser) {
         const db = firebase.firestore();
         const userRef = db.collection('users').doc(uid);
         const lastStart = weekStart(1);
+        const userP = userRef.get();
+        if (onUser) userP.then(d => onUser({ user: d.exists ? d.data() : {}, attempts: null, mistakes: null, vocab: null })).catch(() => {});
         const [userDoc, attemptsSnap, mistakesSnap, vocabSnap] = await Promise.all([
-            userRef.get(),
+            userP,
             userRef.collection('examAttempts').where('submittedAt', '>=', firebase.firestore.Timestamp.fromDate(lastStart)).get().catch(() => null),
             userRef.collection('mistakes').get().catch(() => null),
             userRef.collection('vocabulary').get().catch(() => null)
@@ -98,7 +111,8 @@
         const days = allDays.slice(0, span);
         const from = start.getTime(), to = from + span * DAY;
         const inWeek = t => t >= from && t < to;
-        const at = data.attempts.filter(a => inWeek(ms(a.submittedAt)));
+        const user = data.user || {};
+        const at = (data.attempts || []).filter(a => inWeek(ms(a.submittedAt)));
         const bySkill = {};
         at.forEach(a => {
             const k = a.skill || 'reading';
@@ -111,14 +125,14 @@
         const answered = at.reduce((s, a) => s + (a.answeredCount || 0), 0);
         return {
             days,
-            minutes: sumDays(data.user.dailyStudyData, days),
-            perDay: allDays.map(d => Number((data.user.dailyStudyData || {})[dateKey(d)]) || 0),
-            activeDays: activeDays(data.user.dailyStudyData, days),
-            reviews: sumDays(data.user.dailyReviewData, days),
+            minutes: sumDays(user.dailyStudyData, days),
+            perDay: allDays.map(d => Number((user.dailyStudyData || {})[dateKey(d)]) || 0),
+            activeDays: activeDays(user.dailyStudyData, days),
+            reviews: sumDays(user.dailyReviewData, days),
             exams: at.length, correct, answered, accuracy: pct(correct, answered), bySkill,
-            newWords: data.vocab.filter(v => inWeek(v.srsFirstAt || 0)).length,
-            mistakesNew: data.mistakes.filter(m => inWeek(ms(m.createdAt))).length,
-            mistakesFixed: data.mistakes.filter(m => m.mastered && inWeek(ms(m.masteredAt))).length
+            newWords: (data.vocab || []).filter(v => inWeek(v.srsFirstAt || 0)).length,
+            mistakesNew: (data.mistakes || []).filter(m => inWeek(ms(m.createdAt))).length,
+            mistakesFixed: (data.mistakes || []).filter(m => m.mastered && inWeek(ms(m.masteredAt))).length
         };
     }
 
@@ -131,69 +145,145 @@
         if (skills.length >= 2) {
             skills.sort((a, b) => a.p - b.p);
             const w = skills[0], b = skills[skills.length - 1];
-            if (b.p - w.p >= 10) out.push(`🎯 Kỹ năng <b>${SK[w.k] || w.k}</b> đang yếu hơn ${SK[b.k] || b.k} (${w.p}% so với ${b.p}%). Tuần tới nên làm thêm đề ${SK[w.k] || w.k}.`);
+            if (b.p - w.p >= 10) out.push({ i: 'focus', h: `Kỹ năng <b>${SK[w.k] || w.k}</b> đang yếu hơn ${SK[b.k] || b.k} (${w.p}% so với ${b.p}%). Tuần tới nên làm thêm đề ${SK[w.k] || w.k}.` });
         } else if (skills.length === 1 && skills[0].p < 60) {
-            out.push(`🎯 Độ chính xác phần <b>${SK[skills[0].k] || skills[0].k}</b> tuần này là ${skills[0].p}% — hãy xem lại lời giải các câu sai.`);
+            out.push({ i: 'focus', h: `Độ chính xác phần <b>${SK[skills[0].k] || skills[0].k}</b> tuần này là ${skills[0].p}% — hãy xem lại lời giải các câu sai.` });
         }
         if (prev.minutes >= 30 && cur.minutes < prev.minutes * 0.7) {
-            out.push(`📉 Thời gian học giảm ${Math.round((1 - cur.minutes / prev.minutes) * 100)}% so với tuần trước. Chỉ cần 15 phút mỗi ngày là đủ giữ nhịp!`);
+            out.push({ i: 'trendDown', t: 'neg', h: `Thời gian học giảm ${Math.round((1 - cur.minutes / prev.minutes) * 100)}% so với tuần trước. Chỉ cần 15 phút mỗi ngày là đủ giữ nhịp.` });
         } else if (cur.minutes > prev.minutes * 1.2 && cur.minutes >= 30) {
-            out.push(prev.minutes
-                ? `🔥 Tuyệt vời! Bạn học nhiều hơn cùng kỳ tuần trước ${Math.round((cur.minutes / prev.minutes - 1) * 100)}%. Giữ vững phong độ nhé!`
-                : '🔥 Tuyệt vời! Tuần này bạn đã bắt đầu học đều đặn. Giữ vững phong độ nhé!');
+            out.push({ i: 'trendUp', t: 'pos', h: prev.minutes
+                ? `Bạn học nhiều hơn cùng kỳ tuần trước <b>${Math.round((cur.minutes / prev.minutes - 1) * 100)}%</b>. Giữ vững phong độ nhé.`
+                : 'Tuần này bạn đã bắt đầu học đều đặn. Giữ vững phong độ nhé.' });
         }
         if (cur.accuracy !== null && prev.accuracy !== null && cur.accuracy - prev.accuracy >= 5) {
-            out.push(`📈 Độ chính xác khi làm đề tăng từ ${prev.accuracy}% lên <b>${cur.accuracy}%</b>.`);
+            out.push({ i: 'trendUp', t: 'pos', h: `Độ chính xác khi làm đề tăng từ ${prev.accuracy}% lên <b>${cur.accuracy}%</b>.` });
         }
         const need = data.mistakes.filter(m => !m.mastered).length;
-        if (need) out.push(`📕 Còn <b>${need}</b> câu sai chưa thuộc. <a href="mistakes.html">Ôn ngay →</a>`);
+        if (need) out.push({ i: 'book', h: `Còn <b>${need}</b> câu sai chưa thuộc.`, a: ['mistakes.html', 'Ôn câu sai'] });
         if (window.SRS && data.vocab.length) {
             const words = data.vocab.map(v => v);
             const due = words.filter(v => { const d = window.SRS.virtualDue(v); return d !== null && d <= Date.now(); }).length;
-            if (due) out.push(`🔁 Có <b>${due}</b> từ vựng đến hạn ôn. <a href="vocab.html?review=1">Ôn từ vựng →</a>`);
+            if (due) out.push({ i: 'repeat', h: `Có <b>${due}</b> từ vựng đến hạn ôn.`, a: ['vocab.html?review=1', 'Ôn từ vựng'] });
         }
-        if (!cur.minutes && !cur.exams && !cur.reviews) out.push('🌱 Tuần này bạn chưa học gì — bắt đầu bằng 1 buổi ôn từ vựng 5 phút nhé!');
+        if (!cur.minutes && !cur.exams && !cur.reviews) out.push({ i: 'sprout', h: 'Tuần này bạn chưa học — bắt đầu bằng một buổi ôn từ vựng 5 phút nhé.' });
         return out;
+    }
+
+    // Khung xương (skeleton) cho số liệu chưa tải xong
+    function SK(w, h) { return '<span class="wr-sk" style="width:' + (w || '3em') + (h ? ';height:' + h : '') + '"></span>'; }
+
+    // ---- Biểu đồ thời gian học: 7 ngày (tuần này) / 30 ngày gần đây ----
+    function chartRange() { try { return localStorage.getItem('wrChartRange') === '30' ? 30 : 7; } catch (e) { return 7; } }
+    function setChartRange(v) { try { localStorage.setItem('wrChartRange', String(v)); } catch (e) { } }
+
+    function studyPanel(data, cur, range) {
+        const map = (data.user && data.user.dailyStudyData) || {};
+        const sk = !data.user;
+        const seg = `<div class="wr-seg" role="tablist">
+            <button type="button" data-wr-range="7" class="${range === 7 ? 'on' : ''}">Tuần này</button>
+            <button type="button" data-wr-range="30" class="${range === 30 ? 'on' : ''}">30 ngày</button></div>`;
+        let cols, avg, total, active, cls = '';
+        if (range === 30) {
+            const today = new Date(); today.setHours(0, 0, 0, 0);
+            const days = Array.from({ length: 30 }, (_, i) => { const d = new Date(today); d.setDate(d.getDate() - (29 - i)); return d; });
+            const vals = days.map(d => Number(map[dateKey(d)]) || 0);
+            const max = Math.max(30, ...vals);
+            total = vals.reduce((a, b) => a + b, 0);
+            active = vals.filter(v => v > 0).length;
+            avg = active ? total / active : 0;
+            cls = ' wr-chart-30';
+            cols = days.map((d, i) => {
+                const m = vals[i], isToday = i === 29, lbl = d.getDate() + '/' + (d.getMonth() + 1);
+                const showLbl = isToday || (29 - i) % 5 === 0;
+                return `<div class="wr-col${isToday ? ' today' : ''}" title="${DOW[(d.getDay() + 6) % 7]} ${lbl}: ${fmtMin(m)}">
+                    <div class="wr-bar-wrap">${sk ? '' : `<div class="wr-bar" style="height:${m ? Math.max(3, Math.round(m / max * 100)) : 0}%"></div>`}</div>
+                    <div class="wr-dow">${showLbl ? (isToday ? 'Nay' : lbl) : ''}</div></div>`;
+            }).join('');
+        } else {
+            const maxMin = Math.max(30, ...cur.perDay);
+            const todayIdx = (new Date().getDay() + 6) % 7;
+            total = cur.minutes; active = cur.activeDays;
+            avg = active ? total / active : 0;
+            cols = cur.perDay.map((m, i) => `
+                <div class="wr-col${i === todayIdx ? ' today' : ''}${i > todayIdx ? ' future' : ''}" title="${DOW[i]}: ${fmtMin(m)}">
+                    <div class="wr-bar-wrap">${sk ? '' : `<div class="wr-val">${m ? Math.round(m) + "'" : ''}</div><div class="wr-bar" style="height:${m ? Math.max(4, Math.round(m / maxMin * 100)) : 0}%"></div>`}</div>
+                    <div class="wr-dow">${i === todayIdx ? 'Hôm nay' : DOW[i]}</div>
+                </div>`).join('');
+        }
+        return `<div class="wr-panel-h"><span>${ic('chart')}Thời gian học mỗi ngày</span>${seg}</div>
+            <div class="wr-chart${cls}${sk ? ' wr-chart-sk' : ''}">${cols}</div>
+            <div class="wr-chart-foot">${sk ? SK('16em') : `<span>Tổng <b>${fmtMin(total)}</b></span><span><b>${active}</b>/${range === 30 ? 30 : 7} ngày có học</span><span>TB <b>${fmtMin(avg)}</b> / ngày học</span>`}</div>`;
     }
 
     function renderStudent(box, data) {
         const cur = weekStats(data, weekStart(0));
         const prev = weekStats(data, weekStart(1), elapsedDays());
-        const maxMin = Math.max(30, ...cur.perDay);
-        const todayIdx = (new Date().getDay() + 6) % 7;
-        const tips = insights(cur, prev, data);
+        const has = { u: !!data.user, at: !!data.attempts, mk: !!data.mistakes, vc: !!data.vocab };
+        const ready = has.u && has.at && has.mk && has.vc;
+        const tips = ready ? insights(cur, prev, data) : [];
+        const kpi = (icon, tone, label, value, cls, sub, d) => `<div class="wr-kpi">
+            <div class="wr-kpi-top">${tile(icon, tone, 'sm')}<span class="wr-kpi-l">${label}</span></div>
+            <div class="wr-kpi-v ${cls}">${value === null ? SK('2.6em', '1em') : value}</div>
+            <div class="wr-kpi-s">${value === null ? SK('5em') : (d || '') + (sub ? '<span>' + sub + '</span>' : '')}</div></div>`;
+        const TIP_TONE = { focus: 'amber', trendDown: 'coral', trendUp: 'green', book: 'coral', repeat: 'violet', sprout: 'green' };
+        const fixRate = cur.mistakesNew + cur.mistakesFixed ? Math.round(cur.mistakesFixed / (cur.mistakesNew + cur.mistakesFixed) * 100) : 0;
 
+        box.classList.add('wr-scope');
         box.innerHTML = `
             <div class="wr-head">
-                <div><div class="wr-title">📅 Báo cáo tuần này</div><div class="wr-range">${fmtRange(weekStart(0))} · ${spanLabel()}</div></div>
+                <div class="wr-head-l">${tile('calendar', 'blue')}
+                    <div><div class="wr-title">Báo cáo tuần này</div><div class="wr-range">${fmtRangeLong(weekStart(0))} · ${spanLabel()}</div></div></div>
             </div>
-            <div class="wr-grid">
-                <div class="wr-tile"><span class="wr-ico">⏱️</span><b>${fmtMin(cur.minutes)}</b><span>thời gian học</span>${delta(cur.minutes, prev.minutes)}</div>
-                <div class="wr-tile"><span class="wr-ico">📆</span><b>${cur.activeDays}/7</b><span>ngày có học</span>${delta(cur.activeDays, prev.activeDays)}</div>
-                <div class="wr-tile"><span class="wr-ico">📝</span><b>${cur.exams}</b><span>đề đã làm${cur.accuracy !== null ? ' · đúng ' + cur.accuracy + '%' : ''}</span>${delta(cur.exams, prev.exams)}</div>
-                <div class="wr-tile"><span class="wr-ico">🔁</span><b>${cur.reviews}</b><span>thẻ từ đã ôn${cur.newWords ? ' · ' + cur.newWords + ' từ mới' : ''}</span>${delta(cur.reviews, prev.reviews)}</div>
-                <div class="wr-tile"><span class="wr-ico">📕</span><b>+${cur.mistakesNew} / ✓${cur.mistakesFixed}</b><span>câu sai mới / đã thuộc</span><span class="wr-d wr-flat">&nbsp;</span></div>
+            <div class="wr-kpis">
+                ${kpi('clock', 'cyan', 'Thời gian học', has.u ? fmtMin(cur.minutes) : null, 'c-cyan', '', delta(cur.minutes, prev.minutes))}
+                ${kpi('flame', 'orange', 'Ngày có học', has.u ? cur.activeDays + '<small>/7</small>' : null, 'c-orange', '', delta(cur.activeDays, prev.activeDays))}
+                ${kpi('exam', 'blue', 'Đề đã làm', has.at ? cur.exams : null, 'c-blue', cur.accuracy !== null ? 'đúng ' + cur.accuracy + '%' : '', delta(cur.exams, prev.exams))}
+                ${kpi('repeat', 'violet', 'Thẻ từ đã ôn', has.u ? cur.reviews : null, 'c-violet', has.vc && cur.newWords ? '+' + cur.newWords + ' từ mới' : '', delta(cur.reviews, prev.reviews))}
             </div>
-            <div class="wr-chart">
-                ${cur.perDay.map((m, i) => `
-                    <div class="wr-col${i === todayIdx ? ' today' : ''}${i > todayIdx ? ' future' : ''}" title="${DOW[i]}: ${fmtMin(m)}">
-                        <div class="wr-bar-wrap"><div class="wr-bar" style="height:${Math.round(m / maxMin * 100)}%"></div></div>
-                        <div class="wr-val">${m ? Math.round(m) + "'" : ''}</div>
-                        <div class="wr-dow">${DOW[i]}</div>
-                    </div>`).join('')}
+            <div class="wr-body">
+                <div class="wr-panel wr-study">${studyPanel(data, cur, chartRange())}</div>
+                <div class="wr-panel wr-side">
+                    <div class="wr-panel-h"><span>${ic('notebook')}Sổ câu sai</span><a href="mistakes.html" class="wr-link">Mở sổ ${ic('arrow')}</a></div>
+                    <div class="wr-pair">
+                        <div class="wr-pair-box red"><div class="wr-pair-v">${has.mk ? '+' + cur.mistakesNew : SK('1.6em', '1em')}</div><div class="wr-pair-l">câu sai mới</div></div>
+                        <div class="wr-pair-box green"><div class="wr-pair-v">${has.mk ? cur.mistakesFixed : SK('1.6em', '1em')}</div><div class="wr-pair-l">câu đã thuộc</div></div>
+                    </div>
+                    <div class="wr-pair-cap"><span>Tỉ lệ khắc phục</span><b>${has.mk ? fixRate + '%' : SK('2.4em')}</b></div>
+                    <div class="wr-pair-bar"><div style="width:${fixRate}%"></div></div>
+                </div>
             </div>
-            ${tips.length ? `<div class="wr-tips">${tips.map(t => `<div class="wr-tip">${t}</div>`).join('')}</div>` : ''}`;
+            ${!ready ? `<div class="wr-tips"><div class="wr-panel-h"><span>${ic('sparkle')}Nhận xét & gợi ý</span></div>
+                <div class="wr-tip wr-tip-sk"><span class="wr-sk wr-sk-tile"></span>${SK('70%')}</div>
+                <div class="wr-tip wr-tip-sk"><span class="wr-sk wr-sk-tile"></span>${SK('50%')}</div></div>` : ''}
+            ${tips.length ? `<div class="wr-tips"><div class="wr-panel-h"><span>${ic('sparkle')}Nhận xét & gợi ý</span></div>${tips.map(t => `
+                <div class="wr-tip">${tile(t.i, TIP_TONE[t.i] || 'blue', 'sm')}<div class="wr-tip-t">${t.h}</div>
+                ${t.a ? `<a class="wr-tip-a" href="${t.a[0]}">${t.a[1]} ${ic('arrow')}</a>` : ''}</div>`).join('')}</div>` : ''}`;
+        const panel = box.querySelector('.wr-study');
+        if (panel) panel.addEventListener('click', e => {
+            const b = e.target.closest('[data-wr-range]');
+            if (!b) return;
+            const r = Number(b.dataset.wrRange);
+            setChartRange(r);
+            panel.innerHTML = studyPanel(data, cur, r);
+        });
     }
 
     async function initStudent() {
         const box = document.getElementById('weeklyReportBox');
         if (!box || typeof firebase === 'undefined') return;
+        const EMPTY = { user: null, attempts: null, mistakes: null, vocab: null };
+        // Hiện ngay phần cố định (tiêu đề, nhãn, icon) — số liệu Firebase điền sau
+        box.style.display = 'block';
+        renderStudent(box, EMPTY);
         firebase.auth().onAuthStateChanged(async user => {
             if (!user) { box.style.display = 'none'; return; }
             box.style.display = 'block';
-            box.innerHTML = '<div class="wr-loading">⏳ Đang tổng hợp báo cáo tuần...</div>';
+            let done = false;
             try {
-                renderStudent(box, await loadStudentData(user.uid));
+                const full = await loadStudentData(user.uid, partial => { if (!done) renderStudent(box, partial); });
+                done = true;
+                renderStudent(box, full);
             } catch (e) {
                 console.warn('[WeeklyReport]', e);
                 box.innerHTML = '<div class="wr-loading">Không tải được báo cáo tuần.</div>';
@@ -259,11 +349,11 @@
     function flagsFor(r) {
         const f = [];
         const idleDays = r.lastActive ? Math.floor((Date.now() - r.lastActive) / DAY) : null;
-        if (!r.minutes && !r.words && !r.quizEx && !r.subs) f.push({ t: '⚠️ Chưa học tuần này', c: 'bad', w: 3 });
-        else if (r.minutesPrev >= 30 && r.minutes < r.minutesPrev * 0.5) f.push({ t: '📉 Giảm ' + Math.round((1 - r.minutes / r.minutesPrev) * 100) + '%', c: 'warn', w: 2 });
-        if (idleDays !== null && idleDays >= 7) f.push({ t: '💤 ' + idleDays + ' ngày không vào', c: 'bad', w: 3 });
-        if (r.quizAcc !== null && r.quizAnswered >= 5 && r.quizAcc < 50) f.push({ t: '🎯 Bài tập đúng ' + r.quizAcc + '%', c: 'warn', w: 1 });
-        if (r.days >= 5) f.push({ t: '🌟 Chăm chỉ', c: 'good', w: -1 });
+        if (!r.minutes && !r.words && !r.quizEx && !r.subs) f.push({ t: 'Chưa học tuần này', c: 'bad', w: 3 });
+        else if (r.minutesPrev >= 30 && r.minutes < r.minutesPrev * 0.5) f.push({ t: 'Giảm ' + Math.round((1 - r.minutes / r.minutesPrev) * 100) + '%', c: 'warn', w: 2 });
+        if (idleDays !== null && idleDays >= 7) f.push({ t: idleDays + ' ngày không vào', c: 'bad', w: 3 });
+        if (r.quizAcc !== null && r.quizAnswered >= 5 && r.quizAcc < 50) f.push({ t: 'Bài tập đúng ' + r.quizAcc + '%', c: 'warn', w: 1 });
+        if (r.days >= 5) f.push({ t: 'Chăm chỉ', c: 'good', w: -1 });
         return f;
     }
 
@@ -274,14 +364,14 @@
         if (old) old.remove();
         const ov = document.createElement('div');
         ov.id = '_wrClassModal';
-        ov.className = 'wr-modal-ov';
+        ov.className = 'wr-modal-ov wr-scope';
         ov.innerHTML = `<div class="wr-modal">
             <div class="wr-modal-head">
-                <div><div style="font-weight:900;font-size:1.1em;color:#0f172a;">📈 Báo cáo tuần · ${esc(folderName || 'Lớp học')}</div>
-                <div style="font-size:0.84em;color:#64748b;">${fmtRange(weekStart(0))} · ${spanLabel()}</div></div>
-                <button class="wr-close" title="Đóng (Esc)">✕</button>
+                <div class="wr-head-l">${tile('chart', 'navy')}<div><div class="wr-title">Báo cáo tuần · ${esc(folderName || 'Lớp học')}</div>
+                <div class="wr-range">${fmtRangeLong(weekStart(0))} · ${spanLabel()}</div></div></div>
+                <button class="wr-close" title="Đóng (Esc)">${ic('x')}</button>
             </div>
-            <div class="wr-modal-body"><div class="wr-loading">⏳ Đang tổng hợp dữ liệu học viên...</div></div>
+            <div class="wr-modal-body"><div class="wr-loading"><div class="wr-spin"></div>Đang tổng hợp dữ liệu học viên…</div></div>
         </div>`;
         document.body.appendChild(ov);
         const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); };
@@ -297,7 +387,7 @@
             body.innerHTML = '<div class="wr-loading">Không tải được dữ liệu: ' + esc(e.message) + '</div>';
             return;
         }
-        if (!rows.length) { body.innerHTML = '<div class="wr-loading">📭 Lớp chưa có học viên nào.</div>'; return; }
+        if (!rows.length) { body.innerHTML = '<div class="wr-loading">' + tile('users', 'slate', 'lg') + 'Lớp chưa có học viên nào.</div>'; return; }
 
         rows.forEach(r => { r.flags = flagsFor(r); r.weight = r.flags.reduce((s, f) => s + f.w, 0); });
         rows.sort((a, b) => b.weight - a.weight || a.minutes - b.minutes);
@@ -306,27 +396,29 @@
         const totalMin = rows.reduce((s, r) => s + r.minutes, 0);
         const attention = rows.filter(r => r.weight >= 2).length;
 
+        const initials = n => String(n || '?').trim().split(/\s+/).slice(-2).map(w => w[0] || '').join('').toUpperCase() || '?';
+        const dash = '<span class="wr-muted">—</span>';
         body.innerHTML = `
-            <div class="wr-grid wr-grid-3">
-                <div class="wr-tile"><b>${active}/${rows.length}</b><span>học viên có học tuần này</span></div>
-                <div class="wr-tile"><b>${fmtMin(rows.length ? totalMin / rows.length : 0)}</b><span>thời gian học TB / học viên</span></div>
-                <div class="wr-tile"><b style="color:${attention ? '#dc2626' : '#059669'};">${attention}</b><span>học viên cần chú ý</span></div>
+            <div class="wr-kpis wr-kpis-3">
+                <div class="wr-kpi"><div class="wr-kpi-top">${tile('users', 'blue', 'sm')}<span class="wr-kpi-l">Học viên có học</span></div><div class="wr-kpi-v c-blue">${active}<small>/${rows.length}</small></div></div>
+                <div class="wr-kpi"><div class="wr-kpi-top">${tile('clock', 'cyan', 'sm')}<span class="wr-kpi-l">Thời gian TB / học viên</span></div><div class="wr-kpi-v c-cyan">${fmtMin(rows.length ? totalMin / rows.length : 0)}</div></div>
+                <div class="wr-kpi"><div class="wr-kpi-top">${tile('alert', 'coral', 'sm')}<span class="wr-kpi-l">Cần chú ý</span></div><div class="wr-kpi-v ${attention ? 'wr-neg' : 'wr-pos'}">${attention}</div></div>
             </div>
             <div class="wr-table-wrap"><table class="wr-table">
-                <thead><tr><th>Học viên</th><th>Thời gian học</th><th>Ngày học</th><th>Từ vựng lớp đã ôn</th><th>Bài tập</th><th>Gần nhất</th><th>Ghi chú</th></tr></thead>
+                <thead><tr><th>Học viên</th><th>Thời gian học</th><th>Ngày học</th><th>Từ vựng lớp</th><th>Bài tập</th><th>Gần nhất</th><th>Ghi chú</th></tr></thead>
                 <tbody>${rows.map(r => `
                     <tr>
-                        <td><div class="wr-name">${esc(r.name)}</div><div class="wr-email">${esc(r.email)}</div></td>
-                        <td data-l="Thời gian học"><b>${fmtMin(r.minutes)}</b><br>${delta(r.minutes, r.minutesPrev)}</td>
-                        <td data-l="Ngày học">${r.days}/7</td>
-                        <td data-l="Từ vựng lớp">${r.words} từ</td>
-                        <td data-l="Bài tập">${r.quizEx || r.subs ? `${r.quizEx ? r.quizEx + ' bài tương tác' + (r.quizAcc !== null ? ' · đúng ' + r.quizAcc + '%' : '') : ''}${r.quizEx && r.subs ? '<br>' : ''}${r.subs ? r.subs + ' bài nộp' : ''}` : '<span style="color:#94a3b8;">—</span>'}</td>
-                        <td data-l="Gần nhất">${r.lastActive ? new Date(r.lastActive).toLocaleDateString('vi-VN') : '—'}</td>
-                        <td data-l="Ghi chú">${r.flags.map(f => `<span class="wr-flag ${f.c}">${f.t}</span>`).join(' ') || '<span style="color:#94a3b8;">—</span>'}</td>
+                        <td><div class="wr-who"><span class="wr-av">${esc(initials(r.name))}</span><div style="min-width:0;"><div class="wr-name">${esc(r.name)}</div><div class="wr-email">${esc(r.email)}</div></div></div></td>
+                        <td data-l="Thời gian học"><div class="wr-cell-v">${fmtMin(r.minutes)}</div>${delta(r.minutes, r.minutesPrev)}</td>
+                        <td data-l="Ngày học"><div class="wr-days">${[0, 1, 2, 3, 4, 5, 6].map(i => `<i class="${i < r.days ? 'on' : ''}"></i>`).join('')}</div><span class="wr-muted wr-num">${r.days}/7</span></td>
+                        <td data-l="Từ vựng lớp" class="wr-num">${r.words ? r.words + ' từ' : dash}</td>
+                        <td data-l="Bài tập">${r.quizEx || r.subs ? `${r.quizEx ? r.quizEx + ' bài tương tác' + (r.quizAcc !== null ? ' <span class="wr-muted">· đúng ' + r.quizAcc + '%</span>' : '') : ''}${r.quizEx && r.subs ? '<br>' : ''}${r.subs ? r.subs + ' bài nộp' : ''}` : dash}</td>
+                        <td data-l="Gần nhất" class="wr-num">${r.lastActive ? new Date(r.lastActive).toLocaleDateString('vi-VN') : dash}</td>
+                        <td data-l="Ghi chú">${r.flags.map(f => `<span class="wr-flag ${f.c}"><span class="wr-flag-dot"></span>${f.t}</span>`).join('') || dash}</td>
                     </tr>`).join('')}
                 </tbody>
             </table></div>
-            <div class="wr-note">“Thời gian học” là tổng thời gian học trên toàn website (đề thi, bài học...). “Từ vựng lớp đã ôn” đếm số từ trong thư mục này mà học viên đã đánh giá trong tuần.</div>`;
+            <div class="wr-note">“Thời gian học” là tổng thời gian học trên toàn website (đề thi, bài học…). “Từ vựng lớp” đếm số từ trong thư mục này mà học viên đã đánh giá trong tuần.</div>`;
     }
 
     // ── CSS dùng chung (chèn 1 lần) ──
@@ -335,60 +427,167 @@
         const st = document.createElement('style');
         st.id = 'wr-css';
         st.textContent = `
-            #weeklyReportBox { background: rgba(255,255,255,0.95); border-radius: 18px; padding: 18px 20px; margin-bottom: 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); }
-            .wr-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
-            .wr-title { font-size: 1.15em; font-weight: 900; color: #0f172a; }
-            .wr-range { font-size: 0.82em; color: #64748b; }
-            .wr-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
-            .wr-grid-3 { grid-template-columns: repeat(3, 1fr); margin-bottom: 14px; }
-            .wr-tile { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px; display: flex; flex-direction: column; gap: 2px; text-align: center; }
-            .wr-tile b { font-size: 1.3em; font-weight: 900; color: #1e293b; }
-            .wr-tile > span:not(.wr-d):not(.wr-ico) { font-size: 0.76em; color: #64748b; font-weight: 600; }
-            .wr-ico { font-size: 1.1em; }
-            .wr-d { font-size: 0.72em; font-weight: 800; }
-            .wr-up { color: #059669; } .wr-down { color: #dc2626; } .wr-flat { color: #94a3b8; }
-            .wr-chart { display: flex; gap: 6px; align-items: flex-end; height: 120px; margin: 16px 0 6px; padding: 0 4px; }
-            .wr-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
-            .wr-bar-wrap { flex: 1; width: 100%; max-width: 38px; display: flex; align-items: flex-end; background: #f1f5f9; border-radius: 8px; overflow: hidden; }
-            .wr-bar { width: 100%; background: linear-gradient(180deg, #60a5fa, #2563eb); border-radius: 8px 8px 0 0; min-height: 2px; }
-            .wr-col.today .wr-bar { background: linear-gradient(180deg, #fbbf24, #f97316); }
-            .wr-col.future { opacity: 0.4; }
-            .wr-val { font-size: 0.7em; color: #475569; font-weight: 700; height: 14px; }
-            .wr-dow { font-size: 0.75em; color: #64748b; font-weight: 700; }
-            .wr-col.today .wr-dow { color: #f97316; }
-            .wr-tips { margin-top: 12px; display: flex; flex-direction: column; gap: 6px; }
-            .wr-tip { background: #f0f9ff; border-left: 3px solid #3b82f6; border-radius: 8px; padding: 8px 12px; font-size: 0.9em; color: #1e293b; line-height: 1.5; }
-            .wr-tip a { color: #2563eb; font-weight: 800; text-decoration: none; }
-            .wr-loading { text-align: center; color: #64748b; padding: 20px; }
-            .wr-modal-ov { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
-            .wr-modal { background: #fff; border-radius: 18px; width: 100%; max-width: 1000px; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; }
-            .wr-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 16px 20px; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
-            .wr-modal-body { padding: 16px 20px 20px; overflow-y: auto; }
-            .wr-close { border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; color: #64748b; flex-shrink: 0; }
-            .wr-table-wrap { overflow-x: auto; }
-            .wr-table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
-            .wr-table th { text-align: left; background: #f1f5f9; color: #475569; font-weight: 800; padding: 9px 10px; white-space: nowrap; }
-            .wr-table td { padding: 10px; border-bottom: 1px solid #f1f5f9; vertical-align: top; color: #1e293b; }
-            .wr-name { font-weight: 800; } .wr-email { font-size: 0.8em; color: #94a3b8; }
-            .wr-flag { display: inline-block; font-size: 0.78em; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin: 1px 0; white-space: nowrap; }
-            .wr-flag.bad { background: #fee2e2; color: #b91c1c; } .wr-flag.warn { background: #fef3c7; color: #92400e; } .wr-flag.good { background: #dcfce7; color: #15803d; }
-            .wr-note { font-size: 0.78em; color: #94a3b8; margin-top: 10px; }
-            body.dark-mode #weeklyReportBox, body.dark-mode .wr-modal { background: #1e293b; }
-            body.dark-mode .wr-title, body.dark-mode .wr-tile b, body.dark-mode .wr-tip { color: #f1f5f9; }
-            body.dark-mode .wr-tile, body.dark-mode .wr-modal-head { background: #0f172a; border-color: #334155; }
-            body.dark-mode .wr-tip { background: #0f172a; }
-            @media (max-width: 760px) {
-                .wr-grid { grid-template-columns: repeat(2, 1fr); }
-                .wr-grid > .wr-tile:last-child:nth-child(odd) { grid-column: span 2; }
-                .wr-grid-3 { grid-template-columns: repeat(3, 1fr); }
+            .wr-scope { --tx:#1f2937; --sub:#6b7280; --mute:#9ca3af; --bd:#e5e7eb; --soft:#f8fafc; --card:#fff;
+                --pos:#059669; --pos-soft:#ecfdf5; --neg:#e11d48; --neg-soft:#fff1f2; --warn:#b45309; --warn-soft:#fffbeb;
+                font-family: 'Pretendard','Inter',sans-serif; color: var(--tx); }
+            body.dark-mode .wr-scope { --tx:#f1f5f9; --sub:#94a3b8; --mute:#64748b; --bd:#334155; --soft:#0f172a; --card:#1e293b;
+                --pos:#34d399; --pos-soft:#052e22; --neg:#fb7185; --neg-soft:#3b0d18; --warn:#fbbf24; --warn-soft:#2d1f05; }
+            .wr-i { width: 1em; height: 1em; flex-shrink: 0; }
+            #weeklyReportBox { background: var(--card); border: 1px solid var(--bd); border-radius: 16px; padding: 22px; margin-bottom: 20px; }
+            .wr-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
+            .wr-head-l { display: flex; align-items: center; gap: 12px; min-width: 0; }
+            .wr-title { font-size: 1.15em; font-weight: 800; color: var(--tx); }
+            .wr-range { font-size: .84em; color: var(--sub); font-weight: 500; margin-top: 1px; }
+            .wr-muted { color: var(--mute); }
+            .wr-num { font-variant-numeric: tabular-nums; }
+            .wr-pos { color: var(--pos) !important; } .wr-neg { color: var(--neg) !important; }
+            .c-cyan { color: #0891b2; } .c-orange { color: #ea580c; } .c-blue { color: #1d4ed8; } .c-violet { color: #7c3aed; }
+            body.dark-mode .c-cyan { color: #67e8f9; } body.dark-mode .c-orange { color: #fdba74; } body.dark-mode .c-blue { color: #93c5fd; } body.dark-mode .c-violet { color: #c4b5fd; }
+
+            /* KPI (giống .ach-score-card) */
+            .wr-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+            .wr-kpis-3 { grid-template-columns: repeat(3, 1fr); margin-bottom: 18px; }
+            .wr-kpi { background: var(--card); border: 1px solid var(--bd); border-radius: 16px; padding: 14px; min-width: 0; transition: .2s; }
+            .wr-kpi:hover { border-color: #93c5fd; box-shadow: 0 8px 20px rgba(37,99,235,.10); transform: translateY(-2px); }
+            .wr-kpi-top { display: flex; align-items: center; gap: 10px; }
+            .wr-kpi-l { font-size: .82em; color: var(--sub); font-weight: 700; line-height: 1.25; }
+            .wr-kpi-v { font-size: 1.75em; font-weight: 900; line-height: 1.1; margin-top: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+            .wr-kpi-v small { font-size: .5em; color: var(--mute); font-weight: 700; margin-left: 1px; }
+            .wr-kpi-s { display: flex; align-items: center; gap: 6px; margin-top: 8px; min-height: 22px; flex-wrap: wrap; }
+            .wr-kpi-s > span:not(.wr-d) { font-size: .76em; color: var(--sub); font-weight: 600; }
+            .wr-d { display: inline-flex; align-items: center; gap: 3px; font-size: .74em; font-weight: 800; padding: 3px 8px; border-radius: 999px; font-variant-numeric: tabular-nums; }
+            .wr-d .wr-i { width: 11px; height: 11px; }
+            .wr-up { color: var(--pos); background: var(--pos-soft); } .wr-down { color: var(--neg); background: var(--neg-soft); } .wr-flat { color: var(--sub); background: var(--soft); }
+
+            /* Biểu đồ + panel */
+            .wr-body { display: grid; grid-template-columns: 1fr 250px; gap: 12px; margin-top: 12px; }
+            .wr-panel { background: var(--card); border: 1px solid var(--bd); border-radius: 16px; padding: 16px; }
+            .wr-panel-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: .95em; font-weight: 800; color: var(--tx); margin-bottom: 14px; }
+            .wr-panel-h > span:first-child { display: inline-flex; align-items: center; gap: 7px; }
+            .wr-panel-h > span:first-child .wr-i { color: #2563eb; font-size: 1.15em; }
+            .wr-panel-h .wr-muted { font-weight: 600; font-size: .85em; }
+            .wr-link { display: inline-flex; align-items: center; gap: 4px; font-size: .85em; font-weight: 800; color: #2563eb; text-decoration: none; }
+            .wr-link:hover { text-decoration: underline; }
+            .wr-chart { display: flex; gap: 8px; align-items: stretch; height: 160px; }
+            .wr-col { flex: 1; display: flex; flex-direction: column; align-items: center; min-width: 0; }
+            .wr-bar-wrap { flex: 1; width: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; background: var(--soft); border-radius: 10px; padding: 0 4px; }
+            .wr-bar { width: 100%; max-width: 34px; background: linear-gradient(180deg, #93c5fd, #3b82f6); border-radius: 8px 8px 4px 4px; box-shadow: 0 4px 10px -4px rgba(37,99,235,.5); }
+            .wr-col.today .wr-bar { background: linear-gradient(180deg, #fdba74, #f97316); box-shadow: 0 4px 10px -4px rgba(249,115,22,.55); }
+            .wr-col.future .wr-bar-wrap { background: repeating-linear-gradient(-45deg, var(--soft), var(--soft) 6px, transparent 6px, transparent 12px); }
+            .wr-val { font-size: .72em; color: var(--sub); font-weight: 800; margin-bottom: 4px; font-variant-numeric: tabular-nums; min-height: 14px; }
+            .wr-dow { font-size: .76em; color: var(--sub); font-weight: 700; height: 24px; line-height: 24px; white-space: nowrap; }
+            .wr-col.today .wr-dow { color: #ea580c; font-weight: 900; }
+            .wr-col.future .wr-dow { color: var(--mute); }
+            .wr-seg { display: inline-flex; background: var(--soft); border: 1px solid var(--bd); border-radius: 10px; padding: 3px; gap: 2px; }
+            .wr-seg button { border: 0; background: transparent; font: inherit; font-size: .8em; font-weight: 700; color: var(--sub); padding: 5px 11px; border-radius: 7px; cursor: pointer; transition: .15s; }
+            .wr-seg button:hover { color: var(--tx); }
+            .wr-seg button.on { background: var(--card); color: #2563eb; box-shadow: 0 1px 3px rgba(15,23,42,.12); }
+            body.dark-mode .wr-seg button.on { color: #93c5fd; }
+            .wr-chart-30 { gap: 3px; }
+            .wr-chart-30 .wr-bar-wrap { border-radius: 6px; padding: 0 1px; }
+            .wr-chart-30 .wr-bar { border-radius: 4px 4px 2px 2px; box-shadow: none; }
+            .wr-chart-30 .wr-dow { font-size: .68em; overflow: visible; }
+            .wr-chart-foot { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 10px; font-size: .8em; color: var(--sub); font-weight: 600; }
+            .wr-chart-foot b { color: var(--tx); font-weight: 800; }
+            .wr-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+            .wr-pair-box { border-radius: 12px; padding: 12px 10px; text-align: center; }
+            .wr-pair-box.red { background: var(--neg-soft); color: var(--neg); } .wr-pair-box.green { background: var(--pos-soft); color: var(--pos); }
+            .wr-pair-v { font-size: 1.7em; font-weight: 900; line-height: 1.1; font-variant-numeric: tabular-nums; }
+            .wr-pair-l { font-size: .76em; font-weight: 700; margin-top: 3px; opacity: .85; }
+            .wr-pair-cap { display: flex; justify-content: space-between; font-size: .8em; color: var(--sub); font-weight: 700; margin-top: 16px; }
+            .wr-pair-cap b { color: var(--pos); font-weight: 900; }
+            .wr-pair-bar { height: 8px; border-radius: 999px; background: #e5e7eb; margin-top: 6px; overflow: hidden; }
+            body.dark-mode .wr-pair-bar { background: #334155; }
+            .wr-pair-bar div { height: 100%; background: linear-gradient(90deg, #34d399, #059669); border-radius: 999px; }
+
+            /* Nhận xét */
+            .wr-tips { margin-top: 12px; background: linear-gradient(135deg, #eff6ff, #f5f3ff); border: 1px solid #dbeafe; border-radius: 16px; padding: 16px; }
+            body.dark-mode .wr-tips { background: linear-gradient(135deg, #172554, #2e1065); border-color: #1e3a8a; }
+            .wr-tips .wr-panel-h { margin-bottom: 8px; }
+            .wr-tip { display: flex; align-items: center; gap: 12px; padding: 10px 12px; margin-top: 8px; background: var(--card); border-radius: 12px; font-size: .92em; line-height: 1.5; color: var(--tx);
+                box-shadow: 0 1px 3px rgba(15,23,42,.06); }
+            .wr-tip b { font-weight: 800; }
+            .wr-tip-t { flex: 1; min-width: 0; }
+            .wr-tip-a { display: inline-flex; align-items: center; gap: 6px; flex-shrink: 0; height: 34px; padding: 0 14px; border-radius: 10px;
+                font-size: .86em; font-weight: 800; color: #fff; text-decoration: none; background: linear-gradient(135deg, #3b82f6, #2563eb); box-shadow: 0 6px 14px -6px rgba(37,99,235,.55); transition: .15s; }
+            .wr-tip-a:hover { transform: translateY(-1px); }
+            .wr-sk { display: inline-block; vertical-align: middle; height: .85em; width: 3em; max-width: 100%; border-radius: 6px;
+                background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%); background-size: 200% 100%; animation: wrSk 1.3s ease-in-out infinite; }
+            body.dark-mode .wr-sk { background: linear-gradient(90deg, #273449 25%, #334155 50%, #273449 75%); background-size: 200% 100%; }
+            .wr-sk-tile { width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0; }
+            .wr-tip-sk { align-items: center; }
+            .wr-chart-sk .wr-bar-wrap { background: linear-gradient(90deg, #eef2f7 25%, #f8fafc 50%, #eef2f7 75%); background-size: 200% 100%; animation: wrSk 1.3s ease-in-out infinite; }
+            body.dark-mode .wr-chart-sk .wr-bar-wrap { background: linear-gradient(90deg, #273449 25%, #334155 50%, #273449 75%); background-size: 200% 100%; }
+            @keyframes wrSk { 0% { background-position: 100% 0; } 100% { background-position: -100% 0; } }
+            .wr-loading { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; color: var(--sub); font-weight: 600; padding: 30px 20px; }
+            .wr-spin { width: 36px; height: 36px; border: 4px solid #dbeafe; border-top-color: #2563eb; border-radius: 50%; animation: wrSpin .9s linear infinite; }
+            @keyframes wrSpin { to { transform: rotate(360deg); } }
+
+            /* Modal giáo viên */
+            .wr-modal-ov { position: fixed; inset: 0; background: rgba(15,23,42,.55); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 18px;
+                backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); animation: wrFade .2s both; }
+            @keyframes wrFade { from { opacity: 0; } to { opacity: 1; } }
+            @keyframes wrIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+            .wr-modal { background: var(--card); border-radius: 22px; width: 100%; max-width: 1040px; max-height: 92vh; display: flex; flex-direction: column; overflow: hidden;
+                box-shadow: 0 30px 70px -20px rgba(0,0,0,.45); animation: wrIn .3s both; }
+            .wr-modal-head { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 18px 22px; border-bottom: 1px solid var(--bd); background: var(--soft); }
+            .wr-modal-body { padding: 18px 22px 22px; overflow-y: auto; }
+            .wr-close { border: 1.5px solid var(--bd); background: var(--card); border-radius: 11px; width: 38px; height: 38px; cursor: pointer; color: var(--sub); flex-shrink: 0;
+                display: flex; align-items: center; justify-content: center; font-size: 16px; transition: .15s; }
+            .wr-close:hover { color: var(--neg); border-color: #fecdd3; background: var(--neg-soft); }
+            .wr-table-wrap { overflow-x: auto; border: 1px solid var(--bd); border-radius: 16px; }
+            .wr-table { width: 100%; border-collapse: collapse; font-size: .9em; }
+            .wr-table th { text-align: left; background: var(--soft); color: var(--sub); font-weight: 800; font-size: .82em; padding: 11px 14px; white-space: nowrap; border-bottom: 1px solid var(--bd); }
+            .wr-table td { padding: 12px 14px; border-bottom: 1px solid var(--bd); vertical-align: middle; color: var(--tx); }
+            .wr-table tbody tr:last-child td { border-bottom: 0; }
+            .wr-table tbody tr:hover { background: #f8fbff; }
+            body.dark-mode .wr-table tbody tr:hover { background: #172036; }
+            .wr-who { display: flex; align-items: center; gap: 11px; }
+            .wr-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .8em; font-weight: 900; color: #fff; flex-shrink: 0;
+                background: linear-gradient(135deg, #60a5fa, #2563eb); box-shadow: 0 4px 10px -4px rgba(37,99,235,.55); }
+            .wr-table tr:nth-child(4n+2) .wr-av { background: linear-gradient(135deg, #a78bfa, #7c3aed); box-shadow: 0 4px 10px -4px rgba(124,58,237,.55); }
+            .wr-table tr:nth-child(4n+3) .wr-av { background: linear-gradient(135deg, #34d399, #059669); box-shadow: 0 4px 10px -4px rgba(5,150,105,.55); }
+            .wr-table tr:nth-child(4n+4) .wr-av { background: linear-gradient(135deg, #fb7185, #f95052); box-shadow: 0 4px 10px -4px rgba(249,80,82,.55); }
+            .wr-name { font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .wr-email { font-size: .8em; color: var(--mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+            .wr-cell-v { font-weight: 800; font-variant-numeric: tabular-nums; margin-bottom: 3px; }
+            .wr-days { display: inline-flex; gap: 3px; margin-right: 8px; vertical-align: middle; }
+            .wr-days i { width: 7px; height: 16px; border-radius: 3px; background: #e5e7eb; }
+            body.dark-mode .wr-days i { background: #334155; }
+            .wr-days i.on { background: linear-gradient(180deg, #60a5fa, #2563eb); }
+            .wr-flag { display: inline-flex; align-items: center; gap: 6px; font-size: .78em; font-weight: 800; padding: 4px 10px 4px 8px; border-radius: 999px; margin: 2px 4px 2px 0; white-space: nowrap; }
+            .wr-flag-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px rgba(255,255,255,.6); }
+            .wr-flag.bad { background: var(--neg-soft); color: var(--neg); } .wr-flag.warn { background: var(--warn-soft); color: var(--warn); } .wr-flag.good { background: var(--pos-soft); color: var(--pos); }
+            .wr-note { font-size: .8em; color: var(--mute); margin-top: 12px; line-height: 1.55; }
+
+            @media (max-width: 860px) {
+                .wr-body { grid-template-columns: 1fr; }
+                .wr-kpis { grid-template-columns: repeat(2, 1fr); }
+            }
+            @media (max-width: 640px) {
+                #weeklyReportBox { padding: 16px 12px; }
+                .wr-kpis { gap: 8px; }
+                .wr-kpi { padding: 12px; }
+                .wr-kpi-v { font-size: 1.45em; }
+                .wr-kpis-3 { grid-template-columns: 1fr; }
+                .wr-chart { gap: 4px; height: 140px; }
+                .wr-chart-30 { gap: 2px; }
+                .wr-chart-30 .wr-dow { font-size: .6em; }
+                .wr-dow { font-size: .68em; }
+                .wr-tip { flex-wrap: wrap; }
+                .wr-tip-t { flex: 1 1 calc(100% - 46px); }
+                .wr-tip-a { margin-left: 46px; }
                 .wr-modal-ov { padding: 0; align-items: stretch; }
                 .wr-modal { max-height: 100vh; border-radius: 0; }
+                .wr-modal-head { padding: 14px; } .wr-modal-body { padding: 14px; }
+                .wr-table-wrap { border: 0; }
                 .wr-table thead { display: none; }
                 .wr-table, .wr-table tbody, .wr-table tr, .wr-table td { display: block; width: 100%; }
-                .wr-table tr { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 10px; padding: 6px 4px; }
-                .wr-table td { border: none; padding: 4px 10px; }
-                .wr-table td[data-l]::before { content: attr(data-l) ': '; color: #64748b; font-weight: 600; }
+                .wr-table tr { border: 1px solid var(--bd); border-radius: 14px; margin-bottom: 10px; padding: 8px 2px; }
+                .wr-table td, .wr-table tbody tr:last-child td { border: none; padding: 5px 12px; }
+                .wr-table td[data-l] { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+                .wr-table td[data-l]::before { content: attr(data-l); color: var(--sub); font-size: .85em; font-weight: 700; }
                 .wr-table td[data-l] br { display: none; }
+                .wr-table td[data-l] .wr-cell-v { margin: 0 6px 0 auto; }
             }`;
         document.head.appendChild(st);
     }

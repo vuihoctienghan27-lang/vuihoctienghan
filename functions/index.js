@@ -11,7 +11,7 @@
 */
 'use strict';
 
-const { onRequest } = require('firebase-functions/v2/https');
+const { onRequest, onCall, HttpsError } = require('firebase-functions/v2/https');
 const { defineSecret } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
 const admin = require('firebase-admin');
@@ -297,4 +297,36 @@ exports.gradeWriting = onRequest({
     logger.error('[AI] Tất cả nhà cung cấp lỗi', e && e.message);
     res.status(502).json({ error: 'AI đang quá tải, vui lòng thử lại sau ít phút.' });
   }
+});
+
+
+/* ── Danh sách TẤT CẢ tài khoản đã đăng nhập (Firebase Authentication) cho trang Admin (data.html) ──
+   Trình duyệt không liệt kê được tài khoản Auth → hàm chạy bằng quyền Admin SDK ở server.
+   Chỉ email admin mới gọi được; trả về dữ liệu trực tiếp, không lưu thêm vào Firestore. */
+const ADMIN_EMAILS = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
+
+exports.listAuthUsers = onCall({ region: 'asia-southeast1', timeoutSeconds: 120, memory: '256MiB' }, async (request) => {
+  const email = request.auth && request.auth.token && request.auth.token.email;
+  if (!email || !ADMIN_EMAILS.includes(String(email).toLowerCase())) {
+    throw new HttpsError('permission-denied', 'Chỉ admin mới xem được danh sách tài khoản.');
+  }
+  const users = [];
+  let pageToken;
+  do {
+    const res = await admin.auth().listUsers(1000, pageToken);
+    res.users.forEach((u) => {
+      users.push({
+        uid: u.uid,
+        email: u.email || '',
+        displayName: u.displayName || '',
+        disabled: !!u.disabled,
+        providers: (u.providerData || []).map((p) => p.providerId),
+        createdAt: u.metadata.creationTime ? new Date(u.metadata.creationTime).toISOString() : '',
+        lastSignInAt: u.metadata.lastSignInTime ? new Date(u.metadata.lastSignInTime).toISOString() : '',
+      });
+    });
+    pageToken = res.pageToken;
+  } while (pageToken && users.length < 50000);
+  logger.info('listAuthUsers', { by: email, count: users.length });
+  return { users, total: users.length };
 });

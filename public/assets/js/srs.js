@@ -186,23 +186,30 @@
         const allDone = sessionSize === 0;
         const mistakesTxt = _mistakeCount === null ? '…' : _mistakeCount;
 
+        const U = window.UIIcons;
+        const ic = n => U ? U.svg(n) : '';
+        const tile = (n, t, z) => U ? U.tile(n, t, z) : '';
+        const doneToday = s.reviewedToday, planned = doneToday + sessionSize;
+        const pctToday = planned ? Math.round(doneToday / planned * 100) : 0;
+        const sub = allDone
+            ? (doneToday ? `Tuyệt vời! Bạn đã ôn ${doneToday} thẻ hôm nay — hẹn gặp lại ngày mai.` : (words.length ? 'Không có từ nào đến hạn hôm nay.' : 'Hãy lưu vài từ vựng để bắt đầu ôn tập nhé!'))
+            : 'Ôn đúng lúc sắp quên giúp nhớ lâu hơn nhiều so với học dồn.';
+
         box.innerHTML = `
-            <div class="sh-head">
-                <div>
-                    <div class="sh-title">🔁 Ôn tập hôm nay</div>
-                    <div class="sh-sub">${allDone
-                        ? (s.reviewedToday ? `Tuyệt! Bạn đã ôn ${s.reviewedToday} thẻ hôm nay. Hẹn gặp lại ngày mai 🎉` : (words.length ? 'Không có từ nào đến hạn hôm nay 🎉' : 'Hãy lưu vài từ vựng để bắt đầu ôn tập nhé!'))
-                        : `Ôn đúng lúc sắp quên giúp nhớ lâu hơn nhiều so với học dồn.`}</div>
+            <div class="vh-head">
+                <div class="vh-head-l">${tile(allDone ? 'checkCircle' : 'repeat', allDone ? 'green' : 'violet')}
+                    <div><div class="vh-title">Ôn tập hôm nay</div><div class="vh-sub">${sub}</div></div>
                 </div>
-                <button class="sh-start" ${allDone ? 'disabled' : ''} onclick="SRS.startTodaySession()">
-                    ${allDone ? '✓ Xong hôm nay' : `▶ Ôn ngay (${sessionSize})`}
+                <button class="vh-start" ${allDone ? 'disabled' : ''} onclick="SRS.startTodaySession()">
+                    ${allDone ? ic('check') + 'Xong hôm nay' : ic('play') + 'Ôn ngay <span class="vh-n">' + sessionSize + '</span>'}
                 </button>
             </div>
-            <div class="sh-stats">
-                <div class="sh-stat"><b class="sh-due">${s.dueCount}</b><span>đến hạn</span></div>
-                <div class="sh-stat"><b class="sh-new">${s.newAvail}</b><span>từ mới hôm nay</span></div>
-                <div class="sh-stat"><b class="sh-done">${s.reviewedToday}</b><span>đã ôn hôm nay</span></div>
-                <a class="sh-stat sh-link" href="mistakes.html"><b class="sh-mis">${escapeHtml(mistakesTxt)}</b><span>câu sai cần ôn →</span></a>
+            ${planned ? `<div class="vh-prog"><span>Tiến độ hôm nay</span><div class="vh-prog-track"><div style="width:${pctToday}%"></div></div><b>${doneToday}/${planned}</b></div>` : ''}
+            <div class="vh-stats">
+                <div class="vh-stat">${tile('clock', 'blue', 'xs')}<div><b class="c-blue">${s.dueCount}</b><span class="vh-l">đến hạn</span></div></div>
+                <div class="vh-stat">${tile('sparkle', 'violet', 'xs')}<div><b class="c-violet">${s.newAvail}</b><span class="vh-l">từ mới hôm nay</span></div></div>
+                <div class="vh-stat">${tile('checkCircle', 'green', 'xs')}<div><b class="c-green">${doneToday}</b><span class="vh-l">đã ôn hôm nay</span></div></div>
+                <a class="vh-stat" href="mistakes.html">${tile('notebook', 'coral', 'xs')}<div><b class="c-red">${escapeHtml(mistakesTxt)}</b><span class="vh-l">câu sai cần ôn →</span></div></a>
             </div>`;
     }
 

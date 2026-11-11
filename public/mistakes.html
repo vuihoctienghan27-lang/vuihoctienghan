@@ -8,116 +8,173 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link rel="stylesheet" href="assets/css/base.css">
     <link rel="stylesheet" href="assets/css/exam-layout.css">
+    <link rel="stylesheet" href="assets/css/lux.css">
     <style>
         body { font-family: 'Pretendard', 'Inter', sans-serif; min-height: 100vh; }
-        .mk-page { max-width: 880px; margin: 24px auto 70px; padding: 0 16px; }
-        .mk-hero { text-align: center; margin-bottom: 20px; }
-        .mk-hero h1 { font-size: 2em; font-weight: 900; color: #0f172a; margin: 0 0 6px; }
-        .mk-hero p { color: #475569; margin: 0; }
-        .mk-card { background: rgba(255,255,255,0.95); border-radius: 18px; padding: 18px 20px; box-shadow: 0 4px 18px rgba(0,0,0,0.06); margin-bottom: 16px; }
-        .mk-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .mk-stat { text-align: center; padding: 8px; border-radius: 12px; background: #f8fafc; }
-        .mk-stat b { display: block; font-size: 1.7em; font-weight: 900; line-height: 1.15; }
-        .mk-stat span { font-size: 0.8em; color: #64748b; font-weight: 600; }
-        .mk-start { width: 100%; margin-top: 14px; background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; border: none;
-            border-radius: 12px; padding: 13px; font-size: 1.05em; font-weight: 800; cursor: pointer; box-shadow: 0 4px 14px rgba(239,68,68,0.3); }
-        .mk-start:disabled { background: #10b981; box-shadow: none; cursor: default; }
-        .mk-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-        .mk-chip { border: 1.5px solid #e2e8f0; background: #fff; border-radius: 20px; padding: 6px 14px; font-weight: 700; font-size: 0.86em; color: #475569; cursor: pointer; }
-        .mk-chip.active { background: #2563eb; border-color: #2563eb; color: #fff; }
-        .mk-sep { width: 1px; background: #e2e8f0; margin: 0 4px; }
-        .mk-item { border: 1px solid #e2e8f0; border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; background: #fff; }
-        .mk-item-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-        .mk-src { font-size: 0.78em; font-weight: 800; padding: 3px 10px; border-radius: 10px; display: inline-block; margin-bottom: 6px; }
-        .mk-src.reading { background: #dbeafe; color: #1d4ed8; } .mk-src.listening { background: #fae8ff; color: #a21caf; }
-        .mk-src.quiz { background: #dcfce7; color: #15803d; } .mk-src.writing { background: #fef3c7; color: #b45309; }
-        .mk-title { font-weight: 800; color: #1e293b; }
-        .mk-meta { font-size: 0.82em; color: #64748b; margin-top: 2px; }
-        .mk-dots { letter-spacing: 2px; color: #10b981; }
-        .mk-preview { margin-top: 8px; color: #334155; font-size: 0.95em; line-height: 1.55; }
-        .mk-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-        .mk-btn { border: 1px solid #cbd5e1; background: #fff; border-radius: 9px; padding: 6px 12px; font-weight: 700; font-size: 0.84em; cursor: pointer; color: #334155; text-decoration: none; }
-        .mk-btn:hover { background: #f1f5f9; }
-        .mk-btn.danger { color: #ef4444; border-color: #fecaca; }
-        .mk-detail { margin-top: 12px; border-top: 1px dashed #e2e8f0; padding-top: 12px; }
-        .mk-empty { text-align: center; color: #64748b; padding: 36px 10px; }
-        .mk-empty div { font-size: 2.4em; margin-bottom: 8px; }
+        .mk-page { width: 100%; max-width: 900px; margin: 0 auto 70px; padding: 0; box-sizing: border-box; }
+        @media (max-width: 768px) { .mk-page { width: auto; margin-left: 4px; margin-right: 4px; } }
+        @media (max-width: 600px) { .mk-page { margin-left: 2px; margin-right: 2px; } }
+
+        /* Banner */
+        .mk-hero { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: start; }
+        .mk-hero-art { width: 92px; height: 92px; border-radius: 26px; background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center; font-size: 50px; color: #fff; transform: rotate(-6deg); box-shadow: 0 12px 24px -10px rgba(0,0,0,0.25); }
+        .mk-hero-art .ui-ic { filter: drop-shadow(0 3px 4px rgba(0,0,0,0.15)); }
+        .mk-hero-bottom { display: flex; justify-content: space-between; align-items: flex-end; gap: 14px; flex-wrap: wrap; margin-top: 20px; }
+        .mk-cta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        .mk-cta .lx-btn { height: 50px; padding: 0 24px; font-size: 1em; }
+        .mk-cta .lx-btn-white { color: #e11d48; }
+        .mk-cta small { font-size: 0.8em; font-weight: 600; opacity: 0.9; }
+        .mk-master { margin-top: 18px; }
+        .mk-master-top { display: flex; justify-content: space-between; font-size: 0.82em; font-weight: 700; margin-bottom: 7px; opacity: 0.95; }
+        .mk-master .lx-track { background: rgba(255,255,255,0.25); height: 8px; }
+        .mk-master .lx-track > div { background: #fff; }
+
+        /* Danh sách */
+        .mk-list-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+        .mk-list-head .lx-sec { margin: 0; }
+        .mk-filters { margin-bottom: 16px; }
+        .mk-item { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: start; border: 1px solid var(--border); border-radius: 16px; padding: 16px;
+            margin-bottom: 10px; background: var(--card); transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s; }
+        .mk-item:hover { border-color: #93c5fd; box-shadow: 0 8px 20px rgba(37,99,235,0.10); transform: translateY(-1px); }
+        .mk-item.open { border-color: #93c5fd; box-shadow: 0 8px 20px rgba(37,99,235,0.10); }
+        .mk-body { min-width: 0; }
+        .mk-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .mk-ref { font-weight: 800; color: var(--text-main); font-size: 0.95em; }
+        .mk-preview { margin-top: 7px; color: #475569; font-size: 0.95em; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all; }
+        body.dark-mode .mk-preview { color: #cbd5e1; }
+        .mk-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+        .mk-pill { display: inline-flex; align-items: center; gap: 5px; font-size: 0.78em; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--soft); color: var(--text-sub); }
+        .mk-pill .ui-ic { font-size: 1.1em; }
+        .mk-pill.red { background: var(--neg-soft); color: var(--neg); }
+        .mk-dots { display: inline-flex; gap: 3px; margin-left: 2px; }
+        .mk-dots i { width: 9px; height: 9px; border-radius: 50%; background: #e5e7eb; }
+        body.dark-mode .mk-dots i { background: #334155; }
+        .mk-dots i.on { background: linear-gradient(135deg, #34d399, #059669); box-shadow: 0 0 0 2px rgba(5,150,105,0.15); }
+        .mk-actions { display: flex; gap: 6px; }
+        .mk-detail { grid-column: 1 / -1; padding-top: 16px; border-top: 1.5px dashed var(--border); animation: lxIn 0.3s both; }
 
         /* Câu hỏi (dùng chung cho xem chi tiết + ôn tập) */
-        .mk-q .shared-text { margin-bottom: 12px; max-height: 260px; overflow-y: auto; }
-        .mk-q .mk-stem { font-weight: 700; font-size: 1.05em; line-height: 1.6; margin-bottom: 12px; color: #0f172a; }
-        .mk-opts { display: flex; flex-direction: column; gap: 8px; }
-        .mk-opt { text-align: left; border: 1.5px solid #e2e8f0; background: #fff; border-radius: 10px; padding: 10px 14px; font-size: 1em;
-            cursor: pointer; font-family: inherit; color: #1e293b; transition: 0.15s; }
-        .mk-opt:hover:not(:disabled) { border-color: #93c5fd; background: #eff6ff; }
-        .mk-opt.correct { border-color: #22c55e; background: #dcfce7; color: #166534; font-weight: 700; }
-        .mk-opt.wrong { border-color: #ef4444; background: #fee2e2; color: #991b1b; }
+        .mk-q .shared-text { margin-bottom: 14px; max-height: 280px; overflow-y: auto; }
+        .mk-q .mk-stem { font-weight: 700; font-size: 1.05em; line-height: 1.65; margin-bottom: 14px; color: var(--text-main); }
+        .mk-q .mk-qn { display: inline-flex; align-items: center; justify-content: center; min-width: 28px; height: 24px; padding: 0 7px; border-radius: 8px; margin-right: 8px;
+            background: var(--primary-soft); color: #1d4ed8; font-size: 0.8em; font-weight: 900; vertical-align: 2px; }
+        .mk-opts { display: flex; flex-direction: column; gap: 9px; }
+        .mk-opt { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 1.5px solid var(--border); background: var(--card); border-radius: 14px; padding: 11px 14px;
+            font-size: 1em; line-height: 1.45; cursor: pointer; font-family: inherit; color: var(--text-main); transition: 0.15s; }
+        .mk-opt:hover:not(:disabled) { border-color: #93c5fd; background: var(--primary-soft); }
+        .mk-key { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.85em;
+            background: var(--soft); color: var(--text-sub); border: 1.5px solid var(--border); transition: 0.15s; }
+        .mk-opt .mk-mark { margin-left: auto; font-size: 1.25em; display: none; }
+        .mk-opt.correct { border-color: #34d399; background: var(--pos-soft); font-weight: 700; }
+        .mk-opt.correct .mk-key { background: linear-gradient(135deg, #34d399, #059669); color: #fff; border-color: transparent; }
+        .mk-opt.correct .mk-mark.ok { display: inline-flex; color: var(--pos); }
+        .mk-opt.wrong { border-color: #fb7185; background: var(--neg-soft); }
+        .mk-opt.wrong .mk-key { background: linear-gradient(135deg, #fb7185, #e11d48); color: #fff; border-color: transparent; }
+        .mk-opt.wrong .mk-mark.no { display: inline-flex; color: var(--neg); }
         .mk-opt:disabled { cursor: default; }
+        .mk-answer { display: flex; align-items: center; gap: 10px; border: 1.5px solid #34d399; background: var(--pos-soft); border-radius: 14px; padding: 12px 14px; font-weight: 700; }
+        .mk-answer .ui-tile { width: 28px; height: 28px; border-radius: 50%; font-size: 14px; }
         .mk-fill { display: flex; gap: 8px; flex-wrap: wrap; }
-        .mk-fill input { flex: 1 1 200px; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-size: 1em; font-family: inherit; }
+        .mk-fill .lx-input { flex: 1 1 220px; }
         .mk-q .explanation-content { display: block; margin-top: 14px; }
-        .mk-was { font-size: 0.85em; color: #991b1b; background: #fef2f2; border-radius: 8px; padding: 6px 10px; margin-top: 8px; }
+        .mk-was { display: inline-flex; align-items: center; gap: 6px; font-size: 0.86em; font-weight: 600; color: var(--neg); background: var(--neg-soft); border-radius: 10px; padding: 6px 10px; margin-top: 10px; }
 
         /* Ôn tập */
-        .mk-review { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 100000; display: flex; align-items: center;
-            justify-content: center; padding: 16px; backdrop-filter: blur(3px); }
-        .mk-review-box { background: #fff; width: 100%; max-width: 780px; max-height: 94vh; border-radius: 18px; display: flex; flex-direction: column; overflow: hidden; }
-        .mk-review-head { padding: 14px 18px; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 12px; background: #f8fafc; }
-        .mk-review-bar { flex: 1; height: 8px; background: #e2e8f0; border-radius: 6px; overflow: hidden; }
-        .mk-review-bar div { height: 100%; background: linear-gradient(90deg, #f97316, #ef4444); transition: width 0.3s; }
-        .mk-review-body { padding: 18px 20px; overflow-y: auto; flex: 1; }
-        .mk-review-foot { padding: 12px 18px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .mk-feedback { font-weight: 800; }
-        .mk-next { background: #2563eb; color: #fff; border: none; border-radius: 10px; padding: 10px 22px; font-weight: 800; cursor: pointer; }
-        .mk-close { border: 1px solid #cbd5e1; background: #fff; border-radius: 8px; width: 32px; height: 32px; cursor: pointer; color: #64748b; }
+        .mk-review { position: fixed; inset: 0; background: rgba(15,23,42,0.55); z-index: 100000; display: flex; align-items: center; justify-content: center; padding: 18px;
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); animation: lxFade 0.2s both; }
+        .mk-review-box { background: var(--card); width: 100%; max-width: 780px; max-height: 94vh; border-radius: 22px; display: flex; flex-direction: column; overflow: hidden;
+            box-shadow: 0 30px 70px -20px rgba(0,0,0,0.45); animation: lxIn 0.3s both; }
+        .mk-review-head { padding: 16px 18px; display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #f95052, #fb7185); color: #fff; }
+        .mk-review-head .mk-rt { flex: 1; min-width: 0; }
+        .mk-review-head b { display: block; font-weight: 900; font-size: 1.02em; }
+        .mk-review-head span { font-size: 0.82em; opacity: 0.9; font-weight: 600; font-variant-numeric: tabular-nums; }
+        .mk-review-bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,0.28); overflow: hidden; margin-top: 7px; }
+        .mk-review-bar div { height: 100%; background: #fff; border-radius: 999px; transition: width 0.35s; }
+        .mk-review-head .lx-icon-btn { background: rgba(255,255,255,0.2); border: 0; color: #fff; }
+        .mk-review-head .lx-icon-btn:hover { background: rgba(255,255,255,0.32); }
+        .mk-review-body { padding: 20px 22px; overflow-y: auto; flex: 1; }
+        .mk-review-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+        .mk-review-foot { padding: 12px 18px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 68px; background: var(--soft); }
+        .mk-feedback { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+        .mk-feedback .ui-tile { width: 32px; height: 32px; border-radius: 50%; font-size: 15px; }
+        .mk-feedback.ok { color: var(--pos); } .mk-feedback.no { color: var(--neg); }
 
-        body.dark-mode .mk-card, body.dark-mode .mk-item, body.dark-mode .mk-review-box { background: #1e293b; color: #e2e8f0; }
-        body.dark-mode .mk-hero h1, body.dark-mode .mk-title, body.dark-mode .mk-q .mk-stem { color: #f1f5f9; }
-        body.dark-mode .mk-stat, body.dark-mode .mk-review-head { background: #0f172a; }
-        body.dark-mode .mk-opt { background: #0f172a; color: #e2e8f0; border-color: #334155; }
-        @media (max-width: 640px) {
-            .mk-hero h1 { font-size: 1.6em; }
+        /* Popup kết quả */
+        .mk-sum { text-align: center; }
+        .mk-sum .ui-tile { margin: 4px auto 12px; }
+        .mk-sum h3 { margin: 0; font-size: 1.3em; font-weight: 900; color: #1f2937; }
+        .mk-sum-big { font-size: 3em; font-weight: 900; line-height: 1.1; margin-top: 8px; background: linear-gradient(135deg, #3b82f6, #7c3aed); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .mk-sum-big small { font-size: 0.45em; }
+        .mk-sum p { color: #6b7280; margin: 10px 0 0; line-height: 1.6; }
+
+        @media (max-width: 680px) {
+            .mk-hero-art { width: 64px; height: 64px; font-size: 34px; border-radius: 18px; }
+            .mk-hero-bottom { flex-direction: column; align-items: stretch; }
+            .mk-cta { align-items: stretch; }
+            .mk-cta small { text-align: center; }
+            .mk-item { grid-template-columns: auto 1fr; padding: 14px; gap: 12px; }
+            .mk-actions { grid-column: 1 / -1; }
+            .mk-list-head .lx-seg { width: 100%; } .mk-list-head .lx-seg button { flex: 1; }
+            .mk-filters { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
+            .mk-filters .lx-chip { flex-shrink: 0; }
             .mk-review { padding: 0; align-items: stretch; }
             .mk-review-box { max-height: 100vh; border-radius: 0; }
-            .mk-review-body { padding: 14px; }
+            .mk-review-body { padding: 16px; }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="assets/js/theme-picker.js"></script>
     <script src="assets/js/navbar.js"></script>
+    <script src="assets/js/ui-icons.js"></script>
 </head>
 <body>
-    <div class="mk-page">
-        <div class="mk-hero">
-            <h1>📕 Sổ Câu Sai</h1>
-            <p>Mỗi câu bạn làm sai sẽ được lưu ở đây. Làm đúng <b>2 lần liên tiếp</b> là thuộc!</p>
-        </div>
-
-        <div id="mkLogin" class="mk-card mk-empty" style="display:none;">
-            <div>🔒</div>Vui lòng đăng nhập để xem Sổ câu sai của bạn.
-        </div>
-
-        <div id="mkMain" style="display:none;">
-            <div class="mk-card">
-                <div class="mk-stats">
-                    <div class="mk-stat"><b id="mkNeed" style="color:#ef4444;">0</b><span>câu cần ôn</span></div>
-                    <div class="mk-stat"><b id="mkMastered" style="color:#10b981;">0</b><span>câu đã thuộc</span></div>
-                    <div class="mk-stat"><b id="mkWeek" style="color:#2563eb;">0</b><span>thuộc trong 7 ngày</span></div>
+    <div class="mk-page lx">
+        <div class="lx-glass lx-in">
+            <section class="lx-banner coral">
+                <div class="mk-hero">
+                    <div>
+                        <span class="lx-eyebrow"><span data-ic="sparkle"></span>Ôn luyện thông minh</span>
+                        <h1>Sổ Câu Sai</h1>
+                        <p>Mọi câu bạn làm sai trong đề thi và bài tập được lưu lại tự động. Trả lời đúng <b>2 lần liên tiếp</b> là thuộc!</p>
+                    </div>
+                    <div class="mk-hero-art" data-ic="notebook"></div>
                 </div>
-                <button id="mkStartBtn" class="mk-start" onclick="MK.startReview()">▶ Ôn tập ngay</button>
+                <div id="mkHead" style="display:none;">
+                    <div class="mk-hero-bottom">
+                        <div class="lx-bstats">
+                            <div class="lx-bstat"><div class="lx-bstat-l">Cần ôn</div><div class="lx-bstat-v" id="mkNeed">0</div></div>
+                            <div class="lx-bstat"><div class="lx-bstat-l">Đã thuộc</div><div class="lx-bstat-v" id="mkMastered">0</div></div>
+                            <div class="lx-bstat"><div class="lx-bstat-l">7 ngày qua</div><div class="lx-bstat-v" id="mkWeek">0</div></div>
+                        </div>
+                        <div class="mk-cta">
+                            <button id="mkStartBtn" class="lx-btn lx-btn-white" onclick="MK.startReview()">Ôn tập ngay</button>
+                            <small id="mkStartHint"></small>
+                        </div>
+                    </div>
+                    <div class="mk-master">
+                        <div class="mk-master-top"><span>Tiến độ làm chủ</span><span id="mkPct">0%</span></div>
+                        <div class="lx-track"><div id="mkBar" style="width:0%"></div></div>
+                    </div>
+                </div>
+            </section>
+
+            <div id="mkLogin" class="lx-card" style="display:none;">
+                <div class="lx-empty"><span data-tile="lock:navy:lg"></span><b>Bạn chưa đăng nhập</b><span>Vui lòng đăng nhập để xem Sổ câu sai của bạn.</span></div>
             </div>
 
-            <div class="mk-filters" id="mkFilters">
-                <button class="mk-chip active" data-status="need">Cần ôn</button>
-                <button class="mk-chip" data-status="mastered">Đã thuộc</button>
-                <span class="mk-sep"></span>
-                <button class="mk-chip active" data-src="all">Tất cả</button>
-                <button class="mk-chip" data-src="reading">📖 Đọc</button>
-                <button class="mk-chip" data-src="listening">🎧 Nghe</button>
-                <button class="mk-chip" data-src="quiz">📝 Bài tập lớp</button>
-            </div>
-            <div id="mkList"></div>
+            <section id="mkMain" class="lx-card" style="display:none;">
+                <div class="mk-list-head">
+                    <div class="lx-sec"><span data-tile="list:blue:sm"></span><div><div class="lx-sec-t">Danh sách câu sai</div><div class="lx-sec-s" id="mkCount"></div></div></div>
+                    <div class="lx-seg" id="mkStatus">
+                        <button class="active" data-status="need">Cần ôn</button>
+                        <button data-status="mastered">Đã thuộc</button>
+                    </div>
+                </div>
+                <div class="lx-chips mk-filters" id="mkFilters"></div>
+                <div id="mkList"></div>
+            </section>
         </div>
     </div>
 
@@ -128,11 +185,20 @@
     <script>
     (function () {
         'use strict';
-        const SRC_LABEL = { reading: '📖 Đọc', listening: '🎧 Nghe', quiz: '📝 Bài tập lớp', writing: '✍️ Viết' };
+        const SRC = {
+            reading:   { label: 'Đọc', icon: 'book', tone: 'blue' },
+            listening: { label: 'Nghe', icon: 'headphones', tone: 'violet' },
+            quiz:      { label: 'Bài tập lớp', icon: 'pencil', tone: 'green' },
+            writing:   { label: 'Viết', icon: 'feather', tone: 'amber' }
+        };
+        const FILTERS = ['all', 'reading', 'listening', 'quiz'];
         const REVIEW_LIMIT = 20;
         let uid = null, all = [], unsub = null;
         let filterStatus = 'need', filterSrc = 'all';
         const openDetail = {};
+        const I = window.UIIcons;
+        const ic = n => I.svg(n), tile = (n, t, s) => I.tile(n, t, s);
+        I.hydrate();
 
         function esc(s) {
             return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
@@ -141,12 +207,15 @@
         function textOf(html) { const d = document.createElement('div'); d.innerHTML = html || ''; return d.textContent.replace(/\s+/g, ' ').trim(); }
         function ms(ts) { return ts && ts.toMillis ? ts.toMillis() : 0; }
         function srcOf(m) { return m.source === 'quiz' ? 'quiz' : (m.skill || 'reading'); }
-        function dots(m) { const s = Math.min(2, m.streak || 0); return '●'.repeat(s) + '○'.repeat(2 - s); }
+        function srcInfo(s) { return SRC[s] || { label: s, icon: 'exam', tone: 'slate' }; }
+        function dots(m) { const s = Math.min(2, m.streak || 0); return '<span class="mk-dots" title="Đúng liên tiếp ' + s + '/2"><i class="' + (s >= 1 ? 'on' : '') + '"></i><i class="' + (s >= 2 ? 'on' : '') + '"></i></span>'; }
         function ago(t) {
             if (!t) return '';
             const d = Math.floor((Date.now() - t) / 86400000);
             return d <= 0 ? 'hôm nay' : d === 1 ? 'hôm qua' : d + ' ngày trước';
         }
+        function srcBadge(s) { return '<span class="lx-badge ' + s + '">' + esc(srcInfo(s).label) + '</span>'; }
+        function refLabel(m) { return esc(m.refName || '') + (m.qNum ? (m.refName ? ' · ' : '') + 'Câu ' + esc(m.qNum) : ''); }
 
         function filtered() {
             return all.filter(m => (filterStatus === 'need' ? !m.mastered : m.mastered) && (filterSrc === 'all' || srcOf(m) === filterSrc));
@@ -159,37 +228,51 @@
                 .slice(0, REVIEW_LIMIT);
         }
 
+        function optBtn(o, i, cls, disabled) {
+            return '<button class="mk-opt' + (cls ? ' ' + cls : '') + '" data-i="' + i + '"' + (disabled ? ' disabled' : '') + '>' +
+                '<span class="mk-key">' + (i + 1) + '</span><span>' + esc(o) + '</span>' +
+                '<span class="mk-mark ok">' + ic('checkCircle') + '</span><span class="mk-mark no">' + ic('x') + '</span></button>';
+        }
+        function answerBox(m) { return '<div class="mk-answer">' + tile('check', 'green') + '<span>Đáp án: ' + esc(String(m.correctText || '').split('|').join(' / ')) + '</span></div>'; }
+
         // ── Khối hiển thị câu hỏi (chế độ xem: tô sẵn đáp án) ──
         function questionHtml(m, mode) {
             let h = '<div class="mk-q">';
             if (m.sharedHtml) h += '<div class="shared-text">' + m.sharedHtml + '</div>';
-            h += '<div class="mk-stem">' + (m.qNum ? 'Câu ' + esc(m.qNum) + '. ' : '') + '<span>' + (m.questionHtml || '') + '</span></div>';
+            h += '<div class="mk-stem">' + (m.qNum ? '<span class="mk-qn">' + esc(m.qNum) + '</span>' : '') + '<span>' + (m.questionHtml || '') + '</span></div>';
             if (m.type === 'fill') {
                 if (mode === 'view') {
-                    h += '<div class="mk-opt correct">✅ Đáp án: ' + esc(String(m.correctText || '').split('|').join(' / ')) + '</div>';
-                    if (m.userText) h += '<div class="mk-was">Bạn đã điền: “' + esc(m.userText) + '”</div>';
+                    h += answerBox(m);
+                    if (m.userText) h += '<div class="mk-was">' + ic('x') + 'Bạn đã điền: “' + esc(m.userText) + '”</div>';
                 } else {
-                    h += '<div class="mk-fill"><input type="text" id="mkFillInput" placeholder="Nhập đáp án..." autocomplete="off">' +
-                        '<button class="mk-next" id="mkFillCheck">Kiểm tra</button></div>';
+                    h += '<div class="mk-fill"><input type="text" class="lx-input" id="mkFillInput" placeholder="Nhập đáp án…" autocomplete="off">' +
+                        '<button class="lx-btn lx-btn-primary" id="mkFillCheck">Kiểm tra</button></div>';
                 }
             } else {
                 h += '<div class="mk-opts">';
                 (m.options || []).forEach((o, i) => {
-                    let cls = 'mk-opt';
+                    let cls = '';
                     if (mode === 'view') {
-                        if (i === m.correctIndex) cls += ' correct';
-                        else if (i === m.userIndex) cls += ' wrong';
+                        if (i === m.correctIndex) cls = 'correct';
+                        else if (i === m.userIndex) cls = 'wrong';
                     }
-                    h += '<button class="' + cls + '" data-i="' + i + '"' + (mode === 'view' ? ' disabled' : '') + '>' + esc(o) + '</button>';
+                    h += optBtn(o, i, cls, mode === 'view');
                 });
                 h += '</div>';
-                if (mode === 'view' && m.userIndex >= 0 && m.userIndex !== m.correctIndex && m.options && m.options[m.userIndex]) {
-                    h += '<div class="mk-was">Lần sai gần nhất bạn chọn: ' + esc(m.options[m.userIndex]) + '</div>';
-                }
             }
             if (mode === 'view' && m.explanationHtml) h += '<div class="explanation-content">' + m.explanationHtml + '</div>';
             h += '</div>';
             return h;
+        }
+
+        function renderFilters() {
+            const pool = all.filter(m => filterStatus === 'need' ? !m.mastered : m.mastered);
+            document.getElementById('mkFilters').innerHTML = FILTERS.map(f => {
+                const n = f === 'all' ? pool.length : pool.filter(m => srcOf(m) === f).length;
+                const inf = f === 'all' ? null : srcInfo(f);
+                return '<button class="lx-chip' + (f === filterSrc ? ' active' : '') + (inf ? '' : ' plain') + '" data-src="' + f + '">' +
+                    (inf ? tile(inf.icon, inf.tone) : '') + (inf ? inf.label : 'Tất cả') + '<span class="lx-count">' + n + '</span></button>';
+            }).join('');
         }
 
         function render() {
@@ -199,37 +282,52 @@
             document.getElementById('mkNeed').textContent = need;
             document.getElementById('mkMastered').textContent = mastered;
             document.getElementById('mkWeek').textContent = all.filter(m => m.mastered && ms(m.masteredAt) >= weekAgo).length;
+            const pct = all.length ? Math.round(mastered / all.length * 100) : 0;
+            document.getElementById('mkPct').textContent = pct + '%';
+            document.getElementById('mkBar').style.width = pct + '%';
+
             const q = reviewQueue();
             const btn = document.getElementById('mkStartBtn');
             btn.disabled = !q.length;
-            btn.textContent = q.length ? '▶ Ôn tập ngay (' + q.length + ' câu)' : '✓ Không còn câu nào cần ôn';
+            btn.innerHTML = q.length ? ic('play') + 'Ôn tập ngay' : ic('checkCircle') + 'Đã ôn hết';
+            document.getElementById('mkStartHint').textContent = q.length
+                ? q.length + ' câu' + (filterSrc !== 'all' ? ' · ' + srcInfo(filterSrc).label : '') + ' · khoảng ' + Math.max(1, Math.round(q.length * 0.75)) + ' phút'
+                : 'Không còn câu nào cần ôn';
+            renderFilters();
 
             const list = filtered().sort((a, b) => ms(b.lastWrongAt) - ms(a.lastWrongAt));
             const box = document.getElementById('mkList');
+            document.getElementById('mkCount').textContent = list.length + ' câu ' + (filterStatus === 'need' ? 'đang chờ ôn' : 'đã thuộc');
             if (!list.length) {
-                box.innerHTML = '<div class="mk-card mk-empty"><div>' + (filterStatus === 'need' ? '🎉' : '📭') + '</div>' +
+                const none = !all.length;
+                box.innerHTML = '<div class="lx-empty">' +
                     (filterStatus === 'need'
-                        ? (all.length ? 'Bạn đã ôn hết các câu sai trong mục này!' : 'Chưa có câu sai nào. Hãy làm đề thi hoặc bài tập — câu sai sẽ tự được lưu vào đây.')
-                        : 'Chưa có câu nào đã thuộc trong mục này.') + '</div>';
+                        ? (none ? tile('inbox', 'blue', 'lg') + '<b>Sổ còn trống</b><span>Hãy làm một đề thi hoặc bài tập — câu sai sẽ được lưu vào đây tự động.</span>'
+                                : tile('trophy', 'amber', 'lg') + '<b>Tuyệt vời, không còn câu cần ôn!</b><span>Bạn đã xử lý hết các câu sai trong mục này.</span>')
+                        : tile('sparkle', 'violet', 'lg') + '<b>Chưa có câu nào đã thuộc</b><span>Câu được trả lời đúng 2 lần liên tiếp sẽ chuyển sang đây.</span>') + '</div>';
                 return;
             }
             box.innerHTML = list.map(m => {
-                const src = srcOf(m);
-                const preview = textOf(m.questionHtml).slice(0, 160);
+                const src = srcOf(m), inf = srcInfo(src);
                 const isOpen = !!openDetail[m.id];
-                return '<div class="mk-item">' +
-                    '<div class="mk-item-head"><div style="min-width:0;">' +
-                    '<span class="mk-src ' + src + '">' + (SRC_LABEL[src] || src) + '</span>' +
-                    '<div class="mk-title">' + esc(m.refName || '') + (m.qNum ? ' · Câu ' + esc(m.qNum) : '') + '</div>' +
-                    '<div class="mk-meta">Sai ' + (m.wrongCount || 1) + ' lần' + (ms(m.lastWrongAt) ? ' · ' + ago(ms(m.lastWrongAt)) : '') +
-                    ' · đúng liên tiếp <span class="mk-dots">' + dots(m) + '</span></div>' +
+                const t = ms(m.lastWrongAt);
+                return '<article class="mk-item' + (isOpen ? ' open' : '') + '">' +
+                    tile(inf.icon, inf.tone) +
+                    '<div class="mk-body">' +
+                    '<div class="mk-top">' + srcBadge(src) + (refLabel(m) ? '<span class="mk-ref">' + refLabel(m) + '</span>' : '') + '</div>' +
+                    (isOpen ? '' : '<div class="mk-preview">' + esc(textOf(m.questionHtml)) + '</div>') +
+                    '<div class="mk-meta">' +
+                    '<span class="mk-pill red">' + ic('x') + 'Sai ' + (m.wrongCount || 1) + ' lần</span>' +
+                    (t ? '<span class="mk-pill">' + ic('clock') + ago(t) + '</span>' : '') +
+                    '<span class="mk-pill">Đúng liên tiếp' + dots(m) + '</span>' +
                     '</div></div>' +
-                    (isOpen ? '<div class="mk-detail">' + questionHtml(m, 'view') + '</div>' : '<div class="mk-preview">' + esc(preview) + (preview.length >= 160 ? '…' : '') + '</div>') +
                     '<div class="mk-actions">' +
-                    '<button class="mk-btn" data-act="toggle" data-id="' + esc(m.id) + '">' + (isOpen ? '▲ Thu gọn' : '👁️ Xem lời giải') + '</button>' +
-                    (m.source === 'exam' && m.url ? '<a class="mk-btn" href="' + esc(m.url) + '">↗ Mở đề gốc</a>' : '') +
-                    '<button class="mk-btn danger" data-act="del" data-id="' + esc(m.id) + '">🗑 Xoá</button>' +
-                    '</div></div>';
+                    '<button class="lx-btn lx-btn-sm ' + (isOpen ? 'lx-btn-soft' : '') + '" data-act="toggle" data-id="' + esc(m.id) + '">' + ic(isOpen ? 'chevUp' : 'eye') + (isOpen ? 'Thu gọn' : 'Lời giải') + '</button>' +
+                    (m.source === 'exam' && m.url ? '<a class="lx-btn lx-btn-sm lx-btn-soft lx-icon-btn" style="width:34px;height:34px;" href="' + esc(m.url) + '" title="Mở đề gốc">' + ic('external') + '</a>' : '') +
+                    '<button class="lx-btn lx-btn-sm lx-btn-soft lx-btn-danger lx-icon-btn" style="width:34px;height:34px;" data-act="del" data-id="' + esc(m.id) + '" title="Xoá khỏi sổ">' + ic('trash') + '</button>' +
+                    '</div>' +
+                    (isOpen ? '<div class="mk-detail">' + questionHtml(m, 'view') + '</div>' : '') +
+                    '</article>';
             }).join('');
         }
 
@@ -254,35 +352,43 @@
             if (!queue.length) return;
             let i = 0, right = 0, newlyMastered = 0;
             const ov = document.createElement('div');
-            ov.className = 'mk-review';
+            ov.className = 'mk-review lx';
             ov.innerHTML = '<div class="mk-review-box">' +
-                '<div class="mk-review-head"><b id="mkRvCount" style="white-space:nowrap;"></b><div class="mk-review-bar"><div id="mkRvBar"></div></div>' +
-                '<button class="mk-close" title="Thoát (Esc)">✕</button></div>' +
+                '<div class="mk-review-head"><span class="lx-bstat" style="padding:0;min-width:0;width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;border-radius:12px;">' + ic('notebook') + '</span>' +
+                '<div class="mk-rt"><b>Ôn tập câu sai</b><span id="mkRvCount"></span><div class="mk-review-bar"><div id="mkRvBar"></div></div></div>' +
+                '<button class="lx-btn lx-icon-btn mk-close" title="Thoát (Esc)">' + ic('x') + '</button></div>' +
                 '<div class="mk-review-body" id="mkRvBody"></div>' +
-                '<div class="mk-review-foot"><span class="mk-feedback" id="mkRvFb"></span><button class="mk-next" id="mkRvNext" style="display:none;">Tiếp →</button></div></div>';
+                '<div class="mk-review-foot"><span class="mk-feedback" id="mkRvFb"></span><button class="lx-btn lx-btn-primary" id="mkRvNext" style="display:none;"></button></div></div>';
             document.body.appendChild(ov);
             const close = () => { ov.remove(); document.removeEventListener('keydown', onKey); };
-            const onKey = e => { if (e.key === 'Escape') close(); };
+            const onKey = e => {
+                if (e.key === 'Escape') { close(); return; }
+                const k = parseInt(e.key, 10);
+                if (k >= 1 && k <= 4 && e.target.tagName !== 'INPUT') { const b = ov.querySelector('.mk-opt[data-i="' + (k - 1) + '"]'); if (b && !b.disabled) b.click(); }
+            };
             document.addEventListener('keydown', onKey);
             ov.querySelector('.mk-close').onclick = close;
 
             function show() {
                 const m = queue[i];
-                document.getElementById('mkRvCount').textContent = (i + 1) + ' / ' + queue.length;
+                document.getElementById('mkRvCount').textContent = 'Câu ' + (i + 1) + ' / ' + queue.length + ' · phím 1–4 để chọn nhanh';
                 document.getElementById('mkRvBar').style.width = Math.round(i / queue.length * 100) + '%';
                 const body = document.getElementById('mkRvBody');
-                body.innerHTML = '<div class="mk-meta" style="margin-bottom:10px;">' + esc(m.refName || '') + ' · đã sai ' + (m.wrongCount || 1) +
-                    ' lần · đúng liên tiếp <span class="mk-dots">' + dots(m) + '</span></div>' + questionHtml(m, 'review');
+                body.innerHTML = '<div class="mk-review-meta">' + srcBadge(srcOf(m)) + (m.refName ? '<span class="mk-ref">' + esc(m.refName) + '</span>' : '') +
+                    '<span class="mk-pill red">' + ic('x') + 'Đã sai ' + (m.wrongCount || 1) + ' lần</span><span class="mk-pill">Đúng liên tiếp' + dots(m) + '</span></div>' + questionHtml(m, 'review');
                 body.scrollTop = 0;
-                document.getElementById('mkRvFb').textContent = '';
+                const fb0 = document.getElementById('mkRvFb');
+                fb0.innerHTML = ''; fb0.className = 'mk-feedback';
                 document.getElementById('mkRvNext').style.display = 'none';
 
                 const finish = ok => {
                     if (ok) { right++; if ((m.streak || 0) + 1 >= 2) newlyMastered++; }
                     saveResult(m, ok);
                     const fb = document.getElementById('mkRvFb');
-                    fb.textContent = ok ? ((m.streak || 0) + 1 >= 2 ? '🎉 Chính xác — đã thuộc câu này!' : '✅ Chính xác! Đúng thêm 1 lần nữa là thuộc.') : '❌ Chưa đúng — xem lời giải bên dưới.';
-                    fb.style.color = ok ? '#059669' : '#dc2626';
+                    fb.className = 'mk-feedback ' + (ok ? 'ok' : 'no');
+                    fb.innerHTML = ok
+                        ? tile('check', 'green') + ((m.streak || 0) + 1 >= 2 ? 'Chính xác — đã thuộc câu này!' : 'Chính xác! Đúng thêm 1 lần là thuộc.')
+                        : tile('x', 'coral') + 'Chưa đúng — xem lời giải bên dưới.';
                     if (m.explanationHtml) {
                         const ex = document.createElement('div');
                         ex.className = 'explanation-content';
@@ -291,7 +397,7 @@
                     }
                     const nx = document.getElementById('mkRvNext');
                     nx.style.display = '';
-                    nx.textContent = i < queue.length - 1 ? 'Tiếp →' : 'Xem kết quả';
+                    nx.innerHTML = (i < queue.length - 1 ? 'Câu tiếp' : 'Xem kết quả') + ic('arrow');
                     nx.focus();
                 };
 
@@ -303,11 +409,11 @@
                         inp.readOnly = true;
                         document.getElementById('mkFillCheck').disabled = true;
                         const ok = String(m.correctText || '').split('|').map(a => a.trim().toLowerCase()).indexOf(v) !== -1;
-                        inp.style.borderColor = ok ? '#22c55e' : '#ef4444';
+                        inp.style.borderColor = ok ? '#34d399' : '#fb7185';
                         if (!ok) {
                             const c = document.createElement('div');
-                            c.className = 'mk-opt correct'; c.style.marginTop = '8px';
-                            c.textContent = '✅ Đáp án: ' + String(m.correctText || '').split('|').join(' / ');
+                            c.style.marginTop = '10px';
+                            c.innerHTML = answerBox(m);
                             inp.parentNode.after(c);
                         }
                         finish(ok);
@@ -332,28 +438,31 @@
                 close();
                 if (window.Badges) window.Badges.check({ force: true });
                 if (newlyMastered && typeof confetti === 'function') confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+                const perfect = right === queue.length;
                 Swal.fire({
-                    icon: right === queue.length ? 'success' : 'info',
-                    title: 'Kết quả buổi ôn',
-                    html: 'Đúng <b>' + right + '/' + queue.length + '</b> câu' +
-                        (newlyMastered ? '<br>🎉 Thuộc thêm <b>' + newlyMastered + '</b> câu!' : '') +
-                        '<br><span style="color:#64748b;font-size:0.9em;">Câu chưa thuộc sẽ được ưu tiên ở buổi ôn sau.</span>',
-                    confirmButtonColor: '#2563eb'
+                    customClass: { popup: 'lx-swal' },
+                    html: '<div class="mk-sum">' + tile(perfect ? 'trophy' : 'chart', perfect ? 'amber' : 'blue', 'lg') +
+                        '<h3>' + (perfect ? 'Xuất sắc!' : 'Kết quả buổi ôn') + '</h3>' +
+                        '<div class="mk-sum-big">' + right + '<small> / ' + queue.length + ' câu đúng</small></div>' +
+                        '<p>' + (newlyMastered ? 'Bạn đã thuộc thêm <b>' + newlyMastered + '</b> câu.<br>' : '') +
+                        'Câu chưa thuộc sẽ được ưu tiên ở buổi ôn sau.</p></div>',
+                    confirmButtonText: 'Tuyệt vời!'
                 });
             };
             show();
         }
 
-        document.getElementById('mkFilters').addEventListener('click', e => {
-            const b = e.target.closest('.mk-chip');
+        document.getElementById('mkStatus').addEventListener('click', e => {
+            const b = e.target.closest('button[data-status]');
             if (!b) return;
-            if (b.dataset.status) {
-                filterStatus = b.dataset.status;
-                document.querySelectorAll('.mk-chip[data-status]').forEach(x => x.classList.toggle('active', x === b));
-            } else if (b.dataset.src) {
-                filterSrc = b.dataset.src;
-                document.querySelectorAll('.mk-chip[data-src]').forEach(x => x.classList.toggle('active', x === b));
-            }
+            filterStatus = b.dataset.status;
+            document.querySelectorAll('#mkStatus button').forEach(x => x.classList.toggle('active', x === b));
+            render();
+        });
+        document.getElementById('mkFilters').addEventListener('click', e => {
+            const b = e.target.closest('button[data-src]');
+            if (!b) return;
+            filterSrc = b.dataset.src;
             render();
         });
 
@@ -363,8 +472,8 @@
             const id = b.dataset.id;
             if (b.dataset.act === 'toggle') { openDetail[id] = !openDetail[id]; render(); }
             if (b.dataset.act === 'del') {
-                Swal.fire({ title: 'Xoá câu này khỏi sổ?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Xoá',
-                    cancelButtonText: 'Huỷ', confirmButtonColor: '#ef4444' }).then(r => {
+                Swal.fire({ title: 'Xoá câu này khỏi sổ?', text: 'Thao tác này không thể hoàn tác.', icon: 'warning', showCancelButton: true, confirmButtonText: 'Xoá',
+                    cancelButtonText: 'Huỷ', confirmButtonColor: '#e11d48', customClass: { popup: 'lx-swal' } }).then(r => {
                     if (r.isConfirmed) firebase.firestore().collection('users').doc(uid).collection('mistakes').doc(id).delete();
                 });
             }
@@ -372,20 +481,19 @@
 
         firebase.auth().onAuthStateChanged(user => {
             if (unsub) { unsub(); unsub = null; }
+            const login = document.getElementById('mkLogin'), head = document.getElementById('mkHead'), main = document.getElementById('mkMain');
             if (!user) {
-                document.getElementById('mkLogin').style.display = 'block';
-                document.getElementById('mkMain').style.display = 'none';
+                login.style.display = 'block'; head.style.display = 'none'; main.style.display = 'none';
                 return;
             }
             uid = user.uid;
-            document.getElementById('mkLogin').style.display = 'none';
-            document.getElementById('mkMain').style.display = 'block';
+            login.style.display = 'none'; head.style.display = 'block'; main.style.display = 'block';
             unsub = firebase.firestore().collection('users').doc(uid).collection('mistakes').onSnapshot(snap => {
                 all = [];
                 snap.forEach(d => { const m = d.data(); m.id = d.id; all.push(m); });
                 render();
             }, err => {
-                document.getElementById('mkList').innerHTML = '<div class="mk-card mk-empty"><div>⚠️</div>Không tải được Sổ câu sai: ' + esc(err.message) + '</div>';
+                document.getElementById('mkList').innerHTML = '<div class="lx-empty">' + tile('alert', 'coral', 'lg') + '<b>Không tải được Sổ câu sai</b><span>' + esc(err.message) + '</span></div>';
             });
         });
 

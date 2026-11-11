@@ -154,10 +154,13 @@ function updateStatsUI(dataArray, title) {
     filtered.forEach(w => { let st = parseInt(w.status)||0; if(st>=0&&st<=3) counts[st]++; });
     let total = filtered.length || 1;
     for (let i=0; i<4; i++) {
-        let el = document.getElementById(`c${i}`), bar = document.getElementById(`bar${i}`);
+        let el = document.getElementById(`c${i}`), bar = document.getElementById(`bar${i}`), pc = document.getElementById(`p${i}`);
         if (el) el.innerText = counts[i];
         if (bar) bar.style.width = (counts[i]/total*100)+'%';
+        if (pc) pc.innerText = filtered.length ? Math.round(counts[i]/total*100)+'%' : '';
     }
+    let vhTotal = document.getElementById('vhTotal');
+    if (vhTotal) vhTotal.innerText = filtered.length;
     let totalEl = document.getElementById('totalVocabCountGlobal');
     if (totalEl) totalEl.innerText = filtered.length;
 }
