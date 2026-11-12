@@ -12,62 +12,163 @@
     <link rel="stylesheet" href="../assets/css/base.css">
     <link rel="stylesheet" href="../assets/css/video.css">
     <style>
-        .hero-section {
-            position: relative; flex-shrink: 0;
-            background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 50%, #ec4899 100%);
-            border-radius: 22px; padding: 32px 36px; color: #fff; margin-bottom: 24px;
-            box-shadow: 0 18px 40px rgba(139,92,246,.18);
-            display: flex; align-items: center; justify-content: space-between; gap: 24px; min-height: 190px;
+        /* ── Hero ── */
+        .vh-hero {
+            position: relative; overflow: hidden; border-radius: 22px; padding: 30px 34px; margin-bottom: 18px; color: #fff;
+            background: linear-gradient(135deg, #4338ca 0%, #7c3aed 55%, #db2777 100%);
+            box-shadow: 0 18px 40px rgba(124,58,237,.22);
+            display: flex; align-items: center; justify-content: space-between; gap: 24px;
         }
-        .hero-bg { position: absolute; inset: 0; border-radius: 22px; overflow: hidden; pointer-events: none; }
-        .hero-bg::before {
-            content: ''; position: absolute; inset: 0;
-            background-image: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1px);
-            background-size: 22px 22px; opacity: .45;
+        .vh-hero::before {
+            content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .4;
+            background-image: radial-gradient(rgba(255,255,255,.16) 1px, transparent 1px); background-size: 22px 22px;
         }
-        .hero-blob { position: absolute; border-radius: 50%; filter: blur(64px); }
-        .hero-blob.b1 { width: 230px; height: 230px; background: rgba(255,255,255,.2); top: -70px; right: -50px; animation: blobFloat 8s ease-in-out infinite; }
-        .hero-blob.b2 { width: 170px; height: 170px; background: rgba(255,255,255,.13); bottom: -70px; left: -40px; animation: blobFloat 11s ease-in-out infinite reverse; }
-        @keyframes blobFloat { 0%,100% { transform: translate(0,0) scale(1); } 50% { transform: translate(14px,-12px) scale(1.08); } }
-        .hero-left { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
-        .hero-tag {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: rgba(255,255,255,.16); color: #fff;
-            font-size: .8em; font-weight: 800; padding: 6px 14px; border-radius: 99px;
-            letter-spacing: .6px; text-transform: uppercase;
-            backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.24); margin-bottom: 14px;
+        .vh-blob { position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none; }
+        .vh-blob.b1 { width: 240px; height: 240px; background: rgba(255,255,255,.18); top: -80px; right: -40px; }
+        .vh-blob.b2 { width: 180px; height: 180px; background: rgba(255,255,255,.12); bottom: -80px; left: -40px; }
+        .vh-hero-left { position: relative; z-index: 1; min-width: 0; }
+        .vh-tag {
+            display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
+            background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.26); backdrop-filter: blur(6px);
+            font-size: .74em; font-weight: 800; padding: 5px 12px; border-radius: 99px; letter-spacing: .6px; text-transform: uppercase;
         }
-        .hero-title {
-            font-size: 2.3em; font-weight: 900; margin: 0; line-height: 1.12; letter-spacing: -.6px;
-            background: linear-gradient(120deg, #fff 35%, rgba(255,255,255,.5));
-            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        .vh-title { font-size: 2.1em; font-weight: 900; margin: 0; line-height: 1.15; letter-spacing: -.6px; }
+        .vh-sub { margin: 8px 0 0; font-size: .95em; color: rgba(255,255,255,.86); font-weight: 500; max-width: 540px; line-height: 1.5; }
+        .vh-stats { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+        .vh-stat {
+            background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.24); backdrop-filter: blur(6px);
+            border-radius: 12px; padding: 6px 12px; font-size: .8em; font-weight: 600; color: rgba(255,255,255,.92);
         }
-        .hero-sub { margin: 9px 0 0; font-size: .95em; color: rgba(255,255,255,.88); font-weight: 500; }
-        .hero-right { position: relative; z-index: 1; flex-shrink: 0; }
-        .hero-icon {
-            width: 110px; height: 110px; border-radius: 50%;
-            background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,255,255,.34);
+        .vh-stat b { font-size: 1.2em; font-weight: 900; margin-right: 3px; color: #fff; }
+        .vh-admin-btn {
+            display: none; align-items: center; gap: 6px; margin-top: 16px; cursor: pointer;
+            background: #fff; color: #6d28d9; border: none; padding: 9px 16px; border-radius: 12px;
+            font-weight: 800; font-size: .88em; font-family: inherit; box-shadow: 0 6px 16px rgba(0,0,0,.15);
+        }
+        .vh-admin-btn:hover { transform: translateY(-1px); }
+        .vh-hero-icon {
+            position: relative; z-index: 1; flex-shrink: 0; width: 104px; height: 104px; border-radius: 50%;
+            background: rgba(255,255,255,.16); border: 1.5px solid rgba(255,255,255,.34); backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 22px 44px rgba(0,0,0,.22), inset 0 0 34px rgba(255,255,255,.12);
-            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-            animation: heroFloat 4s ease-in-out infinite;
+            box-shadow: 0 20px 40px rgba(0,0,0,.2); animation: vhFloat 4s ease-in-out infinite;
         }
-        @keyframes heroFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
-        .hero-admin-btn {
-            margin-top: 14px; background: rgba(255,255,255,.2); color: #fff;
-            border: 1px solid rgba(255,255,255,.35); padding: 9px 18px; border-radius: 12px;
-            font-weight: 800; cursor: pointer; font-size: .9em;
-            backdrop-filter: blur(8px); transition: background .2s;
+        @keyframes vhFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+
+        /* ── Tiếp tục học ── */
+        .vh-continue {
+            display: flex; align-items: center; gap: 16px; padding: 12px; margin-bottom: 18px;
+            background: var(--v-surface); border: 1px solid var(--v-border); border-radius: 18px; box-shadow: var(--v-shadow);
+            text-decoration: none; color: inherit; transition: transform .2s, box-shadow .2s;
         }
-        .hero-admin-btn:hover { background: rgba(255,255,255,.32); }
+        .vh-continue:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(15,23,42,.1); }
+        .vh-continue-thumb {
+            position: relative; width: 168px; aspect-ratio: 16/9; flex-shrink: 0; border-radius: 12px; overflow: hidden;
+            background: linear-gradient(135deg,#3730a3,#7c3aed) center/cover;
+        }
+        .vh-continue-thumb::after {
+            content: '▶'; position: absolute; inset: 0; display: grid; place-items: center;
+            background: rgba(15,23,42,.35); color: #fff; font-size: 1.2em;
+        }
+        .vh-continue-info { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .vh-continue-label { font-size: .7em; font-weight: 800; color: var(--v-accent); text-transform: uppercase; letter-spacing: .6px; }
+        .vh-continue-title { font-weight: 800; font-size: 1.04em; color: var(--v-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .vh-continue-btn {
+            flex-shrink: 0; background: var(--v-accent-fill); color: #fff; padding: 10px 18px; border-radius: 12px;
+            font-weight: 800; font-size: .86em; box-shadow: 0 4px 14px rgba(79,70,229,.28);
+        }
+
+        /* ── Thanh công cụ ── */
+        .vh-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .vh-search { position: relative; flex: 1 1 260px; }
+        .vh-search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--v-muted); pointer-events: none; }
+        .vh-search input {
+            width: 100%; height: 42px; box-sizing: border-box; padding: 0 14px 0 40px;
+            border: 1px solid var(--v-border); border-radius: 12px; background: var(--v-surface-solid); color: var(--v-text);
+            font-family: inherit; font-size: .9em; transition: border-color .15s, box-shadow .15s;
+        }
+        .vh-search input:focus { outline: none; border-color: var(--v-accent-fill); box-shadow: 0 0 0 3px var(--v-accent-ring); }
+        .vh-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+        .vh-chip {
+            display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 99px; cursor: pointer;
+            border: 1px solid var(--v-border); background: var(--v-surface); color: var(--v-text-2);
+            font-family: inherit; font-weight: 700; font-size: .82em; transition: all .15s;
+        }
+        .vh-chip:hover { border-color: var(--v-accent); color: var(--v-accent); }
+        .vh-chip .n { font-size: .85em; padding: 0 7px; border-radius: 99px; background: var(--v-surface-2); color: var(--v-muted); line-height: 1.6; }
+        .vh-chip.active { background: var(--v-accent-fill); border-color: transparent; color: #fff; }
+        .vh-chip.active .n { background: rgba(255,255,255,.22); color: #fff; }
+
+        /* ── Thẻ bài học ── */
+        .vl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+        .vl-card-wrap { position: relative; }
+        .vl-card {
+            display: flex; flex-direction: column; height: 100%; overflow: hidden; text-decoration: none; color: inherit;
+            background: var(--v-surface); border: 1px solid var(--v-border); border-radius: 18px; box-shadow: var(--v-shadow);
+            transition: transform .2s, box-shadow .2s;
+        }
+        .vl-card:hover { transform: translateY(-4px); box-shadow: 0 14px 34px rgba(15,23,42,.12); }
+        .vl-thumb {
+            position: relative; aspect-ratio: 16/9; display: grid; place-items: center;
+            background: linear-gradient(135deg,#3730a3,#7c3aed) center/cover;
+        }
+        .vl-thumb::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.45), transparent 45%); }
+        .vl-play {
+            position: relative; z-index: 1; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center;
+            background: rgba(255,255,255,.94); color: #4f46e5; box-shadow: 0 8px 20px rgba(0,0,0,.25);
+            opacity: 0; transform: scale(.85); transition: all .2s;
+        }
+        .vl-card:hover .vl-play { opacity: 1; transform: scale(1); }
+        .vl-dur { position: absolute; right: 8px; bottom: 8px; z-index: 1; background: rgba(0,0,0,.75); color: #fff; font-size: .72em; font-weight: 700; padding: 2px 7px; border-radius: 6px; font-variant-numeric: tabular-nums; }
+        .vl-badge { position: absolute; left: 8px; top: 8px; z-index: 1; font-size: .7em; font-weight: 800; padding: 3px 9px; border-radius: 99px; color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+        .vl-badge.new { background: #f59e0b; }
+        .vl-badge.doing { background: #4f46e5; }
+        .vl-badge.done { background: #059669; }
+        .vl-body { flex: 1; display: flex; flex-direction: column; gap: 6px; padding: 14px 16px 16px; }
+        .vl-title { font-weight: 800; font-size: 1em; color: var(--v-text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .vl-desc { font-size: .82em; color: var(--v-text-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .vl-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; font-size: .76em; color: var(--v-muted); font-weight: 600; margin-top: auto; padding-top: 4px; }
+        .vl-meta span { display: inline-flex; align-items: center; gap: 4px; }
+        .vl-progress { display: flex; align-items: center; gap: 8px; font-size: .72em; color: var(--v-muted); font-weight: 700; }
+        .vl-bar { flex: 1; height: 5px; border-radius: 3px; background: var(--v-border); overflow: hidden; }
+        .vl-bar i { display: block; height: 100%; border-radius: 3px; background: var(--v-accent-fill); }
+        .vl-card.is-done .vl-bar i { background: var(--v-ok); }
+        .vl-admin { position: absolute; top: 8px; right: 8px; z-index: 5; display: flex; gap: 6px; opacity: 0; transition: opacity .2s; }
+        .vl-card-wrap:hover .vl-admin { opacity: 1; }
+        @media (hover: none) { .vl-admin { opacity: 1; } }
+
+        /* Skeleton & empty */
+        .vl-skel { border-radius: 18px; overflow: hidden; background: var(--v-surface); border: 1px solid var(--v-border); }
+        .vl-skel div { background: linear-gradient(90deg, var(--v-border) 25%, var(--v-surface-2) 50%, var(--v-border) 75%); background-size: 200% 100%; animation: vlShimmer 1.2s infinite; }
+        .vl-skel .s-thumb { aspect-ratio: 16/9; }
+        .vl-skel .s-line { height: 12px; border-radius: 6px; margin: 14px 16px 0; }
+        .vl-skel .s-line.short { width: 45%; margin-bottom: 18px; }
+        @keyframes vlShimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+        .vh-empty { grid-column: 1 / -1; text-align: center; padding: 40px 16px; color: var(--v-muted); font-weight: 600; }
+        .vh-empty .ico { font-size: 2.4em; margin-bottom: 6px; }
+        .vh-empty button { margin-top: 12px; border: none; background: var(--v-accent-soft); color: var(--v-accent); font-weight: 800; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-family: inherit; }
+
+        /* ── Hướng dẫn ── */
+        .vh-guide { margin-top: 28px; background: var(--v-surface); border: 1px solid var(--v-border); border-radius: 18px; padding: 20px 22px; }
+        .vh-guide h2 { font-size: 1.05em; font-weight: 800; color: var(--v-text); margin: 0 0 14px; }
+        .vh-guide-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+        .vh-guide-item { display: flex; gap: 12px; align-items: flex-start; }
+        .vh-guide-ico { width: 40px; height: 40px; flex-shrink: 0; border-radius: 12px; display: grid; place-items: center; background: var(--v-accent-soft); font-size: 1.15em; }
+        .vh-guide-item b { display: block; font-size: .9em; color: var(--v-text); margin-bottom: 2px; }
+        .vh-guide-item span { display: block; font-size: .82em; color: var(--v-text-2); line-height: 1.5; }
+        .vh-keys { margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--v-border-strong); display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .8em; color: var(--v-muted); font-weight: 600; }
+
         @media (max-width: 768px) {
-            .hero-section { padding: 26px 22px; flex-direction: column; align-items: flex-start; min-height: auto; }
-            .hero-right { position: absolute; top: 18px; right: 14px; }
-            .hero-icon { width: 60px; height: 60px; }
-            .hero-icon svg { width: 30px !important; height: 30px !important; }
-            .hero-title { padding-right: 64px; }
-            .hero-title { white-space: nowrap; font-size: 1.05em; }
-            .hero-sub { font-size: .86em; }
+            .vh-hero { padding: 22px 20px; }
+            .vh-hero-icon { display: none; }
+            .vh-title { font-size: 1.5em; }
+            .vh-sub { font-size: .88em; }
+            .vh-continue { gap: 12px; padding: 10px; }
+            .vh-continue-thumb { width: 112px; }
+            .vh-continue-btn { display: none; }
+            .vh-chips { width: 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+            .vh-chips::-webkit-scrollbar { display: none; }
+            .vh-chip { flex-shrink: 0; }
+            .vh-guide { padding: 16px; }
         }
     </style>
     <script src="../assets/js/theme-picker.js"></script>
@@ -83,41 +184,53 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="video-home-page">
-
 <div class="video-wrapper" style="margin-top:80px;margin-bottom:40px;">
 
     <!-- Hero -->
-    <div class="hero-section">
-        <div class="hero-bg"><div class="hero-blob b1"></div><div class="hero-blob b2"></div></div>
-        <div class="hero-left">
-            <div class="hero-tag">🎬 Học qua video</div>
-            <h1 class="hero-title">Học Tiếng Hàn Qua Video</h1>
-            <p class="hero-sub">Xem video có phụ đề Hàn - Việt, luyện nghe chép chính tả & shadowing</p>
-            <button class="hero-admin-btn" id="admin-actions" style="display:none;" onclick="openAddVideoModal()">+ Thêm video</button>
+    <div class="vh-hero">
+        <div class="vh-blob b1"></div><div class="vh-blob b2"></div>
+        <div class="vh-hero-left">
+            <div class="vh-tag">🎬 Học qua video</div>
+            <h1 class="vh-title">Học tiếng Hàn qua video</h1>
+            <p class="vh-sub">Xem video có phụ đề Hàn – Việt, luyện nghe, chép chính tả và nói theo từng câu.</p>
+            <div class="vh-stats" id="vh-stats"></div>
+            <button class="vh-admin-btn" id="admin-actions" onclick="openAddVideoModal()">＋ Thêm video</button>
         </div>
-        <div class="hero-right">
-            <div class="hero-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="52" height="52" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>
-            </div>
+        <div class="vh-hero-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" width="50" height="50" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><polygon points="10,8 16,12 10,16"/></svg>
         </div>
     </div>
 
-    <!-- Lesson Grid -->
-    <div class="video-lesson-grid" id="lesson-grid">
-        <!-- Rendered by script below -->
+    <!-- Tiếp tục học (bài xem gần nhất) -->
+    <div id="vh-continue-slot"></div>
+
+    <!-- Tìm kiếm + bộ lọc -->
+    <div class="vh-toolbar">
+        <label class="vh-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="search" id="vh-search" placeholder="Tìm bài học theo tên hoặc chủ đề..." autocomplete="off">
+        </label>
+        <div class="vh-chips" id="vh-chips"></div>
     </div>
 
-    <!-- How to use -->
-    <div style="margin-top:32px;background:rgba(255,255,255,.4);border:1px solid rgba(255,255,255,.5);border-radius:16px;padding:20px 24px;">
-        <h2 style="font-size:1.1em;font-weight:800;color:#1e293b;margin:0 0 12px;">📖 Cách sử dụng</h2>
-        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-size:.9em;color:#475569;line-height:1.6;">
-            <div><b>👆 Click câu thoại</b><br>Tua đến đoạn video tương ứng</div>
-            <div><b>🔍 Click từ tiếng Hàn</b><br>Tra từ điển 49.000+ từ KRDict</div>
-            <div><b>✏️ Chế độ Nghe chép</b><br>Gõ lại những gì bạn nghe được</div>
-            <div><b>🗣️ Chế độ Shadowing</b><br>Nghe và nhại lại từng câu</div>
+    <!-- Danh sách bài -->
+    <div class="vl-grid" id="lesson-grid"></div>
+
+    <!-- Hướng dẫn -->
+    <div class="vh-guide">
+        <h2>📖 Cách học hiệu quả</h2>
+        <div class="vh-guide-grid">
+            <div class="vh-guide-item"><div class="vh-guide-ico">🎧</div><div><b>Luyện nghe</b><span>Xem với phụ đề song ngữ, bấm vào câu bất kỳ để tua tới đoạn đó.</span></div></div>
+            <div class="vh-guide-item"><div class="vh-guide-ico">✍️</div><div><b>Chép chính tả</b><span>Video tự dừng sau mỗi câu, gõ lại những gì nghe được và xem điểm ngay.</span></div></div>
+            <div class="vh-guide-item"><div class="vh-guide-ico">🎤</div><div><b>Luyện nói</b><span>Nghe từng câu rồi nói theo, hệ thống so khớp phát âm của bạn.</span></div></div>
+            <div class="vh-guide-item"><div class="vh-guide-ico">🔍</div><div><b>Tra từ nhanh</b><span>Bấm vào từ tiếng Hàn để tra từ điển 49.000+ từ KRDict.</span></div></div>
         </div>
-        <div style="margin-top:12px;font-size:.82em;color:#94a3b8;">
-            ⌨️ Phím tắt: <b>Space</b> Play/Pause · <b>← →</b> Tua ±5s · <b>↑ ↓</b> Tua ±2s
+        <div class="vh-keys">
+            <span>⌨️ Phím tắt:</span>
+            <span><kbd>Space</kbd> Phát / Dừng</span>
+            <span><kbd>←</kbd> <kbd>→</kbd> Tua ±5 giây</span>
+            <span><kbd>↑</kbd> <kbd>↓</kbd> Tua ±2 giây</span>
+            <span><kbd>Enter</kbd> Kiểm tra chính tả</span>
         </div>
     </div>
 
@@ -128,11 +241,13 @@
     var adminActions = document.getElementById('admin-actions');
     var adminEmails = ['nmhieu2526@gmail.com', 'vuihoctienghan27@gmail.com'];
     var currentLessons = [];
+    var filterMode = 'all', searchQ = '';
+    var FILTERS = [['all', 'Tất cả'], ['doing', 'Đang học'], ['new', 'Chưa học'], ['done', 'Đã xem hết']];
 
     // Check Auth State
     firebase.auth().onAuthStateChanged(function(user) {
         if (user && adminEmails.includes(user.email)) {
-            adminActions.style.display = 'flex';
+            adminActions.style.display = 'inline-flex';
             window._isVideoAdmin = true;
         } else {
             adminActions.style.display = 'none';
@@ -144,7 +259,9 @@
 
     // Fetch lessons from Firestore (with local fallback)
     function loadLessons() {
-        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;opacity:.6;">Đang tải dữ liệu...</div>';
+        var sk = '';
+        for (var i = 0; i < 6; i++) sk += '<div class="vl-skel"><div class="s-thumb"></div><div class="s-line"></div><div class="s-line short"></div></div>';
+        grid.innerHTML = sk;
         firebase.firestore().collection('video_lessons').orderBy('createdAt', 'desc').get().then(function(snap) {
             currentLessons = [];
             snap.forEach(function(doc) {
@@ -168,34 +285,126 @@
         });
     }
 
+    // ── Tiến độ học (localStorage do video.js ghi) ──
+    function readJSON(k) { try { var r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
+    function lessonTotal(L) { return L.lineCount || (L.subtitles ? L.subtitles.length : 0); }
+    function lessonDuration(L) {
+        if (L.duration) return L.duration;
+        var s = L.subtitles;
+        if (!s || !s.length) return '';
+        var e = s[s.length - 1].end || s[s.length - 1].start || 0, m = Math.floor(e / 60), sec = Math.floor(e % 60);
+        return m + ':' + (sec < 10 ? '0' : '') + sec;
+    }
+    function progressOf(L) {
+        var total = lessonTotal(L), p = readJSON('video_progress_' + L.id) || {}, d = readJSON('video_dict_' + L.id) || {};
+        var seen = Math.min(total, p.maxIdx != null ? p.maxIdx + 1 : 0), dict = Object.keys(d).length;
+        var state = total && seen >= total ? 'done' : (seen > 0 || dict > 0 ? 'doing' : 'new');
+        return { total: total, seen: seen, dict: dict, state: state, idx: p.idx || 0 };
+    }
+    function isRecent(L) {
+        var c = L.createdAt, ms = c && c.toMillis ? c.toMillis() : (c && c.seconds ? c.seconds * 1000 : 0);
+        return ms && Date.now() - ms < 7 * 864e5;
+    }
+    function thumbOf(L) { return L.videoId ? 'https://img.youtube.com/vi/' + encodeURIComponent(L.videoId) + '/hqdefault.jpg' : ''; }
+    // Tìm không dấu: "chao hoi" khớp "Chào hỏi"
+    function norm(s) { return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd'); }
+
     function renderLessons() {
         var isAdmin = window._isVideoAdmin === true;
+        var withP = currentLessons.map(function(L) { return { L: L, p: progressOf(L) }; });
+        renderStats(withP);
+        renderContinue(withP);
+        renderChips(withP);
+
         if (!currentLessons.length) {
-            grid.innerHTML = '<div class="video-lesson-card" style="grid-column:1/-1;text-align:center;padding:40px;opacity:.6;">Chưa có bài học nào.</div>';
+            grid.innerHTML = '<div class="vh-empty"><div class="ico">🎬</div>Chưa có bài học video nào.</div>';
+            return;
+        }
+        var q = norm(searchQ.trim());
+        var list = withP.filter(function(x) {
+            if (filterMode !== 'all' && x.p.state !== filterMode) return false;
+            return !q || norm(x.L.title).indexOf(q) !== -1 || norm(x.L.subtitle).indexOf(q) !== -1;
+        });
+        if (!list.length) {
+            grid.innerHTML = '<div class="vh-empty"><div class="ico">🔍</div>Không có bài nào phù hợp.<br><button type="button" id="vh-clear">Xoá bộ lọc</button></div>';
+            document.getElementById('vh-clear').onclick = function() {
+                searchQ = ''; filterMode = 'all'; document.getElementById('vh-search').value = ''; renderLessons();
+            };
             return;
         }
         var h = '';
-        currentLessons.forEach(function(L) {
-            var thumb = L.videoId ? 'https://img.youtube.com/vi/' + L.videoId + '/hqdefault.jpg' : '';
-            h += '<div class="video-lesson-card-wrap">';
-            h += '<a href="lesson.html?id=' + encodeURIComponent(L.id) + '" class="video-lesson-card">';
-            h += '<div class="card-thumb"' + (thumb ? ' style="background-image:url(\'' + thumb + '\');background-size:cover;background-position:center;"' : '') + '>';
-            if (!thumb) h += '🎬';
-            h += '<div class="card-play-icon">▶</div></div>';
-            h += '<div class="card-body">';
-            h += '<div class="card-title">' + escH(L.title) + '</div>';
-            h += '<div class="card-meta"><span>💬 ' + (L.lineCount || (L.subtitles ? L.subtitles.length : 0)) + ' câu thoại</span><span>⏱ ' + (L.duration || '--:--') + '</span></div>';
+        list.forEach(function(x) {
+            var L = x.L, p = x.p, thumb = thumbOf(L), dur = lessonDuration(L);
+            var pct = p.total ? Math.round(p.seen / p.total * 100) : 0;
+            var badge = p.state === 'done' ? '<span class="vl-badge done">✓ Đã xem hết</span>'
+                      : p.state === 'doing' ? '<span class="vl-badge doing">Đang học</span>'
+                      : isRecent(L) ? '<span class="vl-badge new">Mới</span>' : '';
+            h += '<div class="vl-card-wrap">';
+            h += '<a href="lesson.html?id=' + encodeURIComponent(L.id) + '" class="vl-card' + (p.state === 'done' ? ' is-done' : '') + '">';
+            h += '<div class="vl-thumb"' + (thumb ? ' style="background-image:url(\'' + thumb + '\')"' : '') + '>' + badge;
+            h += '<span class="vl-play"><svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20"><path d="M8 5v14l11-7z"/></svg></span>';
+            if (dur) h += '<span class="vl-dur">' + escH(dur) + '</span>';
+            h += '</div><div class="vl-body">';
+            h += '<div class="vl-title">' + escH(L.title) + '</div>';
+            if (L.subtitle) h += '<div class="vl-desc">' + escH(L.subtitle) + '</div>';
+            h += '<div class="vl-meta"><span>💬 ' + p.total + ' câu thoại</span>' + (p.dict ? '<span>✍️ ' + p.dict + ' câu đã chép</span>' : '') + '</div>';
+            if (p.state !== 'new') h += '<div class="vl-progress"><div class="vl-bar"><i style="width:' + pct + '%"></i></div><span>' + p.seen + '/' + p.total + '</span></div>';
             h += '</div></a>';
             if (isAdmin) {
-                h += '<div class="card-admin-actions">';
-                h += '<button class="card-admin-btn edit" onclick="event.preventDefault();event.stopPropagation();openEditVideoModal(\'' + L.id + '\')" title="Sửa">✏️</button>';
-                h += '<button class="card-admin-btn delete" onclick="event.preventDefault();event.stopPropagation();deleteVideoLesson(\'' + L.id + '\',\'' + escH(L.title).replace(/'/g,"\\'") + '\')" title="Xóa">🗑️</button>';
+                h += '<div class="vl-admin">';
+                h += '<button class="card-admin-btn edit" onclick="event.preventDefault();event.stopPropagation();openEditVideoModal(\'' + escH(L.id) + '\')" title="Sửa">✏️</button>';
+                h += '<button class="card-admin-btn delete" onclick="event.preventDefault();event.stopPropagation();deleteVideoLesson(\'' + escH(L.id) + '\',\'' + escH(L.title).replace(/'/g,"\\'") + '\')" title="Xóa">🗑️</button>';
                 h += '</div>';
             }
             h += '</div>';
         });
         grid.innerHTML = h;
     }
+
+    function renderStats(withP) {
+        var el = document.getElementById('vh-stats'); if (!el) return;
+        if (!withP.length) { el.innerHTML = ''; return; }
+        var lines = 0, started = 0, dict = 0;
+        withP.forEach(function(x) { lines += x.p.total; dict += x.p.dict; if (x.p.state !== 'new') started++; });
+        el.innerHTML = '<span class="vh-stat"><b>' + withP.length + '</b> bài video</span>'
+            + '<span class="vh-stat"><b>' + lines + '</b> câu thoại</span>'
+            + (started ? '<span class="vh-stat"><b>' + started + '</b> bài đã học</span>' : '')
+            + (dict ? '<span class="vh-stat"><b>' + dict + '</b> câu đã chép</span>' : '');
+    }
+
+    function renderContinue(withP) {
+        var slot = document.getElementById('vh-continue-slot'); if (!slot) return;
+        var lastId = null; try { lastId = localStorage.getItem('video_last'); } catch (e) {}
+        var x = lastId && withP.filter(function(y) { return y.L.id === lastId; })[0];
+        if (!x || x.p.seen === 0) { slot.innerHTML = ''; return; }
+        var thumb = thumbOf(x.L), pct = x.p.total ? Math.round(x.p.seen / x.p.total * 100) : 0;
+        slot.innerHTML = '<a class="vh-continue" href="lesson.html?id=' + encodeURIComponent(x.L.id) + '">'
+            + '<div class="vh-continue-thumb"' + (thumb ? ' style="background-image:url(\'' + thumb + '\')"' : '') + '></div>'
+            + '<div class="vh-continue-info"><div class="vh-continue-label">' + (x.p.state === 'done' ? 'Xem lại bài gần nhất' : 'Tiếp tục học') + '</div>'
+            + '<div class="vh-continue-title">' + escH(x.L.title) + '</div>'
+            + '<div class="vl-progress"><div class="vl-bar"><i style="width:' + pct + '%"></i></div><span>Câu ' + (x.p.idx + 1) + '/' + x.p.total + '</span></div></div>'
+            + '<span class="vh-continue-btn">' + (x.p.state === 'done' ? 'Xem lại' : 'Học tiếp') + ' →</span></a>';
+    }
+
+    function renderChips(withP) {
+        var el = document.getElementById('vh-chips'); if (!el) return;
+        var cnt = { all: withP.length, doing: 0, 'new': 0, done: 0 };
+        withP.forEach(function(x) { cnt[x.p.state]++; });
+        el.innerHTML = FILTERS.map(function(f) {
+            return '<button type="button" class="vh-chip' + (filterMode === f[0] ? ' active' : '') + '" data-f="' + f[0] + '">' + f[1] + ' <span class="n">' + cnt[f[0]] + '</span></button>';
+        }).join('');
+        el.querySelectorAll('.vh-chip').forEach(function(b) {
+            b.onclick = function() { filterMode = b.getAttribute('data-f'); renderLessons(); };
+        });
+    }
+
+    var searchTimer = null;
+    document.getElementById('vh-search').addEventListener('input', function() {
+        var v = this.value; clearTimeout(searchTimer);
+        searchTimer = setTimeout(function() { searchQ = v; renderLessons(); }, 120);
+    });
+    // Quay lại trang bằng nút Back (bfcache) → cập nhật tiến độ mới
+    window.addEventListener('pageshow', function(e) { if (e.persisted && currentLessons.length) renderLessons(); });
 
     function escH(s) { return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
 

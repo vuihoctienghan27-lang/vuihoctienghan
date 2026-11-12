@@ -112,6 +112,9 @@
     }
 
     /* ---------- Khởi động ---------- */
+    // Cho trang khác báo "đang học" khi không có tương tác chuột/phím (VD: đang xem video)
+    window.markLearningActivity = function () { lastActivity = Date.now(); };
+
     function start(userId, firestore) {
         uid = userId;
         db  = firestore;
