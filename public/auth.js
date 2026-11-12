@@ -1,6 +1,9 @@
 // KIỂM TRA DARK MODE TOÀN CỤC NGAY KHI VỪA MỞ TRANG
+// auth.js thường được nạp trong <head> → lúc này document.body có thể chưa tồn tại.
+// Trước đây gọi thẳng document.body.classList làm văng lỗi, Firebase không được khởi tạo.
 if (localStorage.getItem('darkMode') === 'true') {
-    document.body.classList.add('dark-mode');
+    if (document.body) document.body.classList.add('dark-mode');
+    else document.addEventListener('DOMContentLoaded', function () { document.body.classList.add('dark-mode'); });
 }
 
 // ========================================================
