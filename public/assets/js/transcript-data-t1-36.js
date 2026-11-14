@@ -49,7 +49,7 @@ window.TRANSCRIPT_DATA = [
   {start:525.4, end:554.8, text:"다음은 무엇에 대해 말하고 있습니까? <보기>와 같이 알맞은 것을 고르십시오", chapter:"CÂU 11"},
   {start:571.2, end:578, text:"11번. 치마가 정말 예뻐요", chapter:"CÂU 11"},
   {start:578.8, end:579.1, text:"감사합니다", chapter:"CÂU 11"},
-  {start:578.9, end:584.8, text:"어제 백화점에서 샀어요", chapter:"CÂU 11"},
+  {start:579.1, end:584.8, text:"어제 백화점에서 샀어요", chapter:"CÂU 11"},
   {start:586.3, end:590.1, text:"다시 들으십시오", chapter:"CÂU 11"},
   {start:591.9, end:595.6, text:"치마가 정말 예뻐요", chapter:"CÂU 11"},
   {start:596.4, end:597.9, text:"감사합니다", chapter:"CÂU 11"},
