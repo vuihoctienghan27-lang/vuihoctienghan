@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK I 듣기 - 제35회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/exam-layout.css">
+    <link rel="stylesheet" href="../../assets/css/audio.css">
+    <link rel="stylesheet" href="../../assets/css/exam-controls.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/audio.js"></script>
+    <script src="../../assets/js/transcript.js"></script>
+    <script src="../../assets/js/transcript-data-t1-35.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script>
+        // Trang luyện nghe TOPIK I: chưa có đề in (hình, 4 lựa chọn) nên chỉ có audio, phụ đề và kịch bản.
+        window.learningActive = true;
+        window.toggleScript = function (btn) {
+            const box = btn.nextElementSibling;
+            if (box) box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+        };
+    </script>
+</head>
+
+<body>
+
+    <div id="sticky-audio-player" data-video-id="GZKvKCuINPE">
+        <div id="youtube-player-hidden"></div>
+        <div class="player-inner">
+            <button onclick="seekAudio(-5)" class="btn-ctrl" title="Lùi 5 giây">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 17l-5-5 5-5" />
+                    <path d="M18 17l-5-5 5-5" />
+                </svg>
+            </button>
+            <button onclick="togglePlayPause()" id="btn-play-pause" class="btn-ctrl" title="Phát / Tạm dừng">
+                <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+                <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                    style="display:none;">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+            </button>
+            <button onclick="stopAudio()" class="btn-ctrl" title="Dừng">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                    <path d="M6 6h12v12H6z" />
+                </svg>
+            </button>
+            <button onclick="seekAudio(5)" class="btn-ctrl" title="Tiến 5 giây">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 17l5-5-5-5" />
+                    <path d="M6 17l5-5-5-5" />
+                </svg>
+            </button>
+            <button onclick="toggleLoop()" id="btn-loop" class="btn-ctrl" title="Lặp lại câu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 1l4 4-4 4" />
+                    <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                    <path d="M7 23l-4-4 4-4" />
+                    <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                </svg>
+            </button>
+            <button onclick="resetToFullAudio()" class="btn-ctrl" title="Nghe lại từ đầu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                </svg>
+            </button>
+            <button id="btn-cc" class="btn-ctrl btn-cc active" title="Ẩn phụ đề (CC)">CC</button>
+            <span class="time-display" id="time-current">00:00</span>
+            <input type="range" id="progress-bar" value="0" step="1" title="Tua âm thanh">
+            <span class="time-display" id="time-total">00:00</span>
+        </div>
+        <div class="transcript-line" id="transcript-line">
+            <span class="transcript-chapter" id="transcript-chapter"></span>
+            <span class="transcript-text" id="transcript-text">🎧 Phụ đề sẽ hiện khi audio phát...</span>
+        </div>
+    </div>
+
+    <a href="../home.html" class="icon-home" title="Về trang Nghe">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+    </a>
+
+    <div class="container" id="main-container">
+    <div class="header-wrapper">
+        <div class="header">TOPIK Ⅰ 듣기 (제35회)</div>
+        <div class="instruction" style="text-align:center">🎧 Bản luyện nghe: bấm 🔊 để nghe từng câu, bật CC để xem phụ đề. Đề in (hình và 4 lựa chọn) sẽ được bổ sung sau.</div>
+    </div>
+    <div class="instruction">※ [1~4] 다음을 듣고 &lt;보기&gt;와 같이 물음에 맞는 대답을 고르십시오.</div>
+
+    <!-- CÂU 1 -->
+    <div class="question-block" id="q1">
+        <div class="question-text">
+            <span class="q-number">1.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(61, 74, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        우산이 있어요?
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 2 -->
+    <div class="question-block" id="q2">
+        <div class="question-text">
+            <span class="q-number">2.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(90, 104, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        오늘 회사에 가요?
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 3 -->
+    <div class="question-block" id="q3">
+        <div class="question-text">
+            <span class="q-number">3.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(121, 136, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        누구하고 커피를 마셨어요?
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 4 -->
+    <div class="question-block" id="q4">
+        <div class="question-text">
+            <span class="q-number">4.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(153, 167, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        이 파란색 바지 어때요?
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [5~6] 다음을 듣고 &lt;보기&gt;와 같이 이어지는 말을 고르십시오.</div>
+
+    <!-- CÂU 5 -->
+    <div class="question-block" id="q5">
+        <div class="question-text">
+            <span class="q-number">5.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(213, 231, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        민수 씨, 저 먼저 갈게요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 6 -->
+    <div class="question-block" id="q6">
+        <div class="question-text">
+            <span class="q-number">6.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(248, 274, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        실례합니다. 김영수 씨 있어요? 잠깐 만나러 왔는데요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [7~10] 여기는 어디입니까? &lt;보기&gt;와 같이 알맞은 것을 고르십시오.</div>
+
+    <!-- CÂU 7 -->
+    <div class="question-block" id="q7">
+        <div class="question-text">
+            <span class="q-number">7.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(332, 363, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        뭘 드릴까요?<br>
+                        아침부터 머리가 아파요. 약 좀 주세요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 8 -->
+    <div class="question-block" id="q8">
+        <div class="question-text">
+            <span class="q-number">8.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(380, 409, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        오늘 수업은 여기까지입니다<br>
+                        저, 질문이 있습니다
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 9 -->
+    <div class="question-block" id="q9">
+        <div class="question-text">
+            <span class="q-number">9.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(427, 456, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        실례합니다. 책은 몇 권까지 빌릴 수 있어요?<br>
+                        5권요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 10 -->
+    <div class="question-block" id="q10">
+        <div class="question-text">
+            <span class="q-number">10.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(474, 510, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        우리 여기서 배드민턴 칠까요?<br>
+                        여기는 축구를 하는 학생들이 있으니까 저쪽으로 가요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [11~14] 다음은 무엇에 대해 말하고 있습니까? &lt;보기&gt;와 같이 알맞은 것을 고르십시오.</div>
+
+    <!-- CÂU 11 -->
+    <div class="question-block" id="q11">
+        <div class="question-text">
+            <span class="q-number">11.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(577, 611, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        이거 비싸요?<br>
+                        아니요, 안 비싸요. 한 개에 천 원이에요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 12 -->
+    <div class="question-block" id="q12">
+        <div class="question-text">
+            <span class="q-number">12.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(628, 656, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        오늘 회의는 몇 시예요?<br>
+                        어제하고 같아요. 3시예요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 13 -->
+    <div class="question-block" id="q13">
+        <div class="question-text">
+            <span class="q-number">13.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(674, 711, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        저는 요리하기를 좋아해요. 민수 씨는요?<br>
+                        저는 시간이 있을 때마다 산에 가요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 14 -->
+    <div class="question-block" id="q14">
+        <div class="question-text">
+            <span class="q-number">14.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(729, 760, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        내일이 쉬는 날이에요?<br>
+                        네, 내일은 한글날이라서 쉬어요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [15~16] 다음 대화를 듣고 알맞은 그림을 고르십시오.</div>
+
+    <!-- CÂU 15 -->
+    <div class="question-block" id="q15">
+        <div class="question-text">
+            <span class="q-number">15.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(787, 813, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        졸업 축하해요. 이 꽃 받으세요<br>
+                        고마워요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 16 -->
+    <div class="question-block" id="q16">
+        <div class="question-text">
+            <span class="q-number">16.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(835, 877, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        유미 씨, 빨리 오세요<br>
+                        잠깐만요. 오랜만에 자전거를 타니까 잘 못하겠어요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [17~21] 다음을 듣고 &lt;보기&gt;와 같이 대화 내용과 같은 것을 고르십시오.</div>
+
+    <!-- CÂU 17 -->
+    <div class="question-block" id="q17">
+        <div class="question-text">
+            <span class="q-number">17.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(946, 983, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        돈을 찾으려고 하는데 근처에 은행이 있어요?<br>
+                        네, 이쪽으로 쭉 가면 있어요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 18 -->
+    <div class="question-block" id="q18">
+        <div class="question-text">
+            <span class="q-number">18.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1005, 1066, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        손님, 미술관으로 사진기를 가지고 들어오시면 안 됩니다<br>
+                        어, 몰랐어요. 죄송해요. 그럼 이 사진기는 어떻게 할까요?<br>
+                        입구에 사진기 맡기는 곳이 있습니다
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 19 -->
+    <div class="question-block" id="q19">
+        <div class="question-text">
+            <span class="q-number">19.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1089, 1163, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        유미 씨는 요즘 주말에도 바쁜 것 같아요<br>
+                        네, 좀 바빠요. 토요일마다 빵 만드는 걸 배우고 있어서요<br>
+                        빵을 직접 만들어요? 재미있겠네요<br>
+                        정말 재미있어요. 만드는 방법도 생각보다 어렵지 않고요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 20 -->
+    <div class="question-block" id="q20">
+        <div class="question-text">
+            <span class="q-number">20.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1186, 1272, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        여보세요? 민우 씨, 밤늦게 죄송한데요. 회의 자료 좀 이메일로 보내 줄 수 있어요?<br>
+                        아, 제가 지금 밖에 있는데요. 집에 가서 바로 보내 드릴게요<br>
+                        바쁘시면 다른 분께 부탁해 볼게요<br>
+                        아니에요. 지금 집에 가고 있어요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 21 -->
+    <div class="question-block" id="q21">
+        <div class="question-text">
+            <span class="q-number">21.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1294, 1380, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        여권을 만들어야 하는데요. 회사 일이 늦게 끝나서 갈 시간이 없어요<br>
+                        요즘은 주말에도 여권을 신청할 수 있는 곳이 있어요. 저도 주말에 거기 가서 여권을 만들었어요<br>
+                        그래요? 어디로 가면 돼요?<br>
+                        만들어 주는 데가 여러 곳 있어요. 인터넷에서 찾아보고 가까운 곳으로 가세요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [22~24] 다음을 듣고 여자의 중심 생각을 고르십시오.</div>
+
+    <!-- CÂU 22 -->
+    <div class="question-block" id="q22">
+        <div class="question-text">
+            <span class="q-number">22.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1413, 1483, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        저 다음 주부터 백화점 안에 있는 옷 가게에서 일하기로 했어요<br>
+                        잘됐네요. 그런데 매일 해요?<br>
+                        아니요, 월요일부터 금요일까지 하루에 3시간씩만 하면 돼요<br>
+                        공부와 일을 같이 하려면 힘들겠어요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 23 -->
+    <div class="question-block" id="q23">
+        <div class="question-text">
+            <span class="q-number">23.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1505, 1599, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        저 식당 음식이 정말 맛있나 봐요<br>
+                        아, 저기요? 삼계탕만 파는 식당인데 항상 사람들이 많아요<br>
+                        우리 회사 근처에 저런 유명한 식당이 있었네요. 다음에 삼계탕 한번 먹으러 가야겠어요<br>
+                        저 식당은 그날 준비한 걸 다 팔면 문을 닫아요. 그러니까 늦게 가면 못 드실 수도 있어요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 24 -->
+    <div class="question-block" id="q24">
+        <div class="question-text">
+            <span class="q-number">24.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1621, 1700, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        여행 가방 하나 사려고 하는데요<br>
+                        이 가방은 어떠세요? 가볍고 튼튼해서 사람들이 많이 사요<br>
+                        주머니도 많아서 편하겠네요. 근데 이거 말고 다른 색깔은 없어요?<br>
+                        있어요. 여기 여러 가지 색깔이 있으니까 구경하세요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [25~26] 다음을 듣고 물음에 답하십시오.</div>
+
+    <!-- CÂU 25~26 -->
+    <div class="question-block" id="q25">
+        <div class="question-text">
+            <span class="q-number">25~26.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1730, 1829, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        자, 여러분. 호텔에 도착했습니다. 많이 피곤하시죠?<br>
+                        먼저 방에 가 계시면 짐들을 가져다 드리겠습니다<br>
+                        식사는 지하 1층 식당에서 하시면 됩니다<br>
+                        호텔에 있는 수영장은 무료로 이용하실 수 있습니다<br>
+                        그리고 필요한 것이 있으면 저에게 전화해 주십시오. 제 방은 301호입니다<br>
+                        그럼 편히 쉬십시오
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [27~28] 다음을 듣고 물음에 답하십시오.</div>
+
+    <!-- CÂU 27~28 -->
+    <div class="question-block" id="q27">
+        <div class="question-text">
+            <span class="q-number">27~28.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1917, 2016, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        부산에 소포를 보내려고 하는데 지금 보내면 언제 도착해요?<br>
+                        지금 보내시면 모레 도착할 거예요<br>
+                        오늘 저녁까지 도착할 수는 없을까요? 제가 좀 급해서요<br>
+                        오전에 보내셨으면 오늘 안에 도착하는데 지금은 너무 늦었어요<br>
+                        지금은 특급으로 보내도 내일 오전에 도착해요<br>
+                        아, 그래요? 내일 오전까지 들어갈 수 있으면 그걸로 해 주세요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="instruction">※ [29~30] 다음을 듣고 물음에 답하십시오.</div>
+
+    <!-- CÂU 29~30 -->
+    <div class="question-block" id="q29">
+        <div class="question-text">
+            <span class="q-number">29~30.</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(2104, 2213, this.closest('.question-block'))" title="Nghe đoạn này">🔊</span>
+        </div>
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleScript(this)">🎙️ Xem kịch bản nghe (듣기 대본)</button>
+            <div class="explanation-content">
+                <div class="trans-box">
+                    <div class="trans-content">
+                        민수 씨, 이번 주말에 '사랑 나누기' 모임이 있는데 같이 가실래요?<br>
+                        사랑 나누기요? 그게 뭐예요?<br>
+                        혼자 사시는 할머니들을 도와드리는 모임이에요<br>
+                        아, 그래요? 근데 무슨 일을 도와드려요?<br>
+                        청소를 하거나 음식을 만들어 드려요. 이번 주말엔 김치를 담가서 드릴 거예요<br>
+                        좋은 일을 하시네요. 저도 이번 모임에 가 보고 싶어요. 김치를 담가 본 적은 없지만 열심히 해 볼게요
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+
+</html>
