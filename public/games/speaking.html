@@ -84,6 +84,7 @@
 
     <script src="../assets/js/vocab-dictionary.js"></script>
     <script src="../assets/js/game-speaking.js"></script>
+    <script src="../assets/js/badges.js"></script>
     <script>
         (function () {
             var sel = document.getElementById('levelSelect');
@@ -98,7 +99,7 @@
         function startGame() {
             var lv = document.getElementById('levelSelect').value;
             var list = (window.AutoVocabDict || []).filter(function (d) { return lv == 0 || d.level == lv; })
-                .map(function (d) { return { word: d.base, meaning: d.meaning }; });
+                .map(function (d) { return { word: d.base, meaning: d.meaning, ex_kr: (d.examples || [])[0] || '' }; });
             if (!list.length) { Swal.fire('Lỗi', 'Không có từ vựng ở cấp này.', 'warning'); return; }
             initSpeaking(list);
         }

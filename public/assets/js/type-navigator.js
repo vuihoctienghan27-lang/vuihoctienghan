@@ -145,6 +145,7 @@
         navPanel.classList.remove('open');
         navToggle.classList.remove('active');
     }
+    window._navClose = function () { if (navPanel) closePanel(); };
 
     function refreshGridColors() {
         const content = document.getElementById('nav-type-content');

@@ -577,7 +577,7 @@
             div.className = 'friend-item' + (activeFriendshipId === f.id ? ' active' : '');
             div.onclick = function () { openDm(f.id, otherUserName, otherUserId); };
             div.innerHTML = ''
-                + '<div class="friend-avatar">' + otherUserName.charAt(0).toUpperCase() + '</div>'
+                + '<div class="friend-avatar">' + escapeHTML(otherUserName.charAt(0).toUpperCase()) + '</div>'
                 + '<div class="friend-info">'
                 + '<div class="friend-name">' + escapeHTML(otherUserName) + '</div>'
                 + '<div class="friend-status">Bạn bè</div>'
@@ -604,14 +604,20 @@
                 }
 
                 try {
-                    var userQuery = await window.db.collection('users').where('email', '==', targetEmail).limit(1).get();
-                    if (userQuery.empty) {
-                        return Swal.fire('Không tìm thấy', 'Email này chưa đăng ký tài khoản.', 'error');
+                    // Tra email qua chỉ mục riêng (email_index) — email không còn nằm trong users công khai
+                    var targetUid = null;
+                    var idxDoc = await window.db.collection('email_index').doc(targetEmail).get();
+                    if (idxDoc.exists) targetUid = idxDoc.data().uid;
+                    if (!targetUid) {
+                        // Tài khoản cũ chưa chuyển email (chưa đăng nhập lại) → thử cách cũ
+                        var userQuery = await window.db.collection('users').where('email', '==', targetEmail).limit(1).get();
+                        if (!userQuery.empty) targetUid = userQuery.docs[0].id;
                     }
-
-                    var targetUser = userQuery.docs[0];
-                    var targetUid = targetUser.id;
-                    var targetData = targetUser.data();
+                    if (!targetUid) {
+                        return Swal.fire('Không tìm thấy', 'Email này chưa đăng ký tài khoản (hoặc người đó chưa đăng nhập lại kể từ lần cập nhật gần đây).', 'error');
+                    }
+                    var targetSnap = await window.db.collection('users').doc(targetUid).get();
+                    var targetData = targetSnap.exists ? targetSnap.data() : {};
                     var myName = currentUser.displayName || currentUser.email.split('@')[0];
                     var targetName = targetData.fullName || targetEmail.split('@')[0];
 
@@ -690,7 +696,9 @@
         if (el.dmPlaceholder) el.dmPlaceholder.style.display = 'none';
         if (el.dmArea) el.dmArea.style.display = 'flex';
         if (el.dmChatName) {
-            el.dmChatName.innerHTML = '<span style="cursor:pointer;" onclick="if(window.showGlobalUserProfile) window.showGlobalUserProfile(\'' + otherUserId + '\', \'' + otherName + '\')">' + otherName + '</span>';
+            el.dmChatName.innerHTML = '<span style="cursor:pointer;" onclick="if(window.showGlobalUserProfile) window.showGlobalUserProfile('
+                + escapeHTML(JSON.stringify(String(otherUserId || ''))) + ', '
+                + escapeHTML(JSON.stringify(String(otherName || ''))) + ')">' + escapeHTML(otherName) + '</span>';
         }
 
         if (dmUnsubscribe) { dmUnsubscribe(); dmUnsubscribe = null; }
@@ -867,6 +875,9 @@
                 } else if (nd.type === 'friend_accept') {
                     var btn = document.querySelector('.forum-tab-btn[data-tab="tab-friends"]');
                     if (btn) btn.click();
+                } else if (nd.link && /^[a-z0-9_\-]+\.html(\?[^\s:]*)?$/i.test(nd.link)) {
+                    // Chỉ cho phép link nội bộ dạng 'trang.html?...' (chống chuyển hướng ra ngoài)
+                    window.location.href = (window.rootPath || '') + nd.link;
                 }
             };
 
@@ -874,6 +885,10 @@
                 div.innerHTML = ''
                     + '<div class="nd-item-title">💬 Có bình luận mới</div>'
                     + '<div class="nd-item-desc"><strong>' + escapeHTML(nd.fromUserName) + '</strong> đã bình luận vào bài viết "' + escapeHTML(nd.postTitle) + '" của bạn.</div>';
+            } else if (nd.type === 'deadline' || nd.type === 'duel') {
+                div.innerHTML = ''
+                    + '<div class="nd-item-title">' + (nd.type === 'duel' ? '⚔️ Lời thách đấu' : '⏰ Nhắc nộp bài tập') + '</div>'
+                    + '<div class="nd-item-desc"><strong>' + escapeHTML(nd.fromUserName) + '</strong>: ' + escapeHTML(nd.message || '') + '</div>';
             } else if (nd.type === 'friend_accept') {
                 div.innerHTML = ''
                     + '<div class="nd-item-title">✅ Bạn bè mới</div>'

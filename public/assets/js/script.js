@@ -158,6 +158,7 @@ function saveExamTime() {
 
     if (sessionMins === 60) {
         updates.bonusEXP = firebase.firestore.FieldValue.increment(10);
+        updates.bonusEXPAt = firebase.firestore.FieldValue.serverTimestamp(); // firestore.rules yêu cầu
         if (typeof Swal !== 'undefined') {
             Swal.fire({icon: 'success', title: 'Tuyệt vời!', text: '🎉 Chúc mừng! Bạn đã giải đề liên tục 1 giờ và nhận được 10 EXP!', confirmButtonColor: '#2563eb'});
         } else {
@@ -165,7 +166,14 @@ function saveExamTime() {
         }
     }
     if (Object.keys(updates).length > 0) {
-        firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid).set(updates, {merge: true});
+        // Rules giới hạn 1 lần cộng EXP / 20 giây → nếu bị từ chối (trùng lúc bonus khác) thử lại sau 25 giây
+        const ref = firebase.firestore().collection("users").doc(firebase.auth().currentUser.uid);
+        ref.set(updates, {merge: true}).catch(() => {
+            setTimeout(() => {
+                updates.bonusEXPAt = firebase.firestore.FieldValue.serverTimestamp();
+                ref.set(updates, {merge: true}).catch(e => console.warn('[EXP] Không cộng được EXP:', e));
+            }, 25000);
+        });
     }
 }
 

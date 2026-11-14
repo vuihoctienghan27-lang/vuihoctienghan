@@ -1,0 +1,2031 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK I 듣기 - 제36회 - Vui Học Tiếng Hàn</title>
+    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/exam-layout.css">
+    <link rel="stylesheet" href="../../assets/css/audio.css">
+    <link rel="stylesheet" href="../../assets/css/exam-controls.css">
+    <link rel="stylesheet" href="../../assets/css/games.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="../../auth.js"></script>
+    <script src="../../assets/js/theme.js"></script>
+    <script src="../../assets/js/theme-picker.js"></script>
+    <script src="../../assets/js/navbar.js"></script>
+    <script src="../../assets/js/exam.js"></script>
+    <script src="../../assets/js/audio.js"></script>
+    <script src="../../assets/js/activity-tracker.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../../assets/js/block.js"></script>
+    <script src="../../assets/js/navigator.js"></script>
+</head>
+
+<body>
+
+
+
+    <div id="sticky-audio-player" data-video-id="cd0qoFvpDRY">
+        <div id="youtube-player-hidden"></div>
+        <div class="player-inner">
+            <button onclick="seekAudio(-5)" class="btn-ctrl" title="Lùi 5 giây">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M11 17l-5-5 5-5" />
+                    <path d="M18 17l-5-5 5-5" />
+                </svg>
+            </button>
+            <button onclick="togglePlayPause()" id="btn-play-pause" class="btn-ctrl" title="Phát / Tạm dừng">
+                <svg id="icon-play" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                    <path d="M8 5v14l11-7z" />
+                </svg>
+                <svg id="icon-pause" viewBox="0 0 24 24" fill="currentColor" width="20" height="20"
+                    style="display:none;">
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                </svg>
+            </button>
+            <button onclick="stopAudio()" class="btn-ctrl" title="Dừng">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+                    <path d="M6 6h12v12H6z" />
+                </svg>
+            </button>
+            <button onclick="seekAudio(5)" class="btn-ctrl" title="Tiến 5 giây">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M13 17l5-5-5-5" />
+                    <path d="M6 17l5-5-5-5" />
+                </svg>
+            </button>
+            <button onclick="toggleLoop()" id="btn-loop" class="btn-ctrl" title="Lặp lại câu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 1l4 4-4 4" />
+                    <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+                    <path d="M7 23l-4-4 4-4" />
+                    <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+                </svg>
+            </button>
+            <button onclick="resetToFullAudio()" class="btn-ctrl" title="Nghe lại từ đầu (câu 1)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="20" height="20"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                    <path d="M3 3v5h5" />
+                </svg>
+            </button>
+            <span class="time-display" id="time-current">00:00</span>
+            <input type="range" id="progress-bar" value="0" step="1" title="Tua âm thanh">
+            <span class="time-display" id="time-total">00:00</span>
+        </div>
+    </div>
+
+
+    <a href="../../index.html" class="icon-home" title="Về trang chủ">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+        </svg>
+    </a>
+
+
+
+
+
+
+<div class="container" id="main-container">
+    <h2 style="text-align:center;">제36회 I 듣기</h2>
+
+    <!-- HƯỚNG DẪN CÂU 1-4 -->
+    <div class="shared-text">
+        <strong>※ [1~4] 다음을 듣고 &lt;보기&gt;와 같이 물음에 맞는 대답을 고르십시오.</strong><br><br>
+        &lt;보기&gt;<br>
+        가: 우산이 있어요?<br>
+        나: _________________<br>
+        ① 네, 우산이에요.<br>
+        ② 아니요, 우산을 써요.<br>
+        ③ 네, 우산이 있어요.<br>
+        ④ 아니요, 우산이 아니에요.
+    </div>
+
+    <!-- CÂU 1 -->
+    <div class="question-block" id="q1">
+        <div class="question-text">
+            <span class="q-number">1.</span> 
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(33, 83)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">①</span> 네, 공책이에요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 네, 공책이 없어요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 아니요, 공책이 싸요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 아니요, 공책이 커요.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 공책이에요?<br>
+                    <strong>남자:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Là quyển vở phải không?<br>
+                    <strong>Nam:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Vâng, là quyển vở.<br>
+                    ② Vâng, không có quyển vở.<br>
+                    ③ Không, quyển vở rẻ.<br>
+                    ④ Không, quyển vở to.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>① 네, 공책이에요.</strong><br>
+                    Câu hỏi của người nữ dùng cấu trúc "Danh từ + 이에요/예요?" (Là... phải không?). Khi xác nhận thông tin này là đúng, người nghe sẽ trả lời "네" (Vâng) và nhắc lại danh từ đó với cấu trúc tương tự. Đáp án 1 hoàn toàn khớp logic và ngữ pháp.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>② 네, 공책이 없어요:</strong> Mâu thuẫn logic. Từ "네" (Vâng) không thể đi kèm với sự phủ định "없어요" (không có) trong ngữ cảnh này, và cấu trúc cũng không trả lời cho câu hỏi xác nhận danh tính.</li>
+                        <li><strong>③ 아니요, 공책이 싸요:</strong> Trả lời sai trọng tâm. Câu hỏi không hỏi về giá cả (싸다 - rẻ).</li>
+                        <li><strong>④ 아니요, 공책이 커요:</strong> Trả lời sai trọng tâm. Câu hỏi không hỏi về kích thước (크다 - to).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+
+                <table class="data-table">
+                    <tr>
+                        <th>Cấu trúc</th>
+                        <th>Ý nghĩa</th>
+                        <th>Cách dùng</th>
+                    </tr>
+                    <tr>
+                        <td>N이에요/예요</td>
+                        <td>Là N</td>
+                        <td>Dùng để định nghĩa, xác nhận danh tính của một sự vật/người.</td>
+                    </tr>
+                    <tr>
+                        <td>N이/가 있다/없다</td>
+                        <td>Có / Không có N</td>
+                        <td>Dùng để chỉ sự tồn tại hoặc sở hữu.</td>
+                    </tr>
+                </table>
+                <span style="display:none;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 2 -->
+    <div class="question-block" id="q2">
+        <div class="question-text">
+            <span class="q-number">2.</span> 
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(89, 112)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 네, 숙제예요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 네, 숙제를 알아요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">③</span> 아니요, 숙제가 없어요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 아니요, 숙제를 좋아해요.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 숙제가 많아요?<br>
+                    <strong>여자:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Bài tập về nhà có nhiều không?<br>
+                    <strong>Nữ:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Vâng, là bài tập về nhà.<br>
+                    ② Vâng, tôi biết bài tập về nhà.<br>
+                    ③ Không, không có bài tập về nhà.<br>
+                    ④ Không, tôi thích bài tập về nhà.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>③ 아니요, 숙제가 없어요.</strong><br>
+                    Người nam hỏi xem có nhiều bài tập không ("숙제가 많아요?"). Trả lời bằng "아니요" (Không) thì người nói phải đưa ra trạng thái ngược lại (ít bài tập) hoặc phủ định hoàn toàn sự tồn tại của bài tập ("숙제가 없어요" - không có bài tập). Đây là câu trả lời tự nhiên nhất.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 네, 숙제예요:</strong> Câu trả lời định nghĩa ("Vâng, là bài tập"), dùng khi được hỏi "Cái này là bài tập à?".</li>
+                        <li><strong>② 네, 숙제를 알아요:</strong> Trả lời không đúng trọng tâm. Câu hỏi hỏi số lượng/trạng thái (nhiều/ít), không hỏi về việc có biết (알다) hay không.</li>
+                        <li><strong>④ 아니요, 숙제를 좋아해요:</strong> Câu hỏi không hỏi về sở thích (좋아하다).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+
+                <table class="data-table">
+                    <tr>
+                        <th>Cấu trúc</th>
+                        <th>Ý nghĩa</th>
+                        <th>Cách dùng</th>
+                    </tr>
+                    <tr>
+                        <td>A/V + 아/어요?</td>
+                        <td>Có... không?</td>
+                        <td>Hỏi về trạng thái, đặc điểm của sự vật, sự việc.</td>
+                    </tr>
+                    <tr>
+                        <td>N을/를 알다/좋아하다</td>
+                        <td>Biết / Thích cái gì đó</td>
+                        <td>Dùng với tiểu từ tân ngữ 을/를 để diễn đạt hành động của chủ thể.</td>
+                    </tr>
+                </table>
+                <span style="display:none;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 3 -->
+    <div class="question-block" id="q3">
+        <div class="question-text">
+            <span class="q-number">3.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(118, 139)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 두 개 살 거예요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">②</span> 지갑을 살 거예요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 주말에 살 거예요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 시장에서 살 거예요.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 뭐 살 거예요?<br>
+                    <strong>여자:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Bạn sẽ mua gì?<br>
+                    <strong>Nữ:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Tôi sẽ mua hai cái.<br>
+                    ② Tôi sẽ mua ví tiền.<br>
+                    ③ Tôi sẽ mua vào cuối tuần.<br>
+                    ④ Tôi sẽ mua ở chợ.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>② 지갑을 살 거예요.</strong><br>
+                    Từ để hỏi trong câu là "뭐" (Cái gì). Người trả lời cần phải chỉ đích danh một sự vật cụ thể mà mình định mua. Từ "지갑" (ví tiền) làm tân ngữ cho động từ "사다" (mua) là câu trả lời chính xác và trực tiếp nhất.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 두 개 살 거예요:</strong> Trả lời cho câu hỏi về số lượng "몇 개 살 거예요?" (Sẽ mua mấy cái?).</li>
+                        <li><strong>③ 주말에 살 거예요:</strong> Trả lời cho câu hỏi về thời gian "언제 살 거예요?" (Khi nào sẽ mua?).</li>
+                        <li><strong>④ 시장에서 살 거예요:</strong> Trả lời cho câu hỏi về địa điểm "어디에서 살 거예요?" (Sẽ mua ở đâu?).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+
+                <table class="data-table">
+                    <tr>
+                        <th>Cấu trúc</th>
+                        <th>Ý nghĩa</th>
+                        <th>Cách dùng</th>
+                    </tr>
+                    <tr>
+                        <td>V + (으)ㄹ 거예요</td>
+                        <td>Sẽ làm V</td>
+                        <td>Thể hiện kế hoạch, dự định hoặc tương lai.</td>
+                    </tr>
+                    <tr>
+                        <td>뭐 (무엇)</td>
+                        <td>Cái gì</td>
+                        <td>Đại từ nghi vấn dùng để hỏi về sự vật, sự việc.</td>
+                    </tr>
+                </table>
+                <span style="display:none;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 4 -->
+    <div class="question-block" id="q4">
+        <div class="question-text">
+            <span class="q-number">4.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(145, 171)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 혼자 일했어요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">②</span> 3년 일했어요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 오후에 일했어요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 집에서 일했어요.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 이 회사에서 얼마나 일했어요?<br>
+                    <strong>여자:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Bạn đã làm việc ở công ty này bao lâu rồi?<br>
+                    <strong>Nữ:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Tôi đã làm việc một mình.<br>
+                    ② Tôi đã làm việc được 3 năm.<br>
+                    ③ Tôi đã làm việc vào buổi chiều.<br>
+                    ④ Tôi đã làm việc ở nhà.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>② 3년 일했어요.</strong><br>
+                    Câu hỏi sử dụng từ "얼마나" (bao lâu, bao nhiêu) đi kèm động từ "일했어요", tức là hỏi về khoảng thời gian làm việc. Câu trả lời "3년" (3 năm) trực tiếp đáp ứng đúng loại thông tin thời lượng được hỏi.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 혼자 일했어요:</strong> Trả lời cho câu hỏi "누구하고 일했어요?" (Làm việc với ai?).</li>
+                        <li><strong>③ 오후에 일했어요:</strong> Trả lời cho câu hỏi về mốc thời gian cụ thể "언제 일했어요?" (Đã làm việc khi nào?).</li>
+                        <li><strong>④ 집에서 일했어요:</strong> Trả lời cho câu hỏi về địa điểm "어디에서 일했어요?" (Đã làm việc ở đâu?).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+
+                <table class="data-table">
+                    <tr>
+                        <th>Cấu trúc</th>
+                        <th>Ý nghĩa</th>
+                        <th>Cách dùng</th>
+                    </tr>
+                    <tr>
+                        <td>얼마나 + V</td>
+                        <td>Bao lâu / Bao nhiêu</td>
+                        <td>Hỏi về thời lượng, mức độ hoặc số lượng.</td>
+                    </tr>
+                    <tr>
+                        <td>장소 + 에서 + 일하다</td>
+                        <td>Làm việc tại (địa điểm)</td>
+                        <td>Chỉ nơi chốn diễn ra hành động làm việc.</td>
+                    </tr>
+                </table>
+                <span style="display:none;"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- HƯỚNG DẪN CÂU 5-6 -->
+    <div class="shared-text">
+        <strong>※ [5~6] 다음을 듣고 &lt;보기&gt;와 같이 이어지는 말을 고르십시오.</strong><br><br>
+        &lt;보기&gt;<br>
+        가: 맛있게 드세요.<br>
+        나: _________________<br>
+        ① 좋겠습니다.<br>
+        ② 모르겠습니다.<br>
+        ③ 잘 지냈습니다.<br>
+        ④ 잘 먹겠습니다.
+    </div>
+
+    <!-- CÂU 5 -->
+    <div class="question-block" id="q5">
+        <div class="question-text">
+            <span class="q-number">5.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(177, 225)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 미안합니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 감사합니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 안녕히 가십시오.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">④</span> 만나서 반갑습니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 처음 뵙겠습니다.<br>
+                    <strong>남자:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Rất hân hạnh lần đầu được gặp mặt.<br>
+                    <strong>Nam:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Xin lỗi.<br>
+                    ② Cảm ơn.<br>
+                    ③ Đi cẩn thận nhé.<br>
+                    ④ Rất vui được gặp bạn.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>④ 만나서 반갑습니다.</strong><br>
+                    "처음 뵙겠습니다" là lời chào tiêu chuẩn mang tính trang trọng khi gặp ai đó lần đầu tiên. Lời đáp lại tự nhiên và phù hợp nhất trong văn hóa Hàn Quốc là bày tỏ sự vui mừng được gặp gỡ: "만나서 반갑습니다" (Rất vui được gặp).
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 미안합니다:</strong> Dùng khi xin lỗi vì làm phiền hay mắc lỗi.</li>
+                        <li><strong>② 감사합니다:</strong> Dùng khi cảm ơn sự giúp đỡ, quà tặng.</li>
+                        <li><strong>③ 안녕히 가십시오:</strong> Dùng để chào tạm biệt người đang rời đi.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 6 -->
+    <div class="question-block" id="q6">
+        <div class="question-text">
+            <span class="q-number">6.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(231, 258)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 괜찮아요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 죄송해요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">③</span> 잘 다녀오세요.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 잘 부탁드려요.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 저 주말에 부산으로 여행 가요.<br>
+                    <strong>여자:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Cuối tuần này tôi đi du lịch Busan.<br>
+                    <strong>Nữ:</strong> _________________
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Không sao đâu.<br>
+                    ② Xin lỗi nhé.<br>
+                    ③ Đi du lịch vui vẻ rồi về nhé.<br>
+                    ④ Xin nhờ vả / Xin chiếu cố cho.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>③ 잘 다녀오세요.</strong><br>
+                    Khi ai đó thông báo rằng họ chuẩn bị đi một chuyến đi (du lịch, công tác, v.v.), phép lịch sự thông thường là chúc họ đi đường thượng lộ bình an và vui vẻ trở về. Cụm từ "잘 다녀오세요" (Đi tốt rồi về nhé) là lựa chọn hoàn hảo.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 괜찮아요:</strong> (Không sao đâu) Dùng để từ chối hoặc an ủi khi ai đó xin lỗi.</li>
+                        <li><strong>② 죄송해요:</strong> (Xin lỗi) Không có lý do gì để xin lỗi trong hoàn cảnh này.</li>
+                        <li><strong>④ 잘 부탁드려요:</strong> (Mong được giúp đỡ) Dùng khi mới làm quen hoặc giao phó một việc gì đó.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HƯỚNG DẪN CÂU 7-10 -->
+    <div class="shared-text">
+        <strong>※ [7~10] 여기는 어디입니까? &lt;보기&gt;와 같이 알맞은 것을 고르십시오.</strong><br><br>
+        &lt;보기&gt;<br>
+        가: 어디가 아프세요?<br>
+        나: 배가 아파요.<br>
+        ① 호텔<br>
+        ② 학교<br>
+        ③ 병원<br>
+        ④ 시장
+    </div>
+
+    <!-- CÂU 7 -->
+    <div class="question-block" id="q7">
+        <div class="question-text">
+            <span class="q-number">7.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(264, 347)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 교실</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 식당</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">③</span> 가게</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 공원</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 어서 오세요, 손님. 뭐 찾으세요?<br>
+                    <strong>여자:</strong> 운동화 있어요?
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Xin kính chào quý khách. Quý khách tìm gì ạ?<br>
+                    <strong>Nữ:</strong> Có giày thể thao không ạ?
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Phòng học<br>
+                    ② Nhà hàng<br>
+                    ③ Cửa hàng<br>
+                    ④ Công viên
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>③ 가게 (Cửa hàng)</strong>.<br>
+                    Đoạn hội thoại có các từ khóa như "손님" (quý khách) và người nữ đang hỏi mua "운동화" (giày thể thao). Việc mua bán giày dép chắc chắn diễn ra ở cửa hàng (가게) hoặc khu mua sắm.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 교실 (Phòng học):</strong> Sẽ xuất hiện từ như 선생님 (giáo viên), 수업 (tiết học).</li>
+                        <li><strong>② 식당 (Nhà hàng):</strong> Sẽ xuất hiện từ vựng liên quan đến gọi món ăn (주문하다, 음식).</li>
+                        <li><strong>④ 공원 (Công viên):</strong> Sẽ xuất hiện các từ liên quan đến đi dạo (산책하다), tập thể dục (운동하다).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 8 -->
+    <div class="question-block" id="q8">
+        <div class="question-text">
+            <span class="q-number">8.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(353, 401)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">①</span> 극장</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 은행</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 공항</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 약국</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 다섯 시 영화 표, 두 장 주세요.<br>
+                    <strong>남자:</strong> 죄송합니다. 다섯 시 표는 없습니다.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Cho tôi hai vé xem phim lúc 5 giờ.<br>
+                    <strong>Nam:</strong> Xin lỗi quý khách. Vé lúc 5 giờ đã hết rồi ạ.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Rạp chiếu phim<br>
+                    ② Ngân hàng<br>
+                    ③ Sân bay<br>
+                    ④ Hiệu thuốc
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>① 극장 (Rạp chiếu phim)</strong>.<br>
+                    Từ khóa rất rõ ràng là "영화 표" (vé xem phim). Địa điểm để mua vé và xem phim chỉ có thể là rạp chiếu phim (극장).
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>② 은행 (Ngân hàng):</strong> Sẽ nói về 돈 (tiền), 통장 (sổ tiết kiệm).</li>
+                        <li><strong>③ 공항 (Sân bay):</strong> Mặc dù cũng có bán vé "표", nhưng đó phải là 비행기 표 (vé máy bay).</li>
+                        <li><strong>④ 약국 (Hiệu thuốc):</strong> Sẽ xuất hiện từ 약 (thuốc), 아프다 (đau ốm).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 9 -->
+    <div class="question-block" id="q9">
+        <div class="question-text">
+            <span class="q-number">9.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(407, 460)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 여행사</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 도서관</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">③</span> 우체국</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 미술관</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 지금 편지를 보내면 내일까지 도착할 수 있을까요?<br>
+                    <strong>여자:</strong> 네, 내일까지는 도착합니다.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Nếu tôi gửi thư bây giờ thì ngày mai có đến nơi được không ạ?<br>
+                    <strong>Nữ:</strong> Vâng, trễ nhất là ngày mai sẽ đến ạ.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Công ty du lịch<br>
+                    ② Thư viện<br>
+                    ③ Bưu điện<br>
+                    ④ Bảo tàng mỹ thuật
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>③ 우체국 (Bưu điện)</strong>.<br>
+                    Hành động chính ở đây là "편지를 보내다" (gửi bức thư). Cơ quan cung cấp dịch vụ gửi nhận thư từ bưu phẩm chính là bưu điện.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 여행사 (Công ty du lịch):</strong> Liên quan đến 예약하다 (đặt chỗ), 비행기 표 (vé máy bay).</li>
+                        <li><strong>② 도서관 (Thư viện):</strong> Liên quan đến 책을 빌리다 (mượn sách).</li>
+                        <li><strong>④ 미술관 (Bảo tàng mỹ thuật):</strong> Liên quan đến 그림 (bức tranh), 구경하다 (ngắm, tham quan).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 10 -->
+    <div class="question-block" id="q10">
+        <div class="question-text">
+            <span class="q-number">10.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(466, 516)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">①</span> 빵집</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 회사</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 미용실</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 박물관</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 이 집은 딸기 케이크가 유명해요.<br>
+                    <strong>남자:</strong> 그래요? 그럼, 우리도 그거 한번 먹어 볼까요?
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Cửa hàng này nổi tiếng với món bánh kem dâu tây lắm.<br>
+                    <strong>Nam:</strong> Vậy sao? Vậy chúng ta cũng ăn thử món đó xem sao nhé?
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Tiệm bánh mì<br>
+                    ② Công ty<br>
+                    ③ Tiệm làm tóc<br>
+                    ④ Viện bảo tàng
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>① 빵집 (Tiệm bánh mì)</strong>.<br>
+                    Hội thoại nhắc đến "딸기 케이크" (Bánh kem dâu tây) và việc rủ nhau "먹어 볼까요" (ăn thử). Nơi bán bánh kem là tiệm bánh (빵집/제과점).
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>② 회사 (Công ty):</strong> Nơi làm việc (일하다), họp hành (회의).</li>
+                        <li><strong>③ 미용실 (Tiệm làm tóc):</strong> Nơi cắt tóc (머리를 자르다).</li>
+                        <li><strong>④ 박물관 (Viện bảo tàng):</strong> Nơi trưng bày hiện vật lịch sử.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HƯỚNG DẪN CÂU 11-14 -->
+    <div class="shared-text">
+        <strong>※ [11~14] 다음은 무엇에 대해 말하고 있습니까? &lt;보기&gt;와 같이 알맞은 것을 고르십시오.</strong><br><br>
+        &lt;보기&gt;<br>
+        가: 누구예요?<br>
+        나: 이 사람은 형이고, 이 사람은 동생이에요.<br>
+        ① 가족<br>
+        ② 이름<br>
+        ③ 고향<br>
+        ④ 소포
+    </div>
+
+    <!-- CÂU 11 -->
+    <div class="question-block" id="q11">
+        <div class="question-text">
+            <span class="q-number">11.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(522, 614)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">①</span> 옷</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 값</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 생일</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 날짜</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 치마가 정말 예뻐요.<br>
+                    <strong>여자:</strong> 감사합니다. 어제 백화점에서 샀어요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Chiếc váy của bạn đẹp thật đấy.<br>
+                    <strong>Nữ:</strong> Cảm ơn nhé. Tôi mới mua ở trung tâm thương mại hôm qua.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Quần áo<br>
+                    ② Giá cả<br>
+                    ③ Sinh nhật<br>
+                    ④ Ngày tháng
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>① 옷 (Quần áo)</strong>.<br>
+                    Hai người đang nói về "치마" (chân váy) - đây là một loại trang phục. Do đó, chủ đề chung của cuộc hội thoại là quần áo (옷).
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>② 값 (Giá cả):</strong> Không nhắc đến số tiền hay đắt rẻ (비싸다/싸다).</li>
+                        <li><strong>③ 생일 (Sinh nhật):</strong> Không có lời chúc mừng hay quà tặng liên quan.</li>
+                        <li><strong>④ 날짜 (Ngày tháng):</strong> Mặc dù có nhắc "어제" (hôm qua) nhưng đó chỉ là thời điểm phụ trợ, trọng tâm vẫn là khen ngợi chiếc váy.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 12 -->
+    <div class="question-block" id="q12">
+        <div class="question-text">
+            <span class="q-number">12.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(620, 661)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 시간</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">②</span> 나이</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 음식</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 기분</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 저는 스물 세 살이에요.<br>
+                    <strong>남자:</strong> 그래요? 저도 스물 세 살이에요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Tôi hai mươi ba tuổi.<br>
+                    <strong>Nam:</strong> Vậy sao? Tôi cũng hai mươi ba tuổi.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Thời gian<br>
+                    ② Tuổi tác<br>
+                    ③ Đồ ăn<br>
+                    ④ Tâm trạng
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>② 나이 (Tuổi tác)</strong>.<br>
+                    Cả hai người đều sử dụng cấu trúc số đếm thuần Hàn + "살" (tuổi) để chia sẻ về thông tin cá nhân. Vì vậy chủ đề là hỏi đáp về độ tuổi.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 시간 (Thời gian):</strong> Dùng số đếm Hán Hàn + "시" (giờ). Ví dụ: 세 시 (3 giờ).</li>
+                        <li><strong>③ 음식 (Đồ ăn):</strong> Không liên quan đến chủ đề ăn uống.</li>
+                        <li><strong>④ 기분 (Tâm trạng):</strong> Sẽ có các tính từ như 좋다 (vui), 슬프다 (buồn).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 13 -->
+    <div class="question-block" id="q13">
+        <div class="question-text">
+            <span class="q-number">13.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(667, 706)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 휴일</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 달력</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">③</span> 사진</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 그림</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 이거 언제 찍은 거예요?<br>
+                    <strong>여자:</strong> 작년에 제주도에서 찍은 거예요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Cái này là bạn chụp khi nào thế?<br>
+                    <strong>Nữ:</strong> Là bức tôi chụp ở đảo Jeju năm ngoái.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Ngày nghỉ<br>
+                    ② Tờ lịch<br>
+                    ③ Bức ảnh<br>
+                    ④ Bức tranh
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>③ 사진 (Bức ảnh)</strong>.<br>
+                    Từ khóa cốt lõi trong đoạn là động từ "찍다" (chụp). Việc hỏi nhau "cái này chụp bao giờ" chỉ có thể áp dụng cho một bức ảnh.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 휴일 (Ngày nghỉ):</strong> Người nam không hỏi về kỳ nghỉ.</li>
+                        <li><strong>② 달력 (Tờ lịch):</strong> Không liên quan đến hành động "chụp".</li>
+                        <li><strong>④ 그림 (Bức tranh):</strong> Tranh thì dùng động từ "그리다" (vẽ), không dùng "찍다" (chụp).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 14 -->
+    <div class="question-block" id="q14">
+        <div class="question-text">
+            <span class="q-number">14.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(712, 762)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">①</span> 가구</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 주소</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 계절</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 선물</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 책상, 의자, 옷장....... 방에 필요한 것은 거의 다 있네요.<br>
+                    <strong>남자:</strong> 네. 침대만 사면 될 거예요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Bàn học, ghế, tủ quần áo... Những thứ cần thiết trong phòng dường như đã có đủ hết rồi nhỉ.<br>
+                    <strong>Nam:</strong> Vâng. Chỉ cần mua thêm giường nữa là được.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Đồ nội thất (Gia cụ)<br>
+                    ② Địa chỉ<br>
+                    ③ Mùa<br>
+                    ④ Quà tặng
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>① 가구 (Đồ nội thất)</strong>.<br>
+                    Cả 4 đồ vật được liệt kê trong bài (책상 - bàn, 의자 - ghế, 옷장 - tủ áo, 침대 - giường) đều là các mặt hàng đồ gỗ, trang bị nội thất trong nhà.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>② 주소 (Địa chỉ):</strong> Không liên quan đến các món đồ.</li>
+                        <li><strong>③ 계절 (Mùa):</strong> Sẽ phải nhắc đến 봄, 여름 (xuân, hạ).</li>
+                        <li><strong>④ 선물 (Quà tặng):</strong> Tuy có thể tặng giường tủ, nhưng liệt kê một loạt các vật dụng trong phòng như thế này thì chủ đề chính là nội thất.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HƯỚNG DẪN CÂU 15-16 -->
+    <div class="shared-text">
+        <strong>※ [15~16] 다음 대화를 듣고 알맞은 그림을 고르십시오. (각 4점)</strong>
+    </div>
+
+    <!-- CÂU 15 -->
+    <div class="question-block" id="q15">
+        <div class="question-text">
+            <span class="q-number">15.</span> 
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(768, 830)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="../../assets\img\listening\topik_i\topik36/15.jpg" alt="Tranh minh họa câu 15" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 1</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">②</span> 2</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 3</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 4</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 무거우시죠? 제가 도와 드릴까요?<br>
+                    <strong>여자:</strong> 감사합니다. 문 좀 열어 주시겠어요?
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Chắc là nặng lắm nhỉ? Để tôi giúp một tay nhé?<br>
+                    <strong>Nữ:</strong> Cảm ơn anh. Anh mở giúp cửa cho tôi được không?
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>② (Bức tranh số 2)</strong>.<br>
+                    Trong đoạn hội thoại, người nữ đang mang một vật nặng và người nam đề nghị giúp đỡ. Người nữ đáp lại bằng cách nhờ mở cửa ("문 좀 열어 주시겠어요?"). Bức tranh số 2 mô tả chính xác cảnh người nữ đang bê chiếc thùng giấy nặng bằng hai tay đi tới cửa, còn người nam thì đang đứng gần cửa chuẩn bị mở giúp.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>Bức tranh 1:</strong> Người nam đang khom người bê thùng đưa cho người nữ. Không khớp với lời nhờ mở cửa.</li>
+                        <li><strong>Bức tranh 3:</strong> Người nữ bê thùng bước vào, nhưng người nam đang kéo ghế ngồi ở bàn tròn, không có hành động mở cửa.</li>
+                        <li><strong>Bức tranh 4:</strong> Cả hai người đang cùng bê chung một chiếc thùng lớn. Trái với nội dung người nữ nhờ người nam chỉ mở cửa giúp.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<!-- CÂU 16 -->
+    <div class="question-block" id="q16">
+        <div class="question-text">
+            <span class="q-number">16.</span> 
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(836, 884)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img src="../../assets\img\listening\topik_i\topik36/16.jpg" alt="Tranh minh họa câu 16" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px;">
+        </div>
+
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 1</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 2</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 3</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">④</span> 4</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 잠깐만요, 손님. 여기 전화기 놓고 가셨어요.<br>
+                    <strong>여자:</strong> (놀란 듯이) 어머, 그래요?
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Chờ một chút ạ, thưa quý khách. Quý khách để quên điện thoại ở đây rồi ạ.<br>
+                    <strong>Nữ:</strong> (Có vẻ giật mình) Ôi trời, vậy sao?
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>④ (Bức tranh số 4)</strong>.<br>
+                    Trong đoạn hội thoại, người nam (nhân viên) đang gọi với theo người nữ (khách hàng) để trả lại chiếc điện thoại ("전화기") mà cô ấy đã để quên ("놓고 가셨어요"). Bức tranh số 4 mô tả chính xác cảnh người nữ vừa bước ra khỏi cửa thì người nam chạy theo, trên tay cầm chiếc điện thoại để gọi lại.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>Bức tranh 1:</strong> Người nam đang phục vụ món ăn cho người nữ tại bàn, không có hành động trả lại điện thoại đánh rơi.</li>
+                        <li><strong>Bức tranh 2:</strong> Người nam đang nhặt điện thoại đánh rơi ngay dưới đất khi người nữ vẫn đang ngồi tại bàn. Trái với chi tiết người nam phải gọi với theo ("잠깐만요, 손님").</li>
+                        <li><strong>Bức tranh 3:</strong> Người nữ đang đứng ở quầy thanh toán, tự cầm điện thoại trên tay. Không có hành động để quên.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HƯỚNG DẪN CÂU 17-21 -->
+    <div class="shared-text">
+        <strong>※ [17~21] 다음을 듣고 &lt;보기&gt;와 같이 대화 내용과 같은 것을 고르십시오. (각 3점)</strong><br><br>
+        &lt;보기&gt;<br>
+        남자: 요즘 한국어를 공부해요?<br>
+        여자: 네. 한국 친구한테서 한국어를 배워요.<br>
+        ① 남자는 학생입니다.<br>
+        ② 여자는 학교에 다닙니다.<br>
+        ③ 남자는 한국어를 가르칩니다.<br>
+        ④ 여자는 한국어를 공부합니다.
+    </div>
+
+    <!-- CÂU 17 -->
+    <div class="question-block" id="q17">
+        <div class="question-text">
+            <span class="q-number">17.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(890, 1015)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">①</span> 남자는 감기에 걸렸습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 여자는 지금 많이 춥습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 여자는 밤에 옷을 얇게 입습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 남자는 날씨가 시원해서 좋습니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 가을이 되니까 많이 시원해졌네요.<br>
+                    <strong>남자:</strong> 네. 근데 아침, 저녁에는 좀 추워요. 저는 밤에 옷을 얇게 입어서 감기에 걸렸어요.<br>
+                    <strong>여자:</strong> 그래서 저는 밖에 나올 때 긴팔 옷을 한 벌 가지고 와요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Sang thu rồi nên trời trở nên mát mẻ hơn nhiều nhỉ.<br>
+                    <strong>Nam:</strong> Vâng. Nhưng mà sáng và tối thì hơi lạnh đấy. Tôi vì mặc áo mỏng vào ban đêm nên đã bị cảm mất rồi.<br>
+                    <strong>Nữ:</strong> Vì vậy nên khi ra ngoài tôi luôn mang theo một chiếc áo dài tay.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Người nam đã bị cảm lạnh.<br>
+                    ② Người nữ bây giờ đang rất lạnh.<br>
+                    ③ Người nữ mặc áo mỏng vào ban đêm.<br>
+                    ④ Người nam thích vì thời tiết mát mẻ.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>① 남자는 감기에 걸렸습니다 (Người nam đã bị cảm lạnh)</strong>.<br>
+                    Trong lời thoại của người nam, anh ấy nói rõ: "저는 밤에 옷을 얇게 입어서 감기에 걸렸어요" (Vì ban đêm mặc áo mỏng nên tôi đã bị cảm). Đáp án 1 hoàn toàn khớp với thông tin này.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>② 여자는 지금 많이 춥습니다:</strong> Sai. Cô ấy có mang theo áo dài tay để phòng khi trời lạnh, không có chỗ nào thể hiện hiện tại cô ấy đang rất lạnh.</li>
+                        <li><strong>③ 여자는 밤에 옷을 얇게 입습니다:</strong> Sai chủ thể. Người mặc áo mỏng vào ban đêm (밤에 옷을 얇게 입다) là người nam, không phải người nữ.</li>
+                        <li><strong>④ 남자는 날씨가 시원해서 좋습니다:</strong> Sai ý nghĩa. Người nam than phiền về việc trời lạnh vào sáng và tối dẫn đến bị cảm, không hề nói rằng anh ấy thích thời tiết mát mẻ.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 18 -->
+    <div class="question-block" id="q18">
+        <div class="question-text">
+            <span class="q-number">18.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1021, 1113)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 여자는 요즘 시간이 많습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 여자는 어제 이메일을 읽었습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 여자는 금요일 약속을 취소했습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">④</span> 여자는 이번 모임에 나갈 수 없습니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 수미 씨, 어제 이메일 보냈는데 받았어요?<br>
+                    <strong>여자:</strong> 아, 그래요? 바빠서 아직 못 봤어요. 무슨 일 있어요?<br>
+                    <strong>남자:</strong> 이번 주 모임 날짜가 금요일로 바뀌었는데 시간 괜찮아요?<br>
+                    <strong>여자:</strong> 저는 금요일에 약속이 있는데 어떡하죠? 다음에는 꼭 갈게요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Sumi à, hôm qua tôi đã gửi email, bạn nhận được chưa?<br>
+                    <strong>Nữ:</strong> À, vậy hả? Tại bận quá nên tôi vẫn chưa xem. Có việc gì vậy?<br>
+                    <strong>Nam:</strong> Ngày họp nhóm tuần này đã đổi sang thứ Sáu rồi, bạn có rảnh thời gian đó không?<br>
+                    <strong>Nữ:</strong> Thứ Sáu tôi lại có hẹn mất rồi, phải làm sao đây? Lần sau tôi nhất định sẽ tham gia nhé.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Người nữ dạo này có rất nhiều thời gian.<br>
+                    ② Người nữ đã đọc email vào ngày hôm qua.<br>
+                    ③ Người nữ đã hủy cuộc hẹn vào thứ Sáu.<br>
+                    ④ Người nữ không thể đi buổi họp nhóm lần này.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>④ 여자는 이번 모임에 나갈 수 없습니다 (Người nữ không thể đi buổi họp nhóm lần này)</strong>.<br>
+                    Người nữ cho biết thứ Sáu cô ấy có hẹn ("금요일에 약속이 있는데") và hẹn lần sau sẽ đến ("다음에는 꼭 갈게요"). Điều này đồng nghĩa với việc cô ấy không thể tham gia buổi họp mặt của tuần này.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 여자는 요즘 시간이 많습니다:</strong> Sai. Cô ấy nói "바빠서" (vì bận), tức là không có nhiều thời gian.</li>
+                        <li><strong>② 여자는 어제 이메일을 읽었습니다:</strong> Sai. Cô ấy xác nhận "아직 못 봤어요" (vẫn chưa xem).</li>
+                        <li><strong>③ 여자는 금요일 약속을 취소했습니다:</strong> Sai. Cô ấy không hề nói sẽ hủy cuộc hẹn (취소하다) vào thứ Sáu, mà ngược lại, vì vướng cuộc hẹn đó nên không thể đi họp nhóm.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 19 -->
+    <div class="question-block" id="q19">
+        <div class="question-text">
+            <span class="q-number">19.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1119, 1204)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 여자는 신청서를 썼습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 여자는 수영장에서 일합니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">③</span> 여자는 아침에 수영을 배울 겁니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 여자는 회사에서 운동을 하려고 합니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 안녕하세요? 수영을 좀 배우려고 하는데요.<br>
+                    <strong>남자:</strong> 아, 네. 그러시면 여기 신청서부터 먼저 써 주세요.<br>
+                    <strong>여자:</strong> 아침에 회사 가기 전에 운동하고 싶은데 몇 시에 문 열어요?<br>
+                    <strong>남자:</strong> 저희는 매일 아침 여섯 시에 시작하니까 아침 일찍 오셔도 됩니다.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Xin chào? Tôi muốn đăng ký học bơi ạ.<br>
+                    <strong>Nam:</strong> À, vâng. Nếu vậy trước tiên xin hãy điền vào đơn đăng ký này ạ.<br>
+                    <strong>Nữ:</strong> Tôi muốn tập thể dục vào buổi sáng trước khi đến công ty, ở đây mấy giờ mở cửa vậy?<br>
+                    <strong>Nam:</strong> Chỗ chúng tôi bắt đầu từ 6 giờ sáng mỗi ngày nên quý khách có thể đến sớm vào buổi sáng ạ.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Người nữ đã viết đơn đăng ký.<br>
+                    ② Người nữ làm việc ở hồ bơi.<br>
+                    ③ Người nữ sẽ học bơi vào buổi sáng.<br>
+                    ④ Người nữ định tập thể dục ở công ty.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>③ 여자는 아침에 수영을 배울 겁니다 (Người nữ sẽ học bơi vào buổi sáng)</strong>.<br>
+                    Người nữ muốn học bơi ("수영을 좀 배우려고 하는데요") và cô ấy muốn tập thể dục trước khi đi làm vào buổi sáng ("아침에 회사 가기 전에 운동하고 싶은데"). Như vậy mục tiêu của cô ấy là học bơi vào buổi sáng.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 여자는 신청서를 썼습니다:</strong> Sai thì. Người nam vừa đưa tờ đơn yêu cầu điền ("먼저 써 주세요"), tức là cô ấy chưa viết.</li>
+                        <li><strong>② 여자는 수영장에서 일합니다:</strong> Sai vai trò. Người làm việc ở hồ bơi là người nam (nhân viên tư vấn), còn người nữ là khách đến đăng ký học.</li>
+                        <li><strong>④ 여자는 회사에서 운동을 하려고 합니다:</strong> Sai địa điểm. Cô ấy định tập thể dục (bơi) ở hồ bơi *trước khi* đi đến công ty (회사 가기 전에), không phải tập ở trong công ty.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 20 -->
+    <div class="question-block" id="q20">
+        <div class="question-text">
+            <span class="q-number">20.</span> 
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1210, 1304)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 여자는 다음 주에 음악회에 갑니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 남자는 아버지의 선물을 준비했습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">③</span> 남자는 부모님과 음악회에 가고 싶어합니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 여자는 인터넷으로 공연을 찾아보려고 합니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 다음 주가 아버지 생신인데 뭐 특별한 선물 없을까요?<br>
+                    <strong>여자:</strong> 전에 저는 부모님이랑 음악회 갔는데 정말 좋아하셨어요.<br>
+                    <strong>남자:</strong> 아! 우리 부모님도 음악 좋아하시니까 같이 음악회에 가야겠어요.<br>
+                    <strong>여자:</strong> 그래요. 요즘 좋은 공연이 많으니까 인터넷으로 한번 알아보세요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Tuần sau là sinh nhật bố tôi rồi, không biết có món quà nào đặc biệt không nhỉ?<br>
+                    <strong>Nữ:</strong> Trước đây tôi từng đi nghe nhạc hội cùng bố mẹ, họ đã rất thích đấy.<br>
+                    <strong>Nam:</strong> À! Bố mẹ tôi cũng thích âm nhạc nên chắc tôi phải đi nhạc hội cùng họ mới được.<br>
+                    <strong>Nữ:</strong> Đúng vậy. Dạo này có nhiều buổi biểu diễn hay lắm nên bạn thử tìm hiểu trên internet xem.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Tuần sau người nữ sẽ đi xem nhạc hội.<br>
+                    ② Người nam đã chuẩn bị xong quà cho bố.<br>
+                    ③ Người nam muốn đi nghe nhạc hội cùng bố mẹ.<br>
+                    ④ Người nữ định tìm kiếm buổi diễn trên internet.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>③ 남자는 부모님과 음악회에 가고 싶어합니다 (Người nam muốn đi nghe nhạc hội cùng bố mẹ)</strong>.<br>
+                    Sau khi nghe lời khuyên, người nam đã đưa ra quyết định: "우리 부모님도 음악 좋아하시니까 같이 음악회에 가야겠어요" (Bố mẹ tôi cũng thích âm nhạc nên tôi phải cùng họ đi nghe nhạc hội mới được). Điều này thể hiện mong muốn của anh ấy.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 여자는 다음 주에 음악회에 갑니다:</strong> Sai đối tượng. Việc đi nghe nhạc hội tuần sau là dự định của người nam, không phải của người nữ.</li>
+                        <li><strong>② 남자는 아버지의 선물을 준비했습니다:</strong> Sai thì. Người nam vẫn đang hỏi xin ý kiến ("뭐 특별한 선물 없을까요?"), tức là chưa chuẩn bị xong.</li>
+                        <li><strong>④ 여자는 인터넷으로 공연을 찾아보려고 합니다:</strong> Sai đối tượng. Người nữ khuyên người nam tự lên mạng tìm kiếm ("인터넷으로 한번 알아보세요"), cô ấy không nói là bản thân mình sẽ tìm.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 21 -->
+    <div class="question-block" id="q21">
+        <div class="question-text">
+            <span class="q-number">21.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1310, 1412)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 남자는 지금 행사장에 있습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">②</span> 남자는 물건을 사서 사무실로 오면 됩니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 남자는 여자에게 필요한 물건을 써 주었습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 남자는 행사 때 쓸 물건을 책상 위에 놓았습니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 팀장님, 행사 때 필요한 물건들을 사러 가려고 하는데요.<br>
+                    <strong>여자:</strong> 필요한 것들을 아까 메모해 놓았는데, 민수 씨 책상 위에 있을 거예요.<br>
+                    <strong>남자:</strong> 네, 알겠습니다. 그런데 물건들은 바로 행사장으로 가지고 갈까요?<br>
+                    <strong>여자:</strong> 아니요. 행사장 준비가 아직 안 끝났으니까 우선 사무실로 가지고 오는 게 좋을 것 같아요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Trưởng phòng à, tôi định đi mua các vật dụng cần thiết cho sự kiện.<br>
+                    <strong>Nữ:</strong> Những đồ cần thiết lúc nãy tôi đã ghi chú lại rồi, chắc là nằm trên bàn của Minsu (bạn) đấy.<br>
+                    <strong>Nam:</strong> Vâng, tôi hiểu rồi. Nhưng mua đồ xong thì tôi có nên mang thẳng đến hội trường sự kiện luôn không?<br>
+                    <strong>Nữ:</strong> Không đâu. Hội trường vẫn chưa chuẩn bị xong nên tốt nhất cậu cứ mang về văn phòng trước đi.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Hiện tại người nam đang ở hội trường sự kiện.<br>
+                    ② Người nam mua đồ xong rồi mang về văn phòng là được.<br>
+                    ③ Người nam đã viết ra những món đồ cần thiết cho người nữ.<br>
+                    ④ Người nam đã đặt các đồ dùng cho sự kiện lên bàn.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>② 남자는 물건을 사서 사무실로 오면 됩니다 (Người nam mua đồ xong mang về văn phòng là được)</strong>.<br>
+                    Người nam hỏi có mang đồ thẳng đến hội trường không, người nữ từ chối và yêu cầu: "우선 사무실로 가지고 오는 게 좋을 것 같아요" (tốt nhất cậu cứ mang về văn phòng trước đi). Do đó đáp án 2 là hoàn toàn chuẩn xác.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 남자는 지금 행사장에 있습니다:</strong> Sai. Họ đang thảo luận việc đi mua đồ và mang về văn phòng hay hội trường, người nam chưa đi tới hội trường.</li>
+                        <li><strong>③ 남자는 여자에게 필요한 물건을 써 주었습니다:</strong> Sai người thực hiện. Người nữ là người viết danh sách ("아까 메모해 놓았는데"), không phải người nam viết cho người nữ.</li>
+                        <li><strong>④ 남자는 행사 때 쓸 물건을 책상 위에 놓았습니다:</strong> Sai sự vật. Thứ được đặt trên bàn (책상 위) là tờ giấy ghi chú (메모), không phải là đồ dùng (물건) vì đồ dùng chưa được mua.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HƯỚNG DẪN CÂU 22-24 -->
+    <div class="shared-text">
+        <strong>※ [22~24] 다음을 듣고 남자의 중심 생각을 고르십시오. (각 3점)</strong><br>
+        (※ [22~24] Nghe và chọn suy nghĩ trọng tâm của người nam. Mỗi câu 3 điểm.)
+    </div>
+
+    <!-- CÂU 22 -->
+    <div class="question-block" id="q22">
+        <div class="question-text">
+            <span class="q-number">22.</span> 
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1418, 1528)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 걷는 것은 좋은 운동이 됩니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 산책은 저녁에 하는 것이 좋습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 공원 안에 호수를 만들어야 합니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">④</span> 집 근처에 공원이 생기면 좋겠습니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>남자:</strong> 여기는 공원 안에 호수가 있네요.<br>
+                    <strong>여자:</strong> 네. 그래서 저녁에 산책하러 오는 사람들이 많아요.<br>
+                    <strong>남자:</strong> 공원에 있는 길을 따라서 걸으면 운동도 되겠는데요. 우리 집 근처에도 이런 곳이 있으면 좋겠어요.<br>
+                    <strong>여자:</strong> 그럼, 산책하고 싶을 때 놀러 와요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nam:</strong> Ở đây có hồ bên trong công viên luôn nhỉ.<br>
+                    <strong>Nữ:</strong> Đúng rồi. Vì vậy nên buổi tối có nhiều người đến đi dạo lắm.<br>
+                    <strong>Nam:</strong> Nếu đi bộ dọc theo con đường trong công viên thì cũng là một cách tập thể dục đấy chứ. Ước gì gần nhà tôi cũng có một nơi như thế này.<br>
+                    <strong>Nữ:</strong> Vậy thì khi nào muốn đi dạo, bạn cứ đến chơi nhé.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Việc đi bộ trở thành một môn thể thao tốt.<br>
+                    ② Đi dạo thì nên đi vào buổi tối sẽ tốt.<br>
+                    ③ Phải làm một cái hồ bên trong công viên.<br>
+                    ④ Thật tốt nếu gần nhà có một cái công viên.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>④ 집 근처에 공원이 생기면 좋겠습니다 (Thật tốt nếu gần nhà có một cái công viên)</strong>.<br>
+                    Ý kiến trọng tâm của người nam (nam자의 중심 생각) nằm ở câu: "우리 집 근처에도 이런 곳이 있으면 좋겠어요" (Giá như gần nhà tôi cũng có nơi như thế này thì tốt). "Nơi này" chính là cái công viên mà hai người đang nhắc đến.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 걷는 것은 좋은 운동이 됩니다:</strong> Mặc dù người nam nói đi bộ cũng là cách tập thể dục, nhưng đó chỉ là lý do dẫn dắt đến mong ước thực sự của anh ta là muốn có công viên gần nhà.</li>
+                        <li><strong>② 산책은 저녁에 하는 것이 좋습니다:</strong> Người nữ là người nhắc đến việc đi dạo buổi tối ("저녁에 산책하러 오는 사람들이 많아요"), không phải là suy nghĩ trọng tâm của người nam.</li>
+                        <li><strong>③ 공원 안에 호수를 만들어야 합니다:</strong> Người nam chỉ trầm trồ vì công viên có sẵn hồ, không hề kêu gọi hay yêu cầu "phải tạo ra hồ" (만들어야 합니다).</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 23 -->
+    <div class="question-block" id="q23">
+        <div class="question-text">
+            <span class="q-number">23.</span> 
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1534, 1644)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">①</span> 불편한 자리는 가격을 싸게 해야 합니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 연극도 영화처럼 값이 싸면 좋겠습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 영화는 앞자리에서 보면 더 재미있습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 영화관은 모든 자리를 편하게 해야 합니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 오늘 영화 정말 재미있었지요?<br>
+                    <strong>남자:</strong> 네. 근데 너무 앞자리라서 목이 좀 아팠어요. 영화관도 불편한 자리는 값을 좀 깎아 줘야 되는 거 아니에요?<br>
+                    <strong>여자:</strong> 맞아요. 앞자리나 뒷자리는 영화 볼 때 좀 불편하죠.<br>
+                    <strong>남자:</strong> 사실 연극이나 뮤지컬은 자리마다 값이 좀 다르잖아요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Phim hôm nay thực sự rất thú vị phải không?<br>
+                    <strong>Nam:</strong> Vâng. Nhưng vì ngồi hàng ghế đầu quá nên tôi hơi đau cổ. Chẳng phải rạp chiếu phim cũng nên giảm giá một chút cho những chỗ ngồi bất tiện sao?<br>
+                    <strong>Nữ:</strong> Đúng thế. Ghế trước hoặc ghế sau cùng khi xem phim thì hơi bất tiện thật.<br>
+                    <strong>Nam:</strong> Thực ra kịch hay nhạc kịch thì giá vé ở mỗi chỗ ngồi cũng khác nhau một chút mà.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Những chỗ ngồi bất tiện thì phải có giá rẻ hơn.<br>
+                    ② Thật tốt nếu kịch cũng có giá rẻ như xem phim.<br>
+                    ③ Xem phim ở ghế đầu thì sẽ thú vị hơn.<br>
+                    ④ Rạp chiếu phim phải làm cho mọi chỗ ngồi đều thoải mái.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>① 불편한 자리는 가격을 싸게 해야 합니다 (Những chỗ ngồi bất tiện thì phải có giá rẻ hơn)</strong>.<br>
+                    Trọng tâm suy nghĩ của người nam thể hiện rõ ở câu: "영화관도 불편한 자리는 값을 좀 깎아 줘야 되는 거 아니에요?" (Chẳng phải rạp chiếu phim cũng nên giảm giá/giảm tiền cho những chỗ ngồi bất tiện sao?). Anh ấy còn đưa ra dẫn chứng vé kịch cũng có sự phân biệt giá theo ghế ngồi để ủng hộ cho quan điểm này.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>② 연극도 영화처럼 값이 싸면 좋겠습니다:</strong> Sai lập luận. Người nam chỉ mượn "kịch" (연극) làm ví dụ để nói về việc phân loại giá vé theo chỗ ngồi, chứ không phải phàn nàn giá vé kịch đắt.</li>
+                        <li><strong>③ 영화는 앞자리에서 보면 더 재미있습니다:</strong> Sai sự thật. Người nam than phiền ngồi ghế đầu gây đau cổ (목이 좀 아팠어요), không phải là thú vị hơn.</li>
+                        <li><strong>④ 영화관은 모든 자리를 편하게 해야 합니다:</strong> Lạc đề. Người nam không yêu cầu rạp phim phải nâng cấp ghế cho thoải mái, anh ta chỉ yêu cầu giảm giá nếu ghế đó vốn đã bị bất tiện.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 24 -->
+    <div class="question-block" id="q24">
+        <div class="question-text">
+            <span class="q-number">24.</span> 
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1650, 1758)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 마라톤 대회를 일찍 끝내야 합니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 마라톤을 하면 길이 막혀서 싫습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 마라톤은 아침 시간에 하는 것이 좋습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">④</span> 마라톤 때문에 길이 좀 막혀도 참아야 합니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 민수 씨, 왜 이쪽 길로 가세요? 저쪽 길이 더 빠른데.<br>
+                    <strong>남자:</strong> 오늘 마라톤 대회가 있어서 저 길로는 못 가요.<br>
+                    <strong>여자:</strong> 지금 시간에 마라톤을 해요? 평일 아침이라 차도 많은데 길이 많이 막히겠네요.<br>
+                    <strong>남자:</strong> 길이 좀 복잡하기는 하겠지만 어쩔 수 없죠.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Minsu à, sao anh lại đi đường này? Đường đằng kia nhanh hơn mà.<br>
+                    <strong>Nam:</strong> Hôm nay có giải chạy marathon nên không đi đường đó được đâu.<br>
+                    <strong>Nữ:</strong> Thi marathon vào giờ này sao? Sáng ngày thường đã nhiều xe rồi, chắc là đường sẽ kẹt cứng mất.<br>
+                    <strong>Nam:</strong> Đường sá sẽ hơi lộn xộn một chút nhưng cũng đành chịu thôi (biết làm sao được).
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    ① Phải kết thúc giải marathon sớm.<br>
+                    ② Tôi ghét tổ chức marathon vì làm tắc đường.<br>
+                    ③ Nên tổ chức thi marathon vào buổi sáng thì tốt hơn.<br>
+                    ④ Có kẹt xe một chút vì marathon thì cũng phải chịu thôi.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>④ 마라톤 때문에 길이 좀 막혀도 참아야 합니다 (Có kẹt xe một chút vì marathon thì cũng phải chịu thôi)</strong>.<br>
+                    Người nam thể hiện thái độ thấu hiểu và nhượng bộ qua câu: "길이 좀 복잡하기는 하겠지만 어쩔 수 없죠" (Đường có hơi lộn xộn kẹt xe nhưng cũng hết cách/đành chịu thôi). Thái độ "어쩔 수 없다" đồng nghĩa với việc chấp nhận sự bất tiện (참아야 하다).
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 마라톤 대회를 일찍 끝내야 합니다:</strong> Không có thông tin yêu cầu kết thúc sớm sự kiện.</li>
+                        <li><strong>② 마라톤을 하면 길이 막혀서 싫습니다:</strong> Sai thái độ. Người nam không hề than vãn hay tỏ ra ghét bỏ (싫다), anh ấy chấp nhận việc đổi đường đi.</li>
+                        <li><strong>③ 마라톤은 아침 시간에 하는 것이 좋습니다:</strong> Lạc đề. Người nam không nói buổi sáng là thời điểm tốt để tổ chức, anh ấy chỉ trình bày sự thật là hôm nay giải chạy diễn ra.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HƯỚNG DẪN CÂU 25-26 -->
+    <div class="shared-text">
+        <strong>※ [25~26] 다음을 듣고 물음에 답하십시오.</strong><br>
+        (※ [25~26] Nghe đoạn sau và trả lời câu hỏi.)
+    </div>
+
+    <!-- CÂU 25 -->
+    <div class="question-block" id="q25">
+        <div class="question-text">
+            <span class="q-number">25.</span> 
+            어떤 이야기를 하고 있는지 고르십시오.
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1764, 1921)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 감사</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 부탁</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 신청</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">④</span> 소개</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 요즘 집안에 실내 정원을 만들고 싶어하는 분들 많으시죠? 하지만 꽃을 심고 정원을 가꾸는 게 보통 일은 아닙니다. 이럴 때 도움을 받을 수 있는 책이 한 권 있는데요. 이 책에는 꽃을 키우는 방법들이 사진과 함께 있어 배우기가 아주 쉽습니다. 또 봄, 여름, 가을, 겨울에 키울 수 있는 꽃의 종류도 알 수 있고요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Dạo này có rất nhiều người muốn tạo một khu vườn nhỏ trong nhà đúng không ạ? Thế nhưng việc trồng hoa và chăm sóc vườn tược không phải là chuyện đơn giản. Những lúc như thế này, có một cuốn sách có thể giúp ích cho quý vị. Trong cuốn sách này có kèm theo hình ảnh các phương pháp trồng hoa nên rất dễ học. Hơn nữa, quý vị còn có thể biết được các loại hoa có thể trồng vào mùa xuân, hạ, thu, đông nữa.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    <strong>Câu hỏi:</strong> Đoạn hội thoại đang nói về chủ đề gì?<br>
+                    ① Cảm ơn<br>
+                    ② Nhờ vả<br>
+                    ③ Đăng ký<br>
+                    ④ Giới thiệu
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>④ 소개 (Giới thiệu)</strong>.<br>
+                    Người nữ đang kể ra các lợi ích ("도움을 받을 수 있는 책", "배우기가 아주 쉽습니다") để đề xuất, giới thiệu một cuốn sách hướng dẫn cách làm vườn trong nhà cho mọi người.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 감사 (Cảm ơn):</strong> Không có lời cảm ơn nào trong bài.</li>
+                        <li><strong>② 부탁 (Nhờ vả):</strong> Không có yêu cầu ai đó giúp đỡ làm việc gì.</li>
+                        <li><strong>③ 신청 (Đăng ký):</strong> Không có nội dung kêu gọi đăng ký tham gia lớp học hay mua hàng.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 26 -->
+    <div class="question-block" id="q26">
+        <div class="question-text">
+            <span class="q-number">26.</span> 
+            들은 내용과 같은 것을 고르십시오.
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1764, 1921)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 실내 정원은 가꾸기가 어렵지 않습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">②</span> 이 책은 실내 정원을 만들 때 도움이 됩니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 이 책을 보면 정원의 종류를 알 수 있습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 꽃을 키우는 방법은 책으로 배우기가 힘듭니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Câu hỏi:</strong> Chọn nội dung ĐÚNG với bài nghe.<br>
+                    ① Khu vườn trong nhà chăm sóc không khó.<br>
+                    ② Cuốn sách này giúp ích khi làm vườn trong nhà.<br>
+                    ③ Xem cuốn sách này có thể biết được các loại vườn.<br>
+                    ④ Phương pháp trồng hoa rất khó để học qua sách.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>② 이 책은 실내 정원을 만들 때 도움이 됩니다 (Cuốn sách này giúp ích khi làm vườn trong nhà)</strong>.<br>
+                    Người nữ đã xác nhận giá trị của cuốn sách: "이럴 때 도움을 받을 수 있는 책이 한 권 있는데요" (Những lúc như thế này (lúc muốn làm vườn) có một cuốn sách có thể giúp ích).
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 실내 정원은 가꾸기가 어렵지 않습니다:</strong> Sai. Bài nghe nói "가꾸는 게 보통 일은 아닙니다" (Chăm sóc không phải chuyện đơn giản), tức là rất khó khăn vất vả.</li>
+                        <li><strong>③ 이 책을 보면 정원의 종류를 알 수 있습니다:</strong> Sai đối tượng. Cuốn sách giúp biết "꽃의 종류" (các loại hoa) theo mùa, không phải "정원의 종류" (các loại vườn).</li>
+                        <li><strong>④ 꽃을 키우는 방법은 책으로 배우기가 힘듭니다:</strong> Sai. Nhờ có ảnh minh họa nên học bằng sách này rất DỄ ("사진과 함께 있어 배우기가 아주 쉽습니다").</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HƯỚNG DẪN CÂU 27-28 -->
+    <div class="shared-text">
+        <strong>※ [27~28] 다음을 듣고 물음에 답하십시오.</strong><br>
+        (※ [27~28] Nghe đoạn sau và trả lời câu hỏi.)
+    </div>
+
+    <!-- CÂU 27 -->
+    <div class="question-block" id="q27">
+        <div class="question-text">
+            <span class="q-number">27.</span> 
+            두 사람이 무엇에 대해 이야기를 하고 있는지 고르십시오.
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1927, 2125)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options options-grid">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">①</span> 방학 때 하고 싶은 일</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 방학 때 한 새로운 경험</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 방학 때 간 특별한 여행</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 방학 때 만나고 싶은 사람</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 선생님, 안녕하세요? 다음 주부터 방학이라 인사드리러 왔어요.<br>
+                    <strong>남자:</strong> 어, 어서 와요. (조금 쉬고) 이번 방학에는 뭐 할 거예요?<br>
+                    <strong>여자:</strong> 방학을 좀 특별하게 보내고 싶어서 자전거 여행을 해 보려고요.<br>
+                    <strong>남자:</strong> 음, 자전거 여행 좋죠. 힘들기는 하겠지만 좋은 경험이 될 거예요.<br>
+                    <strong>여자:</strong> 네. 그리고 기타도 한번 배워 보려고 해요.<br>
+                    <strong>남자:</strong> 새로운 걸 배워 보는 것도 좋겠네요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Em chào thầy ạ? Từ tuần sau là nghỉ hè rồi nên em đến chào thầy.<br>
+                    <strong>Nam:</strong> Ừ, vào đi em. Kì nghỉ này em định làm gì?<br>
+                    <strong>Nữ:</strong> Em muốn có một kì nghỉ hơi đặc biệt nên định thử đi du lịch bằng xe đạp ạ.<br>
+                    <strong>Nam:</strong> Ừm, đi bằng xe đạp cũng tốt đấy. Dù có hơi vất vả nhưng sẽ là một trải nghiệm tuyệt vời.<br>
+                    <strong>Nữ:</strong> Dạ vâng. Với lại em cũng định học thử đánh đàn guitar nữa ạ.<br>
+                    <strong>Nam:</strong> Thử học cái mới cũng tốt nhỉ.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    <strong>Câu hỏi:</strong> Hai người đang nói về chủ đề gì?<br>
+                    ① Việc muốn làm vào kì nghỉ<br>
+                    ② Trải nghiệm mới đã làm vào kì nghỉ<br>
+                    ③ Chuyến du lịch đặc biệt đã đi vào kì nghỉ<br>
+                    ④ Người muốn gặp vào kì nghỉ
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>① 방학 때 하고 싶은 일 (Việc muốn làm vào kì nghỉ)</strong>.<br>
+                    Thầy giáo hỏi "이번 방학에는 뭐 할 거예요?" (Kì nghỉ này định làm gì?), học sinh đưa ra dự định "자전거 여행을 해 보려고요" (Định du lịch xe đạp) và "기타도 한번 배워 보려고 해요" (Định học guitar). Tất cả đều là kế hoạch sẽ làm trong tương lai.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>② 방학 때 한 새로운 경험 (Trải nghiệm MỚI ĐÃ LÀM):</strong> Sai thì. "한" chỉ việc đã xảy ra, trong khi kì nghỉ tuần sau mới bắt đầu.</li>
+                        <li><strong>③ 방학 때 간 특별한 여행 (Chuyến đi ĐÃ ĐI):</strong> Tương tự, "간" là quá khứ. Chuyến đi xe đạp chỉ nằm trong dự định (해 보려고요).</li>
+                        <li><strong>④ 방학 때 만나고 싶은 사람 (Người muốn gặp):</strong> Cuộc hội thoại không đề cập đến việc muốn đi gặp ai.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 28 -->
+    <div class="question-block" id="q28">
+        <div class="question-text">
+            <span class="q-number">28.</span> 
+            들은 내용과 같은 것을 고르십시오.
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(1927, 2125)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 여자는 요즘 기타를 배우고 있습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">②</span> 여자는 방학에 여행을 할 계획입니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 여자는 자전거 여행이 힘들어서 싫습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 여자는 다음 주에 선생님을 찾아갈 겁니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Câu hỏi:</strong> Chọn nội dung ĐÚNG với bài nghe.<br>
+                    ① Dạo này người nữ đang học guitar.<br>
+                    ② Người nữ có kế hoạch đi du lịch vào kì nghỉ.<br>
+                    ③ Người nữ ghét đi xe đạp vì vất vả.<br>
+                    ④ Người nữ sẽ đến tìm thầy giáo vào tuần sau.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>② 여자는 방학에 여행을 할 계획입니다 (Người nữ có kế hoạch đi du lịch vào kì nghỉ)</strong>.<br>
+                    Học sinh nữ khẳng định kế hoạch của mình với đuôi câu dự định: "방학을 좀 특별하게 보내고 싶어서 자전거 여행을 해 보려고요" (Vì muốn kì nghỉ đặc biệt nên định đi du lịch xe đạp). Khớp 100% với ý 2.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 여자는 요즘 기타를 배우고 있습니다:</strong> Sai thì hiện tại tiếp diễn. Việc học guitar chỉ là dự định trong dịp nghỉ tới (배워 보려고 해요), cô ấy chưa bắt đầu học.</li>
+                        <li><strong>③ 여자는 자전거 여행이 힘들어서 싫습니다:</strong> Sai cảm xúc. Người e ngại chuyến đi vất vả là thầy giáo ("힘들기는 하겠지만"), còn người nữ rất hào hứng với kế hoạch này.</li>
+                        <li><strong>④ 여자는 다음 주에 선생님을 찾아갈 겁니다:</strong> Sai thời điểm. Cô ấy ĐANG đến gặp chào thầy giáo ở hiện tại ("인사드리러 왔어요") vì tuần sau bắt đầu kì nghỉ.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+ 
+
+    <!-- HƯỚNG DẪN CÂU 29-30 -->
+    <div class="shared-text">
+        <strong>※ [29~30] 다음을 듣고 물음에 답하십시오.</strong><br>
+        (※ [29~30] Nghe đoạn sau và trả lời câu hỏi.)
+    </div>
+
+    <!-- CÂU 29 -->
+    <div class="question-block" id="q29">
+        <div class="question-text">
+            <span class="q-number">29.</span> 
+            여자는 왜 아이에게 통장을 만들어 줍니까?
+            <span class="q-score">(3점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(2131, 2220)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 아이가 돈을 모으고 싶어해서</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">②</span> 아이가 돈을 많이 가지고 있어서</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 아이가 통장을 바꿀 때가 되어서</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">④</span> 아이가 자기 통장을 갖고 싶어해서</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📝 Kịch bản (듣기 대본)</h4>
+                <p>
+                    <strong>여자:</strong> 아이 통장을 하나 만들려고 하는데요.<br>
+                    <strong>남자:</strong> 아, 어린이 통장요? 요즘 입학 때라 많이들 만드시네요.<br>
+                    <strong>여자:</strong> 네. 우리 아이도 자기 통장을 갖고 싶어해서 선물하려고요.<br>
+                    <strong>남자:</strong> 좋은 생각이세요. 자기 통장이 생기면 돈을 모으는 즐거움을 느낄 수 있을 거예요. 참, 아이 도장은 가져오셨죠?<br>
+                    <strong>여자:</strong> 도장이 필요해요? 안 가져왔는데....... 그냥 내일 다시 와야겠네요.<br>
+                    <strong>남자:</strong> 그럼 내일 아이도 데리고 오세요. 은행에 와서 직접 통장을 만들면 더 좋아할 거예요.
+                    <span style="display:none;"></span>
+                </p>
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Nữ:</strong> Tôi muốn lập một sổ tiết kiệm cho con tôi ạ.<br>
+                    <strong>Nam:</strong> À, sổ tiết kiệm trẻ em ạ? Dạo này vào mùa nhập học nên nhiều người làm lắm.<br>
+                    <strong>Nữ:</strong> Vâng. Con tôi nó cũng muốn có sổ tiết kiệm riêng nên tôi định làm tặng nó.<br>
+                    <strong>Nam:</strong> Chị có ý tưởng hay đấy ạ. Nếu có sổ tiết kiệm riêng, cháu sẽ cảm nhận được niềm vui của việc gom góp tiền. À, chị có mang theo con dấu của bé đến chứ?<br>
+                    <strong>Nữ:</strong> Cần cả con dấu ạ? Tôi không mang rồi... Chắc phải để ngày mai tôi quay lại thôi.<br>
+                    <strong>Nam:</strong> Vậy ngày mai chị dắt cháu theo luôn nhé. Trực tiếp đến ngân hàng lập sổ tiết kiệm thì chắc cháu sẽ thích hơn đấy ạ.
+                    <span style="display:none;"></span>
+                </p>
+                <p>
+                    <strong>Câu hỏi:</strong> Tại sao người nữ lại làm sổ tiết kiệm cho con?<br>
+                    ① Vì đứa trẻ muốn gom góp tiền.<br>
+                    ② Vì đứa trẻ đang có rất nhiều tiền.<br>
+                    ③ Vì đã đến lúc đứa trẻ phải đổi sổ.<br>
+                    ④ Vì đứa trẻ muốn có một cuốn sổ tiết kiệm của riêng mình.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>④ 아이가 자기 통장을 갖고 싶어해서 (Vì đứa trẻ muốn có một cuốn sổ tiết kiệm của riêng mình)</strong>.<br>
+                    Người mẹ (người nữ) đã trực tiếp lý giải lý do làm sổ: "우리 아이도 자기 통장을 갖고 싶어해서 선물하려고요" (Con tôi cũng muốn có sổ tiết kiệm của riêng mình nên tôi định làm tặng nó). 
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 아이가 돈을 모으고 싶어해서 (Đứa trẻ muốn tiết kiệm tiền):</strong> Việc cảm nhận niềm vui tích góp (돈을 모으는 즐거움) là dự đoán của người nhân viên ngân hàng về tương lai, không phải động cơ ban đầu đòi làm sổ của đứa trẻ.</li>
+                        <li><strong>② 아이가 돈을 많이 가지고 있어서 (Đứa trẻ có nhiều tiền):</strong> Không có chi tiết nào nói rằng đứa bé đang có nhiều tiền.</li>
+                        <li><strong>③ 아이가 통장을 바꿀 때가 되어서 (Đến lúc đổi sổ):</strong> Đây là lần lập sổ đầu tiên (통장을 하나 만들려고), không phải đổi sổ cũ lấy sổ mới.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CÂU 30 -->
+    <div class="question-block" id="q30">
+        <div class="question-text">
+            <span class="q-number">30.</span> 
+            들은 내용과 같은 것을 고르십시오.
+            <span class="q-score">(4점)</span>
+            <span class="speaker-icon" onclick="playQuestionAudio(2131, 2220)" title="Nghe đoạn này">🔊</span>
+        </div>
+        
+        <div class="options">
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">①</span> 여자는 지금 도장을 가지고 있습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, true)"><span class="num">②</span> 여자는 내일 은행에 다시 오려고 합니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">③</span> 여자는 아이에게 입학 선물을 주었습니다.</div>
+            <div class="option" style="text-align: left;" onclick="checkAnswer(this, false)"><span class="num">④</span> 여자는 오늘 어린이 통장을 만들었습니다.</div>
+        </div>
+        
+        <div class="action-area">
+            <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết</button>
+            <div class="explanation-content" style="display: none;">
+                <h4>📖 Dịch nghĩa</h4>
+                <p>
+                    <strong>Câu hỏi:</strong> Chọn nội dung ĐÚNG với bài nghe.<br>
+                    ① Hiện tại người nữ đang mang theo con dấu.<br>
+                    ② Người nữ định ngày mai sẽ quay lại ngân hàng.<br>
+                    ③ Người nữ đã trao quà nhập học cho đứa bé.<br>
+                    ④ Hôm nay người nữ đã lập xong sổ tiết kiệm trẻ em.
+                    <span style="display:none;"></span>
+                </p>
+
+                <h4>🎯 Phân tích đáp án (Tại sao đúng?)</h4>
+                <p>
+                    Đáp án đúng là <strong>② 여자는 내일 은행에 다시 오려고 합니다 (Người nữ định ngày mai sẽ quay lại ngân hàng)</strong>.<br>
+                    Sau khi nhận ra mình quên mang theo con dấu, người mẹ đành nói: "내일 다시 와야겠네요" (Chắc tôi phải ngày mai quay lại thôi). Do đó, đáp án 2 hoàn toàn khớp với diễn biến câu chuyện.
+                    <span style="display:none;"></span>
+                </p>
+                
+                <div class="wrong-reason">
+                    <h4>🚫 Phân tích bẫy (Tại sao sai?)</h4>
+                    <ul>
+                        <li><strong>① 여자는 지금 도장을 가지고 있습니다:</strong> Sai. Cô ấy trả lời là "안 가져왔는데" (tôi không mang).</li>
+                        <li><strong>③ 여자는 아이에게 입학 선물을 주었습니다:</strong> Sai thì (đã cho). Cuốn sổ chính là món quà nhưng cô ấy chưa lập xong, nên chưa thể đưa tặng cho đứa bé được.</li>
+                        <li><strong>④ 여자는 오늘 어린이 통장을 만들었습니다:</strong> Sai. Vì thiếu con dấu nên giao dịch làm sổ không thành công trong ngày hôm nay. Phải đợi đến ngày mai.</li>
+                    </ul>
+                    <span style="display:none;"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div> 

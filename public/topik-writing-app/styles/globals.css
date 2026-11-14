@@ -1,0 +1,44 @@
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background: #f5f4ef;
+  color: #1e2a32;
+}
+
+/* 원고지 — Korean manuscript grid paper, used behind the assembled essay */
+.manuscript-grid {
+  background-image:
+    linear-gradient(to right, #d9d4c6 1px, transparent 1px),
+    linear-gradient(to bottom, #d9d4c6 1px, transparent 1px);
+  background-size: 28px 28px;
+  background-position: 0 0;
+}
+
+.wrong-word {
+  color: #b3261e;
+  border-bottom: 2px solid #b3261e;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .step-enter {
+    animation: step-fade 0.25s ease-out;
+  }
+}
+
+@keyframes step-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
