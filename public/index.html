@@ -91,9 +91,59 @@
         body.dark-mode .wrapper { background:rgba(15,23,42,0.4); }
 
         /* HERO */
-        .hero-section {
-            /* Styles replaced by inline styles and image */
-            position:relative;
+        .hero {
+            display:grid;grid-template-columns:1.05fr 1fr;align-items:center;gap:28px;
+            padding:30px 30px 30px 34px;margin-bottom:36px;
+            background:var(--bg-card);border:1px solid var(--border);border-radius:24px;
+            box-shadow:0 15px 40px rgba(20,38,87,0.08);
+        }
+        .hero-eyebrow {
+            display:inline-block;padding:5px 12px;border-radius:99px;
+            background:rgba(249,80,82,0.1);color:#e03e40;
+            font-size:0.78em;font-weight:800;letter-spacing:0.3px;text-transform:uppercase;
+        }
+        .hero-title {
+            margin:14px 0 12px;font-size:2.15em;line-height:1.25;font-weight:900;
+            color:#142657;letter-spacing:-0.5px;word-break:keep-all;
+        }
+        .hero-title .hl { color:#f95052;white-space:nowrap; }
+        .hero-sub { margin:0 0 22px;font-size:1em;line-height:1.65;color:var(--text-sub);font-weight:500; }
+        .hero-cta { display:flex;gap:10px;flex-wrap:wrap; }
+        .hero-btn {
+            display:inline-flex;align-items:center;justify-content:center;gap:8px;
+            min-height:48px;padding:0 22px;border-radius:14px;
+            font-weight:800;font-size:1em;text-decoration:none;
+            transition:transform .15s, box-shadow .15s, background .15s;
+        }
+        .hero-btn-primary { background:#142657;color:#fff;box-shadow:0 8px 20px rgba(20,38,87,0.25); }
+        .hero-btn-primary:hover { transform:translateY(-2px);box-shadow:0 12px 26px rgba(20,38,87,0.3); }
+        .hero-btn-primary svg { transition:transform .15s; }
+        .hero-btn-primary:hover svg { transform:translateX(3px); }
+        .hero-btn-ghost { background:rgba(255,255,255,0.75);color:#142657;border:1px solid rgba(20,38,87,0.15); }
+        .hero-btn-ghost:hover { background:#fff;transform:translateY(-2px); }
+        .hero-stats { list-style:none;margin:24px 0 0;padding:18px 0 0;display:flex;gap:28px;border-top:1px dashed rgba(20,38,87,0.15); }
+        .hero-stats li { display:flex;flex-direction:column;gap:2px; }
+        .hero-stats strong { font-size:1.45em;font-weight:900;color:#142657;line-height:1.1; }
+        .hero-stats span { font-size:0.82em;color:var(--text-sub);font-weight:600; }
+        .hero-art img { display:block;width:100%;height:auto;border-radius:18px; }
+        body.dark-mode .hero-title, body.dark-mode .hero-stats strong { color:#f1f5f9; }
+        body.dark-mode .hero-title .hl { color:#fca5a5; }
+        body.dark-mode .hero-eyebrow { background:rgba(252,165,165,0.15);color:#fca5a5; }
+        body.dark-mode .hero-btn-primary { background:#2563eb;box-shadow:0 8px 20px rgba(37,99,235,0.3); }
+        body.dark-mode .hero-btn-ghost { background:rgba(255,255,255,0.08);color:#f1f5f9;border-color:rgba(255,255,255,0.15); }
+        body.dark-mode .hero-stats { border-top-color:rgba(255,255,255,0.12); }
+        @media(max-width:860px) {
+            .hero { grid-template-columns:1fr;gap:18px;padding:22px 20px; }
+            .hero-art { order:-1;max-width:420px;margin:0 auto;width:100%; }
+            .hero-title { font-size:1.75em; }
+        }
+        @media(max-width:500px) {
+            .hero-art { max-width:300px; }
+            .hero-title { font-size:1.5em; }
+            .hero-sub { font-size:0.94em; }
+            .hero-btn { flex:1 1 auto; }
+            .hero-stats { gap:18px;justify-content:space-between; }
+            .hero-stats strong { font-size:1.25em; }
         }
 
         /* SECTION HEADERS */
@@ -102,6 +152,10 @@
         .section-title { font-size:1.3em;font-weight:900;margin:0;color:var(--text-main);display:flex;align-items:center;gap:10px; }
         .section-more-link { font-size:0.85em;font-weight:700;color:var(--primary);text-decoration:none;display:flex;align-items:center;gap:4px;transition:0.2s; }
         .section-more-link:hover { opacity:0.8; }
+        .section-more-group { display:flex;align-items:center;gap:6px;font-size:0.85em;font-weight:700;color:var(--text-sub); }
+        .section-more-group .section-more-link { font-size:1em;padding:4px 10px;border-radius:99px;background:rgba(37,99,235,0.08); }
+        .section-more-group .section-more-link:hover { opacity:1;background:rgba(37,99,235,0.16); }
+        @media(max-width:500px) { .section-more-group > span { display:none; } }
 
         /* 4 PILLARS */
         .pillars-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-bottom:32px; }
@@ -150,6 +204,12 @@
         .dtw-source { display:inline-block;font-size:0.75em;font-weight:700;padding:3px 10px;border-radius:99px;background:#eff6ff;color:#2563eb;border:1px solid #dbeafe;margin-bottom:12px; }
         body.dark-mode .dtw-source { background:rgba(37,99,235,0.2);border-color:rgba(37,99,235,0.3);color:#93c5fd; }
         
+        .dtw-feedback:empty { display:none; }
+        .dtw-feedback { margin-top:14px;padding:12px 16px;border-radius:12px;font-weight:700;font-size:0.95em; }
+        .dtw-feedback.ok { background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0; }
+        .dtw-feedback.bad { background:#fef2f2;color:#b91c1c;border:1px solid #fecaca; }
+        body.dark-mode .dtw-feedback.ok { background:rgba(34,197,94,0.12);color:#86efac;border-color:rgba(34,197,94,0.3); }
+        body.dark-mode .dtw-feedback.bad { background:rgba(239,68,68,0.12);color:#fca5a5;border-color:rgba(239,68,68,0.3); }
         .dtw-footer { display:flex;align-items:center;justify-content:flex-end;padding-top:8px; }
         .dtw-more-link { display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#2563eb,#4f46e5);color:white;padding:10px 20px;border-radius:12px;font-size:0.9em;font-weight:800;text-decoration:none;transition:0.2s; }
         .dtw-more-link:hover { transform:translateY(-2px);box-shadow:0 6px 15px rgba(37,99,235,0.35); }
@@ -236,7 +296,7 @@
         .fw-dot.active { background:#10b981;transform:scale(1.4); }
 
         /* UTILS GRID */
-        .utils-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:14px; }
+        .utils-grid { display:grid;grid-template-columns:repeat(4,1fr);gap:14px; }
         .util-card { background:var(--bg-card);border:1px solid var(--border);padding:16px;border-radius:16px;text-align:center;text-decoration:none;color:var(--text-main);transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:1em; }
         .util-card:hover { background:var(--bg-card-hover);border-color:var(--border-hover);transform:translateY(-3px);color:var(--primary); }
         .util-icon { font-size:1.7em; }
@@ -253,8 +313,6 @@
         @media(max-width:768px) {
             .wrapper { padding:18px 12px;margin:0 4px;width:auto;border-radius:20px; }
             .global-footer { margin:15px 4px 25px;border-radius:18px; }
-            .hero-title { font-size:2em; }
-            .hero-section { padding:32px 22px; }
             .pillars-grid { gap:12px; }
             .pillar-desc { display:none; }
             .pillar-card { padding:18px; }
@@ -267,7 +325,6 @@
         }
         @media(max-width:500px) {
             .pillars-grid { grid-template-columns:repeat(2,1fr); }
-            .hero-title { font-size:1.75em; }
         }
     </style>
 
@@ -343,9 +400,28 @@
 <div class="wrapper">
 
     <!-- HERO -->
-    <div class="hero-section" style="padding: 0; background: transparent; box-shadow: none; border: none; margin-bottom: 35px; text-align: center;">
-        <img src="assets/img/hero-banner.png" alt="Chinh phục Tiếng Hàn - Dễ dàng hơn bao giờ hết" style="width: 100%; height: auto; border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.12); display: block;">
-    </div>
+    <section class="hero" aria-labelledby="heroTitle">
+        <div class="hero-text">
+            <span class="hero-eyebrow">Luyện thi TOPIK I &amp; II</span>
+            <h1 class="hero-title" id="heroTitle">Luyện thi TOPIK với <span class="hl">đề thật</span> và giải thích tiếng Việt</h1>
+            <p class="hero-sub">Làm đề các kỳ thi chính thức, xem đáp án và giải thích ngay, tra từ một chạm và ôn ngữ pháp từ sơ cấp đến trung cấp.</p>
+            <div class="hero-cta">
+                <a href="reading/home.html" class="hero-btn hero-btn-primary">
+                    Làm đề ngay
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="grammar/home.html" class="hero-btn hero-btn-ghost">Học ngữ pháp</a>
+            </div>
+            <ul class="hero-stats">
+                <li><strong>48</strong><span>đề thi thật</span></li>
+                <li><strong>100+</strong><span>bài ngữ pháp</span></li>
+                <li><strong>4</strong><span>trò chơi từ vựng</span></li>
+            </ul>
+        </div>
+        <div class="hero-art">
+            <img src="assets/img/hero-banner.png" alt="" width="1024" height="587">
+        </div>
+    </section>
 
     <!-- 4 PILLARS -->
     <div class="section-header">
@@ -403,15 +479,14 @@
 
     <!-- DAILY TOPIK WIDGET -->
     <div class="section-header">
-        <h2 class="section-title"><span>📝</span> Mỗi ngày 5 câu TOPIK</h2>
-  
+        <h2 class="section-title"><span>📝</span> Câu TOPIK hôm nay</h2>
     </div>
     <div class="daily-topik-widget">
         <div class="dtw-header">
             <div class="dtw-header-left">
                 <div>
                     <div class="dtw-header-title">Câu hỏi hôm nay</div>
-                    <div class="dtw-header-sub">1 câu ngẫu nhiên từ bộ đề thật</div>
+                    <div class="dtw-header-sub">Mỗi ngày 1 câu mới từ đề thi thật</div>
                 </div>
             </div>
             <div class="dtw-toggle-row">
@@ -458,7 +533,12 @@
     <!-- FEATURED EXAMS — random mỗi ngày -->
     <div class="section-header">
         <h2 class="section-title"><span>🔥</span> Đề thi TOPIK Nổi Bật</h2>
-        <a href="reading/home.html" class="section-more-link">Tất cả đề →</a>
+        <nav class="section-more-group" aria-label="Xem tất cả đề theo kỹ năng">
+            <span>Tất cả đề:</span>
+            <a href="reading/home.html" class="section-more-link">Đọc</a>
+            <a href="listening/home.html" class="section-more-link">Nghe</a>
+            <a href="writing/home.html" class="section-more-link">Viết</a>
+        </nav>
     </div>
     <div class="featured-exams-grid" id="featuredExamsGrid">
         <div class="exam-card"><div class="exam-info"><span>Đang tải...</span></div></div>
@@ -475,6 +555,8 @@
         <a href="dailynews.html" class="util-card"><span class="util-icon">📰</span> Đọc Báo</a>
         <a href="hanhan.html" class="util-card"><span class="util-icon">🧠</span> Hán Hàn</a>
         <a href="video/home.html" class="util-card"><span class="util-icon">🎬</span> Học qua Video</a>
+        <a href="games/home.html" class="util-card"><span class="util-icon">🎮</span> Trò chơi</a>
+        <a href="leaderboard.html" class="util-card"><span class="util-icon">🏆</span> Bảng xếp hạng</a>
     </div>
 
 </div>
@@ -563,10 +645,19 @@ async function dtwLoadQuestion() {
     const exams = dtwLevel === 2 ? DTW_T2_EXAMS : DTW_T1_EXAMS;
     const qs = dtwLevel === 2 ? DTW_T2_QS : DTW_T1_QS;
 
-    // Try a few random combos
-    for (let attempt = 0; attempt < 8; attempt++) {
-        const exam = exams[Math.floor(Math.random() * exams.length)];
-        const q = qs[Math.floor(Math.random() * qs.length)];
+    // Chọn câu theo ngày: cùng một ngày + cùng cấp độ → luôn ra cùng một câu.
+    // Trộn tất cả cặp (đề, câu) bằng seed theo ngày rồi thử lần lượt (phòng khi thiếu câu).
+    const combos = [];
+    exams.forEach(e => qs.forEach(q => combos.push([e, q])));
+    const day = window.getDayOfYear(new Date());
+    const rng = window.seededRandom(new Date().getFullYear() * 1000 + day + dtwLevel * 97);
+    for (let i = combos.length - 1; i > 0; i--) {
+        const j = Math.floor(rng() * (i + 1));
+        [combos[i], combos[j]] = [combos[j], combos[i]];
+    }
+
+    for (let attempt = 0; attempt < Math.min(8, combos.length); attempt++) {
+        const [exam, q] = combos[attempt];
         const folder = dtwLevel === 2 ? 'reading/topik_ii' : 'reading/topik_i';
         try {
             const res = await fetch(`${folder}/topik${exam}.html`);
@@ -595,7 +686,9 @@ async function dtwLoadQuestion() {
             const sourceHtml = `<div class="dtw-source">📄 Đề ${exam} - Câu ${q}</div>`;
             const feedbackHtml = `<div class="dtw-feedback" id="dtwFeedback"></div>`;
 
-            document.getElementById('dtwContent').innerHTML = sourceHtml + qBlock.outerHTML + feedbackHtml;
+            const dtwContentEl = document.getElementById('dtwContent');
+            delete dtwContentEl.dataset.answered;
+            dtwContentEl.innerHTML = sourceHtml + qBlock.outerHTML + feedbackHtml;
             document.getElementById('dtwLoading').style.display = 'none';
             document.getElementById('dtwContent').style.display = 'block';
             return;
@@ -606,9 +699,13 @@ async function dtwLoadQuestion() {
 }
 
 function dtwAnswer(el, isCorrect) {
-    document.querySelectorAll('.dtw-option').forEach(o => {
-        o.classList.add('disabled');
-        if (o.getAttribute('onclick')?.includes('true')) o.classList.add('correct');
+    const content = document.getElementById('dtwContent');
+    if (content.dataset.answered) return;
+    content.dataset.answered = '1';
+    content.querySelectorAll('.option').forEach(o => {
+        o.removeAttribute('onclick');
+        o.style.cursor = 'default';
+        if (o.dataset.correct === '1') o.classList.add('correct');
     });
     const fb = document.getElementById('dtwFeedback');
     if (isCorrect) {

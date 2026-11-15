@@ -56,6 +56,31 @@
           transform: scale(1.06) translateY(-2px);
           box-shadow: 0 15px 35px rgba(220, 38, 38, 0.7);
         }
+        .chat-floating-trigger-red:focus-visible {
+          outline: 3px solid #142657;
+          outline-offset: 3px;
+        }
+        /* Chừa chỗ cuối trang để nút nổi không che nội dung */
+        body:not(.forum-page) { padding-bottom: 84px; }
+        /* Mobile: chỉ hiện icon tròn, chữ vẫn còn cho trình đọc màn hình */
+        @media (max-width: 640px) {
+          #website-chat-container { right: 14px !important; bottom: 14px !important; }
+          .chat-floating-trigger-red {
+            width: 52px; height: 52px;
+            padding: 0 !important;
+            justify-content: center;
+            gap: 0 !important;
+            box-shadow: 0 6px 18px rgba(220, 38, 38, 0.45);
+          }
+          #btn-chat-text {
+            position: absolute; width: 1px; height: 1px;
+            overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap;
+          }
+          body:not(.forum-page) { padding-bottom: 76px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .chat-floating-trigger-red { animation: none; }
+        }
         .chat-responsive-box {
           width: min(92vw, 380px);
           height: min(calc(100vh - 120px), 500px);

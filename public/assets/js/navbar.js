@@ -98,28 +98,26 @@ document.addEventListener('DOMContentLoaded', () => {
             border-radius:0;
             background:none;
         }
-        .nav-link.active, .nav-link:hover{
-            font-weight:800;
-            background:none;
+        /* Tất cả mục cùng màu; mục đang chọn = màu đỏ thương hiệu + gạch chân */
+        .nav-link{position:relative;color:#142657}
+        .nav-link:hover{color:#f95052}
+        .nav-link.active{color:#f95052;font-weight:800}
+        .nav-link::after{
+            content:"";position:absolute;left:0;right:0;bottom:-6px;height:3px;
+            border-radius:3px;background:#f95052;
+            transform:scaleX(0);transition:transform .2s;
         }
-        .nav-link[data-skill="read"]{color:#142657}
-        .nav-link[data-skill="listen"]{color:#142657}
-        .nav-link[data-skill="write"]{color:#f95052}
-        .nav-link[data-skill="grammar"]{color:#f95052}
-        .nav-link[data-skill="read"]:hover{color:#f95052!important}
-        .nav-link[data-skill="listen"]:hover{color:#f95052!important}
-        .nav-link[data-skill="write"]:hover{color:#142657!important}
-        .nav-link[data-skill="grammar"]:hover{color:#142657!important}
-        @keyframes blink-read{0%,100%{color:#142657}50%{color:#f95052}}
-        @keyframes blink-listen{0%,100%{color:#142657}50%{color:#f95052}}
-        @keyframes blink-write{0%,100%{color:#f95052}50%{color:#142657}}
-        @keyframes blink-grammar{0%,100%{color:#f95052}50%{color:#142657}}
-        .nav-link[data-skill="read"].active{animation:blink-read 1.2s infinite}
-        .nav-link[data-skill="listen"].active{animation:blink-listen 1.2s infinite}
-        .nav-link[data-skill="write"].active{animation:blink-write 1.2s infinite}
-        .nav-link[data-skill="grammar"].active{animation:blink-grammar 1.2s infinite}
-        body.dark-mode .nav-link{color:#9ca3af}
-        body.dark-mode .nav-link.active, body.dark-mode .nav-link:hover{background:none;font-weight:800;}
+        .nav-link.active::after{transform:scaleX(1)}
+        body.dark-mode .nav-link{color:#cbd5e1}
+        body.dark-mode .nav-link:hover, body.dark-mode .nav-link.active{color:#fca5a5}
+        body.dark-mode .nav-link::after{background:#fca5a5}
+
+        /* Viền focus khi dùng bàn phím — áp dụng toàn site (navbar có mặt ở mọi trang).
+           !important để thắng các rule outline:none rải rác; chỉ hiện khi dùng phím, không hiện khi bấm chuột. */
+        a:focus-visible, button:focus-visible, summary:focus-visible, select:focus-visible,
+        [role="button"]:focus-visible, [tabindex]:not([tabindex="-1"]):focus-visible{
+            outline:3px solid #f95052!important;outline-offset:3px!important;
+        }
 
         /* SIDE DRAWER — Glassmorphism */
         .side-drawer{
@@ -297,18 +295,18 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             
             <div class="nav-logo-wrapper">
-                <a href="${rootPath}index.html" class="nav-logo"><img src="${rootPath}assets/img/logo-navbar.png" alt=""><span class="nav-logo-text"><span class="vh">Vui Học</span><span class="th">Tiếng Hàn</span></span></a>
+                <a href="${rootPath}index.html" class="nav-logo"><img src="${rootPath}assets/img/logo-navbar.png" alt="" aria-hidden="true"><span class="nav-logo-text"><span class="vh">Vui Học</span><span class="th">Tiếng Hàn</span></span></a>
             </div>
 
             <div class="nav-desktop-links">
-                <a href="${rootPath}reading/home.html" class="nav-link ${isReading?'active':''}" data-skill="read">Đọc</a>
-                <a href="${rootPath}listening/home.html" class="nav-link ${isListening?'active':''}" data-skill="listen">Nghe</a>
-                <a href="${rootPath}writing/home.html" class="nav-link ${isWriting?'active':''}" data-skill="write">Viết</a>
-                <a href="${rootPath}grammar/home.html" class="nav-link ${isGrammar?'active':''}" data-skill="grammar">Ngữ pháp</a>
+                <a href="${rootPath}reading/home.html" class="nav-link ${isReading?'active" aria-current="page':''}" data-skill="read">Đọc</a>
+                <a href="${rootPath}listening/home.html" class="nav-link ${isListening?'active" aria-current="page':''}" data-skill="listen">Nghe</a>
+                <a href="${rootPath}writing/home.html" class="nav-link ${isWriting?'active" aria-current="page':''}" data-skill="write">Viết</a>
+                <a href="${rootPath}grammar/home.html" class="nav-link ${isGrammar?'active" aria-current="page':''}" data-skill="grammar">Ngữ pháp</a>
             </div>
 
             <div class="nav-right">
-                <button class="nav-icon-btn" id="globalVocabBtn" onclick="window.toggleVocab()" title="Bật/Tắt tra từ điển">
+                <button class="nav-icon-btn" id="globalVocabBtn" onclick="window.toggleVocab()" title="Bật/Tắt tra từ điển" aria-label="Bật/Tắt tra từ điển">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="20" height="20">
                         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
                         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -317,11 +315,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </svg>
                 </button>
                 ${path.includes('mypage.html') ? `
-                    <button class="nav-icon-btn" onclick="window.location.href='${rootPath}index.html'" title="Trang chủ">
+                    <button class="nav-icon-btn" onclick="window.location.href='${rootPath}index.html'" title="Trang chủ" aria-label="Trang chủ">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20"><path d="M3 12L12 3l9 9M5 10v10h5v-6h4v6h5V10"/></svg>
                     </button>
                 ` : `
-                    <button class="nav-icon-btn" id="navAvatarBtn" onclick="handleAvatarClick()" title="Tài khoản">
+                    <button class="nav-icon-btn" id="navAvatarBtn" onclick="handleAvatarClick()" title="Tài khoản" aria-label="Tài khoản">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="20" height="20">
                             <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                         </svg>
