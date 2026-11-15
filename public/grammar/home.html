@@ -294,6 +294,215 @@
         @media (max-width: 520px) {
             .grammar-grid { grid-template-columns: 1fr; }
         }
+
+        /* ===== GRAMMAR CONTENT (nội dung bài học từ grammar-library) ===== */
+        .grammar-content { font-size: 1.25em; line-height: 1.9; color: #334155; }
+        .grammar-content h3 {
+            font-size: 1.25em; font-weight: 800; color: #1e3a5f;
+            margin: 24px 0 12px 0; padding: 10px 18px;
+            background: linear-gradient(90deg, #eff6ff, transparent);
+            border-left: 4px solid #2563eb; border-radius: 0 6px 6px 0;
+        }
+        .grammar-content h3:first-child { margin-top: 0; }
+        .grammar-content p { margin: 12px 0; font-size: 1.08em; line-height: 1.9; }
+        .grammar-content ul, .grammar-content ol {
+            margin: 10px 0 12px 24px; padding: 0; line-height: 2.0; font-size: 1.08em;
+        }
+        .grammar-content li { margin: 8px 0; }
+        .grammar-content li strong,
+        .grammar-content p > strong:first-child {
+            color: #0f172a;
+            font-weight: 800;
+        }
+        .grammar-content strong { color: #1d4ed8; font-weight: 800; }
+        .grammar-content table {
+            width: 100%; border-collapse: collapse; margin: 18px 0;
+            font-size: 1.08em; border-radius: 10px; overflow: hidden;
+        }
+        .grammar-content th {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #fff; padding: 12px 18px; text-align: left; font-weight: 700;
+            font-size: 1.05em;
+        }
+        .grammar-content td {
+            padding: 12px 18px; border-bottom: 1px solid #e2e8f0;
+            font-size: 1.05em; line-height: 1.8;
+        }
+        .grammar-content tr:nth-child(even) td { background: #f8fafc; }
+        .grammar-content tr:last-child td { border-bottom: none; }
+
+        /* Khung ví dụ — 4 màu xoay vòng */
+        .grammar-content .ex-box {
+            margin: 16px 0; padding: 16px 20px;
+            border-radius: 12px; border: 1px solid #cbd5e1;
+            border-left-width: 5px; color: #1e293b;
+            font-size: 1em;
+        }
+        .grammar-content .ex-box .ex-label {
+            font-weight: 800; font-size: 0.92em;
+            margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+        }
+        .grammar-content .ex-box .ex-text { line-height: 1.8; font-size: 1.06em; }
+        .grammar-content .ex-box .ex-trans { color: #64748b; font-size: 0.96em; margin-top: 4px; display: inline-block; }
+        /* màu tím (mặc định) */
+        .grammar-content .ex-box          { background: #f8fafc; border-left-color: #4f46e5; }
+        .grammar-content .ex-box .ex-label { color: #4f46e5; }
+        /* màu xanh dương */
+        .grammar-content .ex-box.blue     { background: #f0f9ff; border-left-color: #0284c7; }
+        .grammar-content .ex-box.blue .ex-label { color: #0284c7; }
+        /* màu xanh lá */
+        .grammar-content .ex-box.green    { background: #ecfdf5; border-left-color: #059669; }
+        .grammar-content .ex-box.green .ex-label { color: #059669; }
+        /* màu vàng cam */
+        .grammar-content .ex-box.orange   { background: #fffbeb; border-left-color: #d97706; }
+        .grammar-content .ex-box.orange .ex-label { color: #b45309; }
+        /* màu đỏ */
+        .grammar-content .ex-box.red      { background: #fef2f2; border-left-color: #dc2626; }
+        .grammar-content .ex-box.red .ex-label { color: #b91c1c; }
+
+        /* Tag chia ngữ pháp (badge đánh dấu trường hợp dùng) */
+        .grammar-content .g-tag {
+            display: inline-block; padding: 4px 12px; border-radius: 99px;
+            font-size: 0.92em; font-weight: 700; margin: 0 4px 3px 0;
+            background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;
+        }
+        .grammar-content .g-tag.red    { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+        .grammar-content .g-tag.green  { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+        .grammar-content .g-tag.orange { background: #fffbeb; color: #92400e; border-color: #fde68a; }
+        .grammar-content .g-tag.purple { background: #f5f3ff; color: #5b21b6; border-color: #ddd6fe; }
+
+        /* ===== QUIZ SECTION ===== */
+        .grammar-content .quiz-section {
+            margin-top: 28px; padding-top: 20px;
+            border-top: 2px dashed #cbd5e1;
+        }
+        .grammar-content .quiz-section > h3 {
+            background: linear-gradient(90deg, #fef3c7, transparent) !important;
+            border-left-color: #f59e0b !important;
+            color: #92400e !important;
+        }
+        /* Mỗi câu hỏi */
+        .grammar-content .quiz-q {
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            border-radius: 12px; padding: 18px 20px; margin: 14px 0;
+            transition: border-color 0.2s;
+        }
+        .grammar-content .quiz-q.answered { pointer-events: none; }
+        .grammar-content .quiz-stem {
+            font-weight: 700; font-size: 1.12em; color: #1e293b;
+            margin-bottom: 12px; line-height: 1.6;
+        }
+        .grammar-content .quiz-stem .quiz-blank {
+            display: inline-block; min-width: 60px; border-bottom: 2px solid #2563eb;
+            text-align: center; font-weight: 800; color: #2563eb;
+            margin: 0 2px; padding: 0 4px;
+        }
+        /* Trắc nghiệm options */
+        .grammar-content .quiz-opts {
+            display: flex; flex-wrap: wrap; gap: 10px; margin: 10px 0;
+        }
+        .grammar-content .quiz-opt {
+            padding: 10px 20px; border-radius: 8px;
+            border: 2px solid #e2e8f0; background: #fff;
+            cursor: pointer; font-size: 1.05em; font-weight: 600;
+            color: #334155; transition: all 0.15s;
+            font-family: 'Pretendard', 'Inter', sans-serif;
+        }
+        .grammar-content .quiz-opt:hover { border-color: #2563eb; background: #eff6ff; color: #1d4ed8; }
+        .grammar-content .quiz-opt.correct {
+            border-color: #10b981 !important; background: #ecfdf5 !important;
+            color: #065f46 !important; box-shadow: 0 0 0 2px rgba(16,185,129,0.2);
+        }
+        .grammar-content .quiz-opt.wrong {
+            border-color: #ef4444 !important; background: #fef2f2 !important;
+            color: #991b1b !important; box-shadow: 0 0 0 2px rgba(239,68,68,0.2);
+            text-decoration: line-through;
+        }
+        /* Điền vào chỗ trống */
+        .grammar-content .quiz-fill {
+            display: flex; align-items: center; gap: 10px; margin: 10px 0; flex-wrap: wrap;
+        }
+        .grammar-content .quiz-fill input {
+            padding: 10px 16px; border-radius: 8px;
+            border: 2px solid #e2e8f0; background: #fff;
+            font-size: 1.12em; font-weight: 700; color: #1e293b;
+            width: 220px; outline: none; transition: border-color 0.2s;
+            font-family: 'Pretendard', 'Inter', sans-serif;
+        }
+        .grammar-content .quiz-fill input:focus { border-color: #2563eb; }
+        .grammar-content .quiz-fill input.correct { border-color: #10b981; background: #ecfdf5; color: #065f46; }
+        .grammar-content .quiz-fill input.wrong { border-color: #ef4444; background: #fef2f2; color: #991b1b; }
+        .grammar-content .quiz-fill .quiz-check-btn {
+            padding: 10px 18px; border-radius: 8px; border: none;
+            background: #2563eb; color: #fff; font-weight: 700;
+            font-size: 1em; cursor: pointer; transition: 0.15s;
+            font-family: 'Pretendard', 'Inter', sans-serif;
+        }
+        .grammar-content .quiz-fill .quiz-check-btn:hover { background: #1d4ed8; }
+        /* Đúng/Sai */
+        .grammar-content .quiz-tf {
+            display: flex; gap: 10px; margin: 10px 0;
+        }
+        .grammar-content .quiz-tf button {
+            padding: 10px 24px; border-radius: 8px;
+            border: 2px solid #e2e8f0; background: #fff;
+            cursor: pointer; font-size: 1.05em; font-weight: 700;
+            color: #334155; transition: all 0.15s;
+            font-family: 'Pretendard', 'Inter', sans-serif;
+        }
+        .grammar-content .quiz-tf button:hover { border-color: #2563eb; background: #eff6ff; }
+        .grammar-content .quiz-tf button.correct {
+            border-color: #10b981 !important; background: #ecfdf5 !important; color: #065f46 !important;
+        }
+        .grammar-content .quiz-tf button.wrong {
+            border-color: #ef4444 !important; background: #fef2f2 !important; color: #991b1b !important;
+        }
+        /* Nối cặp */
+        .grammar-content .quiz-match {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0;
+        }
+        .grammar-content .quiz-match-item {
+            padding: 12px 18px; border-radius: 8px;
+            border: 2px solid #e2e8f0; background: #fff;
+            cursor: pointer; font-size: 1.05em; font-weight: 600;
+            color: #334155; transition: all 0.15s; text-align: center;
+            user-select: none;
+        }
+        .grammar-content .quiz-match-item:hover { border-color: #2563eb; background: #eff6ff; }
+        .grammar-content .quiz-match-item.selected { border-color: #2563eb; background: #dbeafe; color: #1d4ed8; }
+        .grammar-content .quiz-match-item.matched {
+            border-color: #10b981; background: #ecfdf5; color: #065f46;
+            pointer-events: none; opacity: 0.7;
+        }
+        .grammar-content .quiz-match-item.wrong-flash {
+            border-color: #ef4444; background: #fef2f2;
+        }
+        /* Giải thích đáp án */
+        .grammar-content .quiz-explain {
+            display: none; margin-top: 10px; padding: 12px 16px;
+            background: #eff6ff; border-radius: 8px; border-left: 3px solid #2563eb;
+            font-size: 1.05em; color: #1e40af; line-height: 1.7;
+        }
+        .grammar-content .quiz-explain.show { display: block; }
+        /* Feedback icon */
+        .grammar-content .quiz-feedback {
+            display: none; font-weight: 800; font-size: 0.95em; margin-top: 8px;
+        }
+        .grammar-content .quiz-feedback.show { display: block; }
+        .grammar-content .quiz-feedback.ok { color: #059669; }
+        .grammar-content .quiz-feedback.fail { color: #dc2626; }
+        /* Thanh kết quả cuối */
+        .grammar-content .quiz-score {
+            display: none; margin-top: 18px; padding: 14px 18px;
+            background: linear-gradient(135deg, #ecfdf5, #f0f9ff);
+            border-radius: 12px; border: 1px solid #a7f3d0;
+            text-align: center; font-weight: 800; font-size: 1.05em; color: #065f46;
+        }
+        .grammar-content .quiz-score.show { display: block; }
+        @media (max-width: 520px) {
+            .grammar-content .quiz-opts { flex-direction: column; }
+            .grammar-content .quiz-match { grid-template-columns: 1fr; }
+        }
     </style>
     <script src="../assets/js/block.js"></script>
     <script src="../assets/js/theme-picker.js"></script>
@@ -328,12 +537,17 @@
                 <div class="hero-tag">📘 Ngữ pháp</div>
                 <h1 class="hero-title">Luyện ngữ pháp</h1>
                 <p class="hero-sub">Tổng hợp ngữ pháp TOPIK từ sơ cấp đến cao cấp.</p>
-                <div class="level-dropdown" id="levelDropdown">
-                    <button class="level-dropdown-btn" id="levelDropdownBtn" onclick="toggleLevelMenu(event)">
-                        <span id="levelDropdownLabel">Sơ cấp 1</span>
-                        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
-                    </button>
-                    <div class="level-dropdown-menu" id="levelMenu"></div>
+                <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+                    <div class="level-dropdown" id="levelDropdown">
+                        <button class="level-dropdown-btn" id="levelDropdownBtn" onclick="toggleLevelMenu(event)">
+                            <span id="levelDropdownLabel">Sơ cấp 1</span>
+                            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div class="level-dropdown-menu" id="levelMenu"></div>
+                    </div>
+                    <a href="admin.html" style="margin-top:20px;display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.18);color:#fff;text-decoration:none;padding:11px 16px;border-radius:12px;font-size:0.92em;font-weight:700;backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.28);transition:all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.28)'" onmouseout="this.style.background='rgba(255,255,255,0.18)'">
+                        ⚙️ Quản lý Thư viện
+                    </a>
                 </div>
             </div>
             <div class="hero-right">
@@ -378,9 +592,31 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="../assets/js/grammar-library.js"></script>
 
     <script>
-        const GRAMMAR_DATA = [
+        function loadGrammarDataSource() {
+            // 1. Ưu tiên dữ liệu từ localStorage (nếu giáo viên vừa dán/chỉnh sửa trong trang Admin trên trình duyệt này)
+            try {
+                const local = localStorage.getItem('admin_grammar_data');
+                if (local) {
+                    const parsed = JSON.parse(local);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed;
+                    }
+                }
+            } catch(e) {}
+
+            // 2. Thư viện dùng chung từ grammar-library.js (sau khi đã xuất JSON và deploy)
+            if (window.GrammarLibrary && window.GrammarLibrary.length) {
+                return window.GrammarLibrary;
+            }
+
+            // 3. Fallback danh sách có sẵn
+            return FALLBACK_GRAMMAR_DATA;
+        }
+
+        const FALLBACK_GRAMMAR_DATA = [
             // ===== SƠ CẤP 1 =====
             { korean: "은/는", vietnamese: "Tiểu từ chủ đề", file: "socap/은_는.html", level: 1 },
             { korean: "여기/거기/저기", vietnamese: "Đây/đó/kia (chỉ địa điểm)", file: "socap/여기_거기_저기.html", level: 1 },
@@ -494,6 +730,8 @@
             { korean: "의", vietnamese: "Của (sở hữu)", file: "trungcap/의.html", level: 3 },
         ];
 
+        const GRAMMAR_DATA = loadGrammarDataSource();
+
         // Các cấp độ ngữ pháp (dropdown)
         const LEVEL_OPTIONS = [
             { val: 1, label: 'Sơ cấp 1' },
@@ -502,14 +740,16 @@
             { val: 4, label: 'Trung cấp 4' },
             { val: 5, label: 'Cao cấp 5' },
             { val: 6, label: 'Cao cấp 6' },
+            { val: 7, label: 'TOPIK' },
             { val: 0, label: 'Tất cả' }
         ];
         // Nhãn cấp độ hiển thị trên ô màu của thẻ (có ý nghĩa hơn chữ cái đầu)
         function levelShort(val) {
-            var map = { 1: 'SC1', 2: 'SC2', 3: 'TC3', 4: 'TC4', 5: 'CC5', 6: 'CC6' };
+            var map = { 1: 'SC1', 2: 'SC2', 3: 'TC3', 4: 'TC4', 5: 'CC5', 6: 'CC6', 7: 'TOPIK' };
             return map[val] || 'TẤT CẢ';
         }
         function levelColor(val) {
+            if (val === 7) return 'linear-gradient(135deg,#0f766e,#14b8a6)';
             if (val >= 5) return 'linear-gradient(135deg,#7c3aed,#db2777)';
             if (val >= 3) return 'linear-gradient(135deg,#d97706,#f59e0b)';
             return 'linear-gradient(135deg,#2563eb,#06b6d4)';
@@ -542,14 +782,286 @@
         }
 
         function generateCard(item, idx) {
-            return '<a href="' + item.file + '" class="grammar-card">' +
+            // Nếu ngữ pháp có nội dung (từ admin hoặc library), click sẽ mở modal xem chi tiết + làm bài tập
+            const hasContent = !!(item.content && item.content.trim());
+            const hasFile = !!item.file;
+            let targetAttr = '';
+            if (hasContent) {
+                targetAttr = `href="javascript:void(0)" onclick="viewGrammarDetail('${item.id || ''}', ${idx})"`;
+            } else if (hasFile) {
+                targetAttr = `href="${item.file}"`;
+            } else {
+                targetAttr = `href="javascript:void(0)" onclick="viewGrammarDetail('${item.id || ''}', ${idx})"`;
+            }
+            return '<a ' + targetAttr + ' class="grammar-card">' +
                 '<span class="grammar-cover" style="background:' + levelColor(item.level) + ';">' + levelShort(item.level) + '</span>' +
                 '<span class="grammar-body">' +
                     '<span class="grammar-korean">' + item.korean + '</span>' +
-                    '<span class="grammar-vietnamese">' + item.vietnamese + '</span>' +
+                    '<span class="grammar-vietnamese">' + (item.vietnamese || '') + '</span>' +
                 '</span>' +
                 '<svg class="grammar-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18"><path d="M9 18l6-6-6-6"/></svg>' +
                 '</a>';
+        }
+
+        function escHtmlHome(str) {
+            if (typeof str !== 'string') return String(str || '');
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function formatLineTitleHome(rawText) {
+            if (!rawText) return '';
+            let s = rawText.trim();
+            if (s.includes('**')) {
+                return s.replace(/\*\*(.*?)\*\*/g, (m, p) => '<strong>' + escHtmlHome(p) + '</strong>');
+            }
+            const colonIdx = s.indexOf(':');
+            if (colonIdx > 0 && colonIdx <= 55) {
+                const titlePart = s.substring(0, colonIdx).trim();
+                const restPart = s.substring(colonIdx + 1);
+                return '<strong>' + escHtmlHome(titlePart) + ':</strong> ' + escHtmlHome(restPart.trim());
+            }
+            return escHtmlHome(s);
+        }
+
+        function formatTextBlockHome(str) {
+            if (!str) return '';
+            const lines = String(str).split('\n').map(l => l.trim()).filter(Boolean);
+            let out = '';
+            let inList = false;
+            lines.forEach(l => {
+                if (l.startsWith('- ') || l.startsWith('• ') || l.startsWith('* ')) {
+                    if (!inList) { out += '<ul style="margin:6px 0 10px 22px;padding:0;line-height:1.8;">'; inList = true; }
+                    out += `<li>${formatLineTitleHome(l.substring(2))}</li>`;
+                } else {
+                    if (inList) { out += '</ul>'; inList = false; }
+                    out += `<p style="margin:8px 0;line-height:1.8;">${formatLineTitleHome(l)}</p>`;
+                }
+            });
+            if (inList) out += '</ul>';
+            return out || `<p>${escHtmlHome(str)}</p>`;
+        }
+
+        function buildHtmlFromStructuredDataHome(item) {
+            let html = '';
+            const meaning = item.meaning || item.desc || item.definition || '';
+            if (meaning) {
+                html += `<h3>1. Ý nghĩa &amp; Cách dùng</h3>${formatTextBlockHome(meaning)}`;
+            }
+            const rules = item.rules || item.combinations || [];
+            if (Array.isArray(rules) && rules.length > 0) {
+                html += `<h3>2. Quy tắc chia / Kết hợp</h3>`;
+                html += `<table><tr><th>Trường hợp</th><th>Dạng kết hợp</th><th>Ví dụ</th></tr>`;
+                rules.forEach((r, idx) => {
+                    const tagCls = idx % 2 === 0 ? 'g-tag' : 'g-tag green';
+                    const cond = r.condition || r.type || '';
+                    const form = r.combine || r.form || '';
+                    const ex = r.example || '';
+                    html += `<tr><td><span class="${tagCls}">${escHtmlHome(cond)}</span></td><td><strong>${escHtmlHome(form)}</strong></td><td>${escHtmlHome(ex)}</td></tr>`;
+                });
+                html += `</table>`;
+            }
+            const colors = ['', 'blue', 'green', 'orange', 'red'];
+            const examples = item.examples || [];
+            if (Array.isArray(examples) && examples.length > 0) {
+                html += `<h3>3. Ví dụ minh họa</h3>`;
+                examples.forEach((ex, idx) => {
+                    const c = colors[idx % colors.length];
+                    const cls = c ? `ex-box ${c}` : 'ex-box';
+                    const kr = ex.kr || ex.korean || '';
+                    const vi = ex.vi || ex.vietnamese || ex.trans || '';
+                    html += `<div class="${cls}"><div class="ex-label">💡 Ví dụ:</div><div class="ex-text"><strong>${escHtmlHome(kr)}</strong><br><span class="ex-trans">${escHtmlHome(vi)}</span></div></div>`;
+                });
+            }
+            const notes = item.notes || item.note || '';
+            if (notes) {
+                html += `<h3>4. Lưu ý &amp; So sánh</h3>${formatTextBlockHome(notes)}`;
+            }
+            const quiz = item.quiz || item.quizzes || [];
+            if (Array.isArray(quiz) && quiz.length > 0) {
+                html += `<div class="quiz-section"><h3>📝 Bài tập kiểm tra</h3>`;
+                quiz.forEach((q, idx) => {
+                    const qNum = idx + 1;
+                    const type = q.type || 'mc';
+                    if (type === 'mc') {
+                        const opts = q.options || q.opts || [];
+                        const ans = q.answer || 1;
+                        html += `<div class="quiz-q" data-type="mc" data-answer="${ans}">`;
+                        html += `<div class="quiz-stem">Câu ${qNum}: ${escHtmlHome(q.question || '')}</div>`;
+                        html += `<div class="quiz-opts">`;
+                        opts.forEach((opt, oIdx) => {
+                            html += `<button class="quiz-opt" data-v="${oIdx + 1}">${escHtmlHome(opt)}</button>`;
+                        });
+                        html += `</div>`;
+                        if (q.explain) html += `<div class="quiz-explain">${escHtmlHome(q.explain)}</div>`;
+                        html += `<div class="quiz-feedback"></div></div>`;
+                    } else if (type === 'fill') {
+                        const ans = q.answer || '';
+                        html += `<div class="quiz-q" data-type="fill" data-answer="${escHtmlHome(String(ans))}">`;
+                        html += `<div class="quiz-stem">Câu ${qNum}: ${escHtmlHome(q.question || '')}</div>`;
+                        html += `<div class="quiz-fill"><input type="text" placeholder="Nhập đáp án..."><button class="quiz-check-btn">Kiểm tra</button></div>`;
+                        if (q.explain) html += `<div class="quiz-explain">${escHtmlHome(q.explain)}</div>`;
+                        html += `<div class="quiz-feedback"></div></div>`;
+                    } else if (type === 'tf') {
+                        const ans = (q.answer === true || q.answer === 't' || q.answer === 'đúng') ? 't' : 'f';
+                        html += `<div class="quiz-q" data-type="tf" data-answer="${ans}">`;
+                        html += `<div class="quiz-stem">Câu ${qNum}: ${escHtmlHome(q.question || '')}</div>`;
+                        html += `<div class="quiz-tf"><button data-v="t">⭕ Đúng</button><button data-v="f">❌ Sai</button></div>`;
+                        if (q.explain) html += `<div class="quiz-explain">${escHtmlHome(q.explain)}</div>`;
+                        html += `<div class="quiz-feedback"></div></div>`;
+                    } else if (type === 'match') {
+                        const pairs = q.pairs || [];
+                        html += `<div class="quiz-q" data-type="match">`;
+                        html += `<div class="quiz-stem">Câu ${qNum}: ${escHtmlHome(q.question || 'Nối cặp tương ứng:')}</div>`;
+                        html += `<div class="quiz-match">`;
+                        const rights = pairs.map((p, pIdx) => ({ text: p.right, pair: pIdx + 1 }));
+                        if (rights.length > 1) {
+                            const temp = rights[0];
+                            rights[0] = rights[rights.length - 1];
+                            rights[rights.length - 1] = temp;
+                        }
+                        pairs.forEach((p, pIdx) => {
+                            html += `<div class="quiz-match-item" data-side="l" data-pair="${pIdx + 1}">${escHtmlHome(p.left)}</div>`;
+                            const r = rights[pIdx];
+                            html += `<div class="quiz-match-item" data-side="r" data-pair="${r.pair}">${escHtmlHome(r.text)}</div>`;
+                        });
+                        html += `</div>`;
+                        if (q.explain) html += `<div class="quiz-explain">${escHtmlHome(q.explain)}</div>`;
+                        html += `<div class="quiz-feedback"></div></div>`;
+                    }
+                });
+                html += `<div class="quiz-score"></div></div>`;
+            }
+            return html;
+        }
+
+        function autoRepairBrokenGeminiHtml(str) {
+            if (!str) return '';
+            let s = str.trim();
+
+            // 1. Tự động bóc tách nếu chuỗi content bị dính header JSON e.g. { "korean": ..., "content": "..." }
+            if (s.includes('"korean"') && s.includes('"content"')) {
+                const idx = s.indexOf('"content":');
+                if (idx !== -1) {
+                    const after = s.substring(idx + 10).trim();
+                    const startQuote = after.indexOf('"');
+                    if (startQuote !== -1) {
+                        s = after.substring(startQuote + 1);
+                        s = s.replace(/"\s*\}?\s*\]?$/, '').replace(/\\"/g, '"');
+                    }
+                }
+            }
+
+            // 2. Tự động sửa lỗi thẻ unclosed ex-box của Gemini khiến các hộp bị lồng vào nhau
+            if (s.includes('class="ex-box') || s.includes("class='ex-box'")) {
+                const openDivCount = (s.match(/<div\b/g) || []).length;
+                const closeDivCount = (s.match(/<\/div>/g) || []).length;
+
+                if (openDivCount > closeDivCount) {
+                    let isFirst = true;
+                    s = s.replace(/<div\s+class=["']ex-box([^"']*)["']>/g, (match) => {
+                        if (isFirst) {
+                            isFirst = false;
+                            return match;
+                        }
+                        return `</div></div>${match}`;
+                    });
+                    if (s.includes('<div class="quiz-section">') || s.includes("<div class='quiz-section'>")) {
+                        s = s.replace(/<div\s+class=["']quiz-section["']>/, '</div></div><div class="quiz-section">');
+                    } else {
+                        s += '</div></div>';
+                    }
+                }
+            }
+
+            return s;
+        }
+
+        function formatGrammarContentForViewer(item) {
+            if (!item) return '<div style="text-align:center;color:#94a3b8;padding:30px;">Chưa có nội dung chi tiết cho mục này.</div>';
+            if (item.meaning || item.rules || item.examples || item.quiz) {
+                return buildHtmlFromStructuredDataHome(item);
+            }
+            let c = (item.content || '').trim();
+            if (c.startsWith('{') || c.startsWith('[')) {
+                try {
+                    const parsed = JSON.parse(c);
+                    const target = Array.isArray(parsed) ? parsed[0] : parsed;
+                    if (target) {
+                        if (target.meaning || target.rules || target.examples || target.quiz) {
+                            return buildHtmlFromStructuredDataHome(target);
+                        }
+                        if (target.content) c = target.content;
+                    }
+                } catch(e) {}
+            }
+            c = autoRepairBrokenGeminiHtml(c);
+            if (!c) {
+                return '<div style="text-align:center;color:#94a3b8;padding:30px;">Chưa có nội dung chi tiết cho mục này.</div>';
+            }
+            return c;
+        }
+
+        function viewGrammarDetail(id, idx) {
+            let item = null;
+            if (id) {
+                item = GRAMMAR_DATA.find(x => x.id === id);
+            }
+            if (!item && typeof idx === 'number') {
+                const currentFiltered = getFilteredData();
+                item = currentFiltered[idx] || GRAMMAR_DATA[idx];
+            }
+            if (!item) return;
+            const modalId = '_grammarHomeViewer';
+            let m = document.getElementById(modalId);
+            if (m) m.remove();
+
+            m = document.createElement('div');
+            m.id = modalId;
+            m.style.cssText = 'position:fixed;inset:0;background:rgba(15,23,42,0.75);z-index:99999;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);padding:14px;box-sizing:border-box;';
+
+            m.innerHTML = `
+                <div style="background:#fff;border-radius:20px;max-width:900px;width:100%;height:90vh;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 25px 50px -12px rgba(0,0,0,0.35);overflow:hidden;border:1px solid rgba(255,255,255,0.2);">
+                    <div style="padding:16px 22px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(135deg,#f8fafc,#edf2f7);flex-shrink:0;">
+                        <div>
+                            <span style="font-size:0.75em;font-weight:800;padding:2px 8px;border-radius:6px;background:${levelColor(item.level)};color:#fff;">${levelShort(item.level)} · ${levelLabel(item.level)}</span>
+                            <h3 style="margin:6px 0 2px 0;font-size:1.45em;color:#1e293b;font-weight:800;">${item.korean}</h3>
+                            <div style="font-size:1em;color:#64748b;">${item.vietnamese || ''}</div>
+                        </div>
+                        <button id="_closeGrammarHomeBtn" style="background:none;border:none;font-size:1.8em;color:#94a3b8;cursor:pointer;padding:0 4px;line-height:1;transition:color 0.15s;" onmouseover="this.style.color='#ef4444'" onmouseout="this.style.color='#94a3b8'">&times;</button>
+                    </div>
+                    <div style="padding:24px;overflow-y:auto;flex:1;color:#334155;background:#ffffff;" class="grammar-content">
+                        ${formatGrammarContentForViewer(item)}
+                    </div>
+                    <div style="padding:12px 22px;border-top:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;background:#f8fafc;flex-shrink:0;">
+                        <span style="font-size:0.82em;color:#94a3b8;">Nhấn <kbd style="background:#e2e8f0;padding:2px 6px;border-radius:4px;font-family:inherit;font-weight:700;">Esc</kbd> để đóng</span>
+                        <button id="_closeGrammarHomeFooterBtn" style="padding:9px 24px;border-radius:10px;border:none;background:#2563eb;color:#fff;font-weight:700;font-size:0.92em;cursor:pointer;transition:background 0.15s;">Đóng</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(m);
+
+            function closeModal() {
+                window.removeEventListener('keydown', onKeyDown);
+                if (m && m.parentNode) m.remove();
+            }
+
+            function onKeyDown(e) {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    closeModal();
+                }
+            }
+
+            window.addEventListener('keydown', onKeyDown);
+            m.onclick = function(e) {
+                if (e.target === m) closeModal();
+            };
+            const closeBtn = document.getElementById('_closeGrammarHomeBtn');
+            if (closeBtn) closeBtn.onclick = closeModal;
+            const footerBtn = document.getElementById('_closeGrammarHomeFooterBtn');
+            if (footerBtn) footerBtn.onclick = closeModal;
+
+            // Initialize quiz interactions
+            setTimeout(function() { initQuizInContainer(m); }, 50);
         }
 
         function renderCarousel(keepPage) {
@@ -800,6 +1312,182 @@
     <script src="../auth.js"></script>
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/menu.js"></script>
+
+    <!-- Quiz Engine -->
+    <script>
+    function initQuizInContainer(container) {
+        if (!container) return;
+        const sections = container.querySelectorAll('.quiz-section');
+        sections.forEach(function(sec) { initOneQuizSection(sec); });
+    }
+
+    function initOneQuizSection(sec) {
+        const allQs = sec.querySelectorAll('.quiz-q');
+        let totalQ = allQs.length;
+        let correctCount = 0;
+        let answeredCount = 0;
+
+        function checkComplete() {
+            answeredCount++;
+            const scoreEl = sec.querySelector('.quiz-score');
+            if (answeredCount >= totalQ && scoreEl) {
+                const pct = Math.round((correctCount / totalQ) * 100);
+                let emoji = pct >= 80 ? '🎉' : pct >= 50 ? '👍' : '💪';
+                scoreEl.innerHTML = emoji + ' Kết quả: <strong>' + correctCount + '/' + totalQ + '</strong> câu đúng (' + pct + '%)';
+                scoreEl.classList.add('show');
+            }
+        }
+
+        allQs.forEach(function(q) {
+            const type = q.dataset.type || 'mc'; // mc, fill, tf, match
+            const answer = q.dataset.answer || '';
+            const explainEl = q.querySelector('.quiz-explain');
+            const feedbackEl = q.querySelector('.quiz-feedback');
+
+            function showFeedback(isCorrect) {
+                if (isCorrect) correctCount++;
+                if (feedbackEl) {
+                    feedbackEl.textContent = isCorrect ? '✅ Chính xác!' : '❌ Chưa đúng rồi!';
+                    feedbackEl.className = 'quiz-feedback show ' + (isCorrect ? 'ok' : 'fail');
+                }
+                if (explainEl) explainEl.classList.add('show');
+                q.classList.add('answered');
+                checkComplete();
+            }
+
+            if (type === 'mc' || type === '' || !type || type === 'undefined') {
+                // === TRẮC NGHIỆM ===
+                const opts = q.querySelectorAll('.quiz-opt');
+                opts.forEach(function(opt) {
+                    opt.addEventListener('click', function() {
+                        if (q.classList.contains('answered')) return;
+                        const chosen = opt.dataset.v;
+                        const isCorrect = (chosen === answer);
+
+                        // Highlight correct answer
+                        opts.forEach(function(o) {
+                            if (o.dataset.v === answer) o.classList.add('correct');
+                        });
+                        if (!isCorrect) opt.classList.add('wrong');
+                        showFeedback(isCorrect);
+                    });
+                });
+            }
+            else if (type === 'fill') {
+                // === ĐIỀN VÀO CHỖ TRỐNG ===
+                const input = q.querySelector('.quiz-fill input');
+                const checkBtn = q.querySelector('.quiz-check-btn');
+                const acceptedAnswers = answer.split('|').map(function(a) { return a.trim().toLowerCase(); });
+
+                function checkFillAnswer() {
+                    if (q.classList.contains('answered') || !input) return;
+                    const userVal = input.value.trim().toLowerCase();
+                    if (!userVal) return;
+                    const isCorrect = acceptedAnswers.indexOf(userVal) !== -1;
+                    input.classList.add(isCorrect ? 'correct' : 'wrong');
+                    input.readOnly = true;
+                    if (!isCorrect) {
+                        // Show correct answer
+                        const correctSpan = document.createElement('span');
+                        correctSpan.style.cssText = 'margin-left:8px;color:#059669;font-weight:700;font-size:0.92em;';
+                        correctSpan.textContent = '→ ' + acceptedAnswers[0];
+                        input.parentNode.appendChild(correctSpan);
+                    }
+                    showFeedback(isCorrect);
+                }
+
+                if (checkBtn) checkBtn.addEventListener('click', checkFillAnswer);
+                if (input) input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') checkFillAnswer();
+                });
+            }
+            else if (type === 'tf') {
+                // === ĐÚNG / SAI ===
+                const btns = q.querySelectorAll('.quiz-tf button');
+                btns.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        if (q.classList.contains('answered')) return;
+                        const chosen = btn.dataset.v;
+                        const isCorrect = (chosen === answer);
+
+                        btns.forEach(function(b) {
+                            if (b.dataset.v === answer) b.classList.add('correct');
+                        });
+                        if (!isCorrect) btn.classList.add('wrong');
+                        showFeedback(isCorrect);
+                    });
+                });
+            }
+            else if (type === 'match') {
+                // === NỐI CẶP ===
+                const matchContainer = q.querySelector('.quiz-match');
+                if (!matchContainer) return;
+                const leftItems = matchContainer.querySelectorAll('.quiz-match-item[data-pair]');
+                let selectedLeft = null;
+                let matchedPairs = 0;
+                const totalPairs = Math.floor(leftItems.length / 2);
+                // Separate left (data-side="l") and right (data-side="r")
+                const lefts = matchContainer.querySelectorAll('[data-side="l"]');
+                const rights = matchContainer.querySelectorAll('[data-side="r"]');
+
+                function handleMatchClick(item) {
+                    if (item.classList.contains('matched')) return;
+                    const side = item.dataset.side;
+
+                    if (!selectedLeft) {
+                        // First selection
+                        if (side === 'l') {
+                            selectedLeft = item;
+                            item.classList.add('selected');
+                        } else {
+                            // Clicked right first — also allow
+                            selectedLeft = item;
+                            item.classList.add('selected');
+                        }
+                    } else {
+                        // Second selection — must be different side
+                        if (selectedLeft.dataset.side === side) {
+                            // Same side — switch selection
+                            selectedLeft.classList.remove('selected');
+                            selectedLeft = item;
+                            item.classList.add('selected');
+                            return;
+                        }
+
+                        const pair1 = selectedLeft.dataset.pair;
+                        const pair2 = item.dataset.pair;
+
+                        if (pair1 === pair2) {
+                            // Correct match!
+                            selectedLeft.classList.remove('selected');
+                            selectedLeft.classList.add('matched');
+                            item.classList.add('matched');
+                            matchedPairs++;
+
+                            if (matchedPairs >= totalPairs) {
+                                correctCount++;
+                                showFeedback(true);
+                            }
+                        } else {
+                            // Wrong match — flash red briefly
+                            selectedLeft.classList.add('wrong-flash');
+                            item.classList.add('wrong-flash');
+                            var prev = selectedLeft;
+                            setTimeout(function() {
+                                prev.classList.remove('wrong-flash', 'selected');
+                                item.classList.remove('wrong-flash');
+                            }, 500);
+                        }
+                        selectedLeft = null;
+                    }
+                }
+
+                lefts.forEach(function(el) { el.addEventListener('click', function() { handleMatchClick(el); }); });
+                rights.forEach(function(el) { el.addEventListener('click', function() { handleMatchClick(el); }); });
+            }
+        });
+    }
+    </script>
 </body>
 
 </html>

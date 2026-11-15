@@ -25,6 +25,8 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/exam.js"></script>
     <script src="../../assets/js/audio.js"></script>
+    <script src="../../assets/js/transcript.js"></script>
+    <script src="../../assets/js/transcript-data-60.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
@@ -35,7 +37,7 @@
 
 
 
-    <div id="sticky-audio-player" data-video-id="hvakiGWgvA">
+    <div id="sticky-audio-player" data-video-id="-hvakiGWgvA">
         <div id="youtube-player-hidden"></div>
         <div class="player-inner">
             <button onclick="seekAudio(-5)" class="btn-ctrl" title="Lùi 5 giây">
@@ -82,9 +84,14 @@
                     <path d="M3 3v5h5" />
                 </svg>
             </button>
+            <button id="btn-cc" class="btn-ctrl btn-cc active" title="Ẩn phụ đề (CC)">CC</button>
             <span class="time-display" id="time-current">00:00</span>
             <input type="range" id="progress-bar" value="0" step="1" title="Tua âm thanh">
             <span class="time-display" id="time-total">00:00</span>
+        </div>
+        <div class="transcript-line" id="transcript-line">
+            <span class="transcript-chapter" id="transcript-chapter"></span>
+            <span class="transcript-text" id="transcript-text">🎧 Phụ đề sẽ hiện khi audio phát...</span>
         </div>
     </div>
 

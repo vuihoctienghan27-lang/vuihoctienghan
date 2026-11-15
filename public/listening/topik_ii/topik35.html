@@ -25,6 +25,8 @@
     <script src="../../assets/js/navbar.js"></script>
     <script src="../../assets/js/exam.js"></script>
     <script src="../../assets/js/audio.js"></script>
+    <script src="../../assets/js/transcript.js"></script>
+    <script src="../../assets/js/transcript-data-35.js"></script>
     <script src="../../assets/js/activity-tracker.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../../assets/js/block.js"></script>
@@ -54,11 +56,6 @@
                     <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
                 </svg>
             </button>
-            <button onclick="stopAudio()" class="btn-ctrl" title="Dừng">
-                <svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-                    <path d="M6 6h12v12H6z" />
-                </svg>
-            </button>
             <button onclick="seekAudio(5)" class="btn-ctrl" title="Tiến 5 giây">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"
                     stroke-linecap="round" stroke-linejoin="round">
@@ -82,9 +79,14 @@
                     <path d="M3 3v5h5" />
                 </svg>
             </button>
+            <button id="btn-cc" class="btn-ctrl btn-cc active" title="Ẩn phụ đề (CC)">CC</button>
             <span class="time-display" id="time-current">00:00</span>
             <input type="range" id="progress-bar" value="0" step="1" title="Tua âm thanh">
             <span class="time-display" id="time-total">00:00</span>
+        </div>
+        <div class="transcript-line" id="transcript-line">
+            <span class="transcript-chapter" id="transcript-chapter"></span>
+            <span class="transcript-text" id="transcript-text">🎧 Phụ đề sẽ hiện khi audio phát...</span>
         </div>
     </div>
 
@@ -107,7 +109,7 @@
                 </div>
 
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="../../assets\img\listening\topik_ii\topik35/1.jpg" alt="Hình ảnh câu 1"
+                    <img src="../../assets/img/listening/topik_ii/topik35/1.jpg" alt="Hình ảnh câu 1"
                         style="width: 100%; max-width: 100%; border-radius: 8px; border: 1px solid #cbd5e1;">
                 </div>
 
@@ -122,8 +124,8 @@
                             class="num">④</span> 4</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -186,7 +188,7 @@
                 </div>
 
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="../../assets\img\listening\topik_ii\topik35/2.jpg" alt="Hình ảnh câu 2"
+                    <img src="../../assets/img/listening/topik_ii/topik35/2.jpg" alt="Hình ảnh câu 2"
                         style="width: 100%; max-width: 100%; border-radius: 8px; border: 1px solid #cbd5e1;">
                 </div>
 
@@ -201,8 +203,8 @@
                             class="num">④</span> 4</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -275,7 +277,7 @@
                 </div>
 
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <img src="../../assets\img\listening\topik_ii\topik35/3.jpg" alt="Hình ảnh câu 3"
+                    <img src="../../assets/img/listening/topik_ii/topik35/3.jpg" alt="Hình ảnh câu 3"
                         style="width: 100%; max-width: 100%; border-radius: 8px; border: 1px solid #cbd5e1;">
                 </div>
 
@@ -290,8 +292,8 @@
                             class="num">④</span> 4</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -386,8 +388,8 @@
                             data-meaning="gọi điện thoại (kính ngữ)">전화 드리겠습니다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -483,8 +485,8 @@
                             class="vocab-word" data-base="힘들다" data-meaning="khó khăn, vất vả">힘들겠는데요</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -574,8 +576,8 @@
                             data-meaning="chắc phải mua">사야겠어요</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -677,8 +679,8 @@
                             data-meaning="có vẻ, dường như">것 같아</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -780,8 +782,8 @@
                             data-meaning="đáng tiếc">아쉽네요</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -885,8 +887,8 @@
                             data-meaning="mua">산다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -992,8 +994,8 @@
                             data-meaning="đi để mua">사러 간다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -1106,8 +1108,8 @@
                             data-base="확인하다" data-meaning="kiểm tra, xác nhận">확인한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -1213,8 +1215,8 @@
                             data-meaning="xác nhận, kiểm tra">확인한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -1339,8 +1341,8 @@
                             data-meaning="chờ đợi">기다려야 한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -1450,8 +1452,8 @@
                             data-meaning="di chuyển, dời">옮겨야 한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -1557,8 +1559,8 @@
                             data-meaning="làm">하는</span> 공연이다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -1681,8 +1683,8 @@
                             data-meaning="đại đa số, phần lớn">대부분이다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -1818,8 +1820,8 @@
                             data-meaning="cần thiết">필요하다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -1946,8 +1948,8 @@
                             data-meaning="không làm thì tốt hơn">하는 게 좋다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -2073,8 +2075,8 @@
                             data-meaning="có">있다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -2197,8 +2199,8 @@
                             data-meaning="thay đổi">바꿔야 한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -2334,8 +2336,8 @@
                             data-base="존중하다" data-meaning="tôn trọng">존중해야 한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -2490,8 +2492,8 @@
                             data-meaning="không có">없다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -2563,8 +2565,8 @@
                             data-meaning="báo cáo">보고하고 있다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -2702,8 +2704,8 @@
                             data-meaning="sử dụng">사용한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -2787,8 +2789,8 @@
                             data-meaning="làm cho">해 줘야 한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -2931,8 +2933,8 @@
                             data-meaning="ý nghĩa">의미가</span> 없다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -3013,8 +3015,8 @@
                             data-meaning="nhận được">받기</span> 위해</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -3156,8 +3158,8 @@
                             data-meaning="được báo cáo, được đưa tin">보도되었다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -3228,8 +3230,8 @@
                             data-base="상담가" data-meaning="nhà tư vấn">상담가</span></div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -3388,8 +3390,8 @@
                             data-meaning="dạy">가르쳐야 한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -3474,8 +3476,8 @@
                             data-meaning="mở rộng">넓혀야 한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -3632,8 +3634,8 @@
                             data-meaning="gửi gắm">보내고 있다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -3712,8 +3714,8 @@
                             data-meaning="phương án">방안</span></div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -3857,8 +3859,8 @@
                             data-meaning="trở nên tốt hơn">좋아졌으나</span> 양이 부족하다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -3931,8 +3933,8 @@
                             data-meaning="làm sáng tỏ, công bố">밝히고 있다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -4056,8 +4058,8 @@
                             class="num">④</span> 이 전시실에서 역사 기록의 절차에 대해 알 수 있다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -4134,8 +4136,8 @@
                             data-base="성공하다" data-meaning="thành công">성공하는</span> 것은 아니다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -4270,8 +4272,8 @@
                             class="num">④</span> 성공할 수 있는 기본 조건은 만 시간을 투자하는 것이다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -4355,8 +4357,8 @@
                             data-meaning="nhanh chóng">빨리</span> 자란다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -4518,8 +4520,8 @@
                             data-base="내려가다" data-meaning="đi xuống, giảm">내려간다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -4598,8 +4600,8 @@
                             data-meaning="hiểu, thấu hiểu">이해한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -4754,8 +4756,8 @@
                             data-meaning="tác dụng, hoạt động">작용한다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -4837,8 +4839,8 @@
                             data-meaning="việc có thể">있기</span> 때문에</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -4984,8 +4986,8 @@
                             data-meaning="cung cấp">공급하기</span> 위해 만든 웅덩이이다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -5060,8 +5062,8 @@
                             data-base="사고" data-meaning="tư duy, suy nghĩ">사고가</span> 필요한 때이다.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -5197,8 +5199,8 @@
                             data-meaning="thuyết phục">설득하고 있다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -5278,8 +5280,8 @@
                             data-meaning="cấp bách">시급하다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -5458,8 +5460,8 @@
                             data-meaning="hối thúc, xúc tiến">촉구하고 있다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -5543,8 +5545,8 @@
                             data-meaning="sự hợp tác">협력이다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">🎙️ Kịch bản nghe (듣기 대본):</span>
@@ -5706,8 +5708,8 @@
                             data-base="촉구하다" data-meaning="hối thúc, xúc tiến">촉구하고 있다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>
@@ -5786,8 +5788,8 @@
                             data-base="촉구하다" data-meaning="hối thúc, xúc tiến">촉구하고 있다</span>.</div>
                 </div>
                 <div class="action-area">
-                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết & Ôn
-                        tập</button>
+                    <button class="btn-explain" onclick="toggleExplain(this)">📖 Xem giải thích chi tiết
+                        </button>
                     <div class="explanation-content">
                         <div class="trans-box">
                             <span class="trans-title">📝 Dịch đáp án:</span>

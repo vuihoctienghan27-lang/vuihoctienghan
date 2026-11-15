@@ -263,12 +263,16 @@
         async _translateLang(text, sl = 'ko', tl = 'vi') {
             if (!text || !text.trim()) return '';
             try {
-                // Google Translate unofficial endpoint
-                const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${encodeURIComponent(text)}`;
+                // Google Translate unofficial endpoint (clients5 có CORS, ổn định hơn)
+                const url = `https://clients5.google.com/translate_a/t?client=dict-chrome-ex&sl=${sl}&tl=${tl}&q=${encodeURIComponent(text)}`;
                 const resp = await fetch(url);
                 if (!resp.ok) throw new Error('Google Translate HTTP ' + resp.status);
                 const data = await resp.json();
-                const translated = data[0]?.map(seg => seg[0]).filter(Boolean).join('') || '';
+                let translated = '';
+                if (typeof data === 'string') translated = data;
+                else if (Array.isArray(data)) {
+                    translated = data.map(seg => Array.isArray(seg) ? (seg[0] || '') : (typeof seg === 'string' ? seg : '')).join('');
+                }
                 if (translated) return translated;
             } catch (e) {
                 // hide error

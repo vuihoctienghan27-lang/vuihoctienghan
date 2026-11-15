@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Học bảng chữ cái Hangeul — Giáo án tương tác</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Noto+Sans+KR:wght@400;500;700;900&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --ink-soft:#3A4A6B;
+    --paper:#F7F2E7;
+    --card:#FFFFFF;
+    --line:#E4DAC5;
+    --red:#C73E3A;
+    --red-dark:#A32E2B;
+    --jade:#1F7A5C;
+    --jade-dark:#175E47;
+    --gold:#C9932A;
+    --gold-dark:#A8791F;
+    --text-soft:#655F4E;
+    --radius:14px;
+    --shadow: 0 2px 0 var(--line);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Be Vietnam Pro', sans-serif;
+    line-height:1.5;
+  }
+  .kr{ font-family:'Noto Sans KR', sans-serif; }
+  h1,h2,h3{ font-family:'Fraunces', serif; margin:0; }
+  a{color:inherit;}
+  button{font-family:inherit;}
+  :focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background: var(--ink);
+    color:#F3EEE0;
+    padding:56px 24px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::before{
+    content:"";
+    position:absolute;
+    right:-60px; top:-60px;
+    width:260px; height:260px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, var(--red) 0 48%, transparent 49%),
+                radial-gradient(circle at 65% 65%, var(--jade) 0 48%, transparent 49%);
+    opacity:0.9;
+  }
+  .hero-inner{ max-width:960px; margin:0 auto; position:relative; }
+  .hero-eyebrow{
+    font-size:15px; color:var(--gold); letter-spacing:0.02em; margin-bottom:10px; font-weight:600;
+  }
+  header.hero h1{ font-size:clamp(32px,5vw,52px); font-weight:600; margin-bottom:8px; }
+  header.hero .kr-subtitle{ font-size:20px; color:#C9C3AE; margin-bottom:18px; }
+  header.hero p.desc{ max-width:560px; color:#D8D2C0; font-size:16px; }
+
+  /* ---------- Nav ---------- */
+  nav.tabs{
+    position:sticky; top:0; z-index:30;
+    background:rgba(247,242,231,0.96);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+    display:flex; justify-content:center; gap:4px;
+    padding:0 12px;
+    overflow-x:auto;
+  }
+  nav.tabs button{
+    border:none; background:none; cursor:pointer;
+    padding:16px 18px; font-size:15px; font-weight:600; color:var(--text-soft);
+    border-bottom:3px solid transparent;
+    white-space:nowrap;
+  }
+  nav.tabs button.active{ color:var(--ink); border-bottom-color:var(--red); }
+
+  main{ max-width:1040px; margin:0 auto; padding:0 20px; }
+
+  section.stage{ padding:56px 0 24px; border-bottom:1px solid var(--line); }
+  section.stage:last-of-type{ border-bottom:none; }
+  .stage-head{ margin-bottom:8px; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .stage-head h2{ font-size:30px; font-weight:600; }
+  .stage-head .kr-tag{ font-size:18px; color:var(--text-soft); }
+  .stage-intro{ color:var(--text-soft); max-width:640px; margin-bottom:28px; font-size:15px; }
+
+  .group-title{ font-size:16px; font-weight:700; margin:28px 0 14px; color:var(--ink-soft); }
+  .group-title:first-of-type{ margin-top:0; }
+
+  /* ---------- Flashcards ---------- */
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(138px,1fr));
+    gap:14px;
+  }
+  .jamo-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    aspect-ratio:1/1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer;
+    position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:var(--shadow);
+  }
+  .jamo-card:hover{ transform:translateY(-3px); box-shadow:0 6px 0 var(--line); }
+  .jamo-card .glyph{ font-size:64px; font-weight:700; line-height:1; }
+  .jamo-card .name-kr{ font-size:15px; color:var(--ink-soft); margin-top:8px; font-weight:600; }
+  .jamo-card .roman{ font-size:12px; color:var(--text-soft); margin-top:2px; }
+  .jamo-card .mini-speak{
+    position:absolute; bottom:8px; right:8px;
+    width:28px; height:28px; border-radius:50%;
+    border:none; background:var(--paper); font-size:13px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:var(--ink-soft);
+  }
+  .jamo-card .mini-speak:hover{ background:var(--line); }
+  #stage-consonants .jamo-card .glyph{ color:var(--red); }
+  #stage-vowels .jamo-card .glyph{ color:var(--jade); }
+
+  /* ---------- Modal (stroke practice) ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(27,42,74,0.55);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    background:var(--card); border-radius:20px; padding:28px;
+    max-width:380px; width:100%; text-align:center;
+    animation:pop .18s ease;
+  }
+  @keyframes pop{ from{ transform:scale(.92); opacity:0;} to{ transform:scale(1); opacity:1;} }
+  .modal .close-x{
+    float:right; border:none; background:none; font-size:20px; cursor:pointer; color:var(--text-soft);
+    margin:-8px -8px 0 0;
+  }
+  .modal .big-glyph{ font-size:56px; font-weight:700; margin:6px 0 4px; }
+  .modal .roman-line{ color:var(--text-soft); font-size:14px; margin-bottom:14px; }
+  .modal canvas{ background:#FFFDF7; border-radius:12px; }
+  .modal .stroke-label{ font-size:13px; color:var(--text-soft); margin:10px 0 6px; font-weight:600; }
+  .modal-actions{ display:flex; gap:10px; margin-top:14px; }
+  .btn{
+    border:none; border-radius:10px; padding:11px 16px; font-weight:600; font-size:14px;
+    cursor:pointer; flex:1; color:#fff; box-shadow:0 2px 0 rgba(0,0,0,0.15);
+  }
+  .btn:active{ transform:translateY(1px); box-shadow:none; }
+  .btn.replay{ background:var(--ink-soft); }
+  .btn.speak{ background:var(--red); }
+  .modal .desc-text{ margin-top:14px; font-size:13px; color:var(--text-soft); text-align:left; background:var(--paper); padding:10px 12px; border-radius:10px; }
+
+  /* ---------- Combination section ---------- */
+  .combo-layout{ display:flex; gap:36px; align-items:flex-start; flex-wrap:wrap; }
+  .combo-result{
+    flex:0 0 240px; display:flex; flex-direction:column; align-items:center; gap:14px;
+    position:sticky; top:76px;
+  }
+  .combo-result .btn{ width:100%; flex:none; }
+  .combo-result .btn.reset{ background:var(--jade); }
+  .combo-pickers{ flex:1 1 340px; min-width:280px; }
+  .combo-picker{ margin-bottom:26px; }
+  .combo-picker .label{ font-weight:700; font-size:14px; margin-bottom:10px; color:var(--ink-soft); }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:10px; }
+  .chip{
+    border:1.5px solid var(--line); background:var(--card); border-radius:12px;
+    padding:14px 20px; font-size:28px; font-weight:600; cursor:pointer; color:var(--ink);
+  }
+  .chip.none-chip{ font-size:14px; font-weight:600; padding:14px 16px; }
+  .chip.selected{ background:var(--gold); border-color:var(--gold-dark); color:#fff; }
+  .combo-box{
+    width:240px; height:240px; border-radius:28px;
+    background:var(--ink); color:#F7F2E7;
+    display:flex; align-items:center; justify-content:center;
+    font-size:104px; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 0 var(--ink-soft);
+  }
+  .combo-box.empty{ font-size:15px; font-weight:500; color:#A7B0C4; padding:10px; text-align:center; }
+  @media (max-width:640px){
+    .combo-result{ position:static; flex:1 1 100%; }
+  }
+
+  /* ---------- Vocabulary ---------- */
+  .vocab-note{
+    background:#FFF7E4; border:1px dashed var(--gold-dark); color:var(--gold-dark);
+    padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:18px; display:none;
+  }
+  .vocab-note.show{ display:block; }
+  .vocab-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:22px;
+  }
+  .vocab-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; cursor:pointer; box-shadow:var(--shadow); position:relative;
+    display:flex; flex-direction:column;
+  }
+  .vocab-card:hover{ transform:translateY(-2px); }
+  .vocab-img{
+    height:190px; display:flex; align-items:center; justify-content:center;
+    font-size:76px; background:linear-gradient(135deg,#F1EADA,#E9E0C9);
+  }
+  .vocab-img img{ width:100%; height:100%; object-fit:cover; }
+  .vocab-body{ padding:16px 18px 18px; }
+  .vocab-word{ font-size:32px; font-weight:700; }
+  .vocab-roman{ font-size:15px; color:var(--text-soft); }
+  .vocab-meaning{ font-size:17px; color:var(--ink-soft); margin-top:4px; }
+  .vocab-edit{
+    display:none; padding:8px 10px; gap:6px; background:#FFF7E4; border-top:1px solid var(--line);
+  }
+  .vocab-edit.show{ display:flex; }
+  .vocab-edit input{
+    flex:1; border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:12px; min-width:0;
+  }
+  .vocab-edit button{
+    border:none; background:var(--jade); color:#fff; border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer;
+  }
+
+  footer{ text-align:center; padding:32px 20px 90px; color:var(--text-soft); font-size:13px; }
+
+  /* ---------- Pencil FAB + password modal ---------- */
+  .fab{
+    position:fixed; bottom:22px; right:22px; z-index:80;
+    width:56px; height:56px; border-radius:50%; border:none;
+    background:var(--red); color:#fff; font-size:24px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+  }
+  .fab.editing{ background:var(--jade); }
+  .pw-modal input{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:15px; margin:12px 0 6px;
+  }
+  .pw-error{ color:var(--red); font-size:13px; min-height:16px; margin-bottom:6px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Giáo án tương tác — tiết dạy thử</div>
+    <h1>Học bảng chữ cái Hangeul</h1>
+    <div class="kr-subtitle kr">한글의 첫걸음</div>
+    <p class="desc">Nhận mặt chữ, tập viết đúng thứ tự nét, ghép âm tiết và luyện đọc từ vựng sơ cấp — tất cả trong một buổi học.</p>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-target="stage-consonants" class="active">Phụ âm</button>
+  <button data-target="stage-vowels">Nguyên âm</button>
+  <button data-target="stage-combo">Ghép âm</button>
+  <button data-target="stage-vocab">Từ vựng</button>
+</nav>
+
+<main>
+  <section class="stage" id="stage-consonants">
+    <div class="stage-head"><h2>Phụ âm</h2><span class="kr-tag kr">자음</span></div>
+    <p class="stage-intro">Chạm vào một thẻ để xem thứ tự nét viết và nghe cách đọc. Nét đang viết hiện màu đỏ, nét đã xong hiện màu xanh đậm.</p>
+    <div class="group-title">Phụ âm cơ bản</div>
+    <div class="card-grid" id="grid-consonants-basic"></div>
+    <div class="group-title">Phụ âm đôi — phát âm căng và mạnh hơn</div>
+    <div class="card-grid" id="grid-consonants-double"></div>
+  </section>
+
+  <section class="stage" id="stage-vowels">
+    <div class="stage-head"><h2>Nguyên âm</h2><span class="kr-tag kr">모음</span></div>
+    <p class="stage-intro">Nguyên âm đơn là nét gốc; nguyên âm đôi được ghép từ hai nguyên âm đơn, vì vậy nét viết bên dưới cũng được ghép tương ứng để dễ liên tưởng. Khác với phụ âm, nguyên âm không có tên gọi riêng — người Hàn gọi nguyên âm bằng chính cách đọc của nó.</p>
+    <div class="group-title">Nguyên âm đơn</div>
+    <div class="card-grid" id="grid-vowels-basic"></div>
+    <div class="group-title">Nguyên âm đôi</div>
+    <div class="card-grid" id="grid-vowels-double"></div>
+  </section>
+
+  <section class="stage" id="stage-combo">
+    <div class="stage-head"><h2>Ghép âm thành chữ</h2><span class="kr-tag kr">조합 연습</span></div>
+    <p class="stage-intro">Chọn phụ âm đầu, nguyên âm, rồi patchim (phụ âm cuối, có thể bỏ trống) để ghép thành một âm tiết hoàn chỉnh. Chạm vào ô lớn để nghe cách đọc.</p>
+
+    <div class="combo-layout">
+      <div class="combo-result">
+        <div class="combo-box empty kr" id="comboBox">Kết quả ghép âm<br>sẽ hiện ở đây</div>
+        <button class="btn reset" id="comboReset">Ghép lại từ đầu</button>
+      </div>
+      <div class="combo-pickers">
+        <div class="combo-picker">
+          <div class="label">1. Phụ âm đầu · 초성</div>
+          <div class="chip-row" id="row-initial"></div>
+        </div>
+        <div class="combo-picker">
+          <div class="label">2. Nguyên âm · 중성</div>
+          <div class="chip-row" id="row-medial"></div>
+        </div>
+        <div class="combo-picker">
+          <div class="label">3. Patchim (không bắt buộc) · 종성</div>
+          <div class="chip-row" id="row-final"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage" id="stage-vocab">
+    <div class="stage-head"><h2>Luyện đọc từ vựng</h2><span class="kr-tag kr">단어</span></div>
+    <p class="stage-intro">Chạm vào thẻ để nghe phát âm của từ.</p>
+    <div class="vocab-note" id="vocabNote">Đang ở chế độ giáo viên — chạm vào một thẻ để dán đường dẫn ảnh minh họa cho từ đó.</div>
+    <div class="vocab-grid" id="vocabGrid"></div>
+  </section>
+</main>
+
+<footer>Giáo án được thiết kế phục vụ buổi dạy thử tiếng Hàn cho người mới bắt đầu.</footer>
+
+<button class="fab" id="fabPencil" title="Chế độ giáo viên">✏️</button>
+
+<!-- Flashcard / stroke practice modal -->
+<div class="overlay" id="jamoOverlay">
+  <div class="modal">
+    <button class="close-x" id="jamoClose">✕</button>
+    <div class="big-glyph kr" id="jamoGlyph"></div>
+    <div class="roman-line" id="jamoRoman"></div>
+    <div class="stroke-label">Thứ tự nét viết</div>
+    <canvas id="jamoCanvas" width="260" height="260"></canvas>
+    <div class="modal-actions">
+      <button class="btn replay" id="jamoReplay">▶ Xem lại</button>
+      <button class="btn speak" id="jamoSpeak">🔊 Nghe phát âm</button>
+    </div>
+    <div class="desc-text" id="jamoDesc"></div>
+  </div>
+</div>
+
+<!-- Password modal -->
+<div class="overlay" id="pwOverlay">
+  <div class="modal pw-modal">
+    <button class="close-x" id="pwClose">✕</button>
+    <h3 style="font-size:20px;">Chế độ giáo viên</h3>
+    <p style="font-size:13px;color:var(--text-soft);margin-top:6px;">Nhập mật khẩu để thêm hình ảnh minh họa cho từ vựng.</p>
+    <input type="password" id="pwInput" placeholder="Mật khẩu">
+    <div class="pw-error" id="pwError"></div>
+    <button class="btn speak" id="pwSubmit" style="width:100%;">Xác nhận</button>
+  </div>
+</div>
+
+<script>
+/* ================= Stroke data ================= */
+function L(...points){ return {type:'line', points}; }
+function C(cx,cy,r){ return {type:'circle', cx, cy, r}; }
+
+const STROKES = {};
+STROKES['ㄱ']=[L([20,20],[75,20],[75,55])];
+STROKES['ㄴ']=[L([25,15],[25,80],[80,80])];
+STROKES['ㄷ']=[L([20,20],[80,20]), L([20,20],[20,80],[80,80])];
+STROKES['ㄹ']=[L([18,15],[75,15],[75,40],[18,40]), L([18,40],[18,62]), L([18,62],[75,62],[75,85],[18,85])];
+STROKES['ㅁ']=[L([22,20],[22,80]), L([22,20],[78,20],[78,80]), L([22,80],[78,80])];
+STROKES['ㅂ']=[L([25,15],[25,85]), L([75,15],[75,85]), L([25,32],[75,32]), L([25,70],[75,70])];
+STROKES['ㅅ']=[L([50,15],[18,85]), L([50,15],[82,85])];
+STROKES['ㅇ']=[C(50,52,33)];
+STROKES['ㅈ']=[L([28,22],[72,22]), L([50,22],[18,85]), L([50,22],[82,85])];
+STROKES['ㅊ']=[L([38,6],[46,14]), L([28,26],[72,26]), L([50,26],[18,88]), L([50,26],[82,88])];
+STROKES['ㅋ']=[L([20,22],[75,22],[75,80]), L([35,48],[62,48])];
+STROKES['ㅌ']=[L([20,18],[80,18]), L([20,48],[68,48]), L([20,18],[20,82],[80,82])];
+STROKES['ㅍ']=[L([18,20],[82,20]), L([30,20],[30,85]), L([70,20],[70,85])];
+STROKES['ㅎ']=[L([35,8],[58,8]), L([46,12],[46,24]), C(50,60,26)];
+
+STROKES['ㅏ']=[L([48,8],[48,92]), L([48,42],[75,42])];
+STROKES['ㅑ']=[L([48,8],[48,92]), L([48,36],[72,36]), L([48,54],[72,54])];
+STROKES['ㅓ']=[L([52,8],[52,92]), L([52,42],[25,42])];
+STROKES['ㅕ']=[L([52,8],[52,92]), L([52,36],[28,36]), L([52,54],[28,54])];
+STROKES['ㅗ']=[L([8,52],[92,52]), L([50,52],[50,20])];
+STROKES['ㅛ']=[L([8,52],[92,52]), L([35,52],[35,20]), L([65,52],[65,20])];
+STROKES['ㅜ']=[L([8,48],[92,48]), L([50,48],[50,80])];
+STROKES['ㅠ']=[L([8,48],[92,48]), L([35,48],[35,80]), L([65,48],[65,80])];
+STROKES['ㅡ']=[L([8,50],[92,50])];
+STROKES['ㅣ']=[L([50,8],[50,92])];
+
+function shiftScale(strokes,sx,ox,sy,oy){
+  return strokes.map(s => s.type==='circle'
+    ? {type:'circle', cx:s.cx*sx+ox, cy:s.cy*sy+oy, r:s.r*Math.min(sx,sy)}
+    : {type:'line', points:s.points.map(p=>[p[0]*sx+ox, p[1]*sy+oy])});
+}
+const DOUBLE_MAP = {'ㄲ':'ㄱ','ㄸ':'ㄷ','ㅃ':'ㅂ','ㅆ':'ㅅ','ㅉ':'ㅈ'};
+Object.entries(DOUBLE_MAP).forEach(([dbl,base])=>{
+  STROKES[dbl] = [...shiftScale(STROKES[base],0.42,3,1,0), ...shiftScale(STROKES[base],0.42,55,1,0)];
+});
+const COMPOUND_MAP = {
+  'ㅐ':['ㅏ','ㅣ'], 'ㅒ':['ㅑ','ㅣ'], 'ㅔ':['ㅓ','ㅣ'], 'ㅖ':['ㅕ','ㅣ'],
+  'ㅘ':['ㅗ','ㅏ'], 'ㅙ':['ㅗ','ㅐ'], 'ㅚ':['ㅗ','ㅣ'],
+  'ㅝ':['ㅜ','ㅓ'], 'ㅞ':['ㅜ','ㅔ'], 'ㅟ':['ㅜ','ㅣ'], 'ㅢ':['ㅡ','ㅣ']
+};
+Object.entries(COMPOUND_MAP).forEach(([ch,[a,b]])=>{
+  STROKES[ch] = [...shiftScale(STROKES[a],0.42,4,0.75,12), ...shiftScale(STROKES[b],0.42,54,0.75,12)];
+});
+
+/* ================= Content data ================= */
+const CONS_BASIC = [
+ ['ㄱ','g / k','Giống âm "g" nhẹ, cuối âm tiết đọc gần như "k".','기역 (giyeok)'],
+ ['ㄴ','n','Giống âm "n" trong tiếng Việt.','니은 (nieun)'],
+ ['ㄷ','d / t','Giống âm "đ" nhẹ, không bật hơi.','디귿 (digeut)'],
+ ['ㄹ','r / l','Âm rung nhẹ, giữa "r" và "l".','리을 (rieul)'],
+ ['ㅁ','m','Giống âm "m".','미음 (mieum)'],
+ ['ㅂ','b / p','Giống âm "b" nhẹ, không bật hơi.','비읍 (bieup)'],
+ ['ㅅ','s','Giống âm "s", nhẹ hơn trong tiếng Việt.','시옷 (siot)'],
+ ['ㅇ','(câm) / ng','Không có âm khi đứng đầu; đọc "ng" khi làm patchim.','이응 (ieung)'],
+ ['ㅈ','j','Giống âm "ch" nhẹ.','지읒 (jieut)'],
+ ['ㅊ','ch','Giống "ch" nhưng bật hơi mạnh.','치읓 (chieut)'],
+ ['ㅋ','k','Giống "k" bật hơi mạnh.','키읔 (kieuk)'],
+ ['ㅌ','t','Giống "th" bật hơi mạnh.','티읕 (tieut)'],
+ ['ㅍ','p','Giống "ph" bật hơi mạnh.','피읖 (pieup)'],
+ ['ㅎ','h','Giống âm "h".','히읗 (hieut)'],
+];
+const CONS_DOUBLE = [
+ ['ㄲ','kk','Phát âm căng, mạnh hơn ㄱ.','쌍기역 (ssanggiyeok)'],
+ ['ㄸ','tt','Phát âm căng, mạnh hơn ㄷ.','쌍디귿 (ssangdigeut)'],
+ ['ㅃ','pp','Phát âm căng, mạnh hơn ㅂ.','쌍비읍 (ssangbieup)'],
+ ['ㅆ','ss','Phát âm căng, mạnh hơn ㅅ.','쌍시옷 (ssangsiot)'],
+ ['ㅉ','jj','Phát âm căng, mạnh hơn ㅈ.','쌍지읒 (ssangjieut)'],
+];
+const VOW_BASIC = [
+ ['ㅏ','a','Miệng mở rộng, giống âm "a".'],
+ ['ㅑ','ya','Giống "ya", bắt đầu bằng âm đệm "y".'],
+ ['ㅓ','eo','Giống âm "ơ" trong tiếng Việt.'],
+ ['ㅕ','yeo','Giống "yơ".'],
+ ['ㅗ','o','Môi tròn, giống âm "o".'],
+ ['ㅛ','yo','Giống "yo".'],
+ ['ㅜ','u','Môi tròn nhỏ, giống âm "u".'],
+ ['ㅠ','yu','Giống "yu".'],
+ ['ㅡ','eu','Giống âm "ư".'],
+ ['ㅣ','i','Giống âm "i".'],
+];
+const VOW_DOUBLE = [
+ ['ㅐ','ae','Giống âm "e" mở (giữa a và e).'],
+ ['ㅒ','yae','Giống "ya" + "e", ít dùng.'],
+ ['ㅔ','e','Giống âm "ê".'],
+ ['ㅖ','ye','Giống "yê".'],
+ ['ㅘ','wa','Giống "oa".'],
+ ['ㅙ','wae','Giống "oe" mở.'],
+ ['ㅚ','oe','Giống "uê / oe".'],
+ ['ㅝ','wo','Giống "uơ".'],
+ ['ㅞ','we','Giống "uê".'],
+ ['ㅟ','wi','Giống "uy".'],
+ ['ㅢ','ui','Giống "ưi", đọc lướt nhanh.'],
+];
+
+const VOCAB = [
+ ['안녕','annyeong','Xin chào','👋'],
+ ['감사','gamsa','Cảm ơn','🙏'],
+ ['사랑','sarang','Tình yêu','❤️'],
+ ['학교','hakgyo','Trường học','🏫'],
+ ['친구','chingu','Bạn bè','🧑‍🤝‍🧑'],
+ ['사과','sagwa','Quả táo','🍎'],
+ ['물','mul','Nước','💧'],
+ ['엄마','eomma','Mẹ','👩'],
+ ['아빠','appa','Bố','👨'],
+ ['이름','ireum','Tên','📛'],
+ ['고양이','goyangi','Con mèo','🐱'],
+ ['강아지','gangaji','Con chó','🐶'],
+ ['커피','keopi','Cà phê','☕'],
+ ['한국','hanguk','Hàn Quốc','🇰🇷'],
+];
+
+/* ================= Speech ================= */
+function speakBrowserFallback(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.rate = 0.82;
+  const voices = speechSynthesis.getVoices();
+  const kv = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ko'));
+  if(kv) u.voice = kv;
+  speechSynthesis.speak(u);
+}
+let currentAudio = null;
+function speak(text){
+  if(currentAudio){ currentAudio.pause(); currentAudio = null; }
+  const url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=tw-ob&q=' + encodeURIComponent(text);
+  const audio = new Audio(url);
+  currentAudio = audio;
+  audio.addEventListener('error', ()=> speakBrowserFallback(text));
+  audio.play().catch(()=> speakBrowserFallback(text));
+}
+if('speechSynthesis' in window){ speechSynthesis.getVoices(); }
+
+/* ================= Canvas stroke animation ================= */
+const REDUCE_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let currentAnimId = 0;
+function drawGrid(ctx,W,H){
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = '#EAE1CB'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle = '#D9CEB0'; ctx.lineWidth = 2; ctx.strokeRect(3,3,W-6,H-6);
+}
+function drawStrokeFull(ctx,W,H,s,color){
+  ctx.strokeStyle = color; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.lineJoin='round';
+  if(s.type==='circle'){
+    ctx.beginPath(); ctx.arc(s.cx/100*W, s.cy/100*H, s.r/100*W, 0, Math.PI*2); ctx.stroke();
+  } else {
+    ctx.beginPath();
+    s.points.forEach((p,i)=>{ const x=p[0]/100*W, y=p[1]/100*H; i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); });
+    ctx.stroke();
+  }
+}
+function playStrokes(canvas, strokes){
+  const myId = ++currentAnimId;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  drawGrid(ctx,W,H);
+  if(REDUCE_MOTION){
+    strokes.forEach(s => drawStrokeFull(ctx,W,H,s,'#1B2A4A'));
+    return;
+  }
+  let i = 0;
+  function next(){
+    if(myId !== currentAnimId) return;
+    if(i >= strokes.length) return;
+    const stroke = strokes[i];
+    const dur = stroke.type==='circle' ? 900 : (450 + stroke.points.length*90);
+    const start = performance.now();
+    function frame(now){
+      if(myId !== currentAnimId) return;
+      const t = Math.min(1,(now-start)/dur);
+      drawGrid(ctx,W,H);
+      for(let k=0;k<i;k++) drawStrokeFull(ctx,W,H,strokes[k],'#1B2A4A');
+      ctx.strokeStyle = '#C73E3A'; ctx.lineWidth = 8; ctx.lineCap='round'; ctx.lineJoin='round';
+      if(stroke.type==='circle'){
+        ctx.beginPath(); ctx.arc(stroke.cx/100*W, stroke.cy/100*H, stroke.r/100*W, -Math.PI/2, -Math.PI/2 + t*Math.PI*2); ctx.stroke();
+      } else {
+        const pts = stroke.points.map(p=>[p[0]/100*W, p[1]/100*H]);
+        const segLens = []; let total=0;
+        for(let k=1;k<pts.length;k++){ const d=Math.hypot(pts[k][0]-pts[k-1][0],pts[k][1]-pts[k-1][1]); segLens.push(d); total+=d; }
+        const target = total*t;
+        ctx.beginPath(); ctx.moveTo(pts[0][0],pts[0][1]);
+        let acc=0;
+        for(let k=1;k<pts.length;k++){
+          const segLen = segLens[k-1];
+          if(acc+segLen <= target){ ctx.lineTo(pts[k][0],pts[k][1]); acc+=segLen; }
+          else { const remain=target-acc; const ratio=segLen? remain/segLen:0; const x=pts[k-1][0]+(pts[k][0]-pts[k-1][0])*ratio; const y=pts[k-1][1]+(pts[k][1]-pts[k-1][1])*ratio; ctx.lineTo(x,y); acc=target; break; }
+        }
+        ctx.stroke();
+      }
+      if(t<1) requestAnimationFrame(frame); else { i++; next(); }
+    }
+    requestAnimationFrame(frame);
+  }
+  next();
+}
+
+/* ================= Render flashcards ================= */
+function makeGrid(containerId, list){
+  const el = document.getElementById(containerId);
+  list.forEach(([ch,roman,desc,name])=>{
+    const card = document.createElement('div');
+    card.className = 'jamo-card';
+    card.innerHTML = `<div class="glyph kr">${ch}</div><div class="roman">${roman}</div>${name ? `<div class="roman kr" style="margin-top:-2px;">${name.split(' ')[0]}</div>` : ''}<button class="mini-speak" title="Nghe phát âm">🔊</button>`;
+    card.querySelector('.mini-speak').addEventListener('click', e=>{ e.stopPropagation(); speak(ch); });
+    card.addEventListener('click', ()=> openJamoModal(ch, roman, desc, name));
+    el.appendChild(card);
+  });
+}
+makeGrid('grid-consonants-basic', CONS_BASIC);
+makeGrid('grid-consonants-double', CONS_DOUBLE);
+makeGrid('grid-vowels-basic', VOW_BASIC);
+makeGrid('grid-vowels-double', VOW_DOUBLE);
+
+const jamoOverlay = document.getElementById('jamoOverlay');
+const jamoCanvas = document.getElementById('jamoCanvas');
+let activeJamo = null;
+function openJamoModal(ch, roman, desc, name){
+  activeJamo = ch;
+  document.getElementById('jamoGlyph').textContent = ch;
+  document.getElementById('jamoRoman').innerHTML = (name ? `Tên gọi: <span class="kr">${name}</span><br>` : '') + 'Phiên âm La-tinh: ' + roman;
+  document.getElementById('jamoDesc').textContent = desc;
+  jamoOverlay.classList.add('open');
+  requestAnimationFrame(()=> playStrokes(jamoCanvas, STROKES[ch] || []));
+}
+document.getElementById('jamoClose').addEventListener('click', ()=> jamoOverlay.classList.remove('open'));
+jamoOverlay.addEventListener('click', e=>{ if(e.target===jamoOverlay) jamoOverlay.classList.remove('open'); });
+document.getElementById('jamoReplay').addEventListener('click', ()=> playStrokes(jamoCanvas, STROKES[activeJamo] || []));
+document.getElementById('jamoSpeak').addEventListener('click', ()=> speak(activeJamo));
+
+/* ================= Combination practice ================= */
+const INITIALS = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const MEDIALS  = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+const FINALS_ALL = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const FINALS_UI = ['','ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ','ㄲ','ㅆ'];
+
+function composeHangul(initial, medial, final){
+  const i = INITIALS.indexOf(initial);
+  const m = MEDIALS.indexOf(medial);
+  const f = FINALS_ALL.indexOf(final || '');
+  if(i<0 || m<0 || f<0) return '';
+  return String.fromCharCode(0xAC00 + (i*21+m)*28 + f);
+}
+
+let selInitial = null, selMedial = null, selFinal = '';
+function buildChipRow(containerId, list, onPick, noneChip, emptyValue){
+  const el = document.getElementById(containerId);
+  list.forEach(ch=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip kr' + ((noneChip && ch==='') ? ' none-chip':'');
+    chip.textContent = (noneChip && ch==='') ? '(không có)' : ch;
+    chip.addEventListener('click', ()=>{
+      const wasSelected = chip.classList.contains('selected');
+      el.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+      if(wasSelected){
+        onPick(emptyValue);
+      } else {
+        chip.classList.add('selected');
+        onPick(ch);
+      }
+      updateCombo();
+    });
+    el.appendChild(chip);
+  });
+}
+buildChipRow('row-initial', INITIALS, ch=>{ selInitial=ch; }, false, null);
+buildChipRow('row-medial', MEDIALS, ch=>{ selMedial=ch; }, false, null);
+buildChipRow('row-final', FINALS_UI, ch=>{ selFinal=ch; }, true, '');
+
+const comboBox = document.getElementById('comboBox');
+function updateCombo(){
+  if(selInitial && selMedial){
+    comboBox.textContent = composeHangul(selInitial, selMedial, selFinal);
+    comboBox.classList.remove('empty');
+  } else if(selInitial){
+    comboBox.textContent = selInitial;
+    comboBox.classList.remove('empty');
+  } else if(selMedial){
+    comboBox.textContent = selMedial;
+    comboBox.classList.remove('empty');
+  } else {
+    comboBox.innerHTML = 'Kết quả ghép âm<br>sẽ hiện ở đây';
+    comboBox.classList.add('empty');
+  }
+}
+comboBox.addEventListener('click', ()=>{
+  if(selInitial && selMedial) speak(composeHangul(selInitial, selMedial, selFinal));
+});
+document.getElementById('comboReset').addEventListener('click', ()=>{
+  selInitial=null; selMedial=null; selFinal='';
+  document.querySelectorAll('#row-initial .chip, #row-medial .chip, #row-final .chip').forEach(c=>c.classList.remove('selected'));
+  updateCombo();
+});
+
+/* ================= Vocabulary + teacher image mode ================= */
+let editMode = false;
+const vocabGrid = document.getElementById('vocabGrid');
+
+async function getStoredImage(word){
+  try{
+    const res = await window.storage.get('vocab-image:'+word, false);
+    return res ? res.value : null;
+  }catch(e){ return null; }
+}
+async function setStoredImage(word, url){
+  try{ await window.storage.set('vocab-image:'+word, url, false); return true; }
+  catch(e){ return false; }
+}
+
+async function renderVocab(){
+  vocabGrid.innerHTML = '';
+  for(const [word, roman, meaning, emoji] of VOCAB){
+    const card = document.createElement('div');
+    card.className = 'vocab-card';
+    const imgUrl = await getStoredImage(word);
+    card.innerHTML = `
+      <div class="vocab-img">${imgUrl ? `<img src="${imgUrl}" alt="${word}">` : emoji}</div>
+      <div class="vocab-body">
+        <div class="vocab-word kr">${word}</div>
+        <div class="vocab-roman">${roman}</div>
+        <div class="vocab-meaning">${meaning}</div>
+      </div>
+      <div class="vocab-edit">
+        <input type="text" placeholder="Dán link hình ảnh…">
+        <button>Lưu</button>
+      </div>
+    `;
+    card.addEventListener('click', (e)=>{
+      if(editMode) return;
+      speak(word);
+    });
+    const editRow = card.querySelector('.vocab-edit');
+    const input = editRow.querySelector('input');
+    editRow.querySelector('button').addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const url = input.value.trim();
+      if(!url) return;
+      await setStoredImage(word, url);
+      card.querySelector('.vocab-img').innerHTML = `<img src="${url}" alt="${word}">`;
+    });
+    input.addEventListener('click', e=> e.stopPropagation());
+    vocabGrid.appendChild(card);
+  }
+  applyEditModeToCards();
+}
+function applyEditModeToCards(){
+  document.querySelectorAll('.vocab-edit').forEach(el=> el.classList.toggle('show', editMode));
+  document.getElementById('vocabNote').classList.toggle('show', editMode);
+}
+renderVocab();
+
+/* Pencil / password flow */
+const fab = document.getElementById('fabPencil');
+const pwOverlay = document.getElementById('pwOverlay');
+const pwInput = document.getElementById('pwInput');
+const pwError = document.getElementById('pwError');
+
+fab.addEventListener('click', ()=>{
+  if(editMode){
+    editMode = false;
+    fab.classList.remove('editing');
+    fab.textContent = '✏️';
+    applyEditModeToCards();
+  } else {
+    pwInput.value=''; pwError.textContent='';
+    pwOverlay.classList.add('open');
+    setTimeout(()=>pwInput.focus(),50);
+  }
+});
+document.getElementById('pwClose').addEventListener('click', ()=> pwOverlay.classList.remove('open'));
+pwOverlay.addEventListener('click', e=>{ if(e.target===pwOverlay) pwOverlay.classList.remove('open'); });
+function trySubmitPw(){
+  if(pwInput.value === '1234'){
+    editMode = true;
+    fab.classList.add('editing');
+    fab.textContent = '✓';
+    applyEditModeToCards();
+    pwOverlay.classList.remove('open');
+  } else {
+    pwError.textContent = 'Sai mật khẩu, vui lòng thử lại.';
+  }
+}
+document.getElementById('pwSubmit').addEventListener('click', trySubmitPw);
+pwInput.addEventListener('keydown', e=>{ if(e.key==='Enter') trySubmitPw(); });
+
+/* ================= Nav tabs ================= */
+const tabButtons = document.querySelectorAll('nav.tabs button');
+tabButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.getElementById(btn.dataset.target).scrollIntoView({behavior:'smooth', block:'start'});
+  });
+});
+const sections = ['stage-consonants','stage-vowels','stage-combo','stage-vocab'].map(id=>document.getElementById(id));
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      tabButtons.forEach(b=> b.classList.toggle('active', b.dataset.target===entry.target.id));
+    }
+  });
+}, {rootMargin:'-40% 0px -50% 0px'});
+sections.forEach(s=> io.observe(s));
+</script>
+</body>
+</html>
