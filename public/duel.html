@@ -32,12 +32,19 @@
         .du-mode-t .ui-ic { color: var(--text-mute); transition: transform .2s, color .2s; }
         .du-mode:hover .du-mode-t .ui-ic { color: var(--primary); transform: translateX(3px); }
         .du-mode-d { font-size: .86em; color: var(--text-sub); margin-top: 4px; line-height: 1.45; font-weight: 500; }
-        .du-mode.hot { border: 0; color: #fff; background: linear-gradient(135deg, #f97316, #f95052 60%, #e11d48); box-shadow: 0 12px 26px -10px rgba(249,80,82,.6); }
+        /* Thẻ chế độ tô nền gradient: chơi với máy (tím) · ghép ngẫu nhiên (cam) · tạo phòng (xanh) */
+        .du-mode.fill { border: 0; color: #fff; }
+        .du-mode.fill .du-mode-d { color: rgba(255,255,255,.88); }
+        .du-mode.fill .du-mode-t .ui-ic { color: #fff; }
+        .du-mode.fill:hover .du-mode-t .ui-ic { color: #fff; }
+        .du-mode.fill .ui-tile { background: rgba(255,255,255,.22); box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
+        .du-mode.fill::after { content: ''; position: absolute; width: 140px; height: 140px; border-radius: 50%; right: -50px; top: -60px; background: rgba(255,255,255,.12); pointer-events: none; }
+        .du-mode.hot { background: linear-gradient(135deg, #f97316, #f95052 60%, #e11d48); box-shadow: 0 12px 26px -10px rgba(249,80,82,.6); }
         .du-mode.hot:hover { box-shadow: 0 16px 30px -10px rgba(249,80,82,.7); }
-        .du-mode.hot .du-mode-d { color: rgba(255,255,255,.88); }
-        .du-mode.hot .du-mode-t .ui-ic { color: #fff; }
-        .du-mode.hot .ui-tile { background: rgba(255,255,255,.22); box-shadow: inset 0 0 0 1px rgba(255,255,255,.3); }
-        .du-mode.hot::after { content: ''; position: absolute; width: 140px; height: 140px; border-radius: 50%; right: -50px; top: -60px; background: rgba(255,255,255,.12); }
+        .du-mode.bot { background: linear-gradient(135deg, #a78bfa, #7c3aed 60%, #6d28d9); box-shadow: 0 12px 26px -10px rgba(124,58,237,.6); }
+        .du-mode.bot:hover { box-shadow: 0 16px 30px -10px rgba(124,58,237,.7); }
+        .du-mode.room { background: linear-gradient(135deg, #60a5fa, #2563eb 60%, #1d4ed8); box-shadow: 0 12px 26px -10px rgba(37,99,235,.6); }
+        .du-mode.room:hover { box-shadow: 0 16px 30px -10px rgba(37,99,235,.7); }
         .du-live { position: absolute; top: 14px; right: 14px; display: inline-flex; align-items: center; gap: 5px; font-size: .7em; font-weight: 900; letter-spacing: .5px; padding: 3px 8px; border-radius: 999px; background: rgba(255,255,255,.22); z-index: 1; }
         .du-live i { width: 6px; height: 6px; border-radius: 50%; background: #fff; animation: duBlink 1.2s infinite; }
         @keyframes duBlink { 50% { opacity: .3; } }
@@ -161,10 +168,26 @@
         .du-review-row .ui-tile { width: 26px; height: 26px; border-radius: 50%; font-size: 13px; }
         .du-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
 
+        /* Chọn trò chơi */
+        .du-games { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .du-game { display: flex; align-items: center; gap: 14px; text-align: left; border: 2px solid var(--border); background: var(--card); border-radius: 18px; padding: 14px 16px;
+            cursor: pointer; font-family: inherit; color: var(--text-main); transition: border-color .2s, box-shadow .2s, transform .2s; }
+        .du-game:hover { transform: translateY(-2px); }
+        .du-game.active { border-color: #7c3aed; box-shadow: 0 10px 24px -12px rgba(124,58,237,.6); background: linear-gradient(180deg, #f5f3ff, var(--card)); }
+        body.dark-mode .du-game.active { background: linear-gradient(180deg, #2e1065, var(--card)); }
+        .du-game b { display: block; font-size: 1.02em; font-weight: 900; }
+        .du-game small { display: block; font-size: .84em; color: var(--text-sub); font-weight: 500; margin-top: 3px; line-height: 1.4; }
+        .du-ninja-ic { width: 48px; height: 48px; flex-shrink: 0; border-radius: 14px; background: linear-gradient(135deg, #1e1b4b, #7c3aed); display: flex; align-items: center; justify-content: center; }
+        .du-ninja-ic svg { width: 30px; height: 30px; }
+        .du-nmodes { margin-top: 14px; }
+        .du-nmodes .lx-seg { display: flex; flex-wrap: wrap; }
+        .du-nmodes .lx-seg button { flex: 1 1 120px; }
+
         @media (max-width: 720px) {
             .du-hero { grid-template-columns: 1fr; }
             .du-art { display: none; }
             .du-modes { grid-template-columns: 1fr; }
+            .du-games { grid-template-columns: 1fr; }
             .du-mode { flex-direction: row; align-items: center; padding: 14px; }
             .du-mode > div:last-child { flex: 1; }
             .du-live { top: 10px; right: 10px; }
@@ -201,7 +224,7 @@
                 <div>
                     <span class="lx-eyebrow"><span data-ic="bolt"></span>Đấu trường từ vựng</span>
                     <h1>Thi Đấu 1-1</h1>
-                    <p>10 câu · 10 giây mỗi câu. Trả lời <b>đúng và nhanh</b> hơn đối thủ để giành chiến thắng!</p>
+                    <p>Kéo co trắc nghiệm hoặc Ninja phi tiêu — trả lời <b>đúng và nhanh</b> hơn đối thủ để giành chiến thắng!</p>
                     <div class="lx-bstats du-hero-stats" id="duStats"></div>
                 </div>
                 <div class="du-art"><span data-tile="swords:orange:a1"></span><span data-tile="trophy:amber:a2"></span></div>
@@ -209,20 +232,42 @@
         </section>
 
         <div class="lx-card">
-            <div class="lx-sec"><span data-tile="sparkle:violet:sm"></span><div><div class="lx-sec-t">Chọn chế độ</div><div class="lx-sec-s">Ghép ngẫu nhiên hoặc đấu riêng với bạn bè</div></div></div>
+            <div class="lx-sec"><span data-tile="swords:coral:sm"></span><div><div class="lx-sec-t">Chọn trò chơi</div><div class="lx-sec-s">Áp dụng khi bạn tạo phòng hoặc ghép ngẫu nhiên</div></div></div>
+            <div class="du-games">
+                <button class="du-game active" data-game="tug" onclick="Duel.pickGame('tug')">
+                    <span data-tile="users:blue"></span>
+                    <span><b>Kéo co trắc nghiệm</b><small>10 câu · ai chọn đúng trước kéo dây về phía mình</small></span>
+                </button>
+                <button class="du-game" data-game="ninja" onclick="Duel.pickGame('ninja')">
+                    <span class="du-ninja-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.6 9.4 L24 12 L14.6 14.6 L12 24 L9.4 14.6 L0 12 L9.4 9.4Z" fill="#e2e8f0"/><circle cx="12" cy="12" r="2.2" fill="#4c1d95"/></svg></span>
+                    <span><b>Ninja phi tiêu</b><small>Từ rơi xuống · gõ đúng trước để phi tiêu phá từ</small></span>
+                </button>
+            </div>
+            <div class="du-nmodes du-hide" id="duNinjaModes">
+                <div class="du-label"><span data-ic="key"></span>Chế độ gõ (chủ phòng chọn)</div>
+                <div class="lx-seg" id="duNinjaSeg">
+                    <button class="active" data-mode="ko2vi" onclick="Duel.pickMode('ko2vi')">한 → Nghĩa Việt</button>
+                    <button data-mode="vi2ko" onclick="Duel.pickMode('vi2ko')">Việt → 한국어</button>
+                    <button data-mode="mix" onclick="Duel.pickMode('mix')">Ngẫu nhiên</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="lx-card">
+            <div class="lx-sec"><span data-tile="sparkle:violet:sm"></span><div><div class="lx-sec-t">Chọn chế độ</div><div class="lx-sec-s">Ghép ngẫu nhiên, đấu riêng với bạn bè hoặc luyện với máy</div></div></div>
             <div class="du-modes">
-                <button class="du-mode hot" onclick="Duel.quickMatch()">
+                <button class="du-mode fill bot" onclick="Duel.playBot()">
+                    <span data-tile="sparkle:violet"></span>
+                    <div><div class="du-mode-t">Chơi với máy <span data-ic="arrow"></span></div><div class="du-mode-d">Luyện ngay, không cần chờ người khác · 3 mức</div></div>
+                </button>
+                <button class="du-mode fill hot" onclick="Duel.quickMatch()">
                     <span class="du-live"><i></i>NHANH</span>
                     <span data-tile="bolt:orange"></span>
                     <div><div class="du-mode-t">Ghép ngẫu nhiên <span data-ic="arrow"></span></div><div class="du-mode-d">Đấu ngay với người đang chờ trận</div></div>
                 </button>
-                <button class="du-mode" onclick="Duel.createRoom(false)">
+                <button class="du-mode fill room" onclick="Duel.createRoom(false)">
                     <span data-tile="home:blue"></span>
                     <div><div class="du-mode-t">Tạo phòng riêng <span data-ic="arrow"></span></div><div class="du-mode-d">Nhận mã phòng và mời bạn bè vào đấu</div></div>
-                </button>
-                <button class="du-mode" onclick="document.getElementById('duCodeInput').focus()">
-                    <span data-tile="key:violet"></span>
-                    <div><div class="du-mode-t">Vào bằng mã <span data-ic="arrow"></span></div><div class="du-mode-d">Nhập mã 6 ký tự bạn được gửi</div></div>
                 </button>
             </div>
         </div>
@@ -247,10 +292,16 @@
         </div>
 
         <div class="lx-card">
-            <div class="du-rules">
-                <div class="du-rule"><span data-tile="list:blue:sm"></span><div>10 câu hỏi<small>Chọn nghĩa đúng</small></div></div>
-                <div class="du-rule"><span data-tile="clock:cyan:sm"></span><div>10 giây<small>cho mỗi câu</small></div></div>
-                <div class="du-rule"><span data-tile="bolt:orange:sm"></span><div>Càng nhanh<small>càng nhiều điểm</small></div></div>
+            <div class="du-rules" id="duRulesQuiz">
+                <div class="du-rule"><span data-tile="list:blue:sm"></span><div>10 câu hỏi<small>Chọn nghĩa đúng · 10 giây</small></div></div>
+                <div class="du-rule"><span data-tile="bolt:orange:sm"></span><div>Đúng trước<small>người kia mất lượt</small></div></div>
+                <div class="du-rule"><span data-tile="users:coral:sm"></span><div>Kéo dây<small>ít điểm hơn bị kéo ngã</small></div></div>
+                <div class="du-rule"><span data-tile="star:amber:sm"></span><div>Thắng +15 EXP<small>Hoà +8 · Thua +3</small></div></div>
+            </div>
+            <div class="du-rules du-hide" id="duRulesNinja">
+                <div class="du-rule"><span data-tile="list:violet:sm"></span><div>15 từ rơi<small>cùng lúc cho cả 2 người</small></div></div>
+                <div class="du-rule"><span data-tile="bolt:orange:sm"></span><div>Gõ đúng trước<small>Ninja phi tiêu phá từ</small></div></div>
+                <div class="du-rule"><span data-tile="target:coral:sm"></span><div>Mỗi từ 1 điểm<small>chỉ người nhanh nhất</small></div></div>
                 <div class="du-rule"><span data-tile="star:amber:sm"></span><div>Thắng +15 EXP<small>Hoà +8 · Thua +3</small></div></div>
             </div>
         </div>
@@ -288,6 +339,12 @@
         </div>
     </div>
 
+    <!-- NINJA PHI TIÊU (assets/js/duel-ninja.js vẽ vào đây) -->
+    <div id="duNinja" class="du-hide"></div>
+
+    <!-- KÉO CO TRẮC NGHIỆM (assets/js/duel-tug.js vẽ vào đây) -->
+    <div id="duTug" class="du-hide"></div>
+
     <!-- KẾT QUẢ -->
     <div id="duResult" class="du-hide"></div>
 </div>
@@ -298,19 +355,26 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
 <script src="auth.js"></script>
 <script src="assets/js/vocab-daily.js"></script>
+<script src="assets/js/ninja-match.js"></script>
+<script src="assets/js/duel-ninja.js"></script>
+<script src="assets/js/duel-tug.js"></script>
+<script src="assets/js/duel-bot.js"></script>
 <script>
 (function () {
     'use strict';
-    const N_Q = 10, Q_MS = 10000, OPEN_ROOM_MAX_AGE = 3 * 60 * 1000;
+    const N_Q = 10, Q_MS = 10000, HOST_ALIVE_MS = 40 * 1000, HEARTBEAT_MS = 12 * 1000;
     const CODE_CHARS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     let me = null, myName = 'Bạn', room = null, roomRef = null, unsub = null;
     let qIdx = 0, myAnswers = [], myScore = 0, qTimer = null, qStart = 0, playing = false, finishedShown = false, waitOpTimer = null;
+    // Loại trò chơi khi tạo phòng: 'quiz' (trắc nghiệm) | 'ninja' (Ninja phi tiêu) + chế độ gõ của ninja
+    let selGame = 'quiz', selMode = 'ko2vi', sawWaiting = false, justJoined = false, ninjaState = '', tugState = '';
+    let hbTimer = null, cancelledHere = false, busy = false;
 
     const $ = id => document.getElementById(id);
     const db = () => firebase.firestore();
     const FV = () => firebase.firestore.FieldValue;
     function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); }
-    function show(id) { ['duLogin', 'duLobby', 'duWaiting', 'duGame', 'duResult'].forEach(x => $(x).classList.toggle('du-hide', x !== id)); }
+    function show(id) { ['duLogin', 'duLobby', 'duWaiting', 'duGame', 'duNinja', 'duTug', 'duResult'].forEach(x => $(x).classList.toggle('du-hide', x !== id)); }
     function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
     function newCode() { let s = ''; for (let i = 0; i < 6; i++) s += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)]; return s; }
     // Icon duotone dùng chung (assets/js/ui-icons.js)
@@ -334,6 +398,7 @@
                 await Swal.fire('Chưa đủ từ', 'Sổ từ vựng của bạn cần ít nhất 8 từ có nghĩa. Tạm dùng bộ TOPIK II nhé!', 'info');
             } else pool = uniq;
         }
+        if (selGame === 'ninja') return window.DuelNinja.buildQuestions(pool, selMode, shuffle);
         const picked = shuffle(pool).slice(0, N_Q);
         return picked.map(item => {
             const others = shuffle(pool.filter(x => x.m !== item.m)).slice(0, 3).map(x => x.m);
@@ -343,8 +408,17 @@
     }
 
     // ── Tạo phòng ──
+    // Huỷ các phòng mình đang mở chờ (bấm đúp, tải lại trang, mở trận ở tab khác…) để không ai bị ghép vào phòng "ma"
+    async function cancelMyWaitingRooms() {
+        try {
+            const snap = await db().collection('duels').where('hostId', '==', me.uid).where('status', '==', 'waiting').get();
+            await Promise.all(snap.docs.map(d => d.ref.update({ status: 'cancelled' }).catch(() => {})));
+        } catch (e) { console.warn('[Duel] cancel old rooms', e); }
+    }
+
     async function createRoom(open) {
         try {
+            await cancelMyWaitingRooms();
             const questions = await buildQuestions();
             for (let tries = 0; tries < 5; tries++) {
                 const code = newCode();
@@ -354,6 +428,7 @@
                 await ref.set({
                     hostId: me.uid, hostName: myName.slice(0, 60), guestId: null, guestName: '',
                     status: 'waiting', open: !!open, questions, createdAt: FV().serverTimestamp(),
+                    game: selGame, ...(selGame === 'ninja' ? { ninjaMode: selMode } : {}),
                     [myKey()]: { answers: [], score: 0, done: false }
                 });
                 enterRoom(code);
@@ -381,7 +456,7 @@
                 });
                 return 'ok';
             });
-            if (result === 'ok' || result === 'mine') { enterRoom(code); return true; }
+            if (result === 'ok' || result === 'mine') { enterRoom(code, result === 'ok'); return true; }
             if (!silent) Swal.fire(result === 'missing' ? 'Không tìm thấy phòng' : 'Phòng đã đủ người',
                 result === 'missing' ? 'Kiểm tra lại mã phòng nhé.' : 'Trận đấu này đã bắt đầu.', 'info');
             return false;
@@ -393,21 +468,28 @@
         try {
             const snap = await db().collection('duels').where('status', '==', 'waiting').limit(20).get();
             const now = Date.now();
+            const alive = r => {
+                const ms = x => (x && x.toMillis ? x.toMillis() : 0);
+                return Math.max(ms(r.createdAt), ms((r['s_' + r.hostId] || {}).hb));
+            };
             const cands = snap.docs.filter(d => {
                 const r = d.data();
-                const t = r.createdAt && r.createdAt.toMillis ? r.createdAt.toMillis() : 0;
-                return r.open && r.hostId !== me.uid && !r.guestId && now - t < OPEN_ROOM_MAX_AGE;
-            });
-            for (const d of shuffle(cands)) { if (await joinRoom(d.id, true)) return; }
+                return r.open && r.hostId !== me.uid && !r.guestId && now - alive(r) < HOST_ALIVE_MS && (r.game || 'quiz') === selGame;
+            }).sort((a, b) => alive(b.data()) - alive(a.data()));
+            for (const d of cands) { if (await joinRoom(d.id, true)) return; }
             await createRoom(true);
         } catch (e) { Swal.fire('Lỗi', e.message, 'error'); }
     }
 
     // ── Theo dõi phòng ──
-    function enterRoom(code) {
+    // refOverride: phòng giả khi chơi với máy (duel-bot.js) — không ghi Firestore, không đổi URL
+    function enterRoom(code, joinedNow, refOverride) {
         if (unsub) unsub();
-        roomRef = db().collection('duels').doc(code);
-        history.replaceState(null, '', 'duel.html?room=' + code);
+        window.DuelBot.stop();
+        stopHeartbeat(); cancelledHere = false;
+        window.DuelNinja.stop(); ninjaState = ''; window.DuelTug.stop(); tugState = ''; sawWaiting = false; justJoined = !!joinedNow;
+        roomRef = refOverride || db().collection('duels').doc(code);
+        history.replaceState(null, '', refOverride ? 'duel.html' : 'duel.html?room=' + code);
         qIdx = 0; myAnswers = []; myScore = 0; playing = false; finishedShown = false;
         unsub = roomRef.onSnapshot(d => {
             if (!d.exists) { leaveToLobby('Phòng đã bị huỷ.'); return; }
@@ -417,8 +499,14 @@
     }
 
     function onRoomUpdate() {
-        if (room.status === 'cancelled') { leaveToLobby(room.hostId === me.uid ? null : 'Chủ phòng đã huỷ trận.'); return; }
+        if (room.status === 'cancelled') {
+            leaveToLobby(room.hostId !== me.uid ? 'Chủ phòng đã huỷ trận.' : cancelledHere ? null : 'Phòng chờ này đã được huỷ vì bạn vừa mở trận khác (ở tab hoặc thiết bị khác cùng tài khoản).');
+            return;
+        }
+        if (room.status !== 'waiting' || room.hostId !== me.uid || !room.open) stopHeartbeat();
         if (room.status === 'waiting') {
+            sawWaiting = true;
+            if (room.hostId === me.uid && room.open) startHeartbeat();
             show('duWaiting');
             $('duRoomCode').innerHTML = String(room.id).split('').map(c => '<span>' + esc(c) + '</span>').join('');
             $('duWaitTitle').textContent = room.open ? 'Đang tìm đối thủ…' : 'Đang chờ bạn bè vào phòng…';
@@ -427,6 +515,8 @@
             if (!room.open) loadFriends();
             return;
         }
+        if (room.game === 'ninja') { onNinjaUpdate(); return; }
+        if (room.game === 'tug') { onTugUpdate(); return; }
         // Cập nhật bảng điểm 2 bên
         const mine = room[myKey()] || {}, op = room['s_' + opId()] || {};
         $('duMeName').textContent = myName;
@@ -572,9 +662,11 @@
     function giveReward(outcome) {
         const key = 'duel_reward_' + room.id + '_' + me.uid;
         try { if (localStorage.getItem(key)) return; localStorage.setItem(key, '1'); } catch (e) {}
-        const exp = outcome === 'win' ? 15 : outcome === 'draw' ? 8 : 3;
+        // Đấu máy: EXP thấp hơn theo mức, không tính vào số trận / số thắng 1-1
+        const botLv = room.bot && window.DuelBot.LEVELS[room.bot];
+        const exp = botLv ? botLv.exp[outcome === 'win' ? 0 : outcome === 'draw' ? 1 : 2] : outcome === 'win' ? 15 : outcome === 'draw' ? 8 : 3;
         const ref = db().collection('users').doc(me.uid);
-        const data = {
+        const data = botLv ? { bonusEXP: FV().increment(exp), bonusEXPAt: FV().serverTimestamp() } : {
             bonusEXP: FV().increment(exp), bonusEXPAt: FV().serverTimestamp(),
             duelPlayed: FV().increment(1), duelWins: FV().increment(outcome === 'win' ? 1 : 0)
         };
@@ -629,6 +721,7 @@
     }
 
     async function cancelRoom() {
+        cancelledHere = true;
         if (room && room.hostId === me.uid && room.status === 'waiting') {
             await roomRef.update({ status: 'cancelled' }).catch(() => {});
         }
@@ -636,7 +729,10 @@
     }
 
     async function rematch() {
+        if (room && room.bot) { const lv = room.bot; pickGame(room.game); if (room.ninjaMode) pickMode(room.ninjaMode); return startBotGame(lv); }
         const opUid = opId();
+        if (room && room.game === 'ninja') { pickGame('ninja'); pickMode(room.ninjaMode || 'ko2vi'); }
+        else if (room && room.game === 'tug') pickGame('tug');
         await createRoom(false);
         if (opUid) {
             // Tự gửi lời mời cho đối thủ cũ
@@ -655,9 +751,21 @@
         }
     }
 
+    function startHeartbeat() {
+        if (hbTimer) return;
+        const beat = () => { if (roomRef) roomRef.update({ [myKey() + '.hb']: FV().serverTimestamp() }).catch(() => {}); };
+        beat();
+        hbTimer = setInterval(beat, HEARTBEAT_MS);
+    }
+    function stopHeartbeat() { clearInterval(hbTimer); hbTimer = null; }
+
     function leaveToLobby(msg) {
+        stopHeartbeat();
+        // Rời phòng mình đang mở chờ → huỷ luôn để người khác không vào nhầm phòng trống
+        if (room && roomRef && room.hostId === me.uid && room.status === 'waiting') { cancelledHere = true; roomRef.update({ status: 'cancelled' }).catch(() => {}); }
         if (unsub) { unsub(); unsub = null; }
         clearTimeout(qTimer); clearTimeout(waitOpTimer); waitOpTimer = null;
+        window.DuelNinja.stop(); ninjaState = ''; window.DuelTug.stop(); tugState = ''; window.DuelBot.stop();
         room = null; roomRef = null; playing = false; friendsLoaded = false;
         history.replaceState(null, '', 'duel.html');
         show('duLobby');
@@ -679,6 +787,7 @@
 
     firebase.auth().onAuthStateChanged(user => {
         if (!user) { show('duLogin'); return; }
+        if (me && me.uid === user.uid) return;
         me = user;
         myName = user.displayName || (user.email ? user.email.split('@')[0] : 'Bạn');
         const code = new URLSearchParams(location.search).get('room');
@@ -693,9 +802,96 @@
         const k = parseInt(e.key, 10);
         if (k >= 1 && k <= 4) { const b = $('duAnswers').querySelector('.du-ans[data-i="' + (k - 1) + '"]'); if (b && !b.disabled) b.click(); }
     });
-    function joinByCode() { joinRoom($('duCodeInput').value); }
+    function joinByCode() { return joinRoom($('duCodeInput').value); }
 
-    window.Duel = { quickMatch, createRoom, joinByCode, copyLink, cancelRoom, rematch, toLobby: () => leaveToLobby() };
+    // ── Ninja phi tiêu (logic trận trong assets/js/duel-ninja.js) ──
+    function ninjaCtx() {
+        return {
+            room, roomRef, me, myName, db, FV, esc, tile, ic, show, myKey, opId, opName,
+            container: $('duNinja'), fresh: sawWaiting || justJoined,
+            giveReward, onDone: () => { ninjaState = 'done'; }
+        };
+    }
+    function onNinjaUpdate() {
+        if (ninjaState === 'done') return;
+        if (ninjaState === 'running') { window.DuelNinja.update(room); return; }
+        if (room.status === 'finished') { ninjaState = 'done'; window.DuelNinja.showFinished(ninjaCtx()); return; }
+        if (room.status === 'playing') {
+            ninjaState = 'running';
+            show('duNinja');
+            window.DuelNinja.start(ninjaCtx());
+        }
+    }
+    // ── Kéo co trắc nghiệm (logic trận trong assets/js/duel-tug.js) ──
+    function tugCtx() {
+        const c = {
+            room, roomRef, me, myName, db, FV, esc, tile, ic, show, myKey, opId, opName,
+            container: $('duTug'), fresh: sawWaiting || justJoined,
+            giveReward, onDone: () => { tugState = 'done'; }
+        };
+        c.serverOffset = () => window.DuelNinja.serverOffset(c);
+        return c;
+    }
+    function onTugUpdate() {
+        if (tugState === 'done') return;
+        if (tugState === 'running') { window.DuelTug.update(room); return; }
+        if (room.status === 'playing' || room.status === 'finished') {
+            tugState = 'running';
+            show('duTug');
+            window.DuelTug.start(tugCtx());
+        }
+    }
+
+    // ── Chơi với máy ──
+    async function playBot() {
+        let saved = 'medium';
+        try { saved = localStorage.getItem('duel_bot_level') || 'medium'; } catch (e) {}
+        const L = window.DuelBot.LEVELS;
+        const r = await Swal.fire({
+            title: 'Chơi với máy',
+            html: '<div style="font-size:.92em;color:var(--text-sub,#64748b);margin-bottom:6px;">Trò: <b>' + (selGame === 'ninja' ? 'Ninja phi tiêu' : 'Kéo co trắc nghiệm') + '</b> · chọn mức của máy</div>'
+                + '<div style="font-size:.8em;color:#94a3b8;">Thắng máy: Dễ +' + L.easy.exp[0] + ' · Vừa +' + L.medium.exp[0] + ' · Khó +' + L.hard.exp[0] + ' EXP</div>',
+            input: 'radio', inputOptions: { easy: 'Dễ', medium: 'Vừa', hard: 'Khó' }, inputValue: saved,
+            showCancelButton: true, confirmButtonText: 'Bắt đầu', cancelButtonText: 'Huỷ', confirmButtonColor: '#7c3aed'
+        });
+        if (!r.isConfirmed || !r.value) return;
+        try { localStorage.setItem('duel_bot_level', r.value); } catch (e) {}
+        window.DuelTug.unlockAudio();
+        await startBotGame(r.value);
+    }
+    async function startBotGame(level) {
+        try {
+            const questions = await buildQuestions();
+            const mock = window.DuelBot.createRoom({ me, myName: myName.slice(0, 60), game: selGame, ninjaMode: selMode, questions, level });
+            enterRoom(mock.id, true, mock.ref);
+            window.DuelBot.attach(mock);
+        } catch (e) { Swal.fire('Lỗi', e.message, 'error'); }
+    }
+
+    function pickGame(g) {
+        // 'quiz' cũ (đã lưu trong máy) → nay là kéo co trắc nghiệm
+        selGame = g === 'ninja' ? 'ninja' : 'tug';
+        document.querySelectorAll('.du-game').forEach(b => b.classList.toggle('active', b.dataset.game === selGame));
+        $('duNinjaModes').classList.toggle('du-hide', selGame !== 'ninja');
+        $('duRulesQuiz').classList.toggle('du-hide', selGame === 'ninja');
+        $('duRulesNinja').classList.toggle('du-hide', selGame !== 'ninja');
+        try { localStorage.setItem('duel_game', selGame); } catch (e) {}
+    }
+    function pickMode(m) {
+        selMode = ['ko2vi', 'vi2ko', 'mix'].includes(m) ? m : 'ko2vi';
+        document.querySelectorAll('#duNinjaSeg button').forEach(b => b.classList.toggle('active', b.dataset.mode === selMode));
+        try { localStorage.setItem('duel_ninja_mode', selMode); } catch (e) {}
+    }
+    let savedGame = 'quiz', savedMode = 'ko2vi';
+    try { savedGame = localStorage.getItem('duel_game') || 'quiz'; savedMode = localStorage.getItem('duel_ninja_mode') || 'ko2vi'; } catch (e) {}
+    pickMode(savedMode); pickGame(savedGame);
+
+    // Chống bấm đúp (trên điện thoại dễ tạo 2 phòng → đối thủ vào phòng không có ai)
+    const once = fn => async (...a) => { if (busy) return; busy = true; try { await fn(...a); } finally { busy = false; } };
+    // Trình duyệt chỉ cho phát nhạc sau một thao tác của người dùng → mở khoá âm thanh ngay khi bấm nút
+    const withAudio = fn => (...a) => { try { window.DuelTug.unlockAudio(); } catch (e) {} return fn(...a); };
+    window.Duel = { quickMatch: withAudio(once(quickMatch)), createRoom: withAudio(once(createRoom)), joinByCode: withAudio(once(joinByCode)), copyLink, cancelRoom,
+        rematch: withAudio(once(rematch)), playBot: withAudio(once(playBot)), pickGame: withAudio(pickGame), pickMode, toLobby: () => leaveToLobby() };
 })();
 </script>
 <script src="assets/js/badges.js"></script>

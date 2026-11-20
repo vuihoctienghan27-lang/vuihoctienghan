@@ -98,13 +98,28 @@ service cloud.firestore {
         uNew('reputation') is number && uNew('reputation') >= uOld('reputation')
         && uNew('reputation') - uOld('reputation') <= 20);
     }
+    // Điểm cao nhất của các game (games/*.html) — client tự ghi nên chặn ở đây:
+    // phải là số, không âm, chỉ được TĂNG (điểm cao nhất) và không vượt trần hợp lý của từng game.
+    // Trần: Hoa Dâm Bụt là % tiến trình (≤ 100); các game arcade lên cấp vô hạn → trần rộng, chỉnh tại đây nếu cần.
+    function gameScoreOk(f, cap) {
+      return !uChanged(f) || (uNew(f) is number && uNew(f) >= uOld(f) && uNew(f) <= cap);
+    }
+    function gameScoresOk() {
+      return gameScoreOk('gameBansungScore', 200000) && gameScoreOk('gameStarshipScore', 200000)
+        && gameScoreOk('gameFroggameScore', 100000) && gameScoreOk('gameMugonghwaScore', 100);
+    }
+    function gameScoreNewOk(d, f, cap) {
+      return !(f in d) || (d[f] is number && d[f] >= 0 && d[f] <= cap);
+    }
     function userCreateOk() {
       let d = request.resource.data;
       return profileOk(d)
         && d.get('bonusEXP', 0) == 0
         && d.get('totalStudyMinutes', 0) in [0, 1]
         && d.get('streakDays', 0) in [0, 1]
-        && d.get('reputation', 0) == 0;
+        && d.get('reputation', 0) == 0
+        && gameScoreNewOk(d, 'gameBansungScore', 200000) && gameScoreNewOk(d, 'gameStarshipScore', 200000)
+        && gameScoreNewOk(d, 'gameFroggameScore', 100000) && gameScoreNewOk(d, 'gameMugonghwaScore', 100);
     }
     function userUpdateOk() {
       let d = request.resource.data;
@@ -120,7 +135,7 @@ service cloud.firestore {
         && (!uChanged('roleTitle') || d.roleTitle in ['Thành viên mới', 'Thành viên cộng đồng'])
         && (!uChanged('bonusEXPAt') || d.bonusEXPAt == request.time)
         && (!uChanged('studyTickAt') || d.studyTickAt == request.time)
-        && bonusOk() && studyOk() && streakOk() && reputationOk();
+        && bonusOk() && studyOk() && streakOk() && reputationOk() && gameScoresOk();
     }
 
     // ===== NGƯỜI DÙNG =====
@@ -180,6 +195,24 @@ service cloud.firestore {
         && emailKey == request.auth.token.email.lower()
         && request.resource.data.keys().hasOnly(['uid'])
         && request.resource.data.uid == request.auth.uid;
+    }
+
+    // ===== HỌC VIÊN NỘI BỘ (access-gate.js) =====
+    // approved_students/{email viết thường}: học viên được dùng toàn bộ Nghe/Đọc/Viết/Ngữ pháp.
+    // Chỉ admin cấp/thu hồi (data.html → tab Duyệt học viên); học viên chỉ GET đúng doc email của mình.
+    match /approved_students/{emailKey} {
+      allow read, write: if isAdmin();
+      allow get: if isSignedIn() && request.auth.token.email != null
+        && emailKey == request.auth.token.email.lower();
+    }
+    // student_requests/{uid}: người dùng tự gửi yêu cầu kích hoạt, admin chấp nhận / từ chối.
+    match /student_requests/{uid} {
+      allow read, delete: if isAdmin();
+      allow get, delete: if isSignedIn() && request.auth.uid == uid;
+      allow create, update: if isSignedIn() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['email', 'name', 'requestedAt'])
+        && request.resource.data.email == request.auth.token.email
+        && strMax(request.resource.data, 'name', 100);
     }
 
     // ===== DIỄN ĐÀN =====
@@ -267,18 +300,62 @@ service cloud.firestore {
         isAdmin()
       );
     }
-    // Quan hệ bạn bè chỉ thành viên trong quan hệ đọc/ghi được
+    // Quan hệ bạn bè chỉ thành viên trong quan hệ đọc/ghi được.
+    // Có 2 dạng doc:
+    //  A) chatbox / korean-chat-widget: id = "<uidA>_<uidB>", không có status, tạo khi NGƯỜI NHẬN
+    //     chấp nhận friend_request → phải gửi kèm fromRequest = id lời mời (sender = bạn kia, receiver = mình).
+    //  B) forum.js / user-profile-popup.js: status 'pending' do user1 tạo, chỉ user2 được đổi sang 'accepted'.
+    function otherOf(users) {
+      return users[0] == request.auth.uid ? users[1] : users[0];
+    }
+    function pairUsersOk(users) {
+      return users is list && users.size() == 2 && users[0] != users[1] && request.auth.uid in users;
+    }
+    function acceptsRequest(d) {
+      return d.get('fromRequest', '') is string && d.get('fromRequest', '') != ''
+        && get(/databases/$(database)/documents/friend_requests/$(d.fromRequest)).data.senderId == otherOf(d.users)
+        && get(/databases/$(database)/documents/friend_requests/$(d.fromRequest)).data.receiverId == request.auth.uid;
+    }
+    function friendshipOk(id, d) {
+      return pairUsersOk(d.users) && (
+        // Dạng A
+        (!('status' in d) && (id == d.users[0] + '_' + d.users[1] || id == d.users[1] + '_' + d.users[0])
+          && acceptsRequest(d))
+        // Dạng B: lời mời đang chờ
+        || (d.status == 'pending' && d.user1Id == request.auth.uid && d.user2Id == otherOf(d.users))
+      );
+    }
+    // Bạn bè đã xác nhận (dạng A không có status; dạng B phải 'accepted')
+    function friendshipActive(f) {
+      return request.auth.uid in f.users && f.get('status', 'accepted') == 'accepted';
+    }
     match /friendships/{id} {
       allow read: if isMember(resource.data.users) || isAdmin();
-      allow create: if isMember(request.resource.data.users);
-      allow update, delete: if isMember(resource.data.users) || isAdmin();
+      allow create: if isSignedIn() && friendshipOk(id, request.resource.data);
+      allow update: if isAdmin()
+        // Dạng B: chỉ người được mời (user2) chấp nhận
+        || (isSignedIn() && resource.data.get('status', '') == 'pending'
+            && request.auth.uid == resource.data.user2Id
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+            && request.resource.data.status == 'accepted')
+        // Dạng A: chấp nhận lại (set merge) — vẫn phải có lời mời hợp lệ, không đổi thành viên
+        || (isSignedIn() && !('status' in resource.data) && isMember(resource.data.users)
+            && request.resource.data.users.toSet() == resource.data.users.toSet()
+            && friendshipOk(id, request.resource.data));
+      allow delete: if isMember(resource.data.users) || isAdmin();
     }
 
     // ===== NHẮN TIN RIÊNG (hệ thống direct_chats) =====
+    // Phòng chat 1-1: id = "<uidA>_<uidB>", đúng 2 người, không đổi thành viên sau khi tạo.
+    // (Vẫn cho nhắn với người chưa kết bạn — tính năng "Nhắn tin" từ hồ sơ thành viên.)
+    function chatPairOk(chatId, p) {
+      return pairUsersOk(p) && (chatId == p[0] + '_' + p[1] || chatId == p[1] + '_' + p[0]);
+    }
     match /direct_chats/{chatId} {
       allow read: if isMember(resource.data.participants) || isAdmin();
-      allow create: if isMember(request.resource.data.participants);
-      allow update: if isMember(resource.data.participants);
+      allow create: if isSignedIn() && chatPairOk(chatId, request.resource.data.participants);
+      allow update: if isMember(resource.data.participants)
+        && request.resource.data.participants.toSet() == resource.data.participants.toSet();
       match /messages/{msgId} {
         allow read: if isMember(chatParticipants(chatId));
         allow create: if isSignedIn()
@@ -294,9 +371,10 @@ service cloud.firestore {
         isMember(friendshipMembers(resource.data.friendshipId)) ||
         isAdmin()
       );
+      // Chỉ nhắn được khi đã là bạn (lời mời 'pending' không đủ)
       allow create: if isSignedIn()
         && request.resource.data.senderId == request.auth.uid
-        && isMember(friendshipMembers(request.resource.data.friendshipId));
+        && friendshipActive(get(/databases/$(database)/documents/friendships/$(request.resource.data.friendshipId)).data);
       allow delete: if isSignedIn() && (request.auth.uid == resource.data.senderId || isAdmin());
     }
 
@@ -310,7 +388,10 @@ service cloud.firestore {
         && request.resource.data.status == 'waiting'
         && request.resource.data.guestId == null
         && request.resource.data.questions is list
-        && request.resource.data.questions.size() <= 15
+        // game: 'quiz' (trắc nghiệm cũ, mặc định) / 'tug' (kéo co trắc nghiệm) ≤ 15 câu · 'ninja' (Ninja phi tiêu) ≤ 30 từ
+        && ((request.resource.data.get('game', 'quiz') in ['quiz', 'tug'] && request.resource.data.questions.size() <= 15)
+          || (request.resource.data.get('game', 'quiz') == 'ninja' && request.resource.data.questions.size() <= 30
+            && request.resource.data.get('ninjaMode', 'ko2vi') in ['ko2vi', 'vi2ko', 'mix']))
         && strMax(request.resource.data, 'hostName', 60);
       allow update: if isSignedIn() && (
         // Khách vào phòng đang chờ
@@ -326,6 +407,28 @@ service cloud.firestore {
           && request.resource.data.status in ['waiting', 'playing', 'finished', 'cancelled'])
       );
       allow delete: if isSignedIn() && request.auth.uid == resource.data.hostId;
+
+      // Ninja phi tiêu / Kéo co: claims/{i} = ai phá từ / trả lời đúng câu thứ i trước. Chỉ được TẠO (không sửa/xoá)
+      // → người ghi sau bị từ chối, hai người không thể cùng ăn điểm một câu.
+      match /claims/{wordIdx} {
+        allow read: if isSignedIn();
+        allow create: if isSignedIn() && ninjaClaimOk(get(/databases/$(database)/documents/duels/$(duelId)).data, wordIdx);
+      }
+    }
+    function ninjaClaimOk(d, wordIdx) {
+      return d.get('game', 'quiz') in ['ninja', 'tug']
+        && d.status == 'playing'
+        && (request.auth.uid == d.hostId || request.auth.uid == d.guestId)
+        && wordIdx.matches('^[0-9]{1,2}$') && int(wordIdx) < d.questions.size()
+        // Ninja: chỉ uid + at · Kéo co: kèm đáp án đã chọn c, phải đúng đáp án của câu
+        && ((d.get('game', 'quiz') == 'ninja' && request.resource.data.keys().hasOnly(['uid', 'at']))
+          || (d.get('game', 'quiz') == 'tug' && request.resource.data.keys().hasOnly(['uid', 'at', 'c'])
+            && request.resource.data.c == d.questions[int(wordIdx)].a))
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.at == request.time
+        // chỉ trong thời gian trận (bắt đầu → tối đa 5 phút)
+        && d.startAt is timestamp
+        && request.time >= d.startAt && request.time < d.startAt + duration.value(300, 's');
     }
 
     // ===== THÔNG BÁO =====
@@ -394,20 +497,32 @@ service cloud.firestore {
     // ===== THƯ MỤC LỚP HỌC 1:1 (Shared Vocab Folders) =====
     // - Admin (vuihoctienghan27@gmail.com): toàn quyền tạo/sửa/xóa thư mục và từ vựng
     // - Học viên đã đăng nhập: đọc thư mục để xác thực Key Code và xem nội dung bài học
+    // Tra cứu Key Code → folderId. Chỉ GET đúng 1 mã đã biết, không liệt kê được danh sách mã.
+    // Admin ghi (shared-vocab.js tự đồng bộ mỗi khi giáo viên mở danh sách thư mục).
+    match /folder_keys/{code} {
+      allow get: if isSignedIn();
+      allow list, write: if isAdmin();
+    }
+
+    // Học viên đã ghi danh vào lớp (có doc students/{uid}) mới đọc được nội dung lớp.
+    function isFolderStudent(folderId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/shared_folders/$(folderId)/students/$(request.auth.uid));
+    }
+
     match /shared_folders/{folderId} {
       // Admin toàn quyền đọc/ghi
       allow read, write: if isAdmin();
 
-      // Mọi học viên đã đăng nhập: đọc để tra key code và xem thông tin thư mục
-      allow read: if isSignedIn();
+      // Học viên: chỉ đọc lớp mình đã ghi danh (ghi danh cần đúng Key Code — xem students bên dưới)
+      allow get: if isFolderStudent(folderId);
 
       // Từ vựng trong thư mục (subcollection words)
       match /words/{wordId} {
         // Admin toàn quyền
         allow read, write: if isAdmin();
 
-        // Học viên đã đăng nhập: đọc để học
-        allow read: if isSignedIn();
+        // Học viên của lớp: đọc để học
+        allow read: if isFolderStudent(folderId);
       }
 
       // Ngữ pháp trong bài học (subcollection grammar)
@@ -415,8 +530,8 @@ service cloud.firestore {
         // Admin toàn quyền tạo/sửa/xóa
         allow read, write: if isAdmin();
 
-        // Học viên đã đăng nhập: đọc để học
-        allow read: if isSignedIn();
+        // Học viên của lớp: đọc để học
+        allow read: if isFolderStudent(folderId);
       }
 
       // Học viên tham gia lớp & Tiến độ học (subcollection students)
@@ -426,7 +541,15 @@ service cloud.firestore {
 
         // Học viên ghi nhận thông tin tham gia và đọc thông tin của chính mình
         allow read, delete: if isSignedIn() && request.auth.uid == studentId;
-        allow create, update: if isSignedIn() && request.auth.uid == studentId
+        // Ghi danh lần đầu: phải gửi kèm đúng Key Code hiện tại của lớp
+        // (get() trong rules không bị chặn bởi quyền đọc nên đối chiếu được mã).
+        allow create: if isSignedIn() && request.auth.uid == studentId
+          && request.resource.data.get('keyCode', '') == get(/databases/$(database)/documents/shared_folders/$(folderId)).data.get('keyCode', null)
+          && strMax(request.resource.data, 'displayName', 60)
+          && strMax(request.resource.data, 'email', 200)
+          && strMax(request.resource.data, 'photoURL', 1000)
+          && request.resource.data.get('uid', studentId) == studentId;
+        allow update: if isSignedIn() && request.auth.uid == studentId
           && strMax(request.resource.data, 'displayName', 60)
           && strMax(request.resource.data, 'email', 200)
           && strMax(request.resource.data, 'photoURL', 1000)
@@ -443,16 +566,21 @@ service cloud.firestore {
         // Admin toàn quyền tạo/sửa đề bài
         allow read, write: if isAdmin();
 
-        // Học viên đã đăng nhập: đọc đề bài tập
-        allow read: if isSignedIn();
+        // Học viên của lớp: đọc đề bài tập
+        allow read: if isFolderStudent(folderId);
 
         // Bài nộp của học viên (subcollection submissions)
         match /submissions/{studentId} {
           // Admin toàn quyền đọc và chấm bài
           allow read, write: if isAdmin();
 
-          // Học viên đọc và nộp/chỉnh sửa bài làm của chính mình
-          allow read, write: if isSignedIn() && (request.auth.uid == studentId || isAdmin());
+          // Học viên đọc bài của mình; nộp/nộp lại được nhưng KHÔNG đụng vào phần chấm của giáo viên
+          allow read: if isSignedIn() && request.auth.uid == studentId;
+          allow create, update: if isSignedIn() && request.auth.uid == studentId
+            && request.resource.data.get('status', 'submitted') == 'submitted'
+            && request.resource.data.get('studentUid', studentId) == studentId
+            && !request.resource.data.diff(resource == null ? {} : resource.data).affectedKeys()
+                 .hasAny(['score', 'teacherFeedback', 'correctedHtml', 'gradedAt']);
         }
 
         // Tiến độ bài tập tương tác (JSON) — câu đã chọn / đã điền của từng học viên

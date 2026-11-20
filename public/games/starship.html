@@ -1158,6 +1158,7 @@
     const currentUid = window.currentUserUid;
     let myRank = -1, myUser = null;
     users.forEach((u,i)=>{ if(u.uid === currentUid){ myRank = i; myUser = u; } });
+    if(users._lb) myRank = users._lb.myRank;
     const medals = ['🥇','🥈','🥉'];
     const scorers = users.filter(u => u.score > 0);
     const end = Math.min(9, scorers.length - 1);
@@ -1167,15 +1168,15 @@
       const u = scorers[i];
       const isMe = u.uid === currentUid;
       const badge = i < 3 ? medals[i] : (i + 1);
-      html += '<div class="lb-row-game ' + (isMe?'me':'') + '" onclick="showStarshipProfile(\'' + u.uid + '\',\'' + esc(u.name) + '\')">'
+      html += '<div class="lb-row-game ' + (isMe?'me':'') + '" data-uid="' + esc(u.uid) + '" data-name="' + esc(u.name) + '">'
         + '<div class="lb-rk">' + badge + '</div>'
         + '<div class="lb-av">' + av(u.uid) + '</div>'
         + '<div class="lb-nm"><div class="lb-name-game">' + esc(u.name) + (isMe?' <span style="color:var(--accent-cyan);">(Bạn)</span>':'') + '</div><div class="lb-title-game-sub">Điểm cao nhất</div></div>'
         + '<div class="lb-exp">' + u.score + '</div></div>';
     }
     if(myUser){
-      html += '<div class="lb-me-game" onclick="showStarshipProfile(\'' + currentUid + '\',\'' + esc(myUser.name) + '\')">'
-        + '<div class="lb-rk">#' + (myRank+1) + '</div>'
+      html += '<div class="lb-me-game" data-uid="' + esc(currentUid) + '" data-name="' + esc(myUser.name) + '">'
+        + '<div class="lb-rk">' + GameLB.rankText(myRank, 10) + '</div>'
         + '<div class="lb-av">' + av(currentUid) + '</div>'
         + '<div class="lb-nm"><div class="lb-name-game">' + esc(myUser.name) + ' · Vị trí của bạn</div><div class="lb-title-game-sub">' + (myUser.score > 0 ? 'Điểm cao nhất: ' + myUser.score : 'Chưa có điểm — chơi để lập thành tích!') + '</div></div>'
         + '<div class="lb-exp">' + (myUser.score > 0 ? myUser.score : '—') + '</div></div>';
@@ -1183,6 +1184,7 @@
       html += '<div class="lb-note-game">Đăng nhập để lưu điểm và xem hạng của bạn.</div>';
     }
     lbList.innerHTML = html;
+    GameLB.bind(lbList, window.showStarshipProfile);
   }
 
   window.openStarshipLeaderboard = function(){
@@ -1191,13 +1193,10 @@
       lbList.innerHTML = '<div style="text-align:center; padding:30px; color:var(--text-dim); font-weight:700;">Không thể tải bảng xếp hạng.</div>';
       return;
     }
-    window.db.collection('users').get().then(snap => {
-      const users = [];
-      snap.forEach(doc => {
-        const d = doc.data();
-        users.push({ uid: doc.id, name: d.fullName || 'Ẩn danh', score: Math.max(0, d.gameStarshipScore || 0) });
-      });
-      users.sort((a,b) => b.score - a.score);
+    // Chỉ đọc top 10 (không tải toàn bộ users) — xem assets/js/game-leaderboard.js
+    GameLB.load('gameStarshipScore', 10).then(lb => {
+      const users = lb.users.map(u => ({ uid: u.uid, name: u.data.fullName || 'Ẩn danh', score: u.score }));
+      users._lb = lb;
       renderStarshipLeaderboard(users);
     }).catch(() => {
       lbList.innerHTML = '<div style="text-align:center; padding:30px; color:var(--danger); font-weight:700;">⚠️ Lỗi tải dữ liệu.</div>';
@@ -1257,5 +1256,6 @@
   })();
 </script>
 <script src="../assets/js/user-profile-popup.js"></script>
+<script src="../assets/js/game-leaderboard.js"></script>
 </body>
 </html>

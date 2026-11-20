@@ -915,6 +915,7 @@
         db.collection('friendships').doc(friendshipId).set({
           id: friendshipId,
           users: [myUid, senderId],
+          fromRequest: reqId, // rules đối chiếu lời mời (sender = bạn kia, receiver = mình)
           userNames: { [myUid]: myName, [senderId]: cleanSenderName },
           userAvatars: { [myUid]: currentLoggedUser.photoURL || '', [senderId]: senderAvatar || '' },
           createdAt: Date.now()

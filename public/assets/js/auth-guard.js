@@ -9,6 +9,8 @@
     var path = window.location.pathname;
     var needsAuth = path.indexOf('/writing/') !== -1 || path.indexOf('/grammar/') !== -1;
     if (!needsAuth) return;
+    // Trang bị khóa cho học viên → access-gate.js đã lo phần đăng nhập + kiểm tra quyền
+    if (window.AccessGate && window.AccessGate.pageLocked) return;
 
     var overlay = null;
     var _locked = false;

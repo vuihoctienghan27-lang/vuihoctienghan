@@ -8,7 +8,7 @@ const path = require('path');
 const vm = require('vm');
 
 // Load source code into global scope (dùng vm.runInThisContext để chạy như <script>)
-const sourcePath = path.join(__dirname, 'grading-engine.js');
+const sourcePath = path.join(__dirname, '../public/assets/js/grading-engine.js');
 const source = fs.readFileSync(sourcePath, 'utf-8');
 vm.runInThisContext(source);
 
@@ -187,22 +187,22 @@ runTest('E.3 gradeByConfig — exact match đáp án mở rộng → 5 điểm',
     assertEqual(r.score, 5);
 });
 
-runTest('E.4 gradeByConfig — đúng stems + grammar → 5 điểm', () => {
+runTest('E.4 gradeByConfig — đúng stems + grammar + bối cảnh (không trùng đáp án) → 4 điểm', () => {
     let r = gradeByConfig('제 물건들을 정리하려고 해요.', CONFIG, '');
-    assertEqual(r.score, 5);
-    assertContains(r.feedback[0], 'Đúng động từ');
+    assertEqual(r.score, 4);
+    assertContains(r.feedback[0], 'Khớp với ý');
 });
 
-runTest('E.5 gradeByConfig — chỉ đúng grammar → 3 điểm', () => {
+runTest('E.5 gradeByConfig — chỉ đúng grammar → 1 điểm', () => {
     let r = gradeByConfig('공부하려고 합니다.', CONFIG, '');
-    assertEqual(r.score, 3);
-    assertContains(r.feedback[0], 'Đúng ngữ pháp');
+    assertEqual(r.score, 1);
+    assertContains(r.feedback[0], 'Chỉ đúng ngữ pháp');
 });
 
 runTest('E.6 gradeByConfig — chỉ đúng stems → 2 điểm', () => {
     let r = gradeByConfig('물건을 정리합니다.', CONFIG, '');
     assertEqual(r.score, 2);
-    assertContains(r.feedback[0], 'Đúng động từ chính');
+    assertContains(r.feedback[0], 'Chỉ đúng trạng từ hoặc động từ');
 });
 
 runTest('E.7 gradeByConfig — không match gì → 0 điểm', () => {
@@ -211,14 +211,14 @@ runTest('E.7 gradeByConfig — không match gì → 0 điểm', () => {
     assertContains(r.feedback[0], 'Học sinh không liên quan');
 });
 
-runTest('E.8 gradeByConfig — altStems + altRequire → stems được tính', () => {
+runTest('E.8 gradeByConfig — altStems + altRequire → stems được tính (4 điểm)', () => {
     let r = gradeByConfig('제 물건을 드리려고 합니다.', CONFIG, '');
-    assertEqual(r.score, 5);
+    assertEqual(r.score, 4);
 });
 
-runTest('E.9 gradeByConfig — altStems thiếu altRequire → chỉ grammar (3đ)', () => {
+runTest('E.9 gradeByConfig — altStems thiếu altRequire → chỉ grammar (1đ)', () => {
     let r = gradeByConfig('드리려고 합니다.', CONFIG, '');
-    assertEqual(r.score, 3);
+    assertEqual(r.score, 1);
 });
 
 runTest('E.10 gradeByConfig — config thiếu grammar (edge case)', () => {

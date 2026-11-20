@@ -523,21 +523,38 @@
 
         try {
             const db = firebase.firestore();
-            const snap = await db.collection("shared_folders").where("keyCode", "==", code).get();
+            const wrongCode = () => Swal.fire({
+                icon: 'error',
+                title: 'Mã không đúng',
+                text: `Không tìm thấy thư mục nào có mã "${code}". Vui lòng kiểm tra lại với Giáo viên!`,
+                confirmButtonColor: '#ef4444'
+            });
 
-            if (snap.empty) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Mã không đúng',
-                    text: `Không tìm thấy thư mục nào có mã "${code}". Vui lòng kiểm tra lại với Giáo viên!`,
-                    confirmButtonColor: '#ef4444'
-                });
+            // 1. Tra mã → folderId (folder_keys chỉ cho GET đúng 1 mã, không liệt kê được)
+            const keyDoc = await db.collection("folder_keys").doc(code).get().catch(() => null);
+            const folderId = keyDoc && keyDoc.exists ? keyDoc.data().folderId : null;
+            if (!folderId) { wrongCode(); return; }
+
+            // 2. Ghi danh kèm Key Code — rules đối chiếu mã với thư mục rồi mới cho đọc nội dung lớp
+            try {
+                await db.collection("shared_folders").doc(folderId).collection("students").doc(user.uid).set({
+                    uid: user.uid,
+                    keyCode: code,
+                    email: user.email || '',
+                    displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'Học viên'),
+                    photoURL: user.photoURL || '',
+                    joinedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastActiveAt: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+            } catch (errStudents) {
+                console.warn("Không thể ghi danh học viên:", errStudents);
+                wrongCode();
                 return;
             }
 
-            const folderDoc = snap.docs[0];
+            const folderDoc = await db.collection("shared_folders").doc(folderId).get();
+            if (!folderDoc.exists) { wrongCode(); return; }
             const folderData = folderDoc.data();
-            const folderId = folderDoc.id;
 
             // Kiểm tra xem học viên đã mở khóa thư mục này chưa
             const userRef = db.collection("users").doc(user.uid);
@@ -567,20 +584,6 @@
             await userRef.set({
                 unlockedSharedFolders: firebase.firestore.FieldValue.arrayUnion(folderId)
             }, { merge: true });
-
-            // Ghi nhận học viên tham gia vào subcollection students của thư mục chia sẻ
-            try {
-                await db.collection("shared_folders").doc(folderId).collection("students").doc(user.uid).set({
-                    uid: user.uid,
-                    email: user.email || '',
-                    displayName: user.displayName || (user.email ? user.email.split('@')[0] : 'Học viên'),
-                    photoURL: user.photoURL || '',
-                    joinedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastActiveAt: firebase.firestore.FieldValue.serverTimestamp()
-                }, { merge: true });
-            } catch (errStudents) {
-                console.warn("Không thể ghi danh học viên:", errStudents);
-            }
 
             // Bắn pháo hoa 🎉
             if (typeof confetti === 'function') {
@@ -11410,6 +11413,41 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
         }
     };
 
+    // Đồng bộ bảng tra cứu folder_keys/{keyCode} → { folderId } theo danh sách thư mục của giáo viên.
+    // Học viên chỉ GET được đúng 1 mã nên không liệt kê được thư mục/mã của lớp khác.
+    // Chạy mỗi khi snapshot thư mục đổi → tự bao phủ tạo / nhân bản / đổi mã / xoá thư mục.
+    let _folderKeysSig = '';
+    async function syncFolderKeys(db) {
+        try {
+            // Lấy TẤT CẢ thư mục (mọi admin), không chỉ của TEACHER_EMAIL, để không xoá nhầm mã của admin khác
+            const all = await db.collection("shared_folders").get();
+            const want = {};
+            all.forEach(d => {
+                const code = ((d.data() || {}).keyCode || '').trim();
+                if (code && code.indexOf('/') === -1) want[code] = d.id;
+            });
+            const sig = Object.keys(want).sort().map(k => k + '=' + want[k]).join('|');
+            if (sig === _folderKeysSig) return;
+            const existing = await db.collection("folder_keys").get();
+            const batch = db.batch();
+            let ops = 0;
+            existing.forEach(d => {
+                if (!(d.id in want)) { batch.delete(d.ref); ops++; }
+            });
+            Object.keys(want).forEach(code => {
+                const cur = existing.docs.find(d => d.id === code);
+                if (!cur || (cur.data() || {}).folderId !== want[code]) {
+                    batch.set(db.collection("folder_keys").doc(code), { folderId: want[code] });
+                    ops++;
+                }
+            });
+            if (ops) await batch.commit();
+            _folderKeysSig = sig;
+        } catch (e) {
+            console.warn("Không đồng bộ được folder_keys:", e && e.message);
+        }
+    }
+
     // =========================================================================
     // 6. KHỞI TẠO REALTIME SYNC KHI ĐĂNG NHẬP
     // =========================================================================
@@ -11445,6 +11483,7 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
                         if (typeof window.renderSharedFoldersGrid === 'function' && document.getElementById('listsGrid')) {
                             window.renderSharedFoldersGrid();
                         }
+                        if (!snap.metadata.hasPendingWrites) syncFolderKeys(db);
                     });
             } else {
                 // 2. Nếu là Học viên: Lắng nghe danh sách unlockedSharedFolders

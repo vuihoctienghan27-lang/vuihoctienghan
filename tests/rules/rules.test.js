@@ -11,7 +11,7 @@ const {
   initializeTestEnvironment, assertSucceeds, assertFails,
 } = require('@firebase/rules-unit-testing');
 const {
-  doc, setDoc, updateDoc, getDoc, collection, addDoc, writeBatch,
+  doc, setDoc, updateDoc, getDoc, getDocs, deleteDoc, query, where, collection, addDoc, writeBatch,
   serverTimestamp, increment, Timestamp,
 } = require('firebase/firestore');
 
@@ -40,7 +40,9 @@ beforeEach(() => env.clearFirestore());
 // ───────── USERS ─────────
 test('đăng nhập lần đầu (auth.js) tạo hồ sơ được', async () => {
   await assertSucceeds(setDoc(doc(db(ALICE, aliceEmail), 'users', ALICE),
-    { email: aliceEmail, fullName: 'Alice', lastLoginAt: new Date().toISOString() }, { merge: true }));
+    { fullName: 'Alice', lastLoginAt: new Date().toISOString() }, { merge: true }));
+  // email KHÔNG được lưu trong users (đọc công khai) — auth.js ghi vào user_private
+  await assertFails(setDoc(doc(db(BOB), 'users', BOB), { email: 'bob@example.com' }, { merge: true }));
 });
 
 test('không thể tạo hồ sơ với EXP / role admin', async () => {
@@ -176,10 +178,83 @@ test('lời mời kết bạn: hợp lệ được, tự gửi cho mình bị ch
 });
 
 test('học viên ghi danh lớp (shared-vocab.js) được, tên 1000 ký tự bị chặn', async () => {
+  await seed('shared_folders/f1', { name: 'Lớp 1', keyCode: 'CLASS-AB12' });
   const ref = doc(db(ALICE, aliceEmail), 'shared_folders/f1/students', ALICE);
-  const base = { uid: ALICE, email: aliceEmail, photoURL: '', joinedAt: serverTimestamp(), lastActiveAt: serverTimestamp() };
-  await assertSucceeds(setDoc(ref, { ...base, displayName: 'Alice' }, { merge: true }));
+  const base = { uid: ALICE, keyCode: 'CLASS-AB12', email: aliceEmail, photoURL: '', joinedAt: serverTimestamp(), lastActiveAt: serverTimestamp() };
   await assertFails(setDoc(ref, { ...base, displayName: 'x'.repeat(1000) }, { merge: true }));
+  await assertSucceeds(setDoc(ref, { ...base, displayName: 'Alice' }, { merge: true }));
+});
+
+// ───────── LỚP HỌC: KEY CODE / BÀI NỘP ─────────
+test('Key Code: tra đúng 1 mã được, liệt kê mã bị chặn; sai mã không ghi danh được', async () => {
+  await seed('shared_folders/f1', { name: 'Lớp 1', keyCode: 'CLASS-AB12' });
+  await seed('shared_folders/f1/words/w1', { word: '학교' });
+  await seed('folder_keys/CLASS-AB12', { folderId: 'f1' });
+  const bob = db(BOB);
+  await assertSucceeds(getDoc(doc(bob, 'folder_keys', 'CLASS-AB12')));
+  await assertFails(getDocs(collection(bob, 'folder_keys')));
+  await assertFails(getDocs(query(collection(bob, 'shared_folders'), where('keyCode', '==', 'CLASS-AB12'))));
+  // Chưa ghi danh → không đọc được lớp
+  await assertFails(getDoc(doc(bob, 'shared_folders', 'f1')));
+  await assertFails(getDocs(collection(bob, 'shared_folders/f1/words')));
+  // Sai mã / thiếu mã → không ghi danh được
+  const st = doc(bob, 'shared_folders/f1/students', BOB);
+  await assertFails(setDoc(st, { uid: BOB, keyCode: 'WRONG', displayName: 'Bob' }, { merge: true }));
+  await assertFails(setDoc(st, { uid: BOB, displayName: 'Bob' }, { merge: true }));
+  // Đúng mã → ghi danh và đọc được nội dung lớp
+  await assertSucceeds(setDoc(st, { uid: BOB, keyCode: 'CLASS-AB12', displayName: 'Bob' }, { merge: true }));
+  await assertSucceeds(getDoc(doc(bob, 'shared_folders', 'f1')));
+  await assertSucceeds(getDocs(collection(bob, 'shared_folders/f1/words')));
+  // Đã ghi danh: cập nhật lastActiveAt không cần mã
+  await assertSucceeds(setDoc(st, { uid: BOB, displayName: 'Bob', lastActiveAt: serverTimestamp() }, { merge: true }));
+});
+
+test('Bài nộp: học viên nộp / nộp lại được nhưng không tự chấm điểm', async () => {
+  const p = `shared_folders/f1/exercises/e1/submissions/${ALICE}`;
+  const sub = { studentUid: ALICE, studentName: 'Alice', studentWorksheetHtml: '<p>bài</p>', originalText: 'bài', status: 'submitted', submittedAt: serverTimestamp() };
+  await assertSucceeds(setDoc(doc(db(ALICE), p), sub, { merge: true }));
+  await assertFails(setDoc(doc(db(ALICE), p), { score: '10', status: 'graded' }, { merge: true }));
+  await assertFails(setDoc(doc(db(ALICE), p), { teacherFeedback: 'Giỏi' }, { merge: true }));
+  await assertFails(setDoc(doc(db(BOB), `shared_folders/f1/exercises/e1/submissions/${ALICE}`), sub, { merge: true }));
+  // Giáo viên chấm
+  await assertSucceeds(setDoc(doc(db('admin', 'vuihoctienghan27@gmail.com'), p),
+    { correctedHtml: '<p>sửa</p>', score: '8', teacherFeedback: 'Tốt', status: 'graded', gradedAt: serverTimestamp() }, { merge: true }));
+  // Học viên nộp lại (giữ nguyên điểm cũ) được, sửa điểm thì không
+  await assertSucceeds(setDoc(doc(db(ALICE), p), sub, { merge: true }));
+  await assertFails(setDoc(doc(db(ALICE), p), { ...sub, score: '10' }, { merge: true }));
+});
+
+// ───────── BẠN BÈ / NHẮN TIN RIÊNG ─────────
+test('Kết bạn (chatbox): phải có lời mời từ bạn kia mới tạo được friendship', async () => {
+  const fid = [ALICE, BOB].sort().join('_');
+  const data = (extra) => ({ id: fid, users: [BOB, ALICE], userNames: {}, userAvatars: {}, createdAt: Date.now(), ...extra });
+  // Không có lời mời → bị chặn
+  await assertFails(setDoc(doc(db(BOB), 'friendships', fid), data({}), { merge: true }));
+  await seed('friend_requests/r1', { senderId: ALICE, receiverId: BOB });
+  // Người gửi tự chấp nhận lời mời của mình → bị chặn
+  await assertFails(setDoc(doc(db(ALICE), 'friendships', fid), data({ fromRequest: 'r1' }), { merge: true }));
+  // Người nhận chấp nhận → được
+  await assertSucceeds(setDoc(doc(db(BOB), 'friendships', fid), data({ fromRequest: 'r1' }), { merge: true }));
+});
+
+test('Kết bạn (forum): lời mời pending; chỉ người được mời chấp nhận; chưa là bạn thì không nhắn direct_messages', async () => {
+  const pending = { users: [ALICE, BOB], user1Id: ALICE, user1Name: 'Alice', user2Id: BOB, user2Name: 'Bob', status: 'pending', createdAt: serverTimestamp() };
+  await assertSucceeds(setDoc(doc(db(ALICE), 'friendships', 'p1'), pending));
+  await assertFails(setDoc(doc(db(ALICE), 'friendships', 'p2'), { ...pending, status: 'accepted' }));
+  const msg = { friendshipId: 'p1', senderId: ALICE, text: 'hi', createdAt: serverTimestamp() };
+  await assertFails(addDoc(collection(db(ALICE), 'direct_messages'), msg));
+  await assertFails(updateDoc(doc(db(ALICE), 'friendships', 'p1'), { status: 'accepted' }));
+  await assertSucceeds(updateDoc(doc(db(BOB), 'friendships', 'p1'), { status: 'accepted' }));
+  await assertSucceeds(addDoc(collection(db(ALICE), 'direct_messages'), msg));
+});
+
+test('direct_chats: đúng cặp 2 người theo id, không đổi được thành viên', async () => {
+  const pair = [ALICE, BOB].sort().join('_');
+  await assertSucceeds(setDoc(doc(db(ALICE), 'direct_chats', pair), { participants: [ALICE, BOB], lastUpdated: Date.now() }, { merge: true }));
+  await assertFails(setDoc(doc(db(ALICE), 'direct_chats', 'xyz'), { participants: [ALICE, 'carol'], lastUpdated: Date.now() }));
+  await assertFails(setDoc(doc(db(ALICE), 'direct_chats', 'alice_carol_dave'), { participants: [ALICE, 'carol', 'dave'] }));
+  await assertFails(updateDoc(doc(db(ALICE), 'direct_chats', pair), { participants: [ALICE, 'carol'] }));
+  await assertSucceeds(setDoc(doc(db(BOB), 'direct_chats', pair), { participants: [BOB, ALICE], lastUpdated: Date.now() }, { merge: true }));
 });
 
 test('app_config: chỉ người đã đăng nhập đọc được (tạm thời, chờ Blaze)', async () => {
@@ -233,6 +308,111 @@ test('Thi đấu: tạo phòng, khách vào, mỗi người chỉ ghi phần c�
   await assertSucceeds(updateDoc(ref(ALICE), { status: 'finished', endedAt: serverTimestamp() }));
 });
 
+// ───────── NINJA PHI TIÊU (claims: ai phá từ trước) ─────────
+const ninjaQs = Array.from({ length: 20 }, (_, i) => ({ w: '단어' + i, m: 'nghĩa ' + i, d: i % 2 ? 'v' : 'k', x: 0.5 }));
+const ninjaRoom = (extra = {}) => ({ hostId: ALICE, hostName: 'Alice', guestId: null, guestName: '', status: 'waiting', open: false,
+  game: 'ninja', ninjaMode: 'mix', questions: ninjaQs, ['s_' + ALICE]: { score: 0, done: false }, ...extra });
+const claimRef = (u, i, room = 'NIN123') => doc(db(u), 'duels', room, 'claims', String(i));
+const claim = (u) => ({ uid: u, at: serverTimestamp() });
+
+test('Ninja: tạo phòng ninja ≤ 30 từ, chế độ hợp lệ; trắc nghiệm vẫn ≤ 15 câu', async () => {
+  await assertSucceeds(setDoc(doc(db(ALICE), 'duels', 'NIN123'), ninjaRoom()));
+  await assertFails(setDoc(doc(db(ALICE), 'duels', 'NIN124'), ninjaRoom({ ninjaMode: 'hack' })));
+  await assertFails(setDoc(doc(db(ALICE), 'duels', 'NIN125'), ninjaRoom({ questions: Array(31).fill(ninjaQs[0]) })));
+  await assertFails(setDoc(doc(db(ALICE), 'duels', 'NIN126'), ninjaRoom({ game: 'chess' })));
+  await assertFails(setDoc(doc(db(ALICE), 'duels', 'QUZ127'), { hostId: ALICE, guestId: null, status: 'waiting', questions: Array(16).fill(duelQs[0]) }));
+});
+
+test('Ninja: chỉ người claim đầu tiên ăn điểm từ đó', async () => {
+  await seed('duels/NIN123', ninjaRoom({ guestId: BOB, guestName: 'Bob', status: 'playing', startAt: Timestamp.now() }));
+  await assertSucceeds(setDoc(claimRef(BOB, 3), claim(BOB)));
+  await assertFails(setDoc(claimRef(ALICE, 3), claim(ALICE)));          // Bob đã phá từ 3
+  await assertFails(setDoc(claimRef(BOB, 3), claim(BOB)));              // ghi đè chính mình cũng không được
+  await assertFails(updateDoc(claimRef(BOB, 3), { uid: ALICE }));       // không sửa
+  await assertSucceeds(setDoc(claimRef(ALICE, 4), claim(ALICE)));
+  const c3 = await getDoc(claimRef(ALICE, 3));
+  if (c3.data().uid !== BOB) throw new Error('claim 3 phải thuộc Bob');
+});
+
+test('Ninja: chặn claim giả mạo / sai chỉ số / ngoài người chơi / khi chưa chơi', async () => {
+  await seed('duels/NIN123', ninjaRoom({ guestId: BOB, guestName: 'Bob', status: 'playing', startAt: Timestamp.now() }));
+  await assertFails(setDoc(claimRef(BOB, 1), claim(ALICE)));                       // claim hộ người khác
+  await assertFails(setDoc(claimRef('carol', 1), claim('carol')));                 // không phải người chơi
+  await assertFails(setDoc(claimRef(BOB, 20), claim(BOB)));                        // ngoài số từ
+  await assertFails(setDoc(claimRef(BOB, 'abc'), claim(BOB)));                     // id không phải số
+  await assertFails(setDoc(claimRef(BOB, 2), { uid: BOB, at: serverTimestamp(), pts: 999 })); // thêm trường
+  await assertFails(setDoc(claimRef(BOB, 2), { uid: BOB, at: Timestamp.fromMillis(0) }));     // giả thời gian
+  // Phòng chưa bắt đầu / đã kết thúc / quá giờ / phòng trắc nghiệm
+  await seed('duels/NIN200', ninjaRoom());
+  await assertFails(setDoc(claimRef(ALICE, 0, 'NIN200'), claim(ALICE)));
+  await seed('duels/NIN201', ninjaRoom({ guestId: BOB, status: 'finished', startAt: Timestamp.now() }));
+  await assertFails(setDoc(claimRef(BOB, 0, 'NIN201'), claim(BOB)));
+  await seed('duels/NIN202', ninjaRoom({ guestId: BOB, status: 'playing', startAt: Timestamp.fromMillis(Date.now() - 10 * 60 * 1000) }));
+  await assertFails(setDoc(claimRef(BOB, 0, 'NIN202'), claim(BOB)));
+  await seed('duels/QUZ203', { hostId: ALICE, guestId: BOB, status: 'playing', questions: duelQs, startAt: Timestamp.now() });
+  await assertFails(setDoc(claimRef(BOB, 0, 'QUZ203'), claim(BOB)));
+});
+
+test('Ninja: khách vào phòng ninja và ghi điểm/lượt trượt của mình', async () => {
+  await seed('duels/NIN123', ninjaRoom());
+  const ref = (u) => doc(db(u), 'duels', 'NIN123');
+  await assertSucceeds(updateDoc(ref(BOB), { guestId: BOB, guestName: 'Bob', status: 'playing', startAt: serverTimestamp(), ['s_' + BOB]: { score: 0, done: false } }));
+  await assertSucceeds(updateDoc(ref(BOB), { ['s_' + BOB]: { score: 100, miss: { n: 1, i: 2 }, done: false } }));
+  await assertFails(updateDoc(ref(BOB), { game: 'quiz' }));
+});
+
+// ───────── KÉO CO TRẮC NGHIỆM (claims: ai đúng trước, phải đúng đáp án) ─────────
+const tugQs = Array.from({ length: 10 }, (_, i) => ({ w: 'w' + i, o: ['a', 'b', 'c', 'd'], a: i % 4 }));
+const tugRoom = (extra = {}) => ({ hostId: ALICE, hostName: 'Alice', guestId: null, guestName: '', status: 'waiting', open: true,
+  game: 'tug', questions: tugQs, ['s_' + ALICE]: { answers: [], score: 0, done: false }, ...extra });
+
+test('Kéo co: tạo phòng tug ≤ 15 câu', async () => {
+  await assertSucceeds(setDoc(doc(db(ALICE), 'duels', 'TUG100'), tugRoom()));
+  await assertFails(setDoc(doc(db(ALICE), 'duels', 'TUG101'), tugRoom({ questions: Array(16).fill(tugQs[0]) })));
+});
+
+test('Kéo co: chỉ người đúng trước giành được câu; sai đáp án / thiếu đáp án bị chặn', async () => {
+  await seed('duels/TUG100', tugRoom({ guestId: BOB, guestName: 'Bob', status: 'playing', startAt: Timestamp.now() }));
+  const cref = (u, i) => doc(db(u), 'duels', 'TUG100', 'claims', String(i));
+  await assertFails(setDoc(cref(BOB, 1), { uid: BOB, at: serverTimestamp(), c: 0 }));   // câu 1 đáp án là 1
+  await assertFails(setDoc(cref(BOB, 1), { uid: BOB, at: serverTimestamp() }));         // thiếu đáp án
+  await assertSucceeds(setDoc(cref(BOB, 1), { uid: BOB, at: serverTimestamp(), c: 1 }));
+  await assertFails(setDoc(cref(ALICE, 1), { uid: ALICE, at: serverTimestamp(), c: 1 })); // Bob đã giành trước
+  await assertSucceeds(setDoc(cref(ALICE, 2), { uid: ALICE, at: serverTimestamp(), c: 2 }));
+  await assertFails(setDoc(cref('carol', 3), { uid: 'carol', at: serverTimestamp(), c: 3 })); // không phải người chơi
+});
+
+test('Kéo co: ghi câu trả lời sai của mình (s_<uid>.w.k) được, sửa của đối thủ bị chặn', async () => {
+  await seed('duels/TUG100', tugRoom({ guestId: BOB, guestName: 'Bob', status: 'playing', startAt: Timestamp.now(), ['s_' + BOB]: { score: 0, done: false } }));
+  const ref = (u) => doc(db(u), 'duels', 'TUG100');
+  await assertSucceeds(updateDoc(ref(BOB), { ['s_' + BOB + '.w.3']: 5120 }));
+  await assertSucceeds(updateDoc(ref(BOB), { ['s_' + BOB + '.done']: true, ['s_' + BOB + '.score']: 4 }));
+  await assertFails(updateDoc(ref(BOB), { ['s_' + ALICE + '.w.3']: 1 }));
+});
+
+// ───────── ĐIỂM GAME (games/*.html) ─────────
+test('Điểm game: chỉ tăng, là số, không vượt trần; người khác không sửa được', async () => {
+  await seed(`users/${ALICE}`, { fullName: 'Alice', gameBansungScore: 500, gameMugonghwaScore: 40 });
+  const ref = doc(db(ALICE), 'users', ALICE);
+  await assertSucceeds(setDoc(ref, { gameBansungScore: 820 }, { merge: true }));        // kỷ lục mới
+  await assertFails(setDoc(ref, { gameBansungScore: 100 }, { merge: true }));           // giảm điểm
+  await assertFails(setDoc(ref, { gameBansungScore: 999999999 }, { merge: true }));     // vượt trần
+  await assertFails(setDoc(ref, { gameBansungScore: '9999' }, { merge: true }));        // không phải số
+  await assertSucceeds(setDoc(ref, { gameMugonghwaScore: 100 }, { merge: true }));       // 100% = về đích
+  await assertFails(setDoc(ref, { gameMugonghwaScore: 101 }, { merge: true }));          // quá 100%
+  await assertSucceeds(setDoc(ref, { gameFroggameScore: 300, gameStarshipScore: 1500 }, { merge: true }));
+  await assertFails(setDoc(doc(db(BOB), 'users', ALICE), { gameFroggameScore: 99999 }, { merge: true }));
+});
+
+test('Điểm game: tạo hồ sơ mới kèm điểm vượt trần bị chặn; bảng xếp hạng top 10 đọc được', async () => {
+  await assertFails(setDoc(doc(db(BOB), 'users', BOB), { gameStarshipScore: 5000000 }, { merge: true }));
+  await assertSucceeds(setDoc(doc(db(BOB), 'users', BOB), { gameStarshipScore: 4200 }, { merge: true }));
+  await seed(`users/${ALICE}`, { fullName: 'Alice', gameStarshipScore: 9000 });
+  const { orderBy, limit } = require('firebase/firestore');
+  const top = await assertSucceeds(getDocs(query(collection(anon(), 'users'), orderBy('gameStarshipScore', 'desc'), limit(10))));
+  if (top.docs[0].id !== ALICE) throw new Error('top 1 phải là Alice');
+});
+
 test('Nhắc nộp bài: link nội bộ hợp lệ, không gửi cho chính mình', async () => {
   const c = collection(db(ALICE), 'notifications');
   const base = { type: 'deadline', fromUserId: ALICE, fromUserName: 'Cô Alice', message: 'Nhắc làm bài tập', read: false };
@@ -244,4 +424,31 @@ test('Nhắc nộp bài: link nội bộ hợp lệ, không gửi cho chính mì
 test('Huy hiệu / thống kê thi đấu / luyện nói: chủ tài khoản ghi được', async () => {
   await seed(`users/${ALICE}`, { fullName: 'Alice' });
   await assertSucceeds(setDoc(doc(db(ALICE), 'users', ALICE), { badges: { streak3: Date.now() }, duelPlayed: increment(1), duelWins: increment(1), dailySpeakData: { [today()]: increment(1) } }, { merge: true }));
+});
+
+// ───────── HỌC VIÊN NỘI BỘ (access-gate.js + data.html) ─────────
+const ADMIN = () => db('admin', 'vuihoctienghan27@gmail.com');
+
+test('approved_students: chỉ admin cấp quyền; học viên chỉ đọc đúng email của mình', async () => {
+  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'approved_students', aliceEmail), { email: aliceEmail }));
+  await assertSucceeds(setDoc(doc(ADMIN(), 'approved_students', aliceEmail), { email: aliceEmail, uid: ALICE }));
+  await assertSucceeds(getDoc(doc(db(ALICE, aliceEmail), 'approved_students', aliceEmail)));
+  await assertSucceeds(getDoc(doc(db(BOB), 'approved_students', 'bob@example.com')));   // doc chưa có vẫn GET được
+  await assertFails(getDoc(doc(db(BOB), 'approved_students', aliceEmail)));
+  await assertFails(getDocs(collection(db(ALICE, aliceEmail), 'approved_students')));
+  await assertFails(getDoc(doc(anon(), 'approved_students', aliceEmail)));
+  await assertSucceeds(getDocs(collection(ADMIN(), 'approved_students')));
+  await assertSucceeds(deleteDoc(doc(ADMIN(), 'approved_students', aliceEmail)));
+});
+
+test('student_requests: tự gửi yêu cầu của mình, admin duyệt/xoá', async () => {
+  const req = { email: aliceEmail, name: 'Alice', requestedAt: serverTimestamp() };
+  await assertSucceeds(setDoc(doc(db(ALICE, aliceEmail), 'student_requests', ALICE), req));
+  await assertFails(setDoc(doc(db(BOB), 'student_requests', ALICE), req));
+  await assertFails(setDoc(doc(db(BOB), 'student_requests', BOB), req));                      // email giả
+  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'student_requests', ALICE), { ...req, approved: true }));
+  await assertSucceeds(getDoc(doc(db(ALICE, aliceEmail), 'student_requests', ALICE)));
+  await assertFails(getDocs(collection(db(ALICE, aliceEmail), 'student_requests')));
+  await assertSucceeds(getDocs(collection(ADMIN(), 'student_requests')));
+  await assertSucceeds(deleteDoc(doc(ADMIN(), 'student_requests', ALICE)));
 });

@@ -580,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Global logic & Vocab scripts
-    ['auth-guard.js', 'user-profile-popup.js', 'vocab-external.js','vocab-dictionary.js','hover-lookup.js','vocab-stats.js'].forEach(f => {
+    ['access-gate.js', 'auth-guard.js', 'user-profile-popup.js', 'vocab-external.js','vocab-dictionary.js','hover-lookup.js','vocab-stats.js'].forEach(f => {
         if (!document.querySelector(`script[src*="${f}"]`)) {
             const s = document.createElement('script');
             s.src = `${rootPath}assets/js/${f}`; s.async = false;

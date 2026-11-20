@@ -422,6 +422,7 @@
     var currentUid = window.currentUserUid;
     var myRank = -1, myUser = null;
     users.forEach(function(u,i){ if (u.uid === currentUid){ myRank = i; myUser = u; } });
+    if (users._lb) myRank = users._lb.myRank;
     var medals = ['🥇','🥈','🥉'];
     var scorers = users.filter(function(u){ return u.score > 0; });
     var end = Math.min(9, scorers.length - 1);
@@ -450,7 +451,7 @@
         var row = document.createElement('div');
         row.className = 'leaderboard-row me-self';
         row.style.cursor = 'pointer';
-        var rank = document.createElement('span'); rank.className = 'lb-rank'; rank.textContent = '#' + (myRank + 1);
+        var rank = document.createElement('span'); rank.className = 'lb-rank'; rank.textContent = GameLB.rankText(myRank, 10);
         var nameEl = document.createElement('span'); nameEl.className = 'lb-name';
         nameEl.innerHTML = av(currentUid) + ' ' + esc(myUser.name) + ' · Vị trí của bạn';
         var score = document.createElement('span'); score.className = 'lb-score'; score.textContent = myUser.score;
@@ -471,13 +472,10 @@
       leaderboardListEl.innerHTML = '<p class="leaderboard-empty">Không thể tải bảng xếp hạng.</p>';
       return;
     }
-    window.db.collection('users').get().then(function(snap){
-      var users = [];
-      snap.forEach(function(doc){
-        var d = doc.data();
-        users.push({ uid: doc.id, name: d.fullName || 'Ẩn danh', score: Math.max(0, d.gameFroggameScore || 0) });
-      });
-      users.sort(function(a,b){ return b.score - a.score; });
+    // Chỉ đọc top 10 (không tải toàn bộ users) — xem assets/js/game-leaderboard.js
+    GameLB.load('gameFroggameScore', 10).then(function(lb){
+      var users = lb.users.map(function(u){ return { uid: u.uid, name: u.data.fullName || 'Ẩn danh', score: u.score }; });
+      users._lb = lb;
       renderFrogLeaderboard(users);
     }).catch(function(){
       leaderboardListEl.innerHTML = '<p class="leaderboard-empty">⚠️ Lỗi tải dữ liệu.</p>';
@@ -1075,5 +1073,6 @@
   })();
 </script>
 <script src="../assets/js/user-profile-popup.js"></script>
+<script src="../assets/js/game-leaderboard.js"></script>
 </body>
 </html>

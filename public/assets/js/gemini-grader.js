@@ -79,7 +79,7 @@
     function sleep(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
 
     // ── Gọi Gemini trực tiếp ──
-    async function callGemini(systemPrompt, userText) {
+    async function callGemini(systemPrompt, userText, maxTok) {
         if (!GEMINI_KEYS.length) throw new Error('NO_GEMINI_KEY');
         var fullText = systemPrompt + '\n\n' + userText;
 
@@ -101,7 +101,7 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{ parts: [{ text: fullText }] }],
-                        generationConfig: { temperature: 0.3, maxOutputTokens: 800 }
+                        generationConfig: { temperature: 0.3, maxOutputTokens: maxTok || 800 }
                     }),
                     signal: controller.signal
                 });
@@ -161,7 +161,7 @@
     }
 
     // ── Gọi Groq (free) ──
-    async function callGroq(systemPrompt, userText) {
+    async function callGroq(systemPrompt, userText, maxTok) {
         if (!GROQ_KEYS.length) throw new Error('NO_GROQ_KEY');
         for (var attempt = 0; attempt < 3; attempt++) {
             var key = getGroqKey();
@@ -178,7 +178,7 @@
                             { role: 'system', content: systemPrompt },
                             { role: 'user', content: userText }
                         ],
-                        temperature: 0.3, max_completion_tokens: 1200
+                        temperature: 0.3, max_completion_tokens: maxTok || 1200
                     }),
                     signal: controller.signal
                 });
@@ -202,7 +202,7 @@
     }
 
     // ── Gọi OpenRouter (fallback) ──
-    async function callOpenRouter(systemPrompt, userText) {
+    async function callOpenRouter(systemPrompt, userText, maxTok) {
         if (!OR_KEY || OR_KEY.indexOf('sk-or-v1-') !== 0) throw new Error('NO_OR_KEY');
         for (var attempt = 0; attempt < 2; attempt++) {
             try {
@@ -217,7 +217,7 @@
                             { role: 'system', content: systemPrompt },
                             { role: 'user', content: userText }
                         ],
-                        temperature: 0.3, max_tokens: 1200
+                        temperature: 0.3, max_tokens: maxTok || 1200
                     }),
                     signal: controller.signal
                 });
@@ -236,16 +236,16 @@
     }
 
     // ── Gọi AI: Groq (free) → Gemini (free) → OpenRouter (trả phí) ──
-    async function callAI(systemPrompt, userText) {
+    async function callAI(systemPrompt, userText, maxTok) {
         await loadAiKeys();
         if (!GROQ_KEYS.length && !GEMINI_KEYS.length && !OR_KEY) {
             throw new Error('Chưa cấu hình API key cho AI chấm điểm.');
         }
-        try { return await callGroq(systemPrompt, userText); }
+        try { return await callGroq(systemPrompt, userText, maxTok); }
         catch(e) { console.warn('[AI] Groq lỗi, thử Gemini:', e.message); }
-        try { return await callGemini(systemPrompt, userText); }
+        try { return await callGemini(systemPrompt, userText, maxTok); }
         catch(e) { console.warn('[AI] Gemini lỗi, thử OpenRouter:', e.message); }
-        try { return await callOpenRouter(systemPrompt, userText); }
+        try { return await callOpenRouter(systemPrompt, userText, maxTok); }
         catch(e) { throw new Error('Tất cả AI đều lỗi: ' + e.message); }
     }
 
@@ -336,6 +336,11 @@
     // ═══════════════════════════════════════════════════════
     // PUBLIC API
     // ═══════════════════════════════════════════════════════
+
+    // API thô cho các trang tự dựng prompt riêng (vd. câu 53 trên 원고지): trả về chuỗi gốc của AI
+    window.callWritingAI = function(systemPrompt, userText, maxTokens) {
+        return callAI(systemPrompt, userText, maxTokens);
+    };
 
     window.gradeWriting = function(text, config, fallbackMsg, scoreElId, btnExpId) {
         var sc = document.getElementById(scoreElId);

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Vui Học Tiếng Hàn</title>
-    <link rel="icon" type="image/png" sizes="16x16"  href="/public/assets/img/favicon.png">
+    <link rel="icon" type="image/png" sizes="16x16"  href="/assets/img/favicon.png">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
@@ -73,8 +73,30 @@
         body.dark-mode tbody tr:hover { background: rgba(255,255,255,0.06); }
         .table-scroll { overflow-x: auto; }
         th.col-rank, td.col-rank { width: 3%; }
-        th.col-email, td.col-email { width: 22%; }
-        th.col-name, td.col-name { width: 14%; }
+        th.col-email, td.col-email { width: 19%; }
+        th.col-name, td.col-name { width: 12%; }
+        th.col-access, td.col-access { width: 10%; }
+
+        /* ===== Duyệt học viên ===== */
+        .tab-btn .tab-dot { display: inline-block; min-width: 20px; padding: 1px 6px; margin-left: 6px; border-radius: 10px; background: #ef4444; color: #fff; font-size: 0.75em; line-height: 1.5; }
+        .st-note { color: var(--text-sub); font-size: 0.88em; line-height: 1.55; margin: -4px 0 14px; }
+        .st-row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.6); margin-bottom: 8px; flex-wrap: wrap; }
+        body.dark-mode .st-row { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.08); }
+        .st-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; color: #fff; background: linear-gradient(135deg,#3b82f6,#8b5cf6); flex-shrink: 0; }
+        .st-info { flex: 1; min-width: 160px; overflow: hidden; }
+        .st-name { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .st-meta { font-size: 0.82em; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .st-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .btn-ok, .btn-no { border: none; padding: 8px 14px; border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 0.88em; transition: 0.2s; }
+        .btn-ok { background: rgba(16,185,129,0.15); color: #059669; }
+        .btn-ok:hover { background: rgba(16,185,129,0.28); }
+        .btn-no { background: rgba(239,68,68,0.1); color: #dc2626; }
+        .btn-no:hover { background: rgba(239,68,68,0.22); }
+        .btn-ok:disabled, .btn-no:disabled { opacity: 0.5; cursor: default; }
+        body.dark-mode .btn-ok { color: #34d399; }
+        body.dark-mode .btn-no { color: #f87171; }
+        .btn-mini { padding: 4px 10px; font-size: 0.8em; border-radius: 8px; }
+        .st-empty { text-align: center; padding: 22px; color: var(--text-sub); font-weight: 600; font-size: 0.92em; }
         th.col-streak, td.col-streak { width: 7%; }
         th.col-today, td.col-today { width: 7%; }
         th.col-total, td.col-total { width: 9%; }
@@ -166,6 +188,7 @@
     <div class="tabs-row">
         <button class="tab-btn active" data-tab="tab-overview">📊 Tổng quan</button>
         <button class="tab-btn" data-tab="tab-users">👥 Học viên</button>
+        <button class="tab-btn" data-tab="tab-students">🎓 Duyệt học viên<span class="tab-dot" id="pendingDot" style="display:none;"></span></button>
         <button class="tab-btn" data-tab="tab-charts">📈 Biểu đồ</button>
         <button class="tab-btn" data-tab="tab-activity">📉 Truy cập</button>
         <button class="tab-btn" data-tab="tab-feedback">💬 Góp ý</button>
@@ -221,6 +244,7 @@
                             <th class="col-rank">#</th>
                             <th class="col-email">Email</th>
                             <th class="col-name">Tên</th>
+                            <th class="col-access">Quyền</th>
                             <th class="col-streak">Streak</th>
                             <th class="col-today">Hôm nay</th>
                             <th class="col-total">Tổng phút</th>
@@ -232,6 +256,33 @@
                     <tbody id="userTableBody"></tbody>
                 </table>
             </div>
+        </div>
+    </div>
+
+    <div id="tab-students" class="tab-content">
+        <div class="section-card" style="margin-top:0;">
+            <div class="section-title">🙋 Yêu cầu chờ duyệt <span class="badge-count" id="pendingCount">0</span></div>
+            <p class="st-note">Người dùng bấm "Tôi là học viên — gửi yêu cầu kích hoạt" khi mở đề bị khóa sẽ hiện ở đây. Chấp nhận → dùng được toàn bộ Nghe, Đọc, Viết, Ngữ pháp. Đề 35 luôn mở cho mọi người.</p>
+            <div id="pendingList" class="st-empty">Đang tải…</div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">➕ Thêm học viên theo email</div>
+            <p class="st-note">Thêm trước email Google của học viên. Khi họ đăng nhập bằng email này, toàn bộ nội dung sẽ tự mở.</p>
+            <div class="filter-bar" style="margin-bottom:0;">
+                <input type="email" id="addStudentEmail" placeholder="email@gmail.com" style="flex:1;min-width:200px;" onkeydown="if(event.key==='Enter')addStudentByEmail()">
+                <input type="text" id="addStudentName" placeholder="Tên (không bắt buộc)" style="flex:1;min-width:160px;" onkeydown="if(event.key==='Enter')addStudentByEmail()">
+                <button class="btn-ok" onclick="addStudentByEmail()">✓ Cấp quyền</button>
+            </div>
+        </div>
+
+        <div class="section-card">
+            <div class="section-title">🎓 Học viên đã duyệt <span class="badge-count" id="approvedCount">0</span></div>
+            <div class="filter-bar">
+                <input type="text" id="approvedSearch" placeholder="Tìm email hoặc tên..." oninput="renderStudents()" style="flex:1;">
+                <button class="btn-refresh" onclick="loadStudents()">⟳ Làm mới</button>
+            </div>
+            <div id="approvedList" class="st-empty">Đang tải…</div>
         </div>
     </div>
 
@@ -337,12 +388,13 @@
                 if (btn.dataset.tab === 'tab-charts') { renderExpLargeChart(); renderActivityChart(); }
                 if (btn.dataset.tab === 'tab-activity') renderActivityChart();
                 if (btn.dataset.tab === 'tab-feedback') loadFeedback();
+                if (btn.dataset.tab === 'tab-students') loadStudents();
             }
         });
     });
 
     async function loadData() {
-        document.getElementById('userTableBody').innerHTML = '<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--text-sub);">Đang tải dữ liệu...</td></tr>';
+        document.getElementById('userTableBody').innerHTML = '<tr><td colspan="10" style="text-align:center;padding:30px;color:var(--text-sub);">Đang tải dữ liệu...</td></tr>';
         try {
             const db = firebase.firestore();
             const [snap, authList, privSnap] = await Promise.all([
@@ -380,7 +432,7 @@
             renderStudyChart();
             renderExpChart();
         } catch (e) {
-            document.getElementById('userTableBody').innerHTML = `<tr><td colspan="9" style="text-align:center;padding:30px;color:#ef4444;">⚠️ ${e.message}</td></tr>`;
+            document.getElementById('userTableBody').innerHTML = `<tr><td colspan="10" style="text-align:center;padding:30px;color:#ef4444;">⚠️ ${e.message}</td></tr>`;
         }
     }
 
@@ -517,6 +569,7 @@
                 <td class="col-rank" style="color:var(--text-sub);font-weight:700;">${i+1}</td>
                 <td class="col-email user-email" title="${esc(email)}">${esc(email || '—')}</td>
                 <td class="col-name" style="font-weight:600;" title="${esc(name)}">${esc(name || '—')}${u._authOnly ? ' <span class="badge" style="background:#f1f5f9;color:#64748b;font-size:.75em;">Chưa học</span>' : ''}</td>
+                <td class="col-access">${accessCell(email, name, u._uid)}</td>
                 <td class="col-streak"><span class="badge ${(u.streakDays||0)>=7?'badge-green':'badge-yellow'}">${esc(u.streakDays||0)}🔥</span></td>
                 <td class="col-today">${esc(tm)}p</td>
                 <td class="col-total">${esc(fmtMins(u.totalStudyMinutes))}</td>
@@ -525,6 +578,173 @@
                 <td class="col-join login-time">${esc(fmtDate(String(u.joinDate || '')))}</td>
             </tr>`;
         }).join('');
+    }
+
+    // ===== DUYỆT HỌC VIÊN (access-gate.js) =====
+    // approved_students/{email}: được dùng toàn bộ Nghe/Đọc/Viết/Ngữ pháp
+    // student_requests/{uid}: yêu cầu kích hoạt do người dùng gửi
+    let approvedStudents = {};   // email → data
+    let pendingRequests = [];
+
+    async function loadStudents() {
+        const db = firebase.firestore();
+        try {
+            const [aSnap, rSnap] = await Promise.all([
+                db.collection('approved_students').get(),
+                db.collection('student_requests').get()
+            ]);
+            approvedStudents = {};
+            aSnap.forEach(d => { approvedStudents[d.id] = Object.assign({ email: d.id }, d.data()); });
+            pendingRequests = [];
+            rSnap.forEach(d => {
+                const r = Object.assign({ _uid: d.id }, d.data());
+                // Đã duyệt rồi thì không còn là yêu cầu chờ
+                if (!approvedStudents[String(r.email || '').toLowerCase()]) pendingRequests.push(r);
+            });
+            pendingRequests.sort((a, b) => tsMs(b.requestedAt) - tsMs(a.requestedAt));
+        } catch (e) {
+            const msg = `<div class="st-empty" style="color:#ef4444;">⚠️ ${esc(e.message)} — hãy chắc chắn đã deploy firestore.rules mới.</div>`;
+            document.getElementById('pendingList').innerHTML = msg;
+            document.getElementById('approvedList').innerHTML = msg;
+            return;
+        }
+        renderStudents();
+        if (allUsers.length) renderTable();
+    }
+
+    function tsMs(t) {
+        if (!t) return 0;
+        if (typeof t.toMillis === 'function') return t.toMillis();
+        const n = new Date(t).getTime();
+        return isNaN(n) ? 0 : n;
+    }
+    function fmtTs(t) {
+        const ms = tsMs(t);
+        return ms ? fmtDate(new Date(ms).toISOString()) : '—';
+    }
+    function initial(s) { return esc((String(s || '?').trim()[0] || '?').toUpperCase()); }
+
+    function renderStudents() {
+        const pDot = document.getElementById('pendingDot');
+        pDot.textContent = pendingRequests.length;
+        pDot.style.display = pendingRequests.length ? '' : 'none';
+        document.getElementById('pendingCount').textContent = pendingRequests.length;
+
+        document.getElementById('pendingList').innerHTML = pendingRequests.length
+            ? pendingRequests.map(r => `<div class="st-row">
+                    <div class="st-avatar">${initial(r.name || r.email)}</div>
+                    <div class="st-info">
+                        <div class="st-name">${esc(r.name || '(Chưa có tên)')}</div>
+                        <div class="st-meta">${esc(r.email)} · gửi lúc ${esc(fmtTs(r.requestedAt))}</div>
+                    </div>
+                    <div class="st-actions">
+                        <button class="btn-ok" onclick="approveStudent(${arg(r.email)}, ${arg(r.name)}, ${arg(r._uid)}, this)">✓ Chấp nhận</button>
+                        <button class="btn-no" onclick="rejectRequest(${arg(r._uid)}, ${arg(r.email)}, this)">✕ Từ chối</button>
+                    </div>
+                </div>`).join('')
+            : '<div class="st-empty">Không có yêu cầu nào đang chờ 🎉</div>';
+
+        const q = (document.getElementById('approvedSearch').value || '').toLowerCase().trim();
+        const list = Object.values(approvedStudents)
+            .filter(s => !q || String(s.email).toLowerCase().includes(q) || String(s.name || '').toLowerCase().includes(q))
+            .sort((a, b) => tsMs(b.approvedAt) - tsMs(a.approvedAt));
+        document.getElementById('approvedCount').textContent = Object.keys(approvedStudents).length;
+        document.getElementById('approvedList').innerHTML = list.length
+            ? list.map(s => `<div class="st-row">
+                    <div class="st-avatar" style="background:linear-gradient(135deg,#10b981,#059669);">${initial(s.name || s.email)}</div>
+                    <div class="st-info">
+                        <div class="st-name">${esc(s.name || '(Chưa có tên)')}</div>
+                        <div class="st-meta">${esc(s.email)} · duyệt ${esc(fmtTs(s.approvedAt))}</div>
+                    </div>
+                    <div class="st-actions">
+                        <button class="btn-no" onclick="removeStudent(${arg(s.email)}, this)">🗑 Xoá quyền</button>
+                    </div>
+                </div>`).join('')
+            : `<div class="st-empty">${q ? 'Không tìm thấy học viên phù hợp.' : 'Chưa có học viên nào được duyệt.'}</div>`;
+    }
+
+    // Ô "Quyền" trong bảng Học viên
+    function accessCell(email, name, uid) {
+        const key = String(email || '').toLowerCase();
+        if (!key) return '<span class="login-time">—</span>';
+        if (ADMIN_EMAILS.includes(key)) return '<span class="badge" style="background:rgba(139,92,246,.15);color:#7c3aed;">Admin</span>';
+        if (approvedStudents[key]) return `<button class="btn-no btn-mini" title="Xoá quyền học viên" onclick="removeStudent(${arg(key)}, this)">🎓 Thu hồi</button>`;
+        return `<button class="btn-ok btn-mini" title="Cấp quyền học viên" onclick="approveStudent(${arg(key)}, ${arg(name)}, ${arg(uid)}, this)">+ Cấp quyền</button>`;
+    }
+
+    async function approveStudent(email, name, uid, btn) {
+        const key = String(email || '').trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(key)) return Swal.fire('Email không hợp lệ', key || '(trống)', 'warning');
+        if (btn) btn.disabled = true;
+        const db = firebase.firestore();
+        const me = firebase.auth().currentUser;
+        try {
+            const batch = db.batch();
+            const data = {
+                email: key,
+                name: String(name || '').slice(0, 100),
+                approvedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                approvedBy: me ? me.email : ''
+            };
+            if (uid) data.uid = uid;
+            batch.set(db.collection('approved_students').doc(key), data, { merge: true });
+            // Xoá yêu cầu chờ duyệt (nếu có) của tài khoản này
+            pendingRequests.filter(r => r._uid === uid || String(r.email || '').toLowerCase() === key)
+                .forEach(r => batch.delete(db.collection('student_requests').doc(r._uid)));
+            await batch.commit();
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã cấp quyền cho ' + key, showConfirmButton: false, timer: 2200 });
+            await loadStudents();
+        } catch (e) {
+            if (btn) btn.disabled = false;
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: e.message, confirmButtonColor: '#2563eb' });
+        }
+    }
+
+    async function rejectRequest(uid, email, btn) {
+        const ok = await Swal.fire({
+            icon: 'question', title: 'Từ chối yêu cầu?',
+            html: 'Xoá yêu cầu kích hoạt của <b>' + esc(email) + '</b>.<br>Người này vẫn có thể gửi lại sau.',
+            showCancelButton: true, confirmButtonText: 'Từ chối', cancelButtonText: 'Huỷ', confirmButtonColor: '#ef4444'
+        });
+        if (!ok.isConfirmed) return;
+        if (btn) btn.disabled = true;
+        try {
+            await firebase.firestore().collection('student_requests').doc(uid).delete();
+            await loadStudents();
+        } catch (e) {
+            if (btn) btn.disabled = false;
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: e.message, confirmButtonColor: '#2563eb' });
+        }
+    }
+
+    async function removeStudent(email, btn) {
+        const ok = await Swal.fire({
+            icon: 'warning', title: 'Xoá quyền học viên?',
+            html: '<b>' + esc(email) + '</b> sẽ chỉ còn dùng được đề 35.<br>Dữ liệu học tập của học viên vẫn được giữ nguyên.',
+            showCancelButton: true, confirmButtonText: 'Xoá quyền', cancelButtonText: 'Huỷ', confirmButtonColor: '#ef4444'
+        });
+        if (!ok.isConfirmed) return;
+        if (btn) btn.disabled = true;
+        try {
+            await firebase.firestore().collection('approved_students').doc(String(email).toLowerCase()).delete();
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Đã xoá quyền của ' + email, showConfirmButton: false, timer: 2200 });
+            await loadStudents();
+        } catch (e) {
+            if (btn) btn.disabled = false;
+            Swal.fire({ icon: 'error', title: 'Lỗi', text: e.message, confirmButtonColor: '#2563eb' });
+        }
+    }
+
+    async function addStudentByEmail() {
+        const emailEl = document.getElementById('addStudentEmail');
+        const nameEl = document.getElementById('addStudentName');
+        const key = emailEl.value.trim().toLowerCase();
+        if (!key) return emailEl.focus();
+        if (approvedStudents[key]) return Swal.fire('Đã có', key + ' đã là học viên.', 'info');
+        // Gắn tên/uid nếu tài khoản này đã từng đăng nhập
+        const u = allUsers.find(x => String(x.email || '').toLowerCase() === key);
+        await approveStudent(key, nameEl.value.trim() || (u && (u.fullName || u._authName)) || '', u && u._uid, null);
+        if (approvedStudents[key]) { emailEl.value = ''; nameEl.value = ''; }
     }
 
     function buildStudyData() {
@@ -799,6 +1019,7 @@
                 content.style.display = '';
                 document.getElementById('adminEmail').textContent = '👤 ' + user.email;
                 loadData();
+                loadStudents();
             } else {
                 content.style.display = 'none';
                 denied.style.display = '';

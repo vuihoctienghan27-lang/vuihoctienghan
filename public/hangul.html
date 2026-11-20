@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Học bảng chữ cái Hangeul — Giáo án tương tác</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Noto+Sans+KR:wght@400;500;700;900&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --ink-soft:#3A4A6B;
+    --paper:#F7F2E7;
+    --card:#FFFFFF;
+    --line:#E4DAC5;
+    --red:#C73E3A;
+    --red-dark:#A32E2B;
+    --jade:#1F7A5C;
+    --jade-dark:#175E47;
+    --gold:#C9932A;
+    --gold-dark:#A8791F;
+    --text-soft:#655F4E;
+    --radius:14px;
+    --shadow: 0 2px 0 var(--line);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Be Vietnam Pro', sans-serif;
+    line-height:1.5;
+  }
+  .kr{ font-family:'Noto Sans KR', sans-serif; }
+  h1,h2,h3{ font-family:'Fraunces', serif; margin:0; }
+  a{color:inherit;}
+  button{font-family:inherit;}
+  :focus-visible{ outline:3px solid var(--gold); outline-offset:2px; }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+  }
+
+  /* ---------- Header ---------- */
+  header.hero{
+    background: var(--ink);
+    color:#F3EEE0;
+    padding:56px 24px 40px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::before{
+    content:"";
+    position:absolute;
+    right:-60px; top:-60px;
+    width:260px; height:260px;
+    border-radius:50%;
+    background: radial-gradient(circle at 35% 35%, var(--red) 0 48%, transparent 49%),
+                radial-gradient(circle at 65% 65%, var(--jade) 0 48%, transparent 49%);
+    opacity:0.9;
+  }
+  .hero-inner{ max-width:960px; margin:0 auto; position:relative; }
+  .hero-eyebrow{
+    font-size:15px; color:var(--gold); letter-spacing:0.02em; margin-bottom:10px; font-weight:600;
+  }
+  header.hero h1{ font-size:clamp(32px,5vw,52px); font-weight:600; margin-bottom:8px; }
+  header.hero .kr-subtitle{ font-size:20px; color:#C9C3AE; margin-bottom:18px; }
+  header.hero p.desc{ max-width:560px; color:#D8D2C0; font-size:16px; }
+
+  /* ---------- Nav ---------- */
+  nav.tabs{
+    position:sticky; top:0; z-index:30;
+    background:rgba(247,242,231,0.96);
+    backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--line);
+    display:flex; justify-content:safe center; gap:4px;
+    padding:0 12px;
+    overflow-x:auto;
+  }
+  nav.tabs button{
+    border:none; background:none; cursor:pointer;
+    padding:16px 18px; font-size:15px; font-weight:600; color:var(--text-soft);
+    border-bottom:3px solid transparent;
+    white-space:nowrap;
+    transition: color .2s, border-color .2s;
+  }
+  nav.tabs button.active{ color:var(--ink); border-bottom-color:var(--red); }
+
+  main{ max-width:1040px; margin:0 auto; padding:0 20px; }
+
+  section.stage{ padding:56px 0 24px; border-bottom:1px solid var(--line); }
+  section.stage:last-of-type{ border-bottom:none; }
+  .stage-head{ margin-bottom:8px; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .stage-head h2{ font-size:30px; font-weight:600; }
+  .stage-head .kr-tag{ font-size:18px; color:var(--text-soft); }
+  .stage-intro{ color:var(--text-soft); max-width:640px; margin-bottom:28px; font-size:15px; }
+
+  .group-title{ font-size:16px; font-weight:700; margin:28px 0 14px; color:var(--ink-soft); }
+  .group-title:first-of-type{ margin-top:0; }
+
+  /* ---------- Flashcards ---------- */
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(138px,1fr));
+    gap:14px;
+  }
+  .jamo-card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    aspect-ratio:1/1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    cursor:pointer;
+    position:relative;
+    transition:transform .15s ease, box-shadow .15s ease;
+    box-shadow:var(--shadow);
+  }
+  .jamo-card:hover{ transform:translateY(-3px); box-shadow:0 6px 0 var(--line); }
+  .jamo-card .glyph{ font-size:64px; font-weight:700; line-height:1; }
+  .jamo-card .name-kr{ font-size:15px; color:var(--ink-soft); margin-top:8px; font-weight:600; }
+  .jamo-card .roman{ font-size:12px; color:var(--text-soft); margin-top:2px; }
+  .jamo-card .mini-speak{
+    position:absolute; bottom:8px; right:8px;
+    width:28px; height:28px; border-radius:50%;
+    border:none; background:var(--paper); font-size:13px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:var(--ink-soft);
+  }
+  .jamo-card .mini-speak:hover{ background:var(--line); }
+  #stage-consonants .jamo-card .glyph{ color:var(--red); }
+  #stage-vowels .jamo-card .glyph{ color:var(--jade); }
+
+  /* ---------- Modal (stroke practice) ---------- */
+  .overlay{
+    position:fixed; inset:0; background:rgba(27,42,74,0.55);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:20px;
+  }
+  .overlay.open{ display:flex; }
+  .modal{
+    background:var(--card); border-radius:20px; padding:28px;
+    max-width:380px; width:100%; text-align:center;
+    animation:pop .18s ease;
+  }
+  @keyframes pop{ from{ transform:scale(.92); opacity:0;} to{ transform:scale(1); opacity:1;} }
+  .modal .close-x{
+    float:right; border:none; background:none; font-size:20px; cursor:pointer; color:var(--text-soft);
+    margin:-8px -8px 0 0;
+  }
+  .modal .big-glyph{ font-size:56px; font-weight:700; margin:6px 0 4px; }
+  .modal .roman-line{ color:var(--text-soft); font-size:14px; margin-bottom:14px; }
+  .modal canvas{ background:#FFFDF7; border-radius:12px; max-width:100%; height:auto; }
+  .overlay{ overflow-y:auto; }
+  .modal{ margin:auto; }
+  .modal .stroke-label{ font-size:13px; color:var(--text-soft); margin:10px 0 6px; font-weight:600; }
+  .modal-actions{ display:flex; gap:10px; margin-top:14px; }
+  .btn{
+    border:none; border-radius:10px; padding:11px 16px; font-weight:600; font-size:14px;
+    cursor:pointer; flex:1; color:#fff; box-shadow:0 2px 0 rgba(0,0,0,0.15);
+  }
+  .btn:active{ transform:translateY(1px); box-shadow:none; }
+  .btn.replay{ background:var(--ink-soft); }
+  .btn.speak{ background:var(--red); }
+  .modal .desc-text{ margin-top:14px; font-size:13px; color:var(--text-soft); text-align:left; background:var(--paper); padding:10px 12px; border-radius:10px; }
+
+  /* ---------- Combination section ---------- */
+  .combo-layout{ display:flex; gap:36px; align-items:flex-start; flex-wrap:wrap; }
+  .combo-result{
+    flex:0 0 240px; display:flex; flex-direction:column; align-items:center; gap:14px;
+    position:sticky; top:76px;
+  }
+  .combo-result .btn{ width:100%; flex:none; }
+  .combo-result .btn.reset{ background:var(--jade); }
+  .combo-pickers{ flex:1 1 340px; min-width:280px; }
+  .combo-picker{ margin-bottom:26px; }
+  .combo-picker .label{ font-weight:700; font-size:14px; margin-bottom:10px; color:var(--ink-soft); }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:10px; }
+  .chip{
+    border:1.5px solid var(--line); background:var(--card); border-radius:12px;
+    padding:14px 20px; font-size:28px; font-weight:600; cursor:pointer; color:var(--ink);
+  }
+  .chip.none-chip{ font-size:14px; font-weight:600; padding:14px 16px; }
+  .chip.selected{ background:var(--gold); border-color:var(--gold-dark); color:#fff; }
+  .combo-box{
+    width:240px; height:240px; border-radius:28px;
+    background:var(--ink); color:#F7F2E7;
+    display:flex; align-items:center; justify-content:center;
+    font-size:104px; font-weight:700; cursor:pointer;
+    box-shadow:0 4px 0 var(--ink-soft);
+  }
+  .combo-box.empty{ font-size:15px; font-weight:500; color:#A7B0C4; padding:10px; text-align:center; }
+  @media (max-width:640px){
+    .combo-result{ position:static; flex:1 1 100%; }
+  }
+
+  /* ---------- Vocabulary ---------- */
+  .vocab-note{
+    background:#FFF7E4; border:1px dashed var(--gold-dark); color:var(--gold-dark);
+    padding:10px 14px; border-radius:10px; font-size:13px; margin-bottom:18px; display:none;
+  }
+  .vocab-note.show{ display:block; }
+  .vocab-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:16px;
+  }
+  .vocab-card{
+    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
+    overflow:hidden; cursor:pointer; box-shadow:var(--shadow); position:relative;
+    display:flex; flex-direction:column;
+  }
+  .vocab-card:hover{ transform:translateY(-2px); }
+  .vocab-img{
+    height:110px; display:flex; align-items:center; justify-content:center;
+    font-size:46px; background:linear-gradient(135deg,#F1EADA,#E9E0C9);
+  }
+  .vocab-img img{ width:100%; height:100%; object-fit:cover; }
+  .vocab-body{ padding:10px 12px 12px; }
+  .vocab-word{ font-size:20px; font-weight:700; }
+  .vocab-meaning{ font-size:13px; color:var(--ink-soft); margin-top:2px; }
+  .vocab-edit{
+    display:none; padding:8px 10px; gap:6px; background:#FFF7E4; border-top:1px solid var(--line);
+  }
+  .vocab-edit.show{ display:flex; }
+  .vocab-edit input{
+    flex:1; border:1px solid var(--line); border-radius:8px; padding:6px 8px; font-size:12px; min-width:0;
+  }
+  .vocab-edit button{
+    border:none; background:var(--jade); color:#fff; border-radius:8px; padding:6px 10px; font-size:12px; cursor:pointer;
+  }
+
+  footer{ text-align:center; padding:32px 20px 90px; color:var(--text-soft); font-size:13px; }
+
+  /* ---------- Pencil FAB + password modal ---------- */
+  .fab{
+    position:fixed; bottom:22px; right:22px; z-index:80;
+    width:56px; height:56px; border-radius:50%; border:none;
+    background:var(--red); color:#fff; font-size:24px; cursor:pointer;
+    box-shadow:0 4px 12px rgba(0,0,0,0.25);
+  }
+  .fab.editing{ background:var(--jade); }
+  .pw-modal input{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:10px; font-size:15px; margin:12px 0 6px;
+  }
+  .pw-error{ color:var(--red); font-size:13px; min-height:16px; margin-bottom:6px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Giáo án tương tác — tiết dạy thử</div>
+    <h1>Học bảng chữ cái Hangeul</h1>
+    <div class="kr-subtitle kr">한글의 첫걸음</div>
+    <p class="desc">Nhận mặt chữ, nghe phát âm, ghép âm tiết và luyện đọc từ vựng sơ cấp — tất cả trong một buổi học.</p>
+  </div>
+</header>
+
+<nav class="tabs" id="tabs">
+  <button data-target="stage-consonants" class="active">Phụ âm</button>
+  <button data-target="stage-vowels">Nguyên âm</button>
+  <button data-target="stage-combo">Ghép âm</button>
+  <button data-target="stage-vocab">Từ vựng</button>
+</nav>
+
+<main>
+  <section class="stage" id="stage-consonants">
+    <div class="stage-head"><h2>Phụ âm</h2><span class="kr-tag kr">자음</span></div>
+    <p class="stage-intro">Chạm vào một thẻ để xem chữ mẫu phóng to, tên gọi và cách đọc. Bấm nút 🔊 để nghe phát âm.</p>
+    <div class="group-title">Phụ âm cơ bản</div>
+    <div class="card-grid" id="grid-consonants-basic"></div>
+    <div class="group-title">Phụ âm đôi — phát âm căng và mạnh hơn</div>
+    <div class="card-grid" id="grid-consonants-double"></div>
+  </section>
+
+  <section class="stage" id="stage-vowels">
+    <div class="stage-head"><h2>Nguyên âm</h2><span class="kr-tag kr">모음</span></div>
+    <p class="stage-intro">Có 10 nguyên âm cơ bản và 11 nguyên âm ghép; nguyên âm ghép được tạo thành từ hai nguyên âm cơ bản (ví dụ ㅗ + ㅏ = ㅘ). Khác với phụ âm, nguyên âm không có tên gọi riêng — người Hàn gọi nguyên âm bằng chính cách đọc của nó.</p>
+    <div class="group-title">Nguyên âm cơ bản (10)</div>
+    <div class="card-grid" id="grid-vowels-basic"></div>
+    <div class="group-title">Nguyên âm ghép (11)</div>
+    <div class="card-grid" id="grid-vowels-double"></div>
+  </section>
+
+  <section class="stage" id="stage-combo">
+    <div class="stage-head"><h2>Ghép âm thành chữ</h2><span class="kr-tag kr">조합 연습</span></div>
+    <p class="stage-intro">Chọn phụ âm đầu, nguyên âm, rồi patchim (phụ âm cuối, có thể bỏ trống) để ghép thành một âm tiết hoàn chỉnh. Chạm vào ô lớn để nghe cách đọc.</p>
+
+    <div class="combo-layout">
+      <div class="combo-result">
+        <div class="combo-box empty kr" id="comboBox">Kết quả ghép âm<br>sẽ hiện ở đây</div>
+        <button class="btn reset" id="comboReset">Ghép lại từ đầu</button>
+      </div>
+      <div class="combo-pickers">
+        <div class="combo-picker">
+          <div class="label">1. Phụ âm đầu · 초성</div>
+          <div class="chip-row" id="row-initial"></div>
+        </div>
+        <div class="combo-picker">
+          <div class="label">2. Nguyên âm · 중성</div>
+          <div class="chip-row" id="row-medial"></div>
+        </div>
+        <div class="combo-picker">
+          <div class="label">3. Patchim (không bắt buộc) · 종성</div>
+          <div class="chip-row" id="row-final"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="stage" id="stage-vocab">
+    <div class="stage-head"><h2>Luyện đọc từ vựng</h2><span class="kr-tag kr">단어</span></div>
+    <p class="stage-intro">Chạm vào thẻ để nghe phát âm của từ.</p>
+    <div class="vocab-note" id="vocabNote">Đang ở chế độ giáo viên — chạm vào một thẻ để dán đường dẫn ảnh minh họa cho từ đó.</div>
+    <div class="vocab-grid" id="vocabGrid"></div>
+  </section>
+</main>
+
+<footer>Giáo án được thiết kế phục vụ buổi dạy thử tiếng Hàn cho người mới bắt đầu.</footer>
+
+<button class="fab" id="fabPencil" title="Chế độ giáo viên">✏️</button>
+
+<!-- Flashcard / stroke practice modal -->
+<div class="overlay" id="jamoOverlay">
+  <div class="modal">
+    <button class="close-x" id="jamoClose">✕</button>
+    <div class="big-glyph kr" id="jamoGlyph"></div>
+    <div class="roman-line" id="jamoRoman"></div>
+    <canvas id="jamoCanvas" width="300" height="300"></canvas>
+    <div class="modal-actions">
+      <button class="btn speak" id="jamoSpeak">🔊 Nghe phát âm</button>
+    </div>
+    <div class="desc-text" id="jamoDesc"></div>
+  </div>
+</div>
+
+<!-- Password modal -->
+<div class="overlay" id="pwOverlay">
+  <div class="modal pw-modal">
+    <button class="close-x" id="pwClose">✕</button>
+    <h3 style="font-size:20px;">Chế độ giáo viên</h3>
+    <p style="font-size:13px;color:var(--text-soft);margin-top:6px;">Nhập mật khẩu để thêm hình ảnh minh họa cho từ vựng.</p>
+    <input type="password" id="pwInput" placeholder="Mật khẩu">
+    <div class="pw-error" id="pwError"></div>
+    <button class="btn speak" id="pwSubmit" style="width:100%;">Xác nhận</button>
+  </div>
+</div>
+
+<script>
+/* ================= Content data ================= */
+const CONS_BASIC = [
+ ['ㄱ','g / k','Giống âm "g" nhẹ, cuối âm tiết đọc gần như "k".','기역 (giyeok)'],
+ ['ㄴ','n','Giống âm "n" trong tiếng Việt.','니은 (nieun)'],
+ ['ㄷ','d / t','Âm giữa "t" và "đ", không bật hơi.','디귿 (digeut)'],
+ ['ㄹ','r / l','Đầu âm tiết: "r" nhẹ, lưỡi chạm vòm miệng một lần (không rung lưỡi). Làm patchim: đọc "l".','리을 (rieul)'],
+ ['ㅁ','m','Giống âm "m".','미음 (mieum)'],
+ ['ㅂ','b / p','Giống âm "b" nhẹ, không bật hơi.','비읍 (bieup)'],
+ ['ㅅ','s','Giống âm "s", nhẹ hơn trong tiếng Việt.','시옷 (siot)'],
+ ['ㅇ','(câm) / ng','Không có âm khi đứng đầu; đọc "ng" khi làm patchim.','이응 (ieung)'],
+ ['ㅈ','j','Giống âm "ch" nhẹ.','지읒 (jieut)'],
+ ['ㅊ','ch','Giống "ch" nhưng bật hơi mạnh.','치읓 (chieut)'],
+ ['ㅋ','k','Giống "k" bật hơi mạnh.','키읔 (kieuk)'],
+ ['ㅌ','t','Giống "th" bật hơi mạnh.','티읕 (tieut)'],
+ ['ㅍ','p','Âm "p" bật hơi mạnh, hai môi bật ra. KHÔNG đọc như "ph" tiếng Việt (ph = f).','피읖 (pieup)'],
+ ['ㅎ','h','Giống âm "h".','히읗 (hieut)'],
+];
+const CONS_DOUBLE = [
+ ['ㄲ','kk','Phát âm căng, mạnh hơn ㄱ.','쌍기역 (ssanggiyeok)'],
+ ['ㄸ','tt','Phát âm căng, mạnh hơn ㄷ.','쌍디귿 (ssangdigeut)'],
+ ['ㅃ','pp','Phát âm căng, mạnh hơn ㅂ.','쌍비읍 (ssangbieup)'],
+ ['ㅆ','ss','Phát âm căng, mạnh hơn ㅅ.','쌍시옷 (ssangsiot)'],
+ ['ㅉ','jj','Phát âm căng, mạnh hơn ㅈ.','쌍지읒 (ssangjieut)'],
+];
+const VOW_BASIC = [
+ ['ㅏ','a','Miệng mở rộng, giống âm "a".','아'],
+ ['ㅑ','ya','Giống "ya", bắt đầu bằng âm đệm "y".','야'],
+ ['ㅓ','eo','Giống âm "ơ" trong tiếng Việt.','어'],
+ ['ㅕ','yeo','Giống "yơ".','여'],
+ ['ㅗ','o','Môi tròn, khép, giống âm "ô".','오'],
+ ['ㅛ','yo','Giống "yô".','요'],
+ ['ㅜ','u','Môi tròn nhỏ, giống âm "u".','우'],
+ ['ㅠ','yu','Giống "yu".','유'],
+ ['ㅡ','eu','Giống âm "ư".','으'],
+ ['ㅣ','i','Giống âm "i".','이'],
+];
+const VOW_DOUBLE = [
+ ['ㅐ','ae','Giống âm "e" mở (giữa a và e).','애'],
+ ['ㅒ','yae','Giống "ya" + "e", ít dùng.','얘'],
+ ['ㅔ','e','Giống âm "ê".','에'],
+ ['ㅖ','ye','Giống "yê".','예'],
+ ['ㅘ','wa','Giống "oa".','와'],
+ ['ㅙ','wae','Giống "oe" mở.','왜'],
+ ['ㅚ','oe','Giống "uê / oe".','외'],
+ ['ㅝ','wo','Giống "uơ".','워'],
+ ['ㅞ','we','Giống "uê".','웨'],
+ ['ㅟ','wi','Giống "uy".','위'],
+ ['ㅢ','ui','Giống "ưi", đọc lướt nhanh.','의'],
+];
+
+const VOCAB = [
+ ['안녕','annyeong','Xin chào','👋'],
+ ['감사','gamsa','Cảm ơn','🙏'],
+ ['사랑','sarang','Tình yêu','❤️'],
+ ['학교','hakgyo','Trường học','🏫'],
+ ['친구','chingu','Bạn bè','🧑‍🤝‍🧑'],
+ ['사과','sagwa','Quả táo','🍎'],
+ ['물','mul','Nước','💧'],
+ ['엄마','eomma','Mẹ','👩'],
+ ['아빠','appa','Bố','👨'],
+ ['이름','ireum','Tên','📛'],
+ ['고양이','goyangi','Con mèo','🐱'],
+ ['강아지','gangaji','Con chó','🐶'],
+ ['커피','keopi','Cà phê','☕'],
+ ['한국','hanguk','Hàn Quốc','🗺️'],
+ ['책','chaek','Quyển sách','📚'],
+ ['집','jip','Nhà','🏠'],
+ ['문','mun','Cửa','🚪'],
+ ['나무','namu','Cây','🌳'],
+ ['꽃','kkot','Hoa','🌸'],
+ ['손','son','Tay','✋'],
+ ['우유','uyu','Sữa','🥛'],
+ ['빵','ppang','Bánh mì','🍞'],
+ ['라면','ramyeon','Mì gói','🍜'],
+ ['버스','beoseu','Xe buýt','🚌'],
+ ['자동차','jadongcha','Ô tô','🚗'],
+ ['바다','bada','Biển','🌊'],
+ ['산','san','Núi','⛰️'],
+ ['선생님','seonsaengnim','Giáo viên','🧑‍🏫'],
+ ['학생','haksaeng','Học sinh','🎓'],
+];
+
+/* ================= Speech ================= */
+function speakBrowserFallback(text){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'ko-KR';
+  u.rate = 0.82;
+  const voices = speechSynthesis.getVoices();
+  const kv = voices.find(v => v.lang && v.lang.toLowerCase().startsWith('ko'));
+  if(kv) u.voice = kv;
+  speechSynthesis.speak(u);
+}
+let currentAudio = null;
+function speak(text){
+  if(!text) return;
+  if(currentAudio){ currentAudio.pause(); currentAudio = null; }
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  const url = 'https://translate.google.com/translate_tts?ie=UTF-8&tl=ko&client=tw-ob&q=' + encodeURIComponent(text);
+  const audio = new Audio(url);
+  currentAudio = audio;
+  let fellBack = false;
+  // Chỉ dùng giọng dự phòng nếu đây vẫn là âm thanh mới nhất (tránh đọc lại chữ cũ khi bấm nhanh)
+  const fallback = ()=>{
+    if(fellBack || currentAudio !== audio) return;
+    fellBack = true;
+    speakBrowserFallback(text);
+  };
+  audio.addEventListener('error', fallback);
+  audio.play().catch(err=>{
+    if(err && err.name === 'AbortError') return; // bị ngắt do bấm chữ khác — không phải lỗi
+    fallback();
+  });
+}
+if('speechSynthesis' in window){ speechSynthesis.getVoices(); }
+
+/* ================= Canvas: hiển thị tĩnh thứ tự & hướng nét ================= */
+
+/* Dữ liệu path chữ viết THẬT, lấy trực tiếp từ path831 trong 01_giyeok.svg và 02_nieun.svg
+   (kho hangeul-stroke-order), đã nhân với transform matrix gốc rồi quy đổi từ khung
+   500x500 sang thang toạ độ 0-100 để khớp với hệ toạ độ animation của trang này. */
+const REAL_GLYPH_PATHS = {
+  'ㄱ': 'M82.1514 26.9395Q82.1514 27.7347 81.129 29.2115Q80.1066 30.6884 80.1066 31.7108Q80.1066 42.0487 78.2889 50.1146Q76.5849 58.0669 72.1543 66.8143Q67.7238 75.6753 65.5652 75.6753Q64.6564 75.6753 64.6564 74.6529Q64.6564 74.3121 65.1108 72.7216Q65.5652 71.0176 66.1332 69.0862Q66.8148 67.155 66.9284 66.8141Q71.4726 50.7962 71.6998 30.1196L50.3424 30.1196Q41.595 30.1196 37.0508 32.3917Q33.6427 34.0957 32.8476 34.0957Q31.0299 34.0957 24.4411 31.0284Q17.8519 27.8475 17.8519 26.5979Q17.8519 25.4619 19.556 25.4619Q21.1464 25.4619 24.1001 25.8027Q27.0538 26.1435 28.3034 26.1435Q41.0268 26.5979 47.5023 26.5979L66.0194 26.5979Q67.4962 26.5979 70.2226 25.4619Q73.0627 24.3259 74.6532 24.3259Q82.151 24.3259 82.151 26.9387Z',
+  'ㄴ': 'M85.0487 68.8014Q85.0487 72.4368 79.9365 72.4368L38.2441 72.4368Q31.7687 72.4368 28.2472 70.1647Q24.839 67.8927 24.839 61.7582L24.839 39.1512Q24.839 36.7655 23.2486 34.8343Q21.7717 32.903 19.8404 32.1078Q18.0227 31.199 16.4322 30.4038Q14.9554 29.6085 14.9554 29.0405Q14.9554 27.5637 17.6818 27.5637Q21.6579 27.5637 27.2246 28.5861Q32.9047 29.6085 32.9047 31.767Q32.9047 32.5623 32.5639 34.1527Q32.2231 35.7431 32.2231 36.5384L32.2231 61.7582Q32.2231 65.7342 34.0407 67.3247Q35.8584 68.8015 39.9481 68.8015L53.9214 68.8015Q62.6688 68.8015 67.781 66.4159Q71.0756 65.0526 74.1429 65.0526Q85.0489 65.0526 85.0489 68.8014Z',
+  'ㄷ': 'M84.1398 69.7706Q84.1398 73.0652 78.2324 73.0652L41.7657 73.0652Q34.7224 73.0652 30.7461 70.7931Q26.7701 68.521 26.7701 62.0457L26.7701 40.0068Q26.7701 36.7122 25.0661 34.7812Q23.362 32.7364 21.3173 32.2819Q19.2725 31.7139 17.5686 31.1459Q15.8645 30.4643 15.8645 29.5555Q15.8645 27.397 23.2487 27.397Q30.7465 27.397 34.7225 29.1011Q37.6762 30.2371 39.153 30.2371L53.5805 30.2371Q57.4429 30.2371 61.3056 29.8963Q63.1233 29.6691 66.1906 28.3058Q69.2579 26.9426 72.3252 26.9426Q81.0726 26.9426 81.0726 30.4644Q81.0726 33.8726 71.7571 33.8726L37.9032 33.8726Q33.4727 33.8726 33.4727 39.5527L33.4727 62.0461Q33.4727 66.5902 35.6311 68.0671Q37.9032 69.4303 42.6744 69.4303L59.4877 69.4303Q66.7583 69.4303 70.0529 67.4991Q71.8705 66.363 73.6883 66.363Q84.1398 66.363 84.1398 69.7712Z',
+  'ㄹ': 'M83.1178 70.281Q83.1178 73.3483 79.2554 73.3483Q76.3017 73.3483 70.508 73.4619Q64.7143 73.4619 61.8742 73.4619L38.6993 73.4619Q36.4273 73.4619 34.7233 73.2347Q33.0193 72.8939 31.656 72.6667Q30.2928 72.4395 29.2704 71.5307Q28.3615 70.6219 27.6799 70.1675Q27.1119 69.7131 26.6575 68.1226Q26.2031 66.5322 25.9759 65.9642Q25.8623 65.3962 25.7487 63.1241Q25.6351 60.852 25.6351 60.1704Q25.6351 59.3752 25.6351 56.535Q25.6351 53.8085 23.4767 52.2181Q21.3182 50.6277 19.0461 49.8325Q16.8877 48.9236 16.8877 48.242Q16.8877 46.6516 22.3405 46.6516Q28.0206 46.6516 32.9057 48.1284Q34.6097 48.6964 36.0866 48.6964L63.0105 48.6964Q65.169 48.6964 65.6234 48.0148Q66.0778 47.3332 66.305 45.0612Q67.1002 35.7456 67.1002 33.2465Q67.1002 32.1104 65.5098 32.1104L42.9027 32.1104Q37.5635 32.1104 35.5185 33.2465Q35.1777 33.4737 34.2689 34.1553Q33.4737 34.7233 32.7921 35.0641Q32.1105 35.2913 31.4288 35.2913Q29.4976 35.2913 24.0446 32.5648Q18.5918 29.7248 18.5918 28.248Q18.5918 27.4527 19.7278 27.4527Q20.4094 27.4527 21.7727 27.6799Q29.6113 28.7024 40.1765 28.7024Q43.6983 28.7024 50.7416 28.5887Q57.7849 28.4751 61.3067 28.4751Q62.6699 28.4751 65.2827 27.5663Q67.8955 26.5439 69.3723 26.5439Q70.8491 26.5439 72.5532 26.7711Q74.2573 26.8847 76.1887 27.5663Q78.1199 28.2479 78.1199 29.384Q78.1199 30.1792 75.0526 37.1091Q71.9853 44.0389 71.9853 46.1973Q71.9853 47.1062 73.9166 48.1286Q75.8478 49.0374 75.8478 50.287Q75.8478 52.3319 72.5533 52.3319L34.61 52.3319Q32.906 52.3319 32.906 54.6039L32.906 63.3513Q32.906 66.9868 34.7236 68.4636Q36.5413 69.8268 40.1765 69.8268L54.9448 69.8268Q64.0331 69.8268 68.35 68.0092Q70.9629 66.8732 74.1437 66.8732Q83.1184 66.8732 83.1184 70.2813Z',
+  'ㅁ': 'M82.6621 28.416Q82.6621 29.0976 80.8444 31.3696Q79.0268 33.6417 78.7996 35.6865L75.9595 60.111Q75.7323 62.1559 75.7323 63.2919Q75.7323 64.2008 77.7772 65.1096Q79.9356 65.9048 79.9356 67.3817Q79.9356 69.7673 72.8923 69.7673L34.949 69.7673Q33.4722 75.2202 30.973 75.2202Q28.4738 75.2202 27.7921 61.4741L26.6561 36.2543Q26.5425 33.4142 24.1568 31.4829Q21.8847 29.5516 19.6127 28.6428Q17.3406 27.6204 17.3406 26.9388Q17.3406 25.2348 23.3616 25.2348Q28.8144 25.2348 34.3812 26.4844Q34.6084 26.4844 35.29 26.7116Q35.9716 26.9388 36.3124 26.9388L65.3947 26.9388Q66.9851 26.9388 69.5979 25.9164Q72.2108 24.7804 72.8925 24.7804Q75.1646 24.7804 78.9135 25.8028Q82.6622 26.8252 82.6622 28.4157ZM70.3929 30.5744L34.3819 30.5744L34.9499 66.1327L69.3719 66.1327Z',
+  'ㅂ': 'M78.7992 28.0197Q78.7992 28.815 78.4584 30.2918Q78.1175 31.7686 78.1175 32.4502L78.1175 60.2829Q78.1175 74.824 72.5511 74.824Q70.9606 74.824 70.9606 69.7117L36.7664 69.7117Q34.8352 75.8463 31.995 75.8463Q29.6094 75.8463 29.6094 66.4172L29.6094 36.0845Q29.6094 33.0172 27.4509 30.9722Q25.4061 28.9274 23.2477 27.9049Q21.2028 26.8825 21.2028 26.3145Q21.2028 24.9512 24.2701 24.9512Q27.4511 24.9512 32.4494 26.2009Q37.448 27.4505 37.448 29.4954Q37.448 30.2907 37.1072 31.8811Q36.7664 33.4715 36.7664 34.2668L36.7664 42.7869L70.9606 42.7869L70.9606 34.494Q70.9606 32.1083 68.9158 30.1771Q66.8709 28.2459 64.8261 27.1098Q62.7813 25.8602 62.7813 25.4058Q62.7813 24.1562 65.3941 24.1562Q67.6662 24.1562 73.2328 25.4058Q78.7993 26.6554 78.7993 28.0187ZM70.9605 65.963L70.9605 46.4232L36.7663 46.4232L36.7663 65.963Z',
+  'ㅅ': 'M85.6735 70.3939Q85.6735 73.0067 82.947 73.0067Q80.107 73.0067 71.4732 65.6225L51.252 48.6956Q45.3447 55.5116 33.0755 65.0544Q20.9199 74.5972 15.3534 74.5972Q14.331 74.5972 14.331 73.802Q20.352 68.9169 27.5089 62.4418Q34.6658 55.9666 42.7318 46.9916Q50.7977 37.9034 50.7977 33.9274Q50.7977 32.1097 48.2984 29.7241Q45.7992 27.3385 45.7992 26.4296Q45.7992 25.4071 47.9576 25.4071Q50.3433 25.4071 55.9099 28.1336Q61.59 30.7465 61.59 32.6777Q61.59 35.6314 53.2971 45.9693L62.1582 52.899Q63.8622 54.2622 64.9982 54.9438Q66.2479 55.5118 67.4975 55.8526Q68.7471 56.0798 70.7921 56.6479Q73.2913 57.3295 79.4258 62.7825Q85.674 68.2353 85.674 70.3939Z',
+  'ㅇ': 'M75.4479 53.4667Q75.4479 63.1228 67.4955 69.4847Q59.5432 75.8465 49.6599 75.8465Q39.8901 75.8465 32.1651 69.9392Q24.5536 63.9182 24.5536 54.4891Q24.5536 42.4471 36.1411 35.8583Q38.0723 34.7223 41.8212 33.8135Q45.6836 32.9046 47.274 32.1094Q48.0693 31.655 48.0693 30.7462Q48.0693 29.2694 45.57 27.4517Q43.0707 25.5204 43.0707 24.9524Q43.0707 24.1572 44.5476 24.1572Q46.2516 24.1572 50.2277 25.5204Q54.3173 26.77 54.3173 28.0197Q54.3173 29.2693 52.2725 32.1093Q62.2694 33.5861 68.8585 38.8117Q75.4476 44.0373 75.4476 53.4665ZM67.155 53.8076Q67.155 46.1961 62.3836 41.3111Q57.6122 36.3125 50.0007 36.3125Q42.5029 36.3125 37.6179 41.3111Q32.8465 46.3097 32.8465 53.8076Q32.8465 61.0781 37.7316 66.1904Q42.7302 71.189 50.0007 71.189Q57.2713 71.189 62.1563 66.1904Q67.155 61.0781 67.155 53.8076Z',
+  'ㅈ': 'M84.536 70.5636Q84.536 73.2901 82.1503 73.2901Q79.4238 73.2901 69.7675 66.3604Q60.2247 59.4307 53.5223 53.9776Q52.4999 54.6592 47.7286 58.0672Q42.9572 61.3618 39.6626 63.5201Q36.3681 65.5649 31.8239 68.2915Q27.2798 70.9043 23.531 72.3811Q19.7823 73.7443 17.1692 73.7443Q15.4652 73.7443 15.4652 72.8355Q15.4652 72.3811 17.51 71.0179Q19.5549 69.541 22.2814 67.9506Q25.1215 66.2465 25.2351 66.1329Q39.7762 56.931 52.4999 44.2076Q61.2473 35.4602 61.2473 32.6202Q61.2473 31.8249 58.4072 31.8249L50.6821 31.8249Q43.1843 31.8249 41.1394 32.9609Q40.9122 33.0745 39.8897 33.7562Q38.8673 34.4378 38.1857 34.665Q37.5041 34.8922 36.7089 34.8922Q34.664 34.8922 28.8702 32.3929Q23.0764 29.7801 23.0764 28.1897Q23.0764 26.8264 24.5533 26.8264Q25.3485 26.8264 28.7565 27.3945Q35.232 28.3033 46.1377 28.3033L58.7475 28.3033Q60.2243 28.3033 62.9507 27.2809Q65.6772 26.2584 67.154 26.2584Q69.9941 26.2584 73.9701 26.94Q77.9461 27.5081 77.9461 28.9849Q77.9461 30.5753 74.6515 32.8473Q72.0387 34.8921 69.3123 38.1865Q64.7682 43.6393 57.0431 50.6829L63.0641 54.6589Q64.8817 55.9086 68.9714 56.7038Q73.1747 57.499 74.9924 58.635Q78.2869 60.6799 81.3542 64.2015Q84.5352 67.6097 84.5352 70.5634Z',
+  'ㅊ': 'M61.5311 28.8137Q61.5311 31.5402 56.8733 31.5402L44.1499 31.5402Q42.3323 31.5402 38.0153 29.041Q33.8121 26.5417 33.8121 24.9513Q33.8121 24.2697 34.9481 24.2697Q36.5385 24.2697 39.6059 25.065Q42.7868 25.8602 44.3772 25.8602L55.6238 25.8602Q61.5312 25.8602 61.5312 28.8139ZM87.8869 70.7339Q87.8869 73.3468 85.2741 73.3468Q83.2292 73.3468 52.4439 60.2825Q25.52 75.7326 13.3644 75.7326Q12.1148 75.7326 12.1148 74.8238Q12.1148 74.3694 12.91 73.9149Q13.8188 73.4605 15.1821 72.8925L16.6589 72.4381Q28.0191 68.3485 41.6515 59.6011Q59.8281 47.9 59.8281 44.0376Q59.8281 43.1288 58.5784 43.1288L48.0133 43.1288Q39.7204 43.1288 34.4945 45.5145Q32.6769 46.4233 31.6545 46.4233Q30.064 46.4233 24.2703 43.8104Q18.5902 41.084 18.5902 40.0617Q18.5902 38.9257 20.1806 38.9257Q22.7935 38.9257 28.0193 39.3801Q33.2449 39.7209 35.858 39.7209Q39.7204 39.7209 47.5591 39.6073Q55.3977 39.4937 59.3737 39.4937Q60.6234 39.4937 63.3498 38.5849Q66.0762 37.5624 68.0075 37.5624Q76.8685 37.5624 76.8685 40.7434Q76.8685 42.2202 68.5756 48.582Q60.2828 54.9439 55.3977 58.1248Q57.5562 58.8064 59.601 59.4881Q61.6458 60.1697 63.4634 60.6241Q65.3946 61.0785 67.553 61.4193Q69.7115 61.6465 71.9835 61.6465Q74.3692 61.6465 81.0718 65.2819Q87.8879 68.8037 87.8879 70.7348Z',
+  'ㅋ': 'M83.1167 26.941Q83.1167 27.8498 81.9807 29.5539Q80.9583 31.2579 80.8447 32.2804Q79.9359 40.2327 78.2319 49.0937Q76.5278 57.8411 73.1196 65.3389Q68.3482 75.904 65.5082 75.904Q64.7129 75.904 64.7129 74.9952Q64.7129 73.8592 65.0537 72.8367Q69.3706 57.6139 70.7338 48.4123Q67.5529 48.7531 61.6456 49.3211Q55.8518 49.7755 50.9668 50.3435Q46.1954 50.7979 41.9922 51.4795Q40.6289 51.7067 36.8799 53.2972Q33.2445 54.8876 32.563 54.8876Q30.291 54.8876 23.5884 52.1611Q16.886 49.4347 16.886 47.7306Q16.886 46.3674 18.8172 46.3674Q19.4988 46.3674 20.6349 46.5946Q23.5885 47.049 29.4959 47.049Q35.7441 47.049 42.3329 46.7082Q48.922 46.3674 58.2372 45.6858Q67.6664 44.8905 71.0743 44.6633Q71.3015 42.1641 71.5287 37.1655Q71.7559 32.1669 71.9831 29.6677L48.8082 29.6677Q40.9695 29.6677 38.6976 30.6901Q38.016 30.9174 36.8799 31.599Q35.7439 32.2806 34.7215 32.735Q33.8127 33.0758 32.7903 33.0758Q30.859 33.0758 24.2701 30.2357Q17.7946 27.3957 17.7946 26.0325Q17.7946 24.8965 19.4987 24.8965Q19.6123 24.8965 24.0428 25.2373Q35.6302 26.1461 45.9681 26.1461L64.5988 26.1461Q66.3029 26.1461 69.2566 25.1237Q72.3239 24.1013 73.9144 24.1013Q83.1163 24.1013 83.1163 26.9413Z',
+  'ㅌ': 'M83.3448 70.451Q83.3448 73.8592 77.2102 73.8592Q70.962 73.8592 58.5795 73.7456Q46.1967 73.632 40.0624 73.632Q25.5213 73.632 25.5213 62.0446L25.5213 37.9607Q25.5213 34.6661 23.2492 32.7351Q21.0907 30.8038 18.8187 30.0086Q16.6602 29.0998 16.6602 28.4182Q16.6602 26.6005 21.4316 26.6005Q24.0445 26.6005 29.1567 27.8502Q34.2689 29.0998 36.8817 29.0998L59.3752 29.0998Q62.1017 29.0998 65.6234 27.623Q69.1452 26.1461 70.5084 26.1461Q81.1871 26.1461 81.1871 29.5543Q81.1871 32.8489 75.2798 32.8489Q73.0077 32.8489 68.2365 32.7353Q63.4651 32.6217 61.1932 32.6217L37.3365 32.6217Q35.6325 32.6217 34.8373 32.8489Q34.042 32.9625 33.3604 33.7577Q32.7924 34.4393 32.7924 36.0298L32.7924 48.4126L59.7164 48.4126Q63.0109 48.4126 65.9646 47.1629Q68.9183 45.9133 69.7134 45.9133Q79.824 45.9133 79.824 49.5487Q79.824 52.3888 74.2575 52.3888Q72.3262 52.3888 68.691 52.2752Q65.0556 52.048 63.1246 52.048L32.7918 52.048L32.7918 62.045Q32.7918 66.1346 34.3823 68.0659Q36.0863 69.9972 40.0624 69.9972L61.6468 69.9972Q63.6916 69.9972 67.2133 68.6339Q70.7351 67.2707 72.5525 67.2707Q83.3448 67.2707 83.3448 70.4516Z',
+  'ㅍ': 'M82.2086 28.8153Q82.2086 31.8826 77.8917 31.8826Q74.7108 31.8826 68.4626 31.5418Q62.2143 31.0873 59.147 31.0873L45.7419 31.0873Q37.1081 31.0873 34.7223 32.2234Q34.2678 32.4506 33.359 33.0186Q32.4502 33.5866 31.655 33.9274Q30.9734 34.1546 30.1782 34.1546Q28.1333 34.1546 22.3395 31.3146Q16.5457 28.3609 16.5457 26.7704Q16.5457 25.8616 18.1362 25.8616Q19.045 25.8616 19.9538 25.9752Q20.8627 26.0888 21.9987 26.316Q23.1347 26.4296 23.8163 26.5432Q32.6774 27.5656 44.6057 27.5656L56.1931 27.5656Q62.6686 27.5656 67.0991 25.9752Q69.712 24.9528 71.7569 24.9528Q82.2084 24.9528 82.2084 28.8152ZM84.2534 69.7116Q84.2534 72.5517 80.1638 72.5517Q76.7556 72.5517 69.8259 72.2109Q62.8963 71.7565 59.4881 71.7565L44.3788 71.7565Q36.0859 71.7565 32.905 73.4605Q29.7241 75.0509 29.1563 75.0509Q27.4522 75.0509 21.5448 72.2108Q15.7511 69.2572 15.7511 68.0076Q15.7511 66.9852 17.4551 66.9852Q18.364 66.9852 19.9544 67.2124Q28.5882 68.2348 40.062 68.2348L55.6254 68.2348Q55.739 68.0076 58.2383 61.4187Q60.7376 54.8296 62.2143 50.2858Q63.8047 45.628 63.8047 44.1512Q63.8047 42.5608 60.5102 40.1752Q57.3293 37.7895 57.3293 37.1079Q57.3293 35.7446 60.1693 35.7446Q62.555 35.7446 68.1216 37.9031Q73.6881 40.0615 73.6881 41.8791Q71.1889 45.7415 68.6895 50.3992Q66.1902 55.057 64.259 59.2603Q62.3277 63.3499 60.0557 68.2349L63.0094 68.2349Q66.6448 68.2349 69.5985 67.0989Q72.5522 65.8492 74.4835 65.8492Q84.2532 65.8492 84.2532 69.7116ZM42.9014 58.8056Q42.9014 66.8716 38.4709 66.8716Q37.3349 66.8716 36.5396 65.1675Q35.7444 63.3499 35.4036 61.6457Q35.1764 59.9417 34.8356 57.3289Q34.6084 54.6024 34.6084 54.4888Q33.8132 49.0359 28.5874 40.8564Q26.997 38.2435 26.997 38.1299Q26.997 37.3347 27.7922 37.3347Q28.3603 37.3347 29.9507 38.5843Q35.1763 42.7876 39.039 48.2404Q42.9013 53.5796 42.9013 58.8055Z',
+  'ㅎ': 'M58.5222 22.678Q64.5432 22.678 64.5432 25.5181Q64.5432 28.3582 59.6582 28.3582L44.6626 28.3582Q41.5953 28.3582 37.0511 26.3133Q32.6206 24.1549 32.6206 21.5419Q33.0751 21.0875 33.4159 21.0875Q35.1199 21.0875 38.3009 21.8828Q41.4818 22.678 43.1859 22.678ZM85.5598 36.8783Q85.5598 39.9456 80.3342 39.9456Q74.7677 39.9456 63.6345 39.4912Q52.5016 39.0367 46.9348 39.0367Q37.0514 39.0367 33.6433 40.8544Q30.3487 42.672 29.3264 42.672Q27.6224 42.672 21.0335 39.6047Q14.4444 36.5375 14.4444 35.4015Q14.4444 34.1518 16.8301 34.1518Q18.1933 34.1518 18.8749 34.2655Q29.8945 35.4015 41.9362 35.4015L61.4759 35.4015Q64.5432 35.4015 68.5192 34.2655Q72.6089 33.0158 75.7898 33.0158Q85.5595 33.0158 85.5595 36.8782ZM71.9274 62.439Q71.9274 69.8232 65.225 74.3673Q58.6359 78.9115 50.9111 78.9115Q43.186 78.9115 36.4836 74.5946Q29.7812 70.2777 29.7812 63.0071Q29.7812 59.7126 30.8036 57.2134Q31.9396 54.6005 33.7573 53.1238Q35.5749 51.5333 37.8469 50.2837Q40.2326 48.9205 42.8456 48.2388Q45.572 47.4436 48.2984 46.5348Q49.3208 46.194 49.3208 45.2852Q49.3208 44.2627 48.2984 43.1267Q47.276 41.9907 46.4807 41.3091L46.4807 41.1955Q46.8216 40.8547 47.3896 40.8547Q48.7528 40.8547 51.9337 41.8771Q55.1146 42.8995 55.1146 43.9219Q55.1146 44.9443 53.1834 46.5348Q57.273 47.33 60.1131 48.2388Q62.9531 49.1476 65.9068 50.9653Q68.8605 52.6693 70.3373 55.6231Q71.9277 58.4631 71.9277 62.4391ZM64.6568 62.2118Q64.6568 56.7589 60.4536 53.4644Q56.3639 50.0562 50.7975 50.0562Q45.231 50.0562 41.1414 53.4644Q37.0517 56.7589 37.0517 62.2118Q37.0517 67.551 41.1414 70.9592Q45.3446 74.2537 50.7975 74.2537Q56.1367 74.2537 60.3403 70.8456Q64.6571 67.4374 64.6571 62.2118Z',
+  'ㅏ': 'M69.54 48.9202Q69.54 51.9875 64.2008 51.9875L47.7283 51.9875L47.7283 70.0505Q47.7283 97.5422 42.6161 97.5422Q40.4576 97.5422 40.4576 85.1594L40.4576 12.9066Q40.4576 10.4073 37.9584 8.7033Q35.4591 6.9993 32.9597 5.9768Q30.4605 4.8408 30.4605 3.932Q30.4605 2.4551 34.2092 2.4551Q38.1852 2.4551 43.5248 3.8184Q48.8643 5.1816 48.864 7.7944Q48.864 9.044 48.296 11.6568Q47.728 14.2696 47.728 15.6328L47.728 48.4629L50.4544 48.4629Q52.3857 48.4629 55.7937 46.986Q59.3155 45.5092 61.2465 45.5092Q69.5394 45.5092 69.5394 48.9174Z',
+  'ㅑ': 'M62.0449 55.7378Q69.5427 55.7378 69.5427 58.8051Q69.5427 61.8724 61.704 61.8724Q61.704 61.8724 47.7307 61.8724Q47.7307 97.5431 42.2779 97.5431Q40.4602 97.5431 40.4602 85.3876L40.4602 16.8837Q40.4602 14.4981 40.3466 13.3619Q40.0058 10.4083 37.5065 8.7042Q35.1209 7.0002 32.7351 6.0913Q30.4631 5.1825 30.4631 4.0465Q30.4631 2.456 34.5527 2.456Q37.8473 2.456 43.3001 4.0465Q48.8666 5.5233 48.8666 7.7952Q48.8666 9.0449 48.2986 11.7712Q47.7306 14.3841 47.7306 15.7473L47.7306 34.7189L49.889 34.7189Q51.8202 34.7189 55.1146 33.4692Q58.4091 32.2196 60.7947 32.2196Q69.5421 32.2196 69.5421 35.2869Q69.5421 38.5814 59.886 38.5814Q57.8411 38.5814 53.7514 38.4678Q49.7754 38.2406 47.7304 38.2406L47.7304 58.2346L50.6841 58.2346Q52.6153 58.2346 56.2506 56.985Q59.886 55.7353 62.0443 55.7353Z',
+  'ㅓ': 'M70.0531 7.3427Q70.0531 9.0468 69.3715 12.1141Q68.6899 15.1815 68.6899 16.8855L68.6899 70.1653Q68.6899 97.5434 63.6912 97.5434Q61.5328 97.5434 61.5328 82.6614L61.5328 48.4672L52.1036 48.4672Q48.8091 48.4672 45.4012 50.2849Q42.1067 51.9889 41.6525 51.9889Q40.062 51.9889 34.95 49.1488Q29.9514 46.3088 29.9514 44.9456Q29.9514 43.9231 31.3146 43.9231L37.7901 44.6048Q40.6302 44.9456 46.1966 44.9456L61.5331 44.9456L61.5331 15.2964Q61.5331 12.0018 61.3059 11.2068Q60.7379 9.5027 56.0803 7.458Q51.4226 5.2996 51.4226 4.3907Q51.4226 2.4594 55.6258 2.4594Q58.6931 2.4594 64.3732 3.9363Q70.0533 5.2995 70.0533 7.3445Z',
+  'ㅕ': 'M68.3491 7.2294Q68.3491 8.8198 67.6675 12.0008Q66.9859 15.1817 66.9859 16.8858L66.9859 70.5059Q66.9859 97.5434 61.7603 97.5434Q59.829 97.5434 59.829 82.8887L59.829 63.2353L54.2626 63.2353Q51.6497 63.2353 48.3552 65.053Q45.1743 66.8706 44.7198 66.8706Q42.4477 66.8706 36.9947 64.1441Q31.6555 61.304 31.6555 59.4864Q31.6555 58.4639 33.1323 58.4639Q33.5868 58.4639 34.7228 58.6911Q39.0397 59.4864 45.9693 59.4864L59.829 59.4864L59.829 41.1962L55.0576 41.1962Q51.9903 41.1962 48.5821 42.7866Q45.2876 44.3771 44.9467 44.3771Q42.6746 44.3771 37.9034 41.9914Q33.132 39.4921 33.132 37.5609Q33.132 36.5385 34.3817 36.5385Q34.8361 36.5385 35.9721 36.7657Q40.6299 37.5609 47.9004 37.5609L59.8287 37.5609L59.8287 16.8852Q59.8287 11.6596 58.3519 9.8419Q56.9887 7.9106 51.99 5.9795Q49.718 4.9571 49.718 4.1618Q49.718 2.4578 54.2621 2.4578Q57.3294 2.4578 62.7823 3.8211Q68.3487 5.1843 68.3487 7.2292Z',
+  'ㅗ': 'M94.8164 64.4857Q94.8164 68.1211 90.045 68.1211Q88.4546 68.1211 85.3872 67.8939Q82.4335 67.5531 81.2976 67.5531Q63.6892 66.5306 57.8954 66.5306L38.8102 66.5306Q30.9715 66.5306 26.0868 68.8027Q25.746 68.9163 24.4964 69.5979Q23.3603 70.2795 22.4515 70.6204Q21.5427 70.9612 20.7475 70.9612Q18.3618 70.9612 11.7728 67.553Q5.1837 64.0312 5.1837 62.1002Q5.1837 61.0777 7.115 61.0777Q7.683 61.0777 9.0462 61.3049Q17.9073 62.8954 28.4724 62.8954L46.308 62.8954L46.308 39.8341Q46.308 36.4259 43.9224 34.9491Q41.6503 33.3587 39.2646 32.7907Q36.8789 32.109 36.8789 30.973Q36.8789 29.0417 41.0822 29.0417Q43.1271 29.0417 45.74 29.269Q48.3528 29.4962 51.3064 30.5186Q54.3737 31.4274 54.3737 33.0179Q54.3737 34.3811 53.9193 36.8802Q53.5785 39.3795 53.5785 40.7426L53.5785 62.8952L60.2809 62.8952Q70.6188 62.8952 77.3212 60.8503Q79.9341 60.0551 81.8654 60.0551Q86.1822 60.0551 90.9536 60.9639Q94.816 61.6455 94.816 64.4857Z',
+  'ㅛ': 'M95.3845 64.9395Q95.3845 68.3477 90.6131 68.3477Q89.3635 68.3477 82.2066 67.7797Q71.8687 66.8708 59.1453 66.8708L37.6745 66.8708Q28.1318 66.8708 24.383 68.9157Q21.3157 70.7333 19.9525 70.7333Q17.5668 70.7333 11.0915 67.7797Q4.616 64.826 4.616 63.0083Q4.616 62.0994 5.9792 62.0994L9.0465 62.4403Q15.0675 63.2355 22.2244 63.2355L35.2887 63.2355L35.2887 42.1053Q35.2887 38.8107 33.0167 36.993Q30.7446 35.1753 28.4725 34.3802Q26.3141 33.4713 26.3141 32.5625Q26.3141 30.9721 32.7895 30.9721Q43.4683 30.9721 43.4683 34.7208Q43.4683 35.8568 43.0139 38.0154Q42.5595 40.1739 42.5595 41.3099L42.5595 63.2352L59.1455 63.2352L62.8943 40.0603Q63.1215 38.2427 63.1215 37.3339Q63.1215 35.7434 60.9631 34.6074Q58.9182 33.3577 56.8734 32.5625Q54.8286 31.6537 54.8286 30.9721Q54.8286 29.2681 59.2591 29.2681Q62.6673 29.2681 67.552 30.5177Q72.437 31.6537 72.437 33.9259Q72.437 35.5163 71.5282 38.3564Q70.6193 41.0829 70.5057 41.5373L65.7344 63.2354L68.9153 63.2354Q74.4818 63.2354 77.5491 62.0994Q81.4114 60.6225 81.9796 60.6225Q85.2741 60.6225 91.8629 61.5313Q95.3847 62.0994 95.3847 64.9395Z',
+  'ㅜ': 'M95.3845 30.0629Q95.3845 33.4711 91.1812 33.4711Q85.1603 33.4711 73.1183 32.9031Q61.19 32.2215 55.169 32.2215L55.169 50.7386Q55.169 74.0271 49.7162 74.0271Q48.6938 74.0271 48.1257 71.3006Q47.6713 68.5742 47.7849 65.9614Q48.0121 63.3486 47.8985 62.2127L47.8985 32.2202L37.2198 32.2202Q28.4724 32.2202 26.3138 33.6971Q25.405 34.4923 24.269 35.1739Q23.2465 35.8555 21.9969 35.8555Q19.384 35.8555 11.9999 33.0154Q4.6157 30.1754 4.6157 28.3577Q4.6157 27.108 5.8654 27.108Q6.4334 27.108 7.5694 27.3352Q15.7487 28.6985 30.2901 28.6985L69.9377 28.6985Q72.2098 28.6985 76.186 27.3352Q80.2756 25.972 82.4342 25.972L85.7287 25.972Q95.3848 25.972 95.3848 30.0616Z',
+  'ㅠ': 'M95.4431 29.3839Q95.4431 32.5648 90.899 32.5648Q87.0366 32.5648 79.4251 32.224Q71.8137 31.8832 67.9513 31.8832Q67.9513 31.9968 68.0649 35.0641Q68.1785 38.1314 68.1785 41.6532Q68.1785 45.0614 68.0649 49.8325Q68.0649 54.6039 67.7241 58.8071Q67.3833 62.8968 66.7017 66.6458Q66.1337 70.3946 64.9977 72.5532Q63.8616 74.7116 62.3848 74.7116Q60.7944 74.7116 60.7944 69.713L60.7944 31.8822L40.8004 31.8822Q40.8004 34.1542 40.914 38.4713Q41.0276 42.7881 41.0276 45.0604Q41.0276 72.4385 35.1203 72.4385Q33.6434 72.4385 33.6434 69.712L33.6434 31.8812L31.485 31.8812Q28.4177 31.8812 23.419 33.6989Q18.4204 35.4029 18.1935 35.4029Q16.3758 35.4029 10.4684 32.3356Q4.561 29.1547 4.561 27.7915Q4.561 26.6554 6.1515 26.6554Q6.8331 26.6554 10.8092 27.2234Q18.3071 28.2459 31.0305 28.2459L65.6803 28.2459Q70.9059 28.2459 74.9959 27.7915Q76.5863 27.5643 80.2215 26.4282Q83.8569 25.2922 86.0152 25.2922Q95.4443 25.2922 95.4443 29.3818Z',
+  'ㅡ': 'M95.3845 49.0944Q95.3845 52.3889 91.4085 52.3889Q90.3861 52.3889 88.5684 52.1617Q77.7761 51.0257 62.5535 51.0257L38.2423 51.0257Q29.4949 51.0257 23.8148 54.2066Q21.5428 55.3427 20.8612 55.3427Q19.0435 55.3427 11.7729 51.5939Q4.616 47.8451 4.616 46.5953Q4.616 45.1184 6.4336 45.1184Q7.5696 45.1184 9.8418 45.5728Q20.6342 47.3905 38.3562 47.3905L56.8733 47.3905Q73.2322 47.3905 75.0499 46.7089Q78.1172 45.4592 79.8213 45.1185Q81.5253 44.664 84.9335 44.664Q95.385 44.664 95.385 49.0946Z',
+  'ㅣ': 'M59.2606 7.6276Q59.2606 8.082 58.6926 10.0133Q58.011 12.1717 58.011 16.8293L58.011 70.4494Q58.011 97.4869 52.6718 97.4869Q52.2174 97.4869 51.8766 96.3509Q50.7406 92.7155 50.7406 80.5602L50.7406 16.8293Q50.7406 9.1042 43.8109 6.2642Q40.7436 4.9009 40.7436 4.2193Q40.7436 2.5153 45.0605 2.5153Q48.355 2.5153 53.8079 3.9921Q59.2607 5.3554 59.2607 7.6276Z',
+  'ㅐ': 'M69.0302 7.1725Q69.0302 8.763 68.3486 11.9439Q67.7805 15.0112 67.7805 16.6017L67.7805 67.4965Q67.7805 97.8292 62.2141 97.8292Q60.6236 97.8292 60.6236 83.8559L60.6236 51.0258L46.3098 51.0258Q46.1962 54.2067 46.4234 62.9541Q46.6506 71.5879 45.401 80.9034Q44.1513 90.1053 41.5386 90.1053Q41.0842 90.1053 40.7433 89.0829Q39.7209 85.902 39.7209 75.7914Q39.7209 67.7254 39.8345 51.8211Q39.9481 35.8031 39.9481 27.8508Q39.9481 20.2394 39.6073 17.7402Q39.3801 15.809 37.9033 14.4457Q36.54 13.0824 34.9496 12.5144Q33.4728 11.8328 32.2231 11.1512Q30.9735 10.4696 30.9735 9.7879Q30.9735 7.8567 35.1767 7.8567Q37.2216 7.8567 42.3337 9.3335Q47.4459 10.8104 47.4459 12.1736Q47.4459 13.8776 46.8779 17.2859Q46.3099 20.694 46.3099 22.3981L46.3099 47.3907L60.6238 47.3907L60.6238 16.6053Q60.6238 14.106 60.5102 12.8565Q60.1694 10.4709 57.6701 8.7669Q55.1708 6.9493 52.7851 5.9268Q50.513 4.7908 50.513 3.882Q50.513 2.178 54.1485 2.178Q57.3294 2.178 63.1231 3.6548Q69.0304 5.1316 69.0304 7.1766Z',
+  'ㅒ': 'M69.0303 7.4574Q69.0303 7.6846 68.4623 9.7295Q67.6671 12.2287 67.6671 16.5455L67.6671 70.0531Q67.6671 97.7722 62.3278 97.7722Q61.8734 97.7722 61.5326 96.6361Q60.5102 93.6825 60.5102 83.1174L60.5102 59.6016L46.3099 59.6016Q46.4235 61.5328 46.3099 66.5313Q46.1963 71.5297 45.9691 76.7555Q45.7419 81.9813 44.6059 86.071Q43.4699 90.047 41.6522 90.047Q39.6074 90.047 39.6074 75.7332L39.6074 17.1154Q39.6074 15.2977 37.4489 13.8208Q35.2905 12.344 33.132 11.4352Q30.9736 10.4127 30.9736 9.6175Q30.9736 7.9135 34.609 7.9135Q37.6763 7.9135 42.5613 9.1631Q47.4463 10.2992 47.4463 12.3441Q47.4463 12.6849 46.8783 14.9569Q46.3103 17.6834 46.3103 21.546L46.3103 32.679L60.5106 32.679L60.5106 16.5474Q60.5106 11.4351 59.0337 9.6177Q57.5569 7.8 52.6719 5.8689Q50.3998 4.8465 50.3998 3.9377Q50.3998 3.1425 51.9902 2.688Q53.5807 2.2336 54.6031 2.2336Q57.784 2.2336 63.3505 3.8241Q69.0306 5.3009 69.0306 7.4595ZM60.5101 55.9673L60.5101 36.3139L46.3099 36.3139L46.3099 55.9673Z',
+  'ㅔ': 'M74.9937 7.2862Q74.9937 8.8766 74.4257 11.9439Q73.8577 15.0112 73.8577 16.6017L73.8577 70.9053Q73.8577 97.8292 68.7454 97.8292Q67.4958 97.8292 66.9278 94.9891Q66.4734 92.2626 66.587 89.5363Q66.7006 86.8098 66.587 85.5603L66.587 15.9232Q66.587 13.8783 66.4734 12.9695Q66.2462 10.4702 63.7469 8.7662Q61.2476 7.0622 58.8619 6.0397Q56.5898 4.9037 56.5898 3.9949Q56.5898 2.1772 60.7931 2.1772Q63.974 2.1772 69.4268 3.6541Q74.9933 5.1309 74.9933 7.2895ZM55.6812 13.4208Q55.6812 15.1248 55.1132 18.4194Q54.5452 21.714 54.5452 23.418L54.5452 66.0188Q54.5452 89.8754 49.6602 89.8754Q47.8425 89.8754 47.8425 75.5615L47.8425 46.4793L44.3207 46.4793Q41.8215 46.4793 38.8679 47.9561Q36.0278 49.3194 35.687 49.3194Q33.8693 49.3194 29.4387 47.0473Q25.0082 44.6616 25.0082 43.0713Q25.0082 42.0489 26.1442 42.0489Q28.8707 42.0489 34.3235 42.5033Q39.7764 42.9577 42.5028 42.9577L47.842 42.9577L47.842 22.0547Q47.842 19.4419 47.7284 18.1924Q47.5012 16.1475 45.3427 14.7842Q43.2979 13.3073 41.2531 12.3985Q39.2083 11.3761 39.2083 10.6945Q39.2083 8.8768 42.957 8.8768Q45.2291 8.8768 50.4548 10.3537Q55.6804 11.8305 55.6804 13.421Z',
+  'ㅖ': 'M74.4823 7.6267Q74.4823 9.1036 73.9143 12.0573Q73.4599 15.0109 73.4599 16.6014L73.4599 72.0383Q73.4599 97.8262 68.4613 97.8262Q66.3028 97.8262 66.3028 83.5124Q66.3028 71.5841 66.1892 47.8416Q66.0756 23.985 66.0756 12.0555Q66.0756 10.465 64.4852 9.1018Q63.0083 7.7386 61.077 7.057Q59.2593 6.2617 57.6688 5.4665Q56.192 4.6713 56.192 3.9897Q56.192 2.172 60.7361 2.172Q63.9171 2.172 69.1426 3.7625Q74.4819 5.3529 74.4819 7.6249ZM55.7379 12.3981Q55.7379 13.9886 55.2835 17.3968Q54.9427 20.6913 54.9427 22.3954L54.9427 66.4727Q54.9427 89.8748 49.8304 89.8748Q48.1264 89.8748 48.1264 79.1961L48.1264 60.7923L45.2863 60.7923Q42.9007 60.7923 39.7199 62.1555L36.5389 63.5188Q34.8349 63.5188 30.2907 61.1331Q25.7466 58.6338 25.7466 57.2707Q25.7466 56.3619 26.9962 56.3619Q27.5642 56.3619 28.9275 56.5891Q33.1307 57.1571 39.379 57.1571L48.1264 57.1571L48.1264 39.8896L44.7182 39.8896Q42.2189 39.8896 39.4926 41.1392Q36.7661 42.3889 36.4253 42.3889Q34.7213 42.3889 30.0634 40.2304Q25.5193 38.072 25.5193 36.7086Q25.5193 35.6862 26.6553 35.6862Q28.1322 35.6862 31.0858 36.027Q34.0395 36.2542 35.5163 36.2542L48.1261 36.2542L48.1261 21.5995Q48.1261 16.7145 46.9901 15.124Q45.9677 13.42 41.5373 11.4886Q39.3788 10.5797 39.3788 9.7845Q39.3788 7.9669 43.923 7.9669Q46.0814 7.9669 50.8526 9.4437Q55.7376 10.9206 55.7376 12.3974Z',
+  'ㅚ': 'M91.4661 7.6836Q91.4661 8.138 90.8981 10.0693Q90.2165 12.3414 90.2165 16.8853L90.2165 69.9373Q90.2165 97.5427 85.1042 97.5427Q83.9682 97.5427 83.8546 96.6338Q82.8321 94.9298 82.7185 80.7295Q82.7185 66.4156 82.9457 62.7802Q60.7932 68.4603 37.2765 72.0957Q32.2779 72.891 29.2106 74.595Q26.9385 75.8446 26.7113 75.9582L25.6889 76.299Q24.6665 76.5263 24.5529 76.5263Q22.1672 76.5263 15.351 73.1181Q8.5349 69.5963 8.5349 67.6652Q8.5349 66.6428 10.1254 66.6428Q12.3974 66.6428 16.9414 67.2108Q21.4856 67.7788 23.7575 67.7788Q26.9384 67.7788 37.8441 66.9836L37.8441 53.2376Q37.8441 50.3975 37.5033 49.6021Q37.0489 48.4661 33.7545 47.2165Q30.46 45.9668 30.46 45.058Q30.46 43.1268 36.481 43.1268Q45.6828 43.1268 45.6828 46.3077Q45.6828 47.4437 45.342 49.7159Q45.0012 51.988 45.0012 53.2377L45.0012 66.1883Q58.9745 64.7115 82.9445 59.9401L82.9445 14.3863Q82.9445 11.319 82.2629 10.183Q81.6949 9.047 77.2642 7.2294Q72.9473 5.2981 72.9473 4.2757Q72.9473 2.458 77.037 2.458Q80.4452 2.458 85.898 3.9349Q91.4645 5.4117 91.4645 7.6836Z',
+  'ㅟ': 'M90.7277 7.5712Q90.7277 9.048 90.0461 12.2289Q89.3645 15.2962 89.3645 16.8867L89.3645 70.6221Q89.3645 97.6597 84.3658 97.6597Q82.2074 97.6597 82.2074 80.6194L82.2074 44.9487Q68.1208 49.0383 51.8747 51.992Q51.8747 53.696 51.9883 57.3312Q52.1019 60.853 52.1019 62.6704Q52.1019 89.5944 46.4218 89.5944Q44.4905 89.5944 44.4905 76.9846L44.4905 52.9007Q31.9941 54.1503 30.5173 54.3775Q29.3812 54.6047 26.314 55.968Q23.3603 57.3312 22.6786 57.3312Q20.6337 57.3312 14.9535 54.0367Q9.2734 50.6285 9.2734 48.9244Q9.2734 47.902 10.4094 47.902Q11.6591 47.902 14.1582 48.2428Q16.771 48.47 18.0206 48.47L28.3584 48.47Q52.3287 48.47 82.2063 42.3354L82.2063 12.9123Q82.2063 10.7538 79.5935 9.0499Q77.0942 7.2322 74.5948 6.0962Q72.0954 4.9602 72.0956 4.165Q72.0956 2.3473 77.0942 2.3473Q80.1615 2.3473 85.3871 3.9377Q90.7263 5.4146 90.7263 7.5732Z',
+  'ㅢ': 'M91.2968 7.3427Q91.2968 9.0468 90.6152 12.1141Q89.9336 15.1814 89.9336 16.8855L89.9336 69.7096Q89.9336 97.5422 84.5944 97.5422Q83.572 97.5422 83.004 94.4749Q82.5496 91.5213 82.6632 88.5676Q82.8904 85.7275 82.7768 84.478L82.7768 61.1894Q68.0084 65.3927 35.1783 71.1864Q31.4295 71.7544 28.9301 73.2313Q26.2036 74.9353 24.8404 74.9353Q21.8868 74.9353 15.2977 71.7544Q8.7086 68.5735 8.7086 66.0743Q8.7086 65.0519 9.9582 65.0519Q10.299 65.0519 11.2078 65.2791Q15.8656 66.1879 23.5907 66.1879Q32.9062 66.1879 44.4936 64.9382Q56.0811 63.575 62.2157 62.5526Q68.3503 61.4166 82.7778 58.6902L82.7778 16.8854Q82.7778 9.9558 76.984 7.0021Q72.6672 4.8436 72.6672 4.0484Q72.6672 2.458 76.6432 2.458Q79.8241 2.458 85.5042 3.9348Q91.2979 5.2981 91.2979 7.343Z',
+  'ㅘ': 'M99.4749 52.7273Q99.4749 53.8633 98.6796 54.545Q97.8844 55.2266 96.7484 55.4538Q95.6124 55.5674 94.3627 55.681Q93.2267 55.681 92.4315 55.5674L77.4358 55.5674Q77.4358 57.4986 77.4358 61.2475Q77.5495 64.9962 77.5495 66.8139Q77.5495 97.5994 72.3239 97.5994Q70.3926 97.5994 70.3926 85.1029L70.3926 62.2686Q43.1278 69.7664 29.156 72.152Q22.4536 73.4016 21.09 74.3104Q20.1812 75.1057 18.5908 76.0145Q17.1139 76.9233 15.8643 76.9233Q13.5923 76.9233 7.0033 73.4015Q0.5278 69.8797 0.5278 68.1759Q0.5278 67.0399 2.1183 67.0399L4.1631 67.3807Q7.9119 68.0623 15.4097 68.0623Q19.4993 68.0623 27.4516 67.1535L27.4516 53.0669Q27.4516 50.454 25.634 48.9772Q23.8163 47.3868 21.9985 46.5916Q20.2945 45.7963 20.2945 45.0011Q20.2945 43.0699 25.0659 43.0699Q26.7699 43.0699 28.8147 43.2971Q30.8595 43.4107 33.2452 44.2059Q35.7444 45.0011 35.7444 46.2507Q35.7444 47.3868 35.1764 49.6589Q34.6084 51.8174 34.6084 52.9535L34.6084 66.1314Q51.7623 64.0865 70.3946 59.5423L70.3946 16.8262Q70.3946 10.0101 66.1913 7.8515Q65.2825 7.6243 62.6695 6.3747Q60.1702 5.125 60.1702 4.2162Q60.1702 2.3986 64.1462 2.3986Q67.5544 2.3986 73.1209 3.7618Q78.801 5.1251 78.801 7.2836Q78.801 8.8741 78.1194 12.055Q77.4378 15.2359 77.4378 16.8264L77.4378 52.0444L79.937 52.0444Q81.9819 52.0444 85.7308 50.6812Q89.4795 49.3179 91.5245 49.3179Q99.4768 49.3179 99.4768 52.7261Z',
+  'ㅝ': 'M90.7833 7.1734L90.1017 9.5591Q89.3065 11.8311 89.3065 16.8296Q89.3065 25.6907 89.3065 43.4127Q89.4201 61.0211 89.4201 69.8821Q89.4201 97.6012 84.1945 97.6012Q82.2632 97.6012 82.2632 88.8538Q82.1496 84.9914 82.1496 65.6789L76.015 65.6789Q70.7895 65.6789 67.7222 67.1557Q66.5861 67.7237 66.1317 67.7237Q64.7685 67.7237 60.6789 65.2245Q56.5892 62.7252 56.5892 61.4757Q56.5892 60.9077 57.2708 60.9077Q57.9525 60.9077 58.2933 61.0213Q63.4055 62.0437 68.6311 62.0437L82.1499 62.0437L82.1499 16.8302Q82.1499 12.9678 81.3547 11.1501Q80.6731 9.3325 78.8554 8.4236Q77.0378 7.5148 73.8568 5.9244Q72.0391 5.0155 72.0391 4.3339Q72.0391 2.4027 76.0151 2.4027Q78.9688 2.4027 84.8762 3.8795Q90.7835 5.3564 90.7835 7.1741ZM78.7414 44.4361Q78.7414 47.617 47.8405 53.0699Q47.8405 54.8875 47.8405 58.5227Q47.9541 62.0445 47.9541 63.8619Q47.9541 90.7859 42.0468 90.7859Q41.8196 90.7859 41.3652 89.8771Q40.57 87.1506 40.57 77.1536L40.57 53.8651Q38.2979 53.8651 33.2994 54.5467Q28.3008 55.1147 26.7103 56.1372Q25.9151 56.8188 24.7791 57.5004Q23.643 58.182 22.507 58.182Q20.4621 58.182 14.7819 55.0011Q9.2155 51.8202 9.2155 50.1161Q9.2155 48.9801 10.5787 48.9801Q11.2603 48.9801 12.3963 49.2073Q17.2814 49.8889 24.8928 49.8889Q51.3622 49.8889 72.947 44.8902Q76.8093 43.8678 78.1725 43.8678Q78.7406 43.8678 78.7406 44.4358Z',
+  'ㅙ': 'M93.2282 7.2862Q93.2282 8.8766 92.5466 11.9439Q91.865 15.0112 91.865 16.6017L91.865 73.5181Q91.865 97.8292 86.5257 97.8292Q85.9577 97.8292 85.6169 96.9204Q85.2761 96.0115 85.0489 94.7619Q84.9353 93.5123 84.8217 91.6946Q84.7081 89.9906 84.7081 88.6273Q84.7081 87.3777 84.7081 86.0145Q84.8217 84.5376 84.8217 84.424L84.8217 51.1382L73.4615 51.1382L73.4615 68.9739Q73.4615 92.0352 68.6901 92.0352Q66.6453 92.0352 66.6453 86.9229Q66.6453 82.9469 66.5317 74.9946Q66.5317 66.9287 66.5317 62.839Q49.4914 69.2009 32.7902 72.0409Q24.9515 73.2906 23.361 74.4266Q22.6794 75.1082 21.657 75.7898Q20.7482 76.3578 19.7258 76.3578Q17.7945 76.3578 12.2279 73.5178Q6.7751 70.6777 6.7751 69.2009Q6.7751 68.1784 8.3655 68.1784Q9.956 68.1784 13.0233 68.4057Q16.0906 68.5193 17.5674 68.5193Q21.6571 68.5193 29.8366 67.8377L29.8366 49.6611Q29.8366 47.9571 26.3148 46.1393Q22.9067 44.2081 22.9067 43.7536Q22.9067 42.504 26.2012 42.504Q29.0413 42.504 33.1309 43.2992Q37.2205 43.9808 37.2205 45.4577Q37.2205 46.4801 36.8797 48.525Q36.5389 50.5698 36.5389 51.5923L36.5389 67.0424Q50.1713 64.7703 66.5313 60.2263L66.5313 17.5102Q66.5313 15.4654 64.3729 13.9884Q62.2144 12.398 60.056 11.3756Q57.8975 10.3531 57.8975 9.6715Q57.8975 7.7403 61.7599 7.7403Q64.3728 7.7403 69.3714 9.2171Q74.37 10.6939 74.37 12.5117Q74.37 13.7613 73.9156 16.2604Q73.4612 18.7597 73.4612 20.0092L73.4612 47.6146L84.8214 47.6146L84.8214 13.4204Q84.8214 10.2394 82.2085 8.649Q79.7092 7.0585 77.0962 6.2633Q74.597 5.3545 74.597 3.9912Q74.597 3.196 76.0738 2.7416Q77.5507 2.1736 78.5731 2.1736Q81.9813 2.1736 87.5477 3.6504Q93.2278 5.0137 93.2278 7.2859Z',
+  'ㅞ': 'M92.7731 7.6267Q92.7731 9.1036 92.2051 12.0573Q91.6371 15.0109 91.6371 16.6014L91.6371 68.2892Q91.6371 97.8259 86.2979 97.8259Q85.8435 97.8259 85.5027 96.6899Q84.4802 93.509 84.4802 82.2624L84.4802 16.5993Q84.4802 14.4408 84.3666 13.3047Q84.0258 10.6919 81.5265 8.8742Q79.0273 6.9429 76.6415 5.9205Q74.3695 4.8981 74.3695 4.1029Q74.3695 2.1716 78.8 2.1716Q80.504 2.1716 84.3665 3.0804Q88.2288 3.8757 90.1602 4.6709Q92.773 5.5797 92.773 7.6246ZM76.3007 13.4205Q76.3007 13.7613 75.7327 16.0333Q75.1646 18.419 75.1646 23.4175L75.1646 65.6779Q75.1646 90.216 70.166 90.216Q68.5756 90.216 68.5756 83.5136L68.5756 61.8156L64.9401 61.8156Q63.2361 61.8156 61.0778 62.7244Q58.9193 63.6332 58.4649 63.6332Q57.2153 63.6332 53.6935 61.3611Q50.1718 59.0891 50.1717 57.953Q50.1717 57.2714 50.8533 57.2714Q51.4213 57.2714 52.3302 57.4986Q55.852 58.1802 61.4184 58.1802L68.5754 58.1802L68.5754 21.4856Q68.5754 17.396 67.6665 16.1464Q67.2121 15.5784 63.4633 13.4199Q59.8279 11.1479 59.8279 10.6934Q59.8279 8.8758 64.4856 8.8758Q76.3003 8.8758 76.3003 13.4199ZM61.4187 43.981Q61.4187 45.117 56.1931 47.1619Q50.9675 49.0932 46.6503 50.3429Q42.447 51.4789 39.3797 52.2741Q39.3797 53.751 39.3797 56.7046Q39.4933 59.6583 39.4933 61.2488Q39.4933 85.4463 34.3811 85.4463Q32.7906 85.4463 32.7906 78.5166L32.7906 53.524Q23.9296 55.0008 22.5664 56.0233Q22.3392 56.1369 21.6576 56.7049Q21.0896 57.1593 20.5216 57.3865Q20.0672 57.6137 19.4991 57.6137Q17.5679 57.6137 12.3422 54.66Q7.2299 51.7063 7.2299 50.1159Q7.2299 49.3206 8.2524 49.3206Q9.7292 49.3206 12.9101 49.6615Q16.0911 49.8887 17.5679 49.8887Q33.6995 49.8887 56.1917 44.2086Q60.1677 43.2997 60.6222 43.2997Q61.4175 43.2997 61.4175 43.9813Z',
+  'ㄲ': 'M37.5036 26.9395Q37.5036 27.7347 37.0742 29.2115Q36.6448 30.6884 36.6448 31.7108Q36.6448 42.0487 35.8813 50.1146Q35.1657 58.0669 33.3048 66.8143Q31.444 75.6753 30.5374 75.6753Q30.1557 75.6753 30.1557 74.6529Q30.1557 74.3121 30.3465 72.7216Q30.5374 71.0176 30.7759 69.0862Q31.0622 67.155 31.1099 66.8141Q33.0185 50.7962 33.1139 30.1196L24.1438 30.1196Q20.4699 30.1196 18.5613 32.3917Q17.1299 34.0957 16.796 34.0957Q16.0326 34.0957 13.2653 31.0284Q10.4978 27.8475 10.4978 26.5979Q10.4978 25.4619 11.2135 25.4619Q11.8815 25.4619 13.122 25.8027Q14.3626 26.1435 14.8874 26.1435Q20.2313 26.5979 22.951 26.5979L30.7281 26.5979Q31.3484 26.5979 32.4935 25.4619Q33.6863 24.3259 34.3543 24.3259Q37.5034 24.3259 37.5034 26.9387ZM89.5036 26.9395Q89.5036 27.7347 89.0742 29.2115Q88.6448 30.6884 88.6448 31.7108Q88.6448 42.0487 87.8813 50.1146Q87.1657 58.0669 85.3048 66.8143Q83.444 75.6753 82.5374 75.6753Q82.1557 75.6753 82.1557 74.6529Q82.1557 74.3121 82.3465 72.7216Q82.5374 71.0176 82.7759 69.0862Q83.0622 67.155 83.1099 66.8141Q85.0185 50.7962 85.1139 30.1196L76.1438 30.1196Q72.4699 30.1196 70.5613 32.3917Q69.1299 34.0957 68.796 34.0957Q68.0326 34.0957 65.2653 31.0284Q62.4978 27.8475 62.4978 26.5979Q62.4978 25.4619 63.2135 25.4619Q63.8815 25.4619 65.122 25.8027Q66.3626 26.1435 66.8874 26.1435Q72.2313 26.5979 74.951 26.5979L82.7281 26.5979Q83.3484 26.5979 84.4935 25.4619Q85.6863 24.3259 86.3543 24.3259Q89.5034 24.3259 89.5034 26.9387Z',
+  'ㄸ': 'M38.3387 69.7706Q38.3387 73.0652 35.8576 73.0652L20.5416 73.0652Q17.5834 73.0652 15.9134 70.7931Q14.2434 68.521 14.2434 62.0457L14.2434 40.0068Q14.2434 36.7122 13.5278 34.7812Q12.812 32.7364 11.9533 32.2819Q11.0945 31.7139 10.3788 31.1459Q9.6631 30.4643 9.6631 29.5555Q9.6631 27.397 12.7645 27.397Q15.9135 27.397 17.5834 29.1011Q18.824 30.2371 19.4443 30.2371L25.5038 30.2371Q27.126 30.2371 28.7484 29.8963Q29.5118 29.6691 30.8001 28.3058Q32.0883 26.9426 33.3766 26.9426Q37.0505 26.9426 37.0505 30.4644Q37.0505 33.8726 33.138 33.8726L18.9193 33.8726Q17.0585 33.8726 17.0585 39.5527L17.0585 62.0461Q17.0585 66.5902 17.9651 68.0671Q18.9193 69.4303 20.9232 69.4303L27.9848 69.4303Q31.0385 69.4303 32.4222 67.4991Q33.1856 66.363 33.9491 66.363Q38.3387 66.363 38.3387 69.7712ZM90.3387 69.7706Q90.3387 73.0652 87.8576 73.0652L72.5416 73.0652Q69.5834 73.0652 67.9134 70.7931Q66.2434 68.521 66.2434 62.0457L66.2434 40.0068Q66.2434 36.7122 65.5278 34.7812Q64.812 32.7364 63.9533 32.2819Q63.0945 31.7139 62.3788 31.1459Q61.6631 30.4643 61.6631 29.5555Q61.6631 27.397 64.7645 27.397Q67.9135 27.397 69.5834 29.1011Q70.824 30.2371 71.4443 30.2371L77.5038 30.2371Q79.126 30.2371 80.7484 29.8963Q81.5118 29.6691 82.8001 28.3058Q84.0883 26.9426 85.3766 26.9426Q89.0505 26.9426 89.0505 30.4644Q89.0505 33.8726 85.138 33.8726L70.9193 33.8726Q69.0585 33.8726 69.0585 39.5527L69.0585 62.0461Q69.0585 66.5902 69.9651 68.0671Q70.9193 69.4303 72.9232 69.4303L79.9848 69.4303Q83.0385 69.4303 84.4222 67.4991Q85.1856 66.363 85.9491 66.363Q90.3387 66.363 90.3387 69.7712Z',
+  'ㅃ': 'M36.0957 28.0197Q36.0957 28.815 35.9525 30.2918Q35.8094 31.7686 35.8094 32.4502L35.8094 60.2829Q35.8094 74.824 33.4715 74.824Q32.8035 74.824 32.8035 69.7117L18.4419 69.7117Q17.6308 75.8463 16.4379 75.8463Q15.4359 75.8463 15.4359 66.4172L15.4359 36.0845Q15.4359 33.0172 14.5294 30.9722Q13.6706 28.9274 12.764 27.9049Q11.9052 26.8825 11.9052 26.3145Q11.9052 24.9512 13.1934 24.9512Q14.5295 24.9512 16.6287 26.2009Q18.7282 27.4505 18.7282 29.4954Q18.7282 30.2907 18.585 31.8811Q18.4419 33.4715 18.4419 34.2668L18.4419 42.7869L32.8035 42.7869L32.8035 34.494Q32.8035 32.1083 31.9446 30.1771Q31.0858 28.2459 30.227 27.1098Q29.3681 25.8602 29.3681 25.4058Q29.3681 24.1562 30.4655 24.1562Q31.4198 24.1562 33.7578 25.4058Q36.0957 26.6554 36.0957 28.0187ZM32.8034 65.963L32.8034 46.4232L18.4418 46.4232L18.4418 65.963ZM88.0957 28.0197Q88.0957 28.815 87.9525 30.2918Q87.8093 31.7686 87.8093 32.4502L87.8093 60.2829Q87.8093 74.824 85.4715 74.824Q84.8035 74.824 84.8035 69.7117L70.4419 69.7117Q69.6308 75.8463 68.4379 75.8463Q67.4359 75.8463 67.4359 66.4172L67.4359 36.0845Q67.4359 33.0172 66.5294 30.9722Q65.6706 28.9274 64.764 27.9049Q63.9052 26.8825 63.9052 26.3145Q63.9052 24.9512 65.1934 24.9512Q66.5295 24.9512 68.6287 26.2009Q70.7282 27.4505 70.7282 29.4954Q70.7282 30.2907 70.585 31.8811Q70.4419 33.4715 70.4419 34.2668L70.4419 42.7869L84.8035 42.7869L84.8035 34.494Q84.8035 32.1083 83.9446 30.1771Q83.0858 28.2459 82.227 27.1098Q81.3681 25.8602 81.3681 25.4058Q81.3681 24.1562 82.4655 24.1562Q83.4198 24.1562 85.7578 25.4058Q88.0957 26.6554 88.0957 28.0187ZM84.8034 65.963L84.8034 46.4232L70.4418 46.4232L70.4418 65.963Z',
+  'ㅆ': 'M38.9829 70.3939Q38.9829 73.0067 37.8377 73.0067Q36.6449 73.0067 33.0187 65.6225L24.5258 48.6956Q22.0448 55.5116 16.8917 65.0544Q11.7864 74.5972 9.4484 74.5972Q9.019 74.5972 9.019 73.802Q11.5478 68.9169 14.5537 62.4418Q17.5596 55.9666 20.9474 46.9916Q24.335 37.9034 24.335 33.9274Q24.335 32.1097 23.2853 29.7241Q22.2357 27.3385 22.2357 26.4296Q22.2357 25.4071 23.1422 25.4071Q24.1442 25.4071 26.4822 28.1336Q28.8678 30.7465 28.8678 32.6777Q28.8678 35.6314 25.3848 45.9693L29.1064 52.899Q29.8221 54.2622 30.2992 54.9438Q30.8241 55.5118 31.3489 55.8526Q31.8738 56.0798 32.7327 56.6479Q33.7823 57.3295 36.3588 62.7825Q38.9831 68.2353 38.9831 70.3939ZM90.9829 70.3939Q90.9829 73.0067 89.8377 73.0067Q88.6449 73.0067 85.0187 65.6225L76.5258 48.6956Q74.0448 55.5116 68.8917 65.0544Q63.7864 74.5972 61.4484 74.5972Q61.019 74.5972 61.019 73.802Q63.5478 68.9169 66.5537 62.4418Q69.5596 55.9666 72.9474 46.9916Q76.335 37.9034 76.335 33.9274Q76.335 32.1097 75.2853 29.7241Q74.2357 27.3385 74.2357 26.4296Q74.2357 25.4071 75.1422 25.4071Q76.1442 25.4071 78.4822 28.1336Q80.8678 30.7465 80.8678 32.6777Q80.8678 35.6314 77.3848 45.9693L81.1064 52.899Q81.8221 54.2622 82.2992 54.9438Q82.8241 55.5118 83.349 55.8526Q83.8738 56.0798 84.7327 56.6479Q85.7823 57.3295 88.3588 62.7825Q90.9831 68.2353 90.9831 70.3939Z',
+  'ㅉ': 'M38.5051 70.5636Q38.5051 73.2901 37.5031 73.2901Q36.358 73.2901 32.3023 66.3604Q28.2944 59.4307 25.4794 53.9776Q25.05 54.6592 23.046 58.0672Q21.042 61.3618 19.6583 63.5201Q18.2746 65.5649 16.366 68.2915Q14.4575 70.9043 12.883 72.3811Q11.3086 73.7443 10.2111 73.7443Q9.4954 73.7443 9.4954 72.8355Q9.4954 72.3811 10.3542 71.0179Q11.2131 69.541 12.3582 67.9506Q13.551 66.2465 13.5987 66.1329Q19.706 56.931 25.05 44.2076Q28.7239 35.4602 28.7239 32.6202Q28.7239 31.8249 27.531 31.8249L24.2865 31.8249Q21.1374 31.8249 20.2785 32.9609Q20.1831 33.0745 19.7537 33.7562Q19.3243 34.4378 19.038 34.665Q18.7517 34.8922 18.4177 34.8922Q17.5589 34.8922 15.1255 32.3929Q12.6921 29.7801 12.6921 28.1897Q12.6921 26.8264 13.3124 26.8264Q13.6464 26.8264 15.0777 27.3945Q17.7974 28.3033 22.3778 28.3033L27.674 28.3033Q28.2942 28.3033 29.4393 27.2809Q30.5844 26.2584 31.2047 26.2584Q32.3975 26.2584 34.0674 26.94Q35.7374 27.5081 35.7374 28.9849Q35.7374 30.5753 34.3536 32.8473Q33.2563 34.8921 32.1112 38.1865Q30.2026 43.6393 26.9581 50.6829L29.4869 54.6589Q30.2503 55.9086 31.968 56.7038Q33.7334 57.499 34.4968 58.635Q35.8805 60.6799 37.1688 64.2015Q38.5048 67.6097 38.5048 70.5634ZM90.5051 70.5636Q90.5051 73.2901 89.5031 73.2901Q88.358 73.2901 84.3023 66.3604Q80.2944 59.4307 77.4794 53.9776Q77.05 54.6592 75.046 58.0672Q73.042 61.3618 71.6583 63.5201Q70.2746 65.5649 68.366 68.2915Q66.4575 70.9043 64.883 72.3811Q63.3086 73.7443 62.2111 73.7443Q61.4954 73.7443 61.4954 72.8355Q61.4954 72.3811 62.3542 71.0179Q63.2131 69.541 64.3582 67.9506Q65.551 66.2465 65.5987 66.1329Q71.706 56.931 77.05 44.2076Q80.7239 35.4602 80.7239 32.6202Q80.7239 31.8249 79.531 31.8249L76.2865 31.8249Q73.1374 31.8249 72.2785 32.9609Q72.1831 33.0745 71.7537 33.7562Q71.3243 34.4378 71.038 34.665Q70.7517 34.8922 70.4177 34.8922Q69.5589 34.8922 67.1255 32.3929Q64.6921 29.7801 64.6921 28.1897Q64.6921 26.8264 65.3124 26.8264Q65.6464 26.8264 67.0777 27.3945Q69.7974 28.3033 74.3778 28.3033L79.674 28.3033Q80.2942 28.3033 81.4393 27.2809Q82.5844 26.2584 83.2047 26.2584Q84.3975 26.2584 86.0674 26.94Q87.7374 27.5081 87.7374 28.9849Q87.7374 30.5753 86.3536 32.8473Q85.2563 34.8921 84.1112 38.1865Q82.2026 43.6393 78.9581 50.6829L81.4869 54.6589Q82.2503 55.9086 83.968 56.7038Q85.7334 57.499 86.4968 58.635Q87.8805 60.6799 89.1688 64.2015Q90.5048 67.6097 90.5048 70.5634Z',
+};
+function makeGlyphCanvas(W,H,ch,color){
+  const c = document.createElement('canvas');
+  c.width = W; c.height = H;
+  const cctx = c.getContext('2d');
+  cctx.fillStyle = color;
+  if(REAL_GLYPH_PATHS[ch]){
+    // Vẽ đúng hình dạng nét chữ thật (path vector), toạ độ path đang ở thang 0-100
+    cctx.save();
+    cctx.scale(W/100, H/100);
+    cctx.fill(new Path2D(REAL_GLYPH_PATHS[ch]));
+    cctx.restore();
+  } else {
+    cctx.font = `700 ${Math.floor(H*0.74)}px "Noto Sans KR", sans-serif`;
+    cctx.textAlign = 'center';
+    cctx.textBaseline = 'middle';
+    cctx.fillText(ch, W/2, H/2 + H*0.03);
+  }
+  return c;
+}
+function resetCanvas(ctx,W,H){
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = '#EAE1CB'; ctx.lineWidth = 1; ctx.setLineDash([4,4]);
+  ctx.beginPath(); ctx.moveTo(W/2,0); ctx.lineTo(W/2,H); ctx.moveTo(0,H/2); ctx.lineTo(W,H/2); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.strokeStyle = '#D9CEB0'; ctx.lineWidth = 2; ctx.strokeRect(3,3,W-6,H-6);
+}
+/* Hiển thị tĩnh: chỉ vẽ chữ đầy đủ (không có số thứ tự / mũi tên hướng nét). */
+async function renderGlyph(canvas, ch){
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  if(document.fonts && document.fonts.ready){ try{ await document.fonts.ready; }catch(e){} }
+  resetCanvas(ctx,W,H);
+  const offInk = makeGlyphCanvas(W,H,ch,'#1B2A4A');
+  ctx.drawImage(offInk,0,0);
+}
+
+/* ================= Render flashcards ================= */
+function audioTextFor(ch, name){
+  return name ? name.split(' ')[0] : ch;
+}
+function makeGrid(containerId, list, nameLabel){
+  const el = document.getElementById(containerId);
+  list.forEach(([ch,roman,desc,name])=>{
+    const card = document.createElement('div');
+    card.className = 'jamo-card';
+    card.innerHTML = `<div class="glyph kr">${ch}</div><div class="roman">${roman}</div>${name ? `<div class="roman kr" style="margin-top:-2px;">${name.split(' ')[0]}</div>` : ''}<button class="mini-speak" title="Nghe phát âm">🔊</button>`;
+    card.querySelector('.mini-speak').addEventListener('click', e=>{ e.stopPropagation(); speak(audioTextFor(ch,name)); });
+    card.addEventListener('click', ()=> openJamoModal(ch, roman, desc, name, nameLabel));
+    el.appendChild(card);
+  });
+}
+makeGrid('grid-consonants-basic', CONS_BASIC, 'Tên gọi');
+makeGrid('grid-consonants-double', CONS_DOUBLE, 'Tên gọi');
+makeGrid('grid-vowels-basic', VOW_BASIC, 'Viết thành');
+makeGrid('grid-vowels-double', VOW_DOUBLE, 'Viết thành');
+
+const jamoOverlay = document.getElementById('jamoOverlay');
+const jamoCanvas = document.getElementById('jamoCanvas');
+let activeJamo = null;
+let activeAudioText = null;
+function openJamoModal(ch, roman, desc, name, nameLabel){
+  activeJamo = ch;
+  activeAudioText = audioTextFor(ch, name);
+  document.getElementById('jamoGlyph').textContent = ch;
+  document.getElementById('jamoRoman').innerHTML = (name ? `${nameLabel || 'Tên gọi'}: <span class="kr">${name}</span><br>` : '') + 'Phiên âm La-tinh: ' + roman;
+  document.getElementById('jamoDesc').textContent = desc;
+  jamoOverlay.classList.add('open');
+  requestAnimationFrame(()=> renderGlyph(jamoCanvas, ch));
+}
+document.getElementById('jamoClose').addEventListener('click', ()=> jamoOverlay.classList.remove('open'));
+jamoOverlay.addEventListener('click', e=>{ if(e.target===jamoOverlay) jamoOverlay.classList.remove('open'); });
+document.getElementById('jamoSpeak').addEventListener('click', ()=> speak(activeAudioText));
+document.addEventListener('keydown', e=>{
+  if(e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o=> o.classList.remove('open'));
+});
+
+/* ================= Combination practice ================= */
+const INITIALS = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const MEDIALS  = ['ㅏ','ㅐ','ㅑ','ㅒ','ㅓ','ㅔ','ㅕ','ㅖ','ㅗ','ㅘ','ㅙ','ㅚ','ㅛ','ㅜ','ㅝ','ㅞ','ㅟ','ㅠ','ㅡ','ㅢ','ㅣ'];
+const FINALS_ALL = ['','ㄱ','ㄲ','ㄳ','ㄴ','ㄵ','ㄶ','ㄷ','ㄹ','ㄺ','ㄻ','ㄼ','ㄽ','ㄾ','ㄿ','ㅀ','ㅁ','ㅂ','ㅄ','ㅅ','ㅆ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+const FINALS_UI = ['','ㄱ','ㄴ','ㄷ','ㄹ','ㅁ','ㅂ','ㅅ','ㅇ','ㅈ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ','ㄲ','ㅆ'];
+
+function composeHangul(initial, medial, final){
+  const i = INITIALS.indexOf(initial);
+  const m = MEDIALS.indexOf(medial);
+  const f = FINALS_ALL.indexOf(final || '');
+  if(i<0 || m<0 || f<0) return '';
+  return String.fromCharCode(0xAC00 + (i*21+m)*28 + f);
+}
+
+let selInitial = null, selMedial = null, selFinal = '';
+function buildChipRow(containerId, list, onPick, noneChip, emptyValue){
+  const el = document.getElementById(containerId);
+  list.forEach(ch=>{
+    const chip = document.createElement('div');
+    chip.className = 'chip kr' + ((noneChip && ch==='') ? ' none-chip':'');
+    chip.textContent = (noneChip && ch==='') ? '(không có)' : ch;
+    chip.addEventListener('click', ()=>{
+      const wasSelected = chip.classList.contains('selected');
+      el.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+      if(wasSelected){
+        onPick(emptyValue);
+      } else {
+        chip.classList.add('selected');
+        onPick(ch);
+      }
+      updateCombo();
+    });
+    el.appendChild(chip);
+  });
+}
+buildChipRow('row-initial', INITIALS, ch=>{ selInitial=ch; }, false, null);
+buildChipRow('row-medial', MEDIALS, ch=>{ selMedial=ch; }, false, null);
+buildChipRow('row-final', FINALS_UI, ch=>{ selFinal=ch; }, true, '');
+
+const comboBox = document.getElementById('comboBox');
+let lastSpokenCombo = null;
+function updateCombo(){
+  if(selInitial && selMedial){
+    const syllable = composeHangul(selInitial, selMedial, selFinal);
+    comboBox.textContent = syllable;
+    comboBox.classList.remove('empty');
+    if(syllable && syllable !== lastSpokenCombo){
+      lastSpokenCombo = syllable;
+      speak(syllable);
+    }
+  } else if(selInitial){
+    comboBox.textContent = selInitial;
+    comboBox.classList.remove('empty');
+    lastSpokenCombo = null;
+  } else if(selMedial){
+    comboBox.textContent = selMedial;
+    comboBox.classList.remove('empty');
+    lastSpokenCombo = null;
+  } else {
+    comboBox.innerHTML = 'Kết quả ghép âm<br>sẽ hiện ở đây';
+    comboBox.classList.add('empty');
+    lastSpokenCombo = null;
+  }
+}
+comboBox.addEventListener('click', ()=>{
+  if(selInitial && selMedial) speak(composeHangul(selInitial, selMedial, selFinal));
+});
+document.getElementById('comboReset').addEventListener('click', ()=>{
+  selInitial=null; selMedial=null; selFinal='';
+  lastSpokenCombo = null;
+  document.querySelectorAll('#row-initial .chip, #row-medial .chip, #row-final .chip').forEach(c=>c.classList.remove('selected'));
+  updateCombo();
+});
+
+/* ================= Vocabulary + teacher image mode ================= */
+let editMode = false;
+const vocabGrid = document.getElementById('vocabGrid');
+
+/* Ảnh được lưu trong localStorage của trình duyệt (chỉ trên máy đang dùng). */
+async function getStoredImage(word){
+  try{ return localStorage.getItem('vocab-image:'+word); }
+  catch(e){ return null; }
+}
+async function setStoredImage(word, url){
+  try{ localStorage.setItem('vocab-image:'+word, url); return true; }
+  catch(e){ return false; }
+}
+function setVocabImage(box, url, word, fallbackEmoji){
+  box.textContent = '';
+  if(!url){ box.textContent = fallbackEmoji; return; }
+  const img = document.createElement('img');
+  img.src = url; img.alt = word;
+  img.addEventListener('error', ()=>{ box.textContent = fallbackEmoji; });
+  box.appendChild(img);
+}
+
+async function renderVocab(){
+  vocabGrid.innerHTML = '';
+  for(const [word, , meaning, emoji] of VOCAB){
+    const card = document.createElement('div');
+    card.className = 'vocab-card';
+    const imgUrl = await getStoredImage(word);
+    card.innerHTML = `
+      <div class="vocab-img"></div>
+      <div class="vocab-body">
+        <div class="vocab-word kr">${word}</div>
+        <div class="vocab-meaning">${meaning}</div>
+      </div>
+      <div class="vocab-edit">
+        <input type="text" placeholder="Dán link hình ảnh…">
+        <button>Lưu</button>
+      </div>
+    `;
+    const imgBox = card.querySelector('.vocab-img');
+    setVocabImage(imgBox, imgUrl, word, emoji);
+    card.addEventListener('click', (e)=>{
+      if(editMode) return;
+      speak(word);
+    });
+    const editRow = card.querySelector('.vocab-edit');
+    const input = editRow.querySelector('input');
+    editRow.querySelector('button').addEventListener('click', async (e)=>{
+      e.stopPropagation();
+      const url = input.value.trim();
+      if(!url) return;
+      const ok = await setStoredImage(word, url);
+      setVocabImage(imgBox, url, word, emoji);
+      if(!ok) alert('Không lưu được ảnh (trình duyệt chặn bộ nhớ). Ảnh sẽ mất khi tải lại trang.');
+    });
+    input.addEventListener('click', e=> e.stopPropagation());
+    vocabGrid.appendChild(card);
+  }
+  applyEditModeToCards();
+}
+function applyEditModeToCards(){
+  document.querySelectorAll('.vocab-edit').forEach(el=> el.classList.toggle('show', editMode));
+  document.getElementById('vocabNote').classList.toggle('show', editMode);
+}
+renderVocab();
+
+/* Pencil / password flow */
+const fab = document.getElementById('fabPencil');
+const pwOverlay = document.getElementById('pwOverlay');
+const pwInput = document.getElementById('pwInput');
+const pwError = document.getElementById('pwError');
+
+fab.addEventListener('click', ()=>{
+  if(editMode){
+    editMode = false;
+    fab.classList.remove('editing');
+    fab.textContent = '✏️';
+    applyEditModeToCards();
+  } else {
+    pwInput.value=''; pwError.textContent='';
+    pwOverlay.classList.add('open');
+    setTimeout(()=>pwInput.focus(),50);
+  }
+});
+document.getElementById('pwClose').addEventListener('click', ()=> pwOverlay.classList.remove('open'));
+pwOverlay.addEventListener('click', e=>{ if(e.target===pwOverlay) pwOverlay.classList.remove('open'); });
+function trySubmitPw(){
+  if(pwInput.value === '1234'){
+    editMode = true;
+    fab.classList.add('editing');
+    fab.textContent = '✓';
+    applyEditModeToCards();
+    pwOverlay.classList.remove('open');
+  } else {
+    pwError.textContent = 'Sai mật khẩu, vui lòng thử lại.';
+  }
+}
+document.getElementById('pwSubmit').addEventListener('click', trySubmitPw);
+pwInput.addEventListener('keydown', e=>{ if(e.key==='Enter') trySubmitPw(); });
+
+/* ================= Nav tabs ================= */
+const tabButtons = document.querySelectorAll('nav.tabs button');
+const navBar = document.querySelector('nav.tabs');
+const sections = ['stage-consonants','stage-vowels','stage-combo','stage-vocab'].map(id=>document.getElementById(id));
+
+function applyScrollMargin(){
+  const navH = navBar.getBoundingClientRect().height;
+  sections.forEach(s=> s.style.scrollMarginTop = navH + 'px');
+}
+applyScrollMargin();
+window.addEventListener('resize', applyScrollMargin);
+
+let isProgrammaticScroll = false;
+let scrollLockTimer = null;
+function unlockScrollSpy(){
+  isProgrammaticScroll = false;
+  window.removeEventListener('scrollend', unlockScrollSpy);
+  if(scrollLockTimer){ clearTimeout(scrollLockTimer); scrollLockTimer = null; }
+}
+tabButtons.forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    // Phản hồi tức thì: bật active ngay khi bấm, không chờ scroll xong
+    tabButtons.forEach(b=> b.classList.toggle('active', b===btn));
+    const target = document.getElementById(btn.dataset.target);
+    const navH = navBar.getBoundingClientRect().height;
+    const targetY = target.getBoundingClientRect().top + window.pageYOffset - navH;
+    isProgrammaticScroll = true;
+    window.addEventListener('scrollend', unlockScrollSpy, {once:true});
+    // Dự phòng cho trình duyệt chưa hỗ trợ sự kiện 'scrollend'
+    if(scrollLockTimer) clearTimeout(scrollLockTimer);
+    scrollLockTimer = setTimeout(unlockScrollSpy, 800);
+    window.scrollTo({top: Math.max(0,targetY), behavior:'smooth'});
+  });
+});
+const io = new IntersectionObserver(entries=>{
+  if(isProgrammaticScroll) return; // khoá tạm để tránh các tab trung gian chớp giật khi đang lướt tới đích
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      tabButtons.forEach(b=> b.classList.toggle('active', b.dataset.target===entry.target.id));
+    }
+  });
+}, {rootMargin:'-40% 0px -50% 0px'});
+sections.forEach(s=> io.observe(s));
+</script>
+</body>
+</html>

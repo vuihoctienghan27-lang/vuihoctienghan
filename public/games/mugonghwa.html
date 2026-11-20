@@ -9,21 +9,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;800&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg: #0d0d16;
-    --bg-2: #16121f;
-    --pink: #ff2f6e;
-    --pink-dim: #7a1636;
-    --green: #24e6a0;
-    --green-dim: #0d5c43;
-    --gold: #ffcf5c;
-    --cream: #f3ece1;
+    /* Sân trường ban ngày: hồng tím hoa mugunghwa + xanh lá + vàng nắng */
+    --bg: #eaf6ff;
+    --bg-2: #ffffff;
+    --pink: #d0478f;
+    --pink-dim: #f3c3dc;
+    --green: #16a34a;
+    --green-dim: #bbf7d0;
+    --gold: #c2700b;
+    --cream: #1e293b;
     --ink: #0d0d16;
-    --line: rgba(243,236,225,0.14);
+    --line: rgba(30,41,59,0.14);
   }
   *{box-sizing:border-box;}
   html,  body{
     margin:0; padding:0; height:100%;
-    background: radial-gradient(1200px 800px at 50% -10%, #1c1730 0%, var(--bg) 55%, #08070c 100%);
+    background: radial-gradient(1200px 800px at 50% -10%, #ffffff 0%, #e0f2fe 50%, #dcfce7 100%);
     color: var(--cream);
     font-family:'Noto Sans KR', sans-serif;
     overflow:hidden;
@@ -52,14 +53,14 @@
   }
   h1.title{ font-size: clamp(28px, 6vw, 54px); margin: 0 0 6px; line-height:1.05; }
   h1.title .accent{ color: var(--pink); }
-  .sub{ color: rgba(243,236,225,0.72); max-width:520px; margin: 0 auto 24px; font-size:15px; line-height:1.6;}
+  .sub{ color: rgba(30,41,59,0.72); max-width:520px; margin: 0 auto 24px; font-size:15px; line-height:1.6;}
 
   .btn{
     appearance:none; border:none; cursor:pointer;
     font-family:'Noto Sans KR', sans-serif; font-weight:700; font-size:16px;
     padding:14px 30px; border-radius:999px;
     background: var(--pink); color:#fff;
-    box-shadow: 0 8px 24px -6px rgba(255,47,110,.55);
+    box-shadow: 0 8px 24px -6px rgba(208,71,143,.55);
     transition: transform .15s ease, box-shadow .15s ease, opacity .15s ease;
   }
   .btn:active{ transform: scale(.96); }
@@ -67,36 +68,36 @@
   .btn.ghost{ background: transparent; color: var(--cream); border: 1.5px solid var(--line); box-shadow:none; }
 
   .rules{ display:flex; gap:18px; flex-wrap:wrap; justify-content:center; margin: 6px 0 26px; max-width: 640px; }
-  .rule-card{ background: rgba(243,236,225,0.05); border: 1px solid var(--line); border-radius:14px; padding:14px 16px; width:170px; text-align:left; }
+  .rule-card{ background: rgba(30,41,59,0.05); border: 1px solid var(--line); border-radius:14px; padding:14px 16px; width:170px; text-align:left; }
   .rule-card .num{ font-size:11px; color:var(--gold); font-weight:700; letter-spacing:.1em;}
-  .rule-card p{ margin:6px 0 0; font-size:13px; line-height:1.5; color:rgba(243,236,225,0.85);}
+  .rule-card p{ margin:6px 0 0; font-size:13px; line-height:1.5; color:rgba(30,41,59,0.85);}
 
   /* ---------- Character select ---------- */
   .char-grid{ display:grid; grid-template-columns: repeat(4, 1fr); gap:14px; max-width:640px; width:100%; margin-bottom:18px; }
   .char-card{
     padding:16px 10px 18px; border-radius:16px;
-    background: rgba(243,236,225,0.04); border:2px solid var(--line);
+    background: rgba(30,41,59,0.04); border:2px solid var(--line);
     cursor:pointer; transition: border-color .15s ease, transform .15s ease, background .15s ease;
   }
   .char-card:hover{ transform: translateY(-2px); }
-  .char-card.selected{ border-color: var(--pink); background: rgba(255,47,110,0.1); }
-  .char-avatar{ width:72px; height:72px; margin:0 auto 8px; border-radius:50%; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.25); overflow:hidden; }
+  .char-card.selected{ border-color: var(--pink); background: rgba(208,71,143,0.1); }
+  .char-avatar{ width:72px; height:72px; margin:0 auto 8px; border-radius:50%; display:flex; align-items:center; justify-content:center; background: radial-gradient(circle at 50% 35%, #ffffff, #e0f2fe); overflow:hidden; }
   .char-avatar svg{ width:60%; height:60%; }
   .char-avatar img{ width:100%; height:100%; object-fit:cover; }
   .char-name{ font-size:12.5px; font-weight:700; color:var(--cream); }
-  .char-tag{ font-size:10.5px; color:rgba(243,236,225,0.5); margin-top:2px;}
+  .char-tag{ font-size:10.5px; color:rgba(30,41,59,0.5); margin-top:2px;}
 
   /* Nhân vật tùy chỉnh: tên + màu áo */
-  .custom-wrap{ max-width:640px; width:100%; margin-bottom:22px; padding:14px 16px; border-radius:14px; background:rgba(243,236,225,0.04); border:2px solid var(--line); transition:border-color .15s, background .15s; }
-  .custom-wrap.selected{ border-color: var(--green); background: rgba(36,230,160,0.08); }
-  .custom-hint{ font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(243,236,225,0.55); margin-bottom:10px; text-align:left; }
+  .custom-wrap{ max-width:640px; width:100%; margin-bottom:22px; padding:14px 16px; border-radius:14px; background:rgba(30,41,59,0.04); border:2px solid var(--line); transition:border-color .15s, background .15s; }
+  .custom-wrap.selected{ border-color: var(--green); background: rgba(22,163,74,0.08); }
+  .custom-hint{ font-size:11px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:rgba(30,41,59,0.55); margin-bottom:10px; text-align:left; }
   .custom-row{ display:flex; align-items:center; gap:10px; }
-  .custom-preview{ width:52px; height:62px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.25); border-radius:10px; }
+  .custom-preview{ width:52px; height:62px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:radial-gradient(circle at 50% 35%, #ffffff, #e0f2fe); border-radius:10px; }
   .custom-preview svg{ width:42px; height:56px; }
-  #char-name{ flex:1; min-width:0; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); background:rgba(13,13,22,0.6); color:var(--cream); font-size:14px; font-family:'Noto Sans KR', sans-serif; outline:none; transition:border-color .15s; }
+  #char-name{ flex:1; min-width:0; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); background:rgba(255,255,255,0.6); color:var(--cream); font-size:14px; font-family:'Noto Sans KR', sans-serif; outline:none; transition:border-color .15s; }
   #char-name:focus{ border-color:var(--green); }
-  #char-name::placeholder{ color:rgba(243,236,225,0.4); }
-  .custom-color{ width:52px; height:52px; flex-shrink:0; border-radius:12px; border:1.5px solid var(--line); background:rgba(13,13,22,0.6); display:flex; align-items:center; justify-content:center; cursor:pointer; }
+  #char-name::placeholder{ color:rgba(30,41,59,0.4); }
+  .custom-color{ width:52px; height:52px; flex-shrink:0; border-radius:12px; border:1.5px solid var(--line); background:rgba(255,255,255,0.6); display:flex; align-items:center; justify-content:center; cursor:pointer; }
   .custom-color input{ width:34px; height:34px; border:none; background:none; padding:0; cursor:pointer; }
 
   /* ---------- Game screen ---------- */
@@ -106,38 +107,38 @@
   .life-doll{ width:16px; height:20px; opacity:.35; transition:opacity .2s; }
   .life-doll.on{ opacity:1; }
   .life-doll svg{ width:100%; height:100%; display:block; }
-  .status-pill{ width:54px; height:54px; border-radius:50%; border:1px solid var(--line); background:rgba(243,236,225,0.05); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .status-pill{ width:54px; height:54px; border-radius:50%; border:1px solid var(--line); background:rgba(30,41,59,0.05); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .status-dot{ width:42px; height:42px; border-radius:50%; background:var(--green);
-    box-shadow:0 0 26px var(--green), 0 0 60px rgba(36,230,160,0.45);
+    box-shadow:0 0 26px var(--green), 0 0 60px rgba(22,163,74,0.45);
     transition: background .25s ease, box-shadow .25s ease; }
   .status-pill.red .status-dot{ background:var(--pink);
-    box-shadow:0 0 26px var(--pink), 0 0 60px rgba(255,47,110,0.45); }
-  .mute-btn{ width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:rgba(243,236,225,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; }
-  .home-btn{ border:1px solid var(--line); background:rgba(243,236,225,0.05); color:var(--cream); border-radius:999px; padding:6px 14px; font-size:14px; font-weight:800; cursor:pointer; font-family:'Noto Sans KR', sans-serif; transition:border-color .15s; }
+    box-shadow:0 0 26px var(--pink), 0 0 60px rgba(208,71,143,0.45); }
+  .mute-btn{ width:36px; height:36px; border-radius:50%; border:1px solid var(--line); background:rgba(30,41,59,0.05); display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:15px; }
+  .home-btn{ border:1px solid var(--line); background:rgba(30,41,59,0.05); color:var(--cream); border-radius:999px; padding:6px 14px; font-size:14px; font-weight:800; cursor:pointer; font-family:'Noto Sans KR', sans-serif; transition:border-color .15s; }
   .home-btn:hover{ border-color:var(--pink); }
   .hs-pill{ font-size:12px; font-weight:800; letter-spacing:.08em; padding:8px 14px; border-radius:999px; border:1px solid rgba(255,207,92,.35); background:rgba(255,207,92,0.08); color:var(--gold); display:flex; align-items:center; gap:6px; white-space:nowrap; }
   .hs-pill b{ color:var(--gold); }
-  .timer-pill{ font-size:12px; font-weight:800; letter-spacing:.06em; padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:rgba(243,236,225,0.05); color:var(--cream); display:flex; align-items:center; gap:5px; white-space:nowrap; }
+  .timer-pill{ font-size:12px; font-weight:800; letter-spacing:.06em; padding:8px 12px; border-radius:999px; border:1px solid var(--line); background:rgba(30,41,59,0.05); color:var(--cream); display:flex; align-items:center; gap:5px; white-space:nowrap; }
   .timer-pill b{ color:var(--cream); font-variant-numeric:tabular-nums; }
-  .timer-pill.low{ border-color:var(--pink); color:var(--pink); background:rgba(255,47,110,0.12); }
+  .timer-pill.low{ border-color:var(--pink); color:var(--pink); background:rgba(208,71,143,0.12); }
   .timer-pill.low b{ color:var(--pink); animation: timerblink 1s infinite; }
   @keyframes timerblink{ 50%{ opacity:.4; } }
 
   .arena{ position:relative; flex:1; margin: 0 18px 18px; border-radius: 20px; overflow:hidden;
-    background: linear-gradient(180deg, #241a35 0%, #180f24 38%, #0e0a17 100%); border: 1px solid var(--line); }
+    background: linear-gradient(180deg, #bfe6ff 0%, #e0f5ff 22%, #d9f99d 30%, #a7f3a0 62%, #86efac 100%); border: 1px solid var(--line); }
   .sky-glow{ position:absolute; top:-40%; left:50%; transform:translateX(-50%); width:140%; height:80%;
-    background: radial-gradient(closest-side, rgba(255,47,110,0.18), transparent 70%); pointer-events:none; }
+    background: radial-gradient(closest-side, rgba(253,224,71,0.35), transparent 70%); pointer-events:none; }
 
   /* Doll — head rotates independently on its own 3D axis */
   .doll-wrap{ position:absolute; top:2%; left:50%; transform:translateX(-50%); width: 120px; height:190px; z-index:4; }
   /* Đường chạy ngoằn nghèo (vẽ bằng SVG, tự khớp vị trí người chơi) */
   .road-path{ position:absolute; inset:0; width:100%; height:100%; z-index:1; pointer-events:none; }
   .road-path polyline{
-    fill:none; stroke: #8b7bb0; stroke-width: 2.6; stroke-linecap:round; stroke-linejoin:round;
-    opacity: 0.55; filter: drop-shadow(0 0 6px rgba(255,47,110,0.25));
+    fill:none; stroke: #c99a5b; stroke-width: 3.2; stroke-linecap:round; stroke-linejoin:round;
+    opacity: 0.9; filter: drop-shadow(0 1px 0 rgba(120,80,30,0.25));
   }
   .doll-glow{ position:absolute; left:50%; top:-16px; transform:translateX(-50%); width:170px; height:170px; border-radius:50%;
-    background: radial-gradient(closest-side, rgba(255,47,110,0.5), transparent 70%); opacity:0; transition: opacity .3s ease; pointer-events:none; }
+    background: radial-gradient(closest-side, rgba(208,71,143,0.5), transparent 70%); opacity:0; transition: opacity .3s ease; pointer-events:none; }
   .doll-glow.active{ opacity:1; }
 
   .doll-body{ position:relative; width:100%; height:100%; }
@@ -151,29 +152,42 @@
   .doll-face.back{ transform: rotateY(180deg); }
   .doll-face img{ width:100%; height:100%; object-fit:contain; display:block; }
 
-  .muzzle-flash{ position:absolute; left:50%; top:34%; transform:translate(-50%,-50%) scale(0);
+  .muzzle-flash{ display:none !important; position:absolute; left:50%; top:34%; transform:translate(-50%,-50%) scale(0);
     width:36px; height:36px; border-radius:50%;
     background: radial-gradient(circle, #fff 0%, var(--gold) 35%, transparent 70%);
     pointer-events:none; z-index:6; opacity:0; }
   .muzzle-flash.fire{ animation: muzzle .28s ease-out; }
   @keyframes muzzle{ 0%{ opacity:1; transform:translate(-50%,-50%) scale(.2);} 60%{opacity:1; transform:translate(-50%,-50%) scale(1.5);} 100%{opacity:0; transform:translate(-50%,-50%) scale(1.8);} }
 
-  .laser{ position:absolute; height:3px; transform-origin:left center;
-    background: linear-gradient(90deg, rgba(255,47,110,0.05), #ff2f6e 25%, #fff 50%, #ff2f6e 75%, rgba(255,47,110,0.05));
-    box-shadow:0 0 14px rgba(255,47,110,.95); border-radius:2px; opacity:0; z-index:6; pointer-events:none; }
+  /* "Ánh mắt" của búp bê khi nhìn thấy người chơi đang chạy (vệt sáng vàng nhạt, không phải tia bắn) */
+  .laser{ position:absolute; height:16px; transform-origin:left center;
+    background: linear-gradient(90deg, rgba(253,224,71,0.0), rgba(253,224,71,0.55) 30%, rgba(255,255,255,0.75) 60%, rgba(253,224,71,0.25));
+    border-radius:10px; opacity:0; z-index:6; pointer-events:none; filter: blur(1px); }
   .laser.fire{ animation: laserflash .3s ease-out; }
   @keyframes laserflash{ 0%{opacity:1;} 75%{opacity:1;} 100%{opacity:0;} }
-  .blood-particle{ position:absolute; width:7px; height:7px; border-radius:50%; background:#c2263f;
-    box-shadow:0 0 6px rgba(194,38,63,.85); pointer-events:none; z-index:7; }
+  /* Sao chóng mặt quanh người chơi khi bị bắt gặp */
+  .dizzy-star{ position:absolute; font-size:14px; line-height:1; color:#f59e0b; text-shadow:0 0 6px rgba(253,224,71,.9);
+    pointer-events:none; z-index:7; transform:translate(-50%,-50%); }
 
   .impact-burst{ position:absolute; width:70px; height:70px; border-radius:50%; pointer-events:none; z-index:6;
-    background: radial-gradient(circle, rgba(255,47,110,0.9), rgba(255,47,110,0) 70%);
+    background: radial-gradient(circle, rgba(253,224,71,0.85), rgba(253,224,71,0) 70%);
     transform: translate(-50%,-50%) scale(0); opacity:0; }
   .impact-burst.burst{ animation: burst .4s ease-out; }
   @keyframes burst{ 0%{ opacity:1; transform:translate(-50%,-50%) scale(.2);} 100%{opacity:0; transform:translate(-50%,-50%) scale(2.2);} }
 
+  .chant{ position:absolute; top:calc(2% + 196px); left:50%; transform:translateX(-50%); z-index:5; white-space:nowrap;
+    font-family:'Noto Sans KR', sans-serif; font-weight:900; font-size:clamp(16px, 3.4vw, 22px); letter-spacing:.04em;
+    padding:6px 14px; border-radius:999px; background:rgba(255,255,255,.85); box-shadow:0 6px 16px -8px rgba(15,23,42,.35);
+    opacity:0; transition:opacity .2s; pointer-events:none; }
+  .chant.show{ opacity:1; }
+  .chant span{ color:rgba(30,41,59,.25); transition:color .12s, transform .12s; display:inline-block; }
+  .chant span.on{ color:var(--pink); transform:translateY(-2px); }
+  /* Trình phát YouTube của nhạc gọi: góc dưới bên trái sân, 200×200 (mức tối thiểu YouTube yêu cầu) */
+  .yt-call{ position:absolute; left:10px; bottom:10px; width:200px; height:200px; z-index:5; border-radius:14px; overflow:hidden;
+    background:#000; box-shadow:0 10px 24px -10px rgba(15,23,42,.5); border:2px solid #fff; }
+  .yt-call iframe{ width:200px; height:200px; display:block; border:0; }
   .track{ position:absolute; left:0; right:0; bottom:0; height:60%;
-    background: repeating-linear-gradient(180deg, rgba(243,236,225,0.035) 0 2px, transparent 2px 34px); }
+    background: repeating-linear-gradient(180deg, rgba(30,41,59,0.035) 0 2px, transparent 2px 34px); }
 
   .scenery{ position:absolute; inset:0; pointer-events:none; z-index:1; }
   .scenery svg{ position:absolute; width:44px; height:auto; opacity:0.65; filter: saturate(0.8); }
@@ -182,7 +196,7 @@
   .scenery svg.lamp{ width:28px; }
   .scenery svg.banner{ width:40px; }
   .finish-line{ position:absolute; top:24%; left:8%; right:8%; height:10px;
-    background: repeating-linear-gradient(90deg, var(--gold) 0 14px, #1a1424 14px 28px); border-radius:4px; box-shadow:0 0 18px rgba(255,207,92,.35); }
+    background: repeating-linear-gradient(90deg, #ef4444 0 14px, #ffffff 14px 28px); border-radius:4px; box-shadow:0 0 18px rgba(255,207,92,.35); }
   .finish-label{ position:absolute; top:calc(24% - 22px); left:8%; font-size:10px; letter-spacing:.16em; color:var(--gold); font-weight:700; }
 
   .runner{ position:absolute; left:50%; bottom:10%; width:56px; height:88px; transform: translate(-50%, 0); transition: bottom .08s linear, left .08s linear; z-index:3; }
@@ -191,12 +205,12 @@
   .runner.hit{ animation: hitshake .35s ease; }
   @keyframes hitshake{ 0%,100%{transform:translate(-50%,0) rotate(0);} 25%{transform:translate(-56%,0) rotate(-8deg);} 75%{transform:translate(-44%,0) rotate(8deg);} }
 
-  .progress-track{ position:absolute; right:14px; top:8%; bottom:20%; width:6px; background:rgba(243,236,225,0.08); border-radius:4px; }
+  .progress-track{ position:absolute; right:14px; top:8%; bottom:20%; width:6px; background:rgba(30,41,59,0.08); border-radius:4px; }
   .progress-fill{ position:absolute; bottom:0; left:0; width:100%; background: linear-gradient(180deg, var(--green), var(--gold)); border-radius:4px; height:0%; transition: height .1s linear; }
   .progress-pct{ position:absolute; top:-22px; left:50%; transform:translateX(-50%); font-size:11px; font-weight:800; color:var(--gold); text-shadow:0 0 6px rgba(0,0,0,.7); white-space:nowrap; font-variant-numeric:tabular-nums; }
 
   .call-out{ position:absolute; top:16px; left:50%; transform:translateX(-50%); font-family:'Noto Serif KR', serif; font-weight:800;
-    font-size: clamp(13px, 2.4vw, 18px); color: var(--cream); background: rgba(13,13,22,0.55); padding:8px 16px; border-radius:999px;
+    font-size: clamp(13px, 2.4vw, 18px); color: var(--cream); background: rgba(255,255,255,0.55); padding:8px 16px; border-radius:999px;
     border:1px solid var(--line); opacity:0; transition: opacity .25s ease; white-space:nowrap; z-index:6; letter-spacing:.02em; }
   .call-out.show{ opacity:1; }
 
@@ -204,71 +218,71 @@
 
   .pad-wrap{ position:absolute; right:22px; bottom:22px; z-index:7; display:flex; flex-direction:column; align-items:center; gap:6px; }
   .pad-wrap, .pad-label, .footpad{ user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
-  .pad-label{ font-size:10px; letter-spacing:.14em; color:rgba(243,236,225,0.65); text-transform:uppercase;}
-  .footpad{ width:92px; height:92px; border-radius:50%; background: radial-gradient(closest-side, #2a2038, #16101f);
+  .pad-label{ font-size:10px; letter-spacing:.14em; color:rgba(30,41,59,0.65); text-transform:uppercase;}
+  .footpad{ width:92px; height:92px; border-radius:50%; background: radial-gradient(closest-side, #ffffff, #fde7f3);
     border: 2px solid var(--pink-dim); display:flex; align-items:center; justify-content:center; cursor:pointer;
     box-shadow: 0 10px 26px -8px rgba(0,0,0,.6); transition: transform .08s ease, border-color .15s ease, box-shadow .15s ease; }
   .footpad svg{ width:42px; height:42px; opacity:.9; }
-  .footpad.active{ transform: scale(.94); border-color: var(--green); box-shadow: 0 0 0 8px rgba(36,230,160,0.12), 0 10px 26px -8px rgba(0,0,0,.6); }
+  .footpad.active{ transform: scale(.94); border-color: var(--green); box-shadow: 0 0 0 8px rgba(22,163,74,0.12), 0 10px 26px -8px rgba(0,0,0,.6); }
 
-  .quiz-modal{ position:absolute; inset:0; z-index:10; background: rgba(8,7,12,0.86); backdrop-filter: blur(2px);
+  .quiz-modal{ position:absolute; inset:0; z-index:10; background: rgba(15,23,42,0.45); backdrop-filter: blur(2px);
     display:flex; align-items:center; justify-content:center; padding:20px; opacity:0; pointer-events:none; transition: opacity .25s ease; }
   .quiz-modal.show{ opacity:1; pointer-events:all; }
   .quiz-card{ background: var(--bg-2); border:1px solid var(--line); border-radius:18px; padding:26px 24px; width:100%; max-width:540px; max-height:88vh; overflow-y:auto; text-align:left; }
   .quiz-eyebrow{ font-size:11px; letter-spacing:.16em; color:var(--gold); font-weight:700; text-transform:uppercase; margin-bottom:10px;}
-  .quiz-req{ display:none; font-family:'Noto Sans KR', sans-serif; font-size:13px; font-weight:700; color:#ffb3c4;
-    background: rgba(255,47,110,0.12); border:1px solid rgba(255,47,110,0.4); border-radius:10px; padding:9px 13px;
+  .quiz-req{ display:none; font-family:'Noto Sans KR', sans-serif; font-size:13px; font-weight:700; color:#9d174d;
+    background: rgba(208,71,143,0.12); border:1px solid rgba(208,71,143,0.4); border-radius:10px; padding:9px 13px;
     margin-bottom:14px; line-height:1.6; letter-spacing:0.01em; }
   .quiz-q{ font-family:'Noto Sans KR', sans-serif; font-size:16px; font-weight:600; line-height:1.75; margin:0 0 10px; color:var(--cream); white-space:pre-wrap; word-break:break-word; max-height:40vh; overflow-y:auto; letter-spacing:0.01em; }
-  .quiz-hint{ font-size:12px; color:rgba(243,236,225,0.55); margin-bottom:16px;}
+  .quiz-hint{ font-size:12px; color:rgba(30,41,59,0.55); margin-bottom:16px;}
   .quiz-options{ display:flex; flex-direction:column; gap:10px; }
-  .opt{ text-align:left; padding:12px 14px; border-radius:12px; border:1px solid var(--line); background: rgba(243,236,225,0.03);
+  .opt{ text-align:left; padding:12px 14px; border-radius:12px; border:1px solid var(--line); background: rgba(30,41,59,0.03);
     color:var(--cream); font-size:15px; line-height:1.55; cursor:pointer; font-family:'Noto Sans KR', sans-serif; transition: border-color .12s ease, background .12s ease; }
-  .opt.correct{ border-color: var(--green); background: rgba(36,230,160,0.14); }
-  .opt.wrong{ border-color: var(--pink); background: rgba(255,47,110,0.14); }
+  .opt.correct{ border-color: var(--green); background: rgba(22,163,74,0.14); }
+  .opt.wrong{ border-color: var(--pink); background: rgba(208,71,143,0.14); }
 
-  .caught-banner{ position:absolute; inset:0; z-index:9; background: rgba(255,47,110,0.12); display:flex; align-items:center; justify-content:center;
+  .caught-banner{ position:absolute; inset:0; z-index:9; background: rgba(208,71,143,0.12); display:flex; align-items:center; justify-content:center;
     opacity:0; pointer-events:none; transition:opacity .15s ease; }
   .caught-banner.show{ opacity:1; }
   .caught-text{ font-family:'Noto Serif KR', serif; font-weight:800; font-size:15px; letter-spacing:.1em; color:var(--pink);
-    background: rgba(13,13,22,0.7); padding:10px 22px; border-radius:999px; border:1px solid var(--pink-dim); }
+    background: rgba(255,255,255,0.7); padding:10px 22px; border-radius:999px; border:1px solid var(--pink-dim); }
 
   .result-stats{ display:flex; gap:14px; justify-content:center; margin: 18px 0 28px; flex-wrap:wrap;}
-  .stat{ background: rgba(243,236,225,0.05); border:1px solid var(--line); border-radius:14px; padding:12px 18px; min-width:110px;}
+  .stat{ background: rgba(30,41,59,0.05); border:1px solid var(--line); border-radius:14px; padding:12px 18px; min-width:110px;}
   .stat .n{ font-size:24px; font-weight:800; color:var(--gold); font-family:'Noto Serif KR', serif;}
-  .stat .l{ font-size:11px; color:rgba(243,236,225,0.6); letter-spacing:.08em; text-transform:uppercase; margin-top:2px;}
+  .stat .l{ font-size:11px; color:rgba(30,41,59,0.6); letter-spacing:.08em; text-transform:uppercase; margin-top:2px;}
 
-  .asset-note{ font-size:11px; color:rgba(243,236,225,0.4); max-width:480px; margin-top:6px; }
+  .asset-note{ font-size:11px; color:rgba(30,41,59,0.4); max-width:480px; margin-top:6px; }
 
   /* ---------- Difficulty select ---------- */
   #screen-diff{ justify-content:flex-start; padding:26px 20px 34px; overflow-y:auto; }
-  #diff-tabs{ position:sticky; top:0; z-index:6; width:100%; display:flex; justify-content:center; gap:10px; padding:8px 0 14px; background: rgba(13,13,22,0.92); backdrop-filter:blur(8px); margin-bottom:6px; }
-  .diff-tab{ font-family:'Noto Sans KR', sans-serif; font-weight:700; font-size:14px; color:rgba(243,236,225,0.6); background:rgba(243,236,225,0.05); border:1.5px solid var(--line); padding:9px 20px; border-radius:999px; cursor:pointer; transition:all .15s; }
-  .diff-tab.active{ color:#fff; border-color:var(--pink); background:rgba(255,47,110,0.14); }
+  #diff-tabs{ position:sticky; top:0; z-index:6; width:100%; display:flex; justify-content:center; gap:10px; padding:8px 0 14px; background: rgba(255,255,255,0.92); backdrop-filter:blur(8px); margin-bottom:6px; }
+  .diff-tab{ font-family:'Noto Sans KR', sans-serif; font-weight:700; font-size:14px; color:rgba(30,41,59,0.6); background:rgba(30,41,59,0.05); border:1.5px solid var(--line); padding:9px 20px; border-radius:999px; cursor:pointer; transition:all .15s; }
+  .diff-tab.active{ color:#fff; border-color:var(--pink); background:rgba(208,71,143,0.14); }
   #diff-play{ display:flex; flex-direction:column; align-items:center; text-align:center; }
   .diff-grid{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin: 6px 0 26px; }
-  .diff-card{ width:170px; padding:20px 14px; border-radius:16px; background:rgba(243,236,225,0.04); border:2px solid var(--line); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition: border-color .15s, transform .15s, background .15s; font-family:'Noto Sans KR', sans-serif; }
+  .diff-card{ width:170px; padding:20px 14px; border-radius:16px; background:rgba(30,41,59,0.04); border:2px solid var(--line); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px; transition: border-color .15s, transform .15s, background .15s; font-family:'Noto Sans KR', sans-serif; }
   .diff-card:hover{ transform: translateY(-2px); }
-  .diff-card.selected{ border-color: var(--pink); background: rgba(255,47,110,0.1); }
+  .diff-card.selected{ border-color: var(--pink); background: rgba(208,71,143,0.1); }
   .dc-emoji{ font-size:34px; }
   .dc-name{ font-size:16px; font-weight:800; color:var(--cream); }
-  .dc-sub{ font-size:11px; color:rgba(243,236,225,0.55); }
+  .dc-sub{ font-size:11px; color:rgba(30,41,59,0.55); }
   #diff-lb{ width:100%; max-width:440px; text-align:left; }
   #diff-lb.hidden, #diff-play.hidden{ display:none; }
   .lb-title-game{ font-weight:800; font-size:20px; color:var(--gold); letter-spacing:1px; text-align:center; }
-  .lb-subtitle-game{ font-size:12px; color:rgba(243,236,225,0.6); font-weight:700; text-align:center; margin:2px 0 14px; }
-  .lb-row-game{ display:flex; align-items:center; gap:10px; padding:9px 12px; background:rgba(243,236,225,0.05); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
+  .lb-subtitle-game{ font-size:12px; color:rgba(30,41,59,0.6); font-weight:700; text-align:center; margin:2px 0 14px; }
+  .lb-row-game{ display:flex; align-items:center; gap:10px; padding:9px 12px; background:rgba(30,41,59,0.05); border:1px solid var(--line); border-radius:10px; margin-bottom:6px; cursor:pointer; transition:all .15s; }
   .lb-row-game:hover{ border-color:var(--green); }
-  .lb-row-game.me{ border-color:var(--green); background:rgba(36,230,160,0.07); }
+  .lb-row-game.me{ border-color:var(--green); background:rgba(22,163,74,0.07); }
   .lb-rk{ width:28px; text-align:center; font-weight:900; color:var(--gold); flex-shrink:0; font-size:14px; }
-  .lb-av{ font-size:1.4em; width:38px; height:38px; display:flex; align-items:center; justify-content:center; background:rgba(243,236,225,0.08); border-radius:50%; flex-shrink:0; }
+  .lb-av{ font-size:1.4em; width:38px; height:38px; display:flex; align-items:center; justify-content:center; background:rgba(30,41,59,0.08); border-radius:50%; flex-shrink:0; }
   .lb-nm{ flex:1; min-width:0; }
   .lb-name-game{ font-weight:800; font-size:14px; color:var(--cream); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .lb-title-game-sub{ font-size:11px; color:var(--gold); font-weight:700; }
   .lb-exp{ font-weight:900; color:var(--green); font-size:14px; flex-shrink:0; }
-  .lb-me-game{ display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(36,230,160,0.08); border:2px solid var(--green); border-radius:12px; margin-top:10px; cursor:pointer; transition:all .15s; }
-  .lb-me-game:hover{ box-shadow:0 0 16px rgba(36,230,160,0.35); }
-  .lb-note-game{ margin-top:10px; color:rgba(243,236,225,0.6); font-size:13px; font-weight:600; text-align:center; }
+  .lb-me-game{ display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(22,163,74,0.08); border:2px solid var(--green); border-radius:12px; margin-top:10px; cursor:pointer; transition:all .15s; }
+  .lb-me-game:hover{ box-shadow:0 0 16px rgba(22,163,74,0.35); }
+  .lb-note-game{ margin-top:10px; color:rgba(30,41,59,0.6); font-size:13px; font-weight:600; text-align:center; }
 
   @media (max-width:600px){
     .char-grid{ grid-template-columns: repeat(2, 1fr); }
@@ -294,7 +308,7 @@
     <p class="sub">Lấy cảm hứng từ trò chơi dân gian Hàn Quốc "Đèn đỏ, đèn xanh". Giữ bàn chân để tiến lên khi búp bê quay lưng, buông tay và đứng yên khi búp bê quay đầu lại — rồi trả lời đúng câu hỏi tiếng Hàn để được đi tiếp.</p>
     <div class="rules">
       <div class="rule-card"><div class="num">BƯỚC 1</div><p>Búp bê quay lưng &amp; đèn xanh sáng — giữ nút bàn chân để chạy tới vạch đích.</p></div>
-      <div class="rule-card"><div class="num">BƯỚC 2</div><p>Búp bê quay đầu lại — buông tay ngay, nếu không sẽ bị bắn.</p></div>
+      <div class="rule-card"><div class="num">BƯỚC 2</div><p>Búp bê quay đầu lại — buông tay ngay, nếu không sẽ bị bắt gặp.</p></div>
       <div class="rule-card"><div class="num">BƯỚC 3</div><p>Trả lời đúng câu hỏi tiếng Hàn để được chơi tiếp vòng sau.</p></div>
     </div>
     <button class="btn" id="btn-goto-select">계속 · Tiếp tục</button>
@@ -303,7 +317,7 @@
   <!-- CHARACTER SELECT -->
   <section class="screen hidden" id="screen-select">
     <div class="eyebrow">Chọn nhân vật</div>
-    <h1 class="title" style="font-size:clamp(24px,4.5vw,36px)">참가자를 <span class="accent">선택하세요</span></h1>
+    <h1 class="title" style="font-size:clamp(24px,4.5vw,36px)">친구를 <span class="accent">선택하세요</span></h1>
     <p class="sub">Chọn một người chơi để bước vào sân — hoặc tạo nhân vật của riêng bạn.</p>
     <div class="char-grid" id="char-grid"></div>
     <div class="custom-wrap" id="custom-wrap">
@@ -364,37 +378,49 @@
         <div class="doll-body">
           <div class="doll-dress">
             <svg viewBox="0 0 100 110" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14 110 L26 20 L74 20 L86 110 Z" fill="#ff2f6e"/>
-              <path d="M14 110 L26 20 L50 20 L42 110 Z" fill="#ff5384"/>
-              <rect x="18" y="16" width="64" height="10" rx="5" fill="#ffcf5c"/>
-              <circle cx="50" cy="21" r="7" fill="#f3ece1"/>
+              <!-- chima (váy) -->
+              <path d="M16 110 Q20 60 30 32 L70 32 Q80 60 84 110 Z" fill="#a8327a"/>
+              <path d="M30 32 Q24 70 22 110 L40 110 Q38 70 42 32Z" fill="#c2418f" opacity=".9"/>
+              <path d="M30 34 L70 34" stroke="#f3c3dc" stroke-width="3"/>
+              <!-- jeogori (áo) + ống tay áo sắc màu (saekdong) -->
+              <path d="M26 14 Q50 6 74 14 L76 34 L24 34 Z" fill="#fde68a"/>
+              <path d="M26 15 L12 34 L22 38 L30 24Z" fill="#fde68a"/><path d="M15 30 L12 34 L22 38 L24 34Z" fill="#60a5fa"/>
+              <path d="M74 15 L88 34 L78 38 L70 24Z" fill="#fde68a"/><path d="M85 30 L88 34 L78 38 L76 34Z" fill="#f87171"/>
+              <path d="M44 13 L52 26 L58 13" stroke="#ffffff" stroke-width="3" fill="none" stroke-linejoin="round"/>
+              <!-- goreum (nơ áo) -->
+              <path d="M52 26 Q56 38 52 52" stroke="#dc2626" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+              <path d="M52 26 Q60 36 60 48" stroke="#dc2626" stroke-width="3.4" fill="none" stroke-linecap="round"/>
+              <circle cx="52" cy="26" r="3" fill="#dc2626"/>
+              <!-- tay cầm hoa mugunghwa -->
+              <circle cx="82" cy="40" r="4" fill="#fde2c8"/>
+              <g transform="translate(84 30)"><ellipse cx="0" cy="-6.82" rx="4.95" ry="6.82" fill="#f0a6d0" transform="rotate(0)"/><ellipse cx="0" cy="-6.82" rx="4.95" ry="6.82" fill="#f0a6d0" transform="rotate(72)"/><ellipse cx="0" cy="-6.82" rx="4.95" ry="6.82" fill="#f0a6d0" transform="rotate(144)"/><ellipse cx="0" cy="-6.82" rx="4.95" ry="6.82" fill="#f0a6d0" transform="rotate(216)"/><ellipse cx="0" cy="-6.82" rx="4.95" ry="6.82" fill="#f0a6d0" transform="rotate(288)"/><circle r="3.52" fill="#b5174f"/><circle r="1.3199999999999998" fill="#fde047"/></g>
             </svg>
           </div>
           <div class="doll-head-anchor">
             <div class="doll-head" id="doll-head">
               <div class="doll-face front" id="doll-face-front">
                 <svg viewBox="0 0 88 96" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14 30 C14 6 74 6 74 30 C74 30 76 60 68 74 C60 88 28 88 20 74 C12 60 14 30 14 30 Z" fill="#f3ece1"/>
-                  <path d="M12 26 C12 6 76 6 76 26 C76 14 12 14 12 26Z" fill="#241a2d"/>
-                  <path d="M8 30 C4 34 4 52 10 58 C13 60 15 56 14 50 C12 42 12 34 8 30Z" fill="#241a2d"/>
-                  <path d="M80 30 C84 34 84 52 78 58 C75 60 73 56 74 50 C76 42 76 34 80 30Z" fill="#241a2d"/>
-                  <circle cx="32" cy="42" r="3.6" fill="#0d0d16"/>
-                  <circle cx="56" cy="42" r="3.6" fill="#0d0d16"/>
-                  <circle cx="26" cy="50" r="4.5" fill="#ff9db6" opacity="0.65"/>
-                  <circle cx="62" cy="50" r="4.5" fill="#ff9db6" opacity="0.65"/>
-                  <path d="M32 60 Q44 67 56 60" stroke="#c22a52" stroke-width="3.2" fill="none" stroke-linecap="round"/>
-                  <rect x="20" y="8" width="48" height="8" rx="4" fill="#ffcf5c"/>
+                  <!-- mặt trước: cô bé cười, tóc rẽ ngôi giữa, cài hoa mugunghwa -->
+                  <path d="M10 36 C10 8 78 8 78 36 C78 52 74 72 62 82 C52 90 36 90 26 82 C14 72 10 52 10 36Z" fill="#3f2a1e"/>
+                  <ellipse cx="44" cy="50" rx="27" ry="30" fill="#fde2c8"/>
+                  <path d="M17 44 C17 18 71 18 71 44 C66 30 56 26 44 30 C32 26 22 30 17 44Z" fill="#3f2a1e"/>
+                  <path d="M44 22 L44 30" stroke="#2b1c13" stroke-width="1.6"/>
+                  <path d="M30 50 Q34 46 38 50" stroke="#1e293b" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                  <path d="M50 50 Q54 46 58 50" stroke="#1e293b" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                  <circle cx="28" cy="60" r="4.6" fill="#f9a8d4" opacity=".7"/>
+                  <circle cx="60" cy="60" r="4.6" fill="#f9a8d4" opacity=".7"/>
+                  <path d="M37 64 Q44 71 51 64" stroke="#be123c" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+                  <g transform="translate(68 26)"><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(0)"/><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(72)"/><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(144)"/><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(216)"/><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(288)"/><circle r="2.88" fill="#b5174f"/><circle r="1.08" fill="#fde047"/></g>
                 </svg>
               </div>
               <div class="doll-face back" id="doll-face-back">
                 <svg viewBox="0 0 88 96" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M14 30 C14 6 74 6 74 30 C74 46 72 58 60 66 L44 70 L28 66 C16 58 14 46 14 30Z" fill="#241a2d"/>
-                  <path d="M20 34 Q44 40 68 34" stroke="#3a2c46" stroke-width="3" fill="none" opacity=".6"/>
-                  <path d="M20 44 Q44 50 68 44" stroke="#3a2c46" stroke-width="3" fill="none" opacity=".6"/>
-                  <path d="M20 54 Q44 60 68 54" stroke="#3a2c46" stroke-width="3" fill="none" opacity=".6"/>
-                  <rect x="20" y="8" width="48" height="8" rx="4" fill="#e0b04a"/>
-                  <circle cx="18" cy="70" r="6" fill="#e0b04a"/>
-                  <circle cx="70" cy="70" r="6" fill="#e0b04a"/>
+                  <!-- mặt sau: mái tóc + một bím tết dài buộc nơ đỏ (댕기) -->
+                  <path d="M12 38 C12 8 76 8 76 38 C76 58 70 72 58 78 L30 78 C18 72 12 58 12 38Z" fill="#3f2a1e"/>
+                  <path d="M44 12 L44 74" stroke="#2b1c13" stroke-width="1.6" opacity=".7"/>
+                  <path d="M40 74 Q44 80 48 74 Q44 86 40 92 Q44 98 48 92 Q44 86 48 74" fill="#3f2a1e" stroke="#2b1c13" stroke-width="1"/>
+                  <path d="M36 92 L44 88 L52 92 L48 96 L44 93 L40 96Z" fill="#dc2626"/>
+                  <g transform="translate(22 26)"><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(0)"/><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(72)"/><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(144)"/><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(216)"/><ellipse cx="0" cy="-5.58" rx="4.05" ry="5.58" fill="#f0a6d0" transform="rotate(288)"/><circle r="2.88" fill="#b5174f"/><circle r="1.08" fill="#fde047"/></g>
                 </svg>
               </div>
             </div>
@@ -403,19 +429,20 @@
         </div>
       </div>
 
+      <div class="yt-call hidden" id="yt-call" title="♪ 콩순이 동요 · 무궁화 꽃이 피었습니다"><div id="yt-call-player"></div></div>
       <div class="finish-line"></div>
       <div class="finish-label">결승선 · ĐÍCH</div>
       <div class="progress-track"><div class="progress-fill" id="progress-fill"></div><div class="progress-pct" id="progress-pct">0%</div></div>
       <div class="track"></div>
 
       <div class="scenery" aria-hidden="true">
-        <svg class="tree left" style="top:30%" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="34" width="6" height="26" fill="#4a3350"/><circle cx="20" cy="26" r="17" fill="#3d7a5c"/><circle cx="10" cy="34" r="11" fill="#33684e"/><circle cx="30" cy="34" r="11" fill="#33684e"/></svg>
+        <svg class="tree left" style="top:30%" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="34" width="6" height="26" fill="#a16207"/><circle cx="20" cy="26" r="17" fill="#22c55e"/><circle cx="10" cy="34" r="11" fill="#16a34a"/><circle cx="30" cy="34" r="11" fill="#16a34a"/></svg>
         <svg class="lamp right" style="top:38%" viewBox="0 0 30 70" xmlns="http://www.w3.org/2000/svg"><rect x="13" y="14" width="4" height="56" fill="#3a2c46"/><circle cx="15" cy="10" r="10" fill="#ffcf5c" opacity="0.9"/><circle cx="15" cy="10" r="16" fill="#ffcf5c" opacity="0.18"/></svg>
-        <svg class="tree right" style="top:50%" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="34" width="6" height="26" fill="#4a3350"/><circle cx="20" cy="26" r="17" fill="#3d7a5c"/><circle cx="10" cy="34" r="11" fill="#33684e"/><circle cx="30" cy="34" r="11" fill="#33684e"/></svg>
-        <svg class="banner left" style="top:60%" viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="4" width="6" height="56" fill="#3a2c46"/><path d="M28 8 L48 14 L28 20 Z" fill="#ff2f6e"/></svg>
+        <svg class="tree right" style="top:50%" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="34" width="6" height="26" fill="#a16207"/><circle cx="20" cy="26" r="17" fill="#22c55e"/><circle cx="10" cy="34" r="11" fill="#16a34a"/><circle cx="30" cy="34" r="11" fill="#16a34a"/></svg>
+        <svg class="banner left" style="top:60%" viewBox="0 0 50 60" xmlns="http://www.w3.org/2000/svg"><rect x="22" y="4" width="6" height="56" fill="#3a2c46"/><path d="M28 8 L48 14 L28 20 Z" fill="#d0478f"/></svg>
         <svg class="lamp left" style="top:70%" viewBox="0 0 30 70" xmlns="http://www.w3.org/2000/svg"><rect x="13" y="14" width="4" height="56" fill="#3a2c46"/><circle cx="15" cy="10" r="10" fill="#ffcf5c" opacity="0.9"/><circle cx="15" cy="10" r="16" fill="#ffcf5c" opacity="0.18"/></svg>
-        <svg class="tree left" style="top:82%" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="34" width="6" height="26" fill="#4a3350"/><circle cx="20" cy="26" r="17" fill="#3d7a5c"/><circle cx="10" cy="34" r="11" fill="#33684e"/><circle cx="30" cy="34" r="11" fill="#33684e"/></svg>
-        <svg class="tree right" style="top:90%" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="34" width="6" height="26" fill="#4a3350"/><circle cx="20" cy="26" r="17" fill="#3d7a5c"/><circle cx="10" cy="34" r="11" fill="#33684e"/><circle cx="30" cy="34" r="11" fill="#33684e"/></svg>
+        <svg class="tree left" style="top:82%" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="34" width="6" height="26" fill="#a16207"/><circle cx="20" cy="26" r="17" fill="#22c55e"/><circle cx="10" cy="34" r="11" fill="#16a34a"/><circle cx="30" cy="34" r="11" fill="#16a34a"/></svg>
+        <svg class="tree right" style="top:90%" viewBox="0 0 40 60" xmlns="http://www.w3.org/2000/svg"><rect x="17" y="34" width="6" height="26" fill="#a16207"/><circle cx="20" cy="26" r="17" fill="#22c55e"/><circle cx="10" cy="34" r="11" fill="#16a34a"/><circle cx="30" cy="34" r="11" fill="#16a34a"/></svg>
       </div>
 
       <div class="runner" id="runner"></div>
@@ -428,7 +455,7 @@
       <div class="pad-wrap">
         <div class="pad-label">발판 · Giữ khi búp bê hát</div>
         <div class="footpad" id="footpad">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="#f3ece1">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" fill="#d0478f">
             <ellipse cx="32" cy="40" rx="17" ry="22"/>
             <circle cx="13" cy="18" r="5.5"/>
             <circle cx="23" cy="12" r="6"/>
@@ -457,7 +484,7 @@
   <!-- END SCREEN -->
   <section class="screen hidden" id="screen-end">
     <div class="eyebrow" id="end-eyebrow">Trò chơi kết thúc</div>
-    <h1 class="title" id="end-title">탈락</h1>
+    <h1 class="title" id="end-title">아쉬워요!</h1>
     <p class="sub" id="end-sub">Búp bê đã phát hiện ra bạn. Hít một hơi và thử lại nhé!</p>
     <div class="result-stats">
       <div class="stat"><div class="n" id="stat-round">0</div><div class="l">Vòng đã qua</div></div>
@@ -487,17 +514,23 @@
     dollFrontImage: null,
     dollBackImage: null,
     // Nhạc "무궁화 꽃이 피었습니다" do người dùng cung cấp — nhúng thẳng base64 để file luôn tự chứa dữ liệu.
+    // Nhạc gọi: bài đồng dao "[콩순이 쑥쑥동요] 무궁화 꽃이 피었습니다" (kênh 콩순이 Kongsuni) phát qua trình phát
+    // YouTube nhúng chính thức (không tải/tách tiếng). Đèn xanh → nhạc chạy tiếp; đèn đỏ → nhạc dừng.
+    // Nếu biết chính xác đoạn hát câu "무궁화 꽃이 피었습니다" trong video, điền start/end (giây) để mỗi vòng
+    // phát đúng câu đó. Để id = null → dùng file callAudioSrc, hoặc giai điệu tự tạo nếu cả hai đều null.
+    // Đang dùng file giọng hát cũ (callAudioSrc). Muốn phát bài 콩순이 qua YouTube thì đặt id: 'Vq7l8AApMsA'.
+    callYouTube: { id: null, start: null, end: null },
     callAudioSrc: "https://principal-teal-puqhqs9m.edgeone.dev/",
-    // Tiếng súng: KHÔNG dùng file ngoài — được tổng hợp trực tiếp bằng Web Audio API bên dưới (hàm playGunshot).
+    // Tiếng còi: KHÔNG dùng file ngoài — tổng hợp bằng Web Audio API (hàm playGunshot → tiếng còi).
     shotAudioSrc: null,
   };
 
   // Danh sách nhân vật ở màn hình chọn — có thể gắn ảnh riêng qua "image"
   const CHARACTERS = [
-    {id:'p1', name:'참가자 001', tag:'Số báo danh 001', color:'#ff2f6e', image:null},
-    {id:'p2', name:'참가자 067', tag:'Số báo danh 067', color:'#5cc8ff', image:null},
-    {id:'p3', name:'참가자 218', tag:'Số báo danh 218', color:'#ffcf5c', image:null},
-    {id:'p4', name:'참가자 456', tag:'Số báo danh 456', color:'#9c7bff', image:null},
+    {id:'p1', name:'민수', tag:'Minsu · bạn cùng lớp', color:'#3b82f6', image:null},
+    {id:'p2', name:'지아', tag:'Jia · bạn cùng lớp', color:'#f472b6', image:null},
+    {id:'p3', name:'하늘', tag:'Haneul · bạn cùng lớp', color:'#f59e0b', image:null},
+    {id:'p4', name:'서준', tag:'Seojun · bạn cùng lớp', color:'#10b981', image:null},
   ];
   let selectedCharacter = null;
 
@@ -853,14 +886,15 @@
   const shotAudioEl = document.getElementById('shot-audio');
   const arena = document.getElementById('arena');
 
-  const LIFE_DOLL_SVG = `<svg viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="5" r="5" fill="#f3ece1"/><path d="M2 20 L4 8 L12 8 L14 20 Z" fill="#ff2f6e"/></svg>`;
+  const LIFE_DOLL_SVG = `<svg viewBox="0 0 16 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 20 L5 9 L11 9 L14 20 Z" fill="#a8327a"/><rect x="4" y="8" width="8" height="4" rx="2" fill="#fde68a"/><circle cx="8" cy="5" r="4.2" fill="#fde2c8"/><path d="M3.8 5 Q4 0.6 8 0.8 Q12 0.6 12.2 5 Q10 2.6 8 2.8 Q6 2.6 3.8 5Z" fill="#3f2a1e"/></svg>`;
 
   function runnerSvg(color){
     return `<svg viewBox="0 0 34 56" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="17" cy="10" r="8" fill="#f3ece1"/>
+      <circle cx="17" cy="10" r="8" fill="#fde2c8"/>
+      <path d="M9 9 Q9 1 17 1.5 Q25 1 25 9 Q21 5 17 5.5 Q12 5 9 9Z" fill="#3f2a1e"/>
       <rect x="8" y="18" width="18" height="26" rx="6" fill="${color}"/>
-      <rect x="9" y="42" width="7" height="12" rx="3" fill="#241a2d"/>
-      <rect x="18" y="42" width="7" height="12" rx="3" fill="#241a2d"/>
+      <rect x="9" y="42" width="7" height="12" rx="3" fill="#334155"/>
+      <rect x="18" y="42" width="7" height="12" rx="3" fill="#334155"/>
     </svg>`;
   }
 
@@ -873,6 +907,7 @@
       dollFaceBack.innerHTML = `<img src="${ASSETS.dollBackImage}" alt="Búp bê - mặt sau">`;
     }
     if(ASSETS.callAudioSrc){ callAudioEl.src = ASSETS.callAudioSrc; }
+    setTimeout(loadYouTubeCall, 0); // chạy sau khi toàn bộ script đã khai báo xong (YT_CALL…)
     if(ASSETS.shotAudioSrc){ shotAudioEl.src = ASSETS.shotAudioSrc; }
   }
   applyAssets();
@@ -947,29 +982,60 @@
     }catch(e){}
   }
   function playCall(){
-    if(muted) return;
+    if(ytActive()){ ytCallMs = ytPlay(); return; }
     if(ASSETS.callAudioSrc){
-      try{
-        // Nhiều mức tốc độ (0.8x → 2.0x) — chọn ngẫu nhiên mỗi vòng;
-        // rate cao → nhạc chạy nhanh hơn, thời gian búp bê quay mặt ngắn lại.
-        const RATE_POOL = [0.8, 0.9, 1.0, 1.1, 1.2, 1.35, 1.5, 1.65, 1.8, 2.0];
-        lastRate = RATE_POOL[Math.floor(Math.random() * RATE_POOL.length)];
-        callAudioEl.playbackRate = lastRate;
-        callAudioEl.currentTime = 0;
-        callAudioEl.play();
-      }catch(e){}
+      // Nhiều mức tốc độ (0.8x → 2.0x) — chọn ngẫu nhiên mỗi vòng;
+      // rate cao → nhạc chạy nhanh hơn, thời gian búp bê quay mặt ngắn lại.
+      const RATE_POOL = [0.8, 0.9, 1.0, 1.1, 1.2, 1.35, 1.5, 1.65, 1.8, 2.0];
+      lastRate = RATE_POOL[Math.floor(Math.random() * RATE_POOL.length)];
+      if(!muted){
+        try{
+          callAudioEl.playbackRate = lastRate;
+          callAudioEl.currentTime = 0;
+          callAudioEl.play();
+        }catch(e){}
+      }
       return;
     }
-    try{
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance('무궁화 꽃이 피었습니다');
-      u.lang = 'ko-KR';
-      u.rate = 0.95;
-      const voices = window.speechSynthesis.getVoices();
-      const kv = voices.find(v=>v.lang && v.lang.startsWith('ko'));
-      if(kv) u.voice = kv;
-      window.speechSynthesis.speak(u);
-    }catch(e){}
+    playChant();
+  }
+  // Câu đồng dao "무궁화 꽃이 피었습니다": mỗi âm tiết một nốt (ngũ cung), tốc độ ngẫu nhiên mỗi vòng
+  // (nhanh → búp bê quay lại sớm). Chữ sáng dần theo nhịp để người chơi học luôn câu này.
+  const CHANT = ['무','궁','화','꽃','이','피','었','습','니','다'];
+  const CHANT_NOTES = [67, 67, 64, 67, 67, 69, 69, 67, 64, 72];
+  const CHANT_BEATS = [1, 1, 2, 1, 2, 1, 1, 1, 1, 2];
+  let lastChantMs = 0, chantTimers = [];
+  // opts.silent: chỉ cho chữ sáng (đang phát giọng hát thật) · opts.totalMs: trải đều chữ theo độ dài đoạn hát
+  function playChant(opts){
+    opts = opts || {};
+    chantTimers.forEach(clearTimeout); chantTimers = [];
+    if(!opts.keepRate){
+      const RATE_POOL = [0.8, 0.9, 1.0, 1.1, 1.25, 1.4, 1.6, 1.8, 2.0];
+      lastRate = RATE_POOL[Math.floor(Math.random() * RATE_POOL.length)];
+    }
+    const totalBeats = CHANT_BEATS.reduce((a, b) => a + b, 0);
+    const beatMs = opts.totalMs ? (opts.totalMs * 0.92) / totalBeats : 300 / lastRate;
+    const box = document.getElementById('callout');
+    if(box) box.innerHTML = CHANT.map((ch, i) => '<span data-i="' + i + '">' + ch + '</span>' + (i === 2 || i === 4 ? '&nbsp;' : '')).join('');
+    let t = 0;
+    CHANT.forEach((ch, i) => {
+      const at = t;
+      chantTimers.push(setTimeout(() => {
+        if(box){ const sp = box.querySelector('[data-i="' + i + '"]'); if(sp) sp.classList.add('on'); }
+      }, at));
+      if(!muted && !opts.silent){
+        try{
+          const c = ctx(), st = c.currentTime + at / 1000, d = CHANT_BEATS[i] * beatMs / 1000 * 0.9;
+          const o = c.createOscillator(), g = c.createGain();
+          o.type = 'triangle'; o.frequency.value = 440 * Math.pow(2, (CHANT_NOTES[i] - 69) / 12);
+          g.gain.setValueAtTime(0, st); g.gain.linearRampToValueAtTime(0.12, st + 0.02); g.gain.exponentialRampToValueAtTime(0.001, st + d);
+          o.connect(g); g.connect(c.destination); o.start(st); o.stop(st + d + 0.02);
+        }catch(e){}
+      }
+      t += CHANT_BEATS[i] * beatMs;
+    });
+    lastChantMs = t;
+    return t;
   }
   function playShot(){
     if(muted) return;
@@ -979,8 +1045,24 @@
     }
     playGunshot();
   }
-  // Tiếng súng tự tổng hợp bằng Web Audio API (nhiễu trắng tắt dần + tiếng "uỳnh" trầm)
+  // Tiếng còi "삐익!" tự tổng hợp bằng Web Audio (2 tiếng còi ngắn, có rung nhẹ)
   function playGunshot(){
+    try{
+      const c = ctx(), now = c.currentTime;
+      [0, 0.22].forEach((off, k) => {
+        const o = c.createOscillator(), g = c.createGain(), lfo = c.createOscillator(), lg = c.createGain();
+        o.type = 'square'; o.frequency.value = 2300;
+        lfo.frequency.value = 38; lg.gain.value = 120; lfo.connect(lg); lg.connect(o.frequency);
+        const t = now + off, d = k ? 0.42 : 0.16;
+        g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.07, t + 0.02);
+        g.gain.setValueAtTime(0.07, t + d - 0.04); g.gain.linearRampToValueAtTime(0, t + d);
+        const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 3600;
+        o.connect(lp); lp.connect(g); g.connect(c.destination);
+        o.start(t); lfo.start(t); o.stop(t + d + 0.02); lfo.stop(t + d + 0.02);
+      });
+    }catch(e){}
+  }
+  function playGunshotOld_unused(){
     try{
       const c = ctx();
       const now = c.currentTime;
@@ -1168,9 +1250,69 @@
     setLight(true);
   }
 
+  // ---------- Nhạc gọi từ YouTube (IFrame API) ----------
+  const YT_CALL = ASSETS.callYouTube;
+  let ytPlayer = null, ytReady = false, ytFailed = false, ytWantPlay = false, ytCallMs = 0;
+  function ytActive(){ return !!(YT_CALL && YT_CALL.id && ytReady && !ytFailed); }
+  function ytSegment(){ return !!(YT_CALL && typeof YT_CALL.start === 'number' && typeof YT_CALL.end === 'number' && YT_CALL.end > YT_CALL.start); }
+  function loadYouTubeCall(){
+    if(!YT_CALL || !YT_CALL.id) return;
+    const box = document.getElementById('yt-call');
+    if(!box) return;
+    box.classList.remove('hidden');
+    const fail = () => { ytFailed = true; box.classList.add('hidden'); };
+    const make = () => {
+      try{
+        ytPlayer = new YT.Player('yt-call-player', {
+          width: '200', height: '200', videoId: YT_CALL.id,
+          playerVars: { controls: 0, disablekb: 1, fs: 0, rel: 0, modestbranding: 1, playsinline: 1, iv_load_policy: 3, start: Math.floor(YT_CALL.start || 0) },
+          events: {
+            onReady: () => { ytReady = true; },
+            onError: fail,   // video bị cấm nhúng / không phát được → dùng giai điệu tự tạo
+            onStateChange: e => {
+              // Chỉ phát khi búp bê đang hát (đèn xanh)
+              if(e.data === YT.PlayerState.PLAYING && !ytWantPlay){ try{ ytPlayer.pauseVideo(); }catch(_){} }
+              // Hết bài khi đang hát → quay lại đầu bài, hát tiếp
+              if(e.data === YT.PlayerState.ENDED && ytWantPlay && !ytSegment()){ try{ ytPlayer.seekTo(YT_CALL.start || 0, true); ytPlayer.playVideo(); }catch(_){} }
+            }
+          }
+        });
+      }catch(_){ fail(); }
+    };
+    if(window.YT && window.YT.Player) make();
+    else {
+      const prev = window.onYouTubeIframeAPIReady;
+      window.onYouTubeIframeAPIReady = () => { if(prev){ try{ prev(); }catch(_){} } make(); };
+      const sc = document.createElement('script');
+      sc.src = 'https://www.youtube.com/iframe_api';
+      sc.onerror = fail;
+      document.head.appendChild(sc);
+    }
+  }
+  // Gọi ngay trong thao tác bấm "Bắt đầu" để trình duyệt (nhất là điện thoại) cho phép phát có tiếng
+  function ytUnlock(){ if(ytActive()){ try{ ytPlayer.playVideo(); }catch(_){} } }
+  // Đèn xanh: nhạc chạy (tốc độ ngẫu nhiên). Trả về số ms búp bê hát ở vòng này
+  function ytPlay(){
+    const RATE_POOL = [0.75, 1, 1, 1.25, 1.5, 1.75, 2];
+    lastRate = RATE_POOL[Math.floor(Math.random() * RATE_POOL.length)];
+    ytWantPlay = true;
+    try{
+      ytPlayer.setPlaybackRate(lastRate);
+      if(muted) ytPlayer.mute(); else ytPlayer.unMute();
+      if(ytSegment()) ytPlayer.seekTo(YT_CALL.start, true);
+      ytPlayer.playVideo();
+    }catch(_){}
+    if(ytSegment()) return (YT_CALL.end - YT_CALL.start) * 1000 / lastRate;
+    // Phát liên tục cả bài: mỗi lượt hát 2,6–5,2 giây, tốc độ cao thì lượt ngắn hơn
+    return (2600 + Math.random() * 2600) / Math.sqrt(lastRate);
+  }
+  function ytPause(){ ytWantPlay = false; try{ if(ytPlayer && ytReady) ytPlayer.pauseVideo(); }catch(_){} }
+
   function stopCallAudio(){
+    ytPause();
     try{ callAudioEl.pause(); callAudioEl.currentTime = 0; }catch(e){}
     window.speechSynthesis.cancel();
+    chantTimers.forEach(clearTimeout); chantTimers = [];
   }
 
   function setLight(green){
@@ -1189,7 +1331,13 @@
         setLight(false); // búp bê chỉ quay đầu lại khi nhạc đã dứt
       };
 
-      if(ASSETS.callAudioSrc){
+      if(ytActive()){
+        // Búp bê quay lại khi lượt hát (đoạn nhạc YouTube) kết thúc
+        dollTimer = setTimeout(()=>{
+          if(callout) callout.classList.remove('show');
+          setLight(false);
+        }, ytCallMs + 150);
+      } else if(ASSETS.callAudioSrc){
         callAudioEl.addEventListener('ended', goRed);
         // Lưới an toàn phòng khi trình duyệt chặn phát âm thanh tự động —
         // thời lượng tự tính theo thời lượng nhạc / tốc độ ngẫu nhiên của vòng
@@ -1201,7 +1349,7 @@
           setLight(false);
         }, safeMs);
       } else {
-        const delay = 1800 + Math.random()*2600;
+        const delay = (lastChantMs || 3000) + 120; // búp bê quay lại ngay khi câu đồng dao dứt
         dollTimer = setTimeout(()=>{
           if(callout) callout.classList.remove('show');
           setLight(false);
@@ -1295,10 +1443,9 @@
     const endX = runnerRect.left + runnerRect.width/2 - arenaRect.left;
     const endY = runnerRect.top + runnerRect.height/2 - arenaRect.top;
 
-    muzzleFlash.classList.remove('fire'); void muzzleFlash.offsetWidth; muzzleFlash.classList.add('fire');
-    playShot();
+    playShot(); // tiếng còi "삐익!"
 
-    // Tia laser vẽ từ búp bê đến người chơi
+    // Vệt "ánh mắt" từ búp bê tới người chơi
     const dx = endX - startX, dy = endY - startY;
     const len = Math.hypot(dx, dy);
     const ang = Math.atan2(dy, dx) * 180/Math.PI;
@@ -1310,7 +1457,7 @@
 
     setTimeout(()=>{
       laserEl.classList.remove('fire');
-      spawnBlood(endX, endY); // máu bắn ra khi trúng
+      spawnStars(endX, endY); // sao chóng mặt quanh người chơi
       impactBurst.style.left = endX + 'px';
       impactBurst.style.top = endY + 'px';
       impactBurst.classList.remove('burst'); void impactBurst.offsetWidth; impactBurst.classList.add('burst');
@@ -1319,27 +1466,27 @@
     }, 300);
   }
 
-  function spawnBlood(x, y){
-    for(let i=0;i<16;i++){
+  function spawnStars(x, y){
+    for(let i=0;i<6;i++){
       const p = document.createElement('div');
-      p.className = 'blood-particle';
+      p.className = 'dizzy-star';
+      p.textContent = i % 2 ? '★' : '✦';
       p.style.left = x + 'px';
-      p.style.top = y + 'px';
-      const ang = Math.random() * Math.PI * 2;
-      const dist = 14 + Math.random() * 46;
-      const px = Math.cos(ang) * dist;
-      const py = Math.sin(ang) * dist - 16;
+      p.style.top = (y - 26) + 'px';
       arena.appendChild(p);
-      p.animate([
-        {transform:'translate(0,0) scale(1)', opacity:1},
-        {transform:'translate(' + px + 'px,' + py + 'px) scale(.5)', opacity:0}
-      ], {duration:540, easing:'ease-out'}).onfinish = () => p.remove();
+      const a0 = (i / 6) * Math.PI * 2;
+      const frames = [];
+      for(let k=0;k<=8;k++){
+        const a = a0 + k * 0.6;
+        frames.push({ transform:'translate(' + (Math.cos(a)*22 - 7) + 'px,' + (Math.sin(a)*8 - 7) + 'px)', opacity: k < 7 ? 1 : 0 });
+      }
+      p.animate(frames, {duration:1000, easing:'linear'}).onfinish = () => p.remove();
     }
   }
 
   function loseLife(){
     flash.style.transition = 'opacity .08s ease';
-    flash.style.opacity = '0.85';
+    flash.style.opacity = '0.25';
     caughtBanner.classList.add('show');
     setTimeout(()=>{ flash.style.opacity = '0'; }, 130);
     lives--;
@@ -1418,10 +1565,10 @@
       sub.textContent = 'Bạn đã băng qua vạch đích an toàn! 정말 잘했어요 — làm rất tốt!';
     } else {
       eyebrow.textContent = 'Trò chơi kết thúc';
-      title.textContent = '탈락';
+      title.textContent = '아쉬워요!';
       sub.textContent = deathReason === 'timeout'
         ? '⏱ Hết giờ! Chưa kịp băng qua vạch đích. Thử lại nhanh hơn nhé!'
-        : 'Búp bê đã phát hiện ra bạn. Hít một hơi và thử lại nhé!';
+        : 'Búp bê đã nhìn thấy bạn đang chạy. Hít một hơi và thử lại nhé!';
     }
     showScreen(screenEnd);
   }
@@ -1440,6 +1587,7 @@
   });
   btnDiffStart.addEventListener('click', async ()=>{
     if(!selectedDifficulty) return;
+    ytUnlock();
     if(selectedDifficulty === 'topik_i' || selectedDifficulty === 'topik_ii'){
       const level = selectedDifficulty;
       if(!topikLoaded[level]){
@@ -1525,32 +1673,27 @@
   // ---------- Bảng xếp hạng điểm game (giống hwacha) ----------
   window.openDiffLeaderboard = function(){
     if(!lbList) return;
-    lbList.innerHTML = '<div style="text-align:center; padding:30px; color:rgba(243,236,225,0.6); font-weight:700;">Đang tải dữ liệu...</div>';
+    lbList.innerHTML = '<div style="text-align:center; padding:30px; color:rgba(30,41,59,0.6); font-weight:700;">Đang tải dữ liệu...</div>';
     if(typeof firebase === 'undefined' || !window.db){
-      lbList.innerHTML = '<div style="text-align:center; padding:30px; color:rgba(243,236,225,0.6); font-weight:700;">Không thể tải bảng xếp hạng.</div>';
+      lbList.innerHTML = '<div style="text-align:center; padding:30px; color:rgba(30,41,59,0.6); font-weight:700;">Không thể tải bảng xếp hạng.</div>';
       return;
     }
-    window.db.collection('users').get().then(snap => {
-      const users = [];
-      snap.forEach(doc => {
-        const d = doc.data();
-        d._uid = doc.id;
-        d._score = Math.max(0, d.gameMugonghwaScore || 0);
-        users.push(d);
-      });
-      users.sort((a, b) => b._score - a._score);
-      renderDiffLeaderboard(users);
+    // Chỉ đọc top 10 (không tải toàn bộ users) — xem assets/js/game-leaderboard.js
+    GameLB.load('gameMugonghwaScore', 10).then(lb => {
+      const users = lb.users.map(u => Object.assign({}, u.data, { _uid: u.uid, _score: u.score }));
+      renderDiffLeaderboard(users, lb);
     }).catch(() => {
       lbList.innerHTML = '<div style="text-align:center; padding:30px; color:var(--pink); font-weight:700;">⚠️ Lỗi tải dữ liệu.</div>';
     });
   };
-  function renderDiffLeaderboard(users){
+  function renderDiffLeaderboard(users, lb){
     const STICKERS = ['🐶','🐱','🦊','🐻','🐼','🦄','🐯','🐰','🦁','🐨','🐸','🐙','🦋','🌸','⭐','🔥','💎','🌈','🎯','🚀'];
     const av = uid => STICKERS[Math.abs((uid.charCodeAt(0)*31 + uid.charCodeAt(uid.length-1)*7) % STICKERS.length)];
     const esc = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     const currentUid = window.currentUserUid;
     let myRank = -1, myUser = null;
     users.forEach((u,i)=>{ if(u._uid === currentUid){ myRank = i; myUser = u; } });
+    if(lb) myRank = lb.myRank;
     const medals = ['🥇','🥈','🥉'];
     const scorers = users.filter(u => u._score > 0);
     const end = Math.min(9, scorers.length - 1);
@@ -1560,15 +1703,15 @@
       const u = scorers[i];
       const isMe = u._uid === currentUid;
       const badge = i < 3 ? medals[i] : (i + 1);
-      html += '<div class="lb-row-game ' + (isMe?'me':'') + '" onclick="showMugonghwaProfile(\'' + u._uid + '\',\'' + esc(u.fullName||'Ẩn danh') + '\')">'
+      html += '<div class="lb-row-game ' + (isMe?'me':'') + '" data-uid="' + esc(u._uid) + '" data-name="' + esc(u.fullName||'Ẩn danh') + '">'
         + '<div class="lb-rk">' + badge + '</div>'
         + '<div class="lb-av">' + av(u._uid) + '</div>'
-        + '<div class="lb-nm"><div class="lb-name-game">' + esc(u.fullName||'Ẩn danh') + (isMe?' <span style="color:#24e6a0;">(Bạn)</span>':'') + '</div><div class="lb-title-game-sub">Tiến trình cao nhất</div></div>'
+        + '<div class="lb-nm"><div class="lb-name-game">' + esc(u.fullName||'Ẩn danh') + (isMe?' <span style="color:#16a34a;">(Bạn)</span>':'') + '</div><div class="lb-title-game-sub">Tiến trình cao nhất</div></div>'
         + '<div class="lb-exp">' + u._score + '%</div></div>';
     }
     if(myUser){
-      html += '<div class="lb-me-game" onclick="showMugonghwaProfile(\'' + currentUid + '\',\'' + esc(myUser.fullName||'Bạn') + '\')">'
-        + '<div class="lb-rk">#' + (myRank+1) + '</div>'
+      html += '<div class="lb-me-game" data-uid="' + esc(currentUid) + '" data-name="' + esc(myUser.fullName||'Bạn') + '">'
+        + '<div class="lb-rk">' + GameLB.rankText(myRank, 10) + '</div>'
         + '<div class="lb-av">' + av(currentUid) + '</div>'
         + '<div class="lb-nm"><div class="lb-name-game">' + esc(myUser.fullName||'Bạn') + ' · Vị trí của bạn</div><div class="lb-title-game-sub">' + (myUser._score > 0 ? 'Tiến trình: ' + myUser._score + '%' : 'Chưa có điểm — chơi để lập thành tích!') + '</div></div>'
         + '<div class="lb-exp">' + (myUser._score > 0 ? myUser._score + '%' : '—') + '</div></div>';
@@ -1576,6 +1719,7 @@
       html += '<div class="lb-note-game">Đăng nhập để lưu điểm và xem hạng của bạn.</div>';
     }
     lbList.innerHTML = html;
+    GameLB.bind(lbList, (uid, name) => window.showMugonghwaProfile(uid, name));
   }
   window.showMugonghwaProfile = function(uid, name){
     if(window.showGlobalUserProfile) window.showGlobalUserProfile(uid, name);
@@ -1601,5 +1745,6 @@
   })();
 </script>
 <script src="../assets/js/user-profile-popup.js"></script>
+<script src="../assets/js/game-leaderboard.js"></script>
 </body>
 </html>

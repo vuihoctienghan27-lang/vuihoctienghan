@@ -1058,16 +1058,10 @@ window.AudioSys = (function(){
         listEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--text-dim); font-weight:700;">Không thể tải bảng xếp hạng.</div>`;
         return;
       }
-      window.db.collection('users').get().then(snap => {
-        const users = [];
-        snap.forEach(doc => {
-          const d = doc.data();
-          d._uid = doc.id;
-          d._score = Math.max(0, d.gameBansungScore || 0);
-          users.push(d);
-        });
-        users.sort((a, b) => b._score - a._score);
-        renderGameLeaderboard(users);
+      // Chỉ đọc top 10 (không tải toàn bộ users) — xem assets/js/game-leaderboard.js
+      GameLB.load('gameBansungScore', 10).then(lb => {
+        const users = lb.users.map(u => Object.assign({}, u.data, { _uid: u.uid, _score: u.score }));
+        renderGameLeaderboard(users, lb);
       }).catch(() => {
         listEl.innerHTML = `<div style="text-align:center; padding:40px; color:var(--accent-coral); font-weight:700;">⚠️ Lỗi tải dữ liệu.</div>`;
       });
@@ -1077,12 +1071,13 @@ window.AudioSys = (function(){
       if (window.showGlobalUserProfile) window.showGlobalUserProfile(uid, name);
     };
 
-    function renderGameLeaderboard(users){
+    function renderGameLeaderboard(users, lb){
       const listEl = document.getElementById('lbList');
       if (!listEl) return;
       const currentUid = window.currentUserUid;
       let myRank = -1, myUser = null;
       users.forEach((u, i) => { if (u._uid === currentUid) { myRank = i; myUser = u; } });
+      if (lb) myRank = lb.myRank;
 
       const esc = s => (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
       const medals = ['🥇','🥈','🥉'];
@@ -1097,7 +1092,7 @@ window.AudioSys = (function(){
         const u = scorers[i];
         const isMe = u._uid === currentUid;
         const badge = i < 3 ? medals[i] : (i + 1);
-        html += `<div class="lb-row-game ${isMe ? 'me' : ''}" onclick="showGameProfile('${u._uid}','${esc(u.fullName || 'Ẩn danh')}')">
+        html += `<div class="lb-row-game ${isMe ? 'me' : ''}" data-uid="${esc(u._uid)}" data-name="${esc(u.fullName || 'Ẩn danh')}">
           <div class="lb-rk">${badge}</div>
           <div class="lb-av">${lbAvatar(u._uid)}</div>
           <div class="lb-nm"><div class="lb-name-game">${esc(u.fullName || 'Ẩn danh')}${isMe ? ' <span style="color:var(--accent-cyan);">(Bạn)</span>' : ''}</div><div class="lb-title-game-sub">Điểm cao nhất</div></div>
@@ -1105,8 +1100,8 @@ window.AudioSys = (function(){
         </div>`;
       }
       if (myUser) {
-        html += `<div class="lb-me-game" onclick="showGameProfile('${currentUid}','${esc(myUser.fullName || 'Bạn')}')">
-          <div class="lb-rk">#${myRank + 1}</div>
+        html += `<div class="lb-me-game" data-uid="${esc(currentUid)}" data-name="${esc(myUser.fullName || 'Bạn')}">
+          <div class="lb-rk">${GameLB.rankText(myRank, 10)}</div>
           <div class="lb-av">${lbAvatar(currentUid)}</div>
           <div class="lb-nm"><div class="lb-name-game">${esc(myUser.fullName || 'Bạn')} · Vị trí của bạn</div><div class="lb-title-game-sub">${myUser._score > 0 ? 'Điểm cao nhất: ' + myUser._score : 'Chưa có điểm — chơi để lập thành tích!'}</div></div>
           <div class="lb-exp">${myUser._score > 0 ? myUser._score + ' điểm' : '—'}</div>
@@ -1115,6 +1110,7 @@ window.AudioSys = (function(){
         html += `<div class="lb-note-game">Đăng nhập để lưu điểm và xem hạng của bạn.</div>`;
       }
       listEl.innerHTML = html;
+      GameLB.bind(listEl, window.showGameProfile);
     }
 
     // Tab: Chơi / Bảng Xếp Hạng
@@ -1132,5 +1128,6 @@ window.AudioSys = (function(){
   })();
 </script>
 <script src="../assets/js/user-profile-popup.js"></script>
+<script src="../assets/js/game-leaderboard.js"></script>
 </body>
 </html>

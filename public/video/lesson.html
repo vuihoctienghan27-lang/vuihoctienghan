@@ -15,9 +15,9 @@
     <script src="../assets/js/theme-picker.js"></script>
     <script src="../assets/js/navbar.js"></script>
     <script src="../assets/js/video-lessons.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="../auth.js"></script>
     <script src="../assets/js/activity-tracker.js"></script>
     <script src="../assets/js/vocab-dictionary.js"></script>
@@ -39,8 +39,13 @@
             document.body.style.removeProperty('height');
             document.documentElement.style.removeProperty('height');
         }
+        // Desktop: khung bài học cao vừa đúng phần còn lại của màn hình dưới navbar (xem video.css --shell-top)
+        var w = document.querySelector('.video-sticky-shell .video-wrapper');
+        if (w) document.documentElement.style.setProperty('--shell-top', Math.round(w.getBoundingClientRect().top + window.scrollY) + 'px');
     }
     sync();
+    document.addEventListener('DOMContentLoaded', sync);
+    window.addEventListener('load', sync);
     window.addEventListener('resize', sync);
     if (window.visualViewport) { window.visualViewport.addEventListener('resize', sync); window.visualViewport.addEventListener('scroll', sync); }
 })();
@@ -89,6 +94,8 @@
         <!-- ═══ CỘT TRÁI: video + điều khiển + khung học ═══ -->
         <div class="video-col-left">
 
+            <!-- Video + điều khiển: luôn nằm trong tầm nhìn (desktop: trang vừa khít màn hình; tablet: dính trên cùng) -->
+            <div class="video-stage">
             <div class="video-grid-video">
                 <div class="video-player-wrap">
                     <div id="youtube-player"></div>
@@ -109,6 +116,8 @@
                     <div class="gear-dropdown-wrap" id="gear-dropdown-wrap"><button class="gear-toggle-btn" id="gear-toggle-btn" title="Cài đặt phụ đề"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button><div class="gear-dropdown" id="gear-dropdown"><div class="gear-title">Hiển thị phụ đề</div><div class="gear-row"><span>Font</span><select id="set-font"><option value="">Mặc định</option><option value="'Noto Sans KR',sans-serif">Noto Sans KR</option><option value="'Inter',sans-serif">Inter</option><option value="'Pretendard',sans-serif">Pretendard</option></select></div><div class="gear-row"><span>Cỡ chữ</span><select id="set-size"><option value="">Mặc định</option><option value="1.6em">Nhỏ</option><option value="2em" selected>Vừa</option><option value="2.4em">Lớn</option><option value="2.8em">Rất lớn</option></select></div><div class="gear-row"><span>Màu chữ</span><select id="set-color"><option value="">Mặc định</option><option value="#1e293b">Xám đen</option><option value="#1e40af">Xanh dương</option><option value="#15803d">Xanh lá</option><option value="#b91c1c">Đỏ</option><option value="#6d28d9">Tím</option></select></div><div class="gear-row"><span>Giãn dòng</span><select id="set-spacing"><option value="">Mặc định</option><option value="1.2">Hẹp</option><option value="1.5" selected>Vừa</option><option value="1.9">Rộng</option></select></div><div class="gear-row"><span>Hiện câu tiếp theo</span><label class="gear-toggle"><input type="checkbox" id="set-nextsub" checked><span class="gear-slider"></span></label></div><div class="gear-row"><span>Che phụ đề gốc của video</span><label class="gear-toggle"><input type="checkbox" id="set-cover-cc"><span class="gear-slider"></span></label></div></div></div>
                 </div>
             </div>
+
+            </div><!-- end video-stage -->
 
             <!-- Khung câu hiện tại -->
             <div class="video-grid-cursub">
@@ -156,11 +165,9 @@
                             <button class="dict-btn-big dict-btn-primary" id="dict-check-btn" title="Kiểm tra (Enter)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16"><polyline points="20 6 9 17 4 12"></polyline></svg> Kiểm tra</button>
                             <button class="dict-btn-big dict-btn-secondary" id="vact-dict-next" title="Câu tiếp theo">Câu tiếp <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" width="16" height="16"><polygon points="5 4 15 12 5 20 5 4"></polygon><line x1="19" y1="5" x2="19" y2="19"></line></svg></button>
                         </div>
-                        <div class="dict-tip">Gõ từng từ, nhấn <kbd>Space</kbd> để sang ô kế, <kbd>Enter</kbd> để kiểm tra</div>
                     </div>
                     <div id="mode-notes" class="vmode-pane">
-                        <div class="notes-add-area"><textarea class="notes-input" id="notes-input" rows="2" placeholder="Ghi chú cho câu đang phát... (Enter để lưu)"></textarea><button class="notes-add-btn" id="notes-add-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Thêm</button></div>
-                        <div class="notes-list" id="notes-list"></div>
+                        <div class="notes-add-area"><textarea class="notes-input" id="notes-input" rows="1" placeholder="Ghi chú cho câu đang hiển thị... (Enter để lưu)"></textarea><button class="notes-add-btn" id="notes-add-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Thêm</button></div>
                     </div>
                 </div>
             </div>
@@ -191,6 +198,11 @@
                         <span id="sub-foot-count">Đang tải...</span>
                         <span id="sub-foot-filter" style="display:none;">· Đang lọc câu đã lưu</span>
                     </div>
+                </div>
+                <!-- Tab Ghi chú: danh sách ghi chú thay chỗ danh sách phụ đề (khung câu bên trái giữ nguyên kích thước) -->
+                <div class="notes-panel">
+                    <div class="notes-panel-head">📝 Ghi chú của bạn <span class="notes-count" id="notes-count">0</span></div>
+                    <div class="notes-list" id="notes-list"></div>
                 </div>
             </div>
         </div>

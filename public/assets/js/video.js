@@ -335,6 +335,7 @@ function prepareDict(idx,force){
  var hb=document.getElementById('dict-hint-btn');if(hb)hb.textContent='💡 Xem nghĩa tiếng Việt';
  var vh=document.getElementById('dict-vi-hint');if(vh)vh.textContent=s.vi||'(Câu này chưa có nghĩa tiếng Việt)';
  var cb=document.getElementById('dict-check-btn');if(cb)cb.style.display='';
+ var nb=document.getElementById('vact-dict-next');if(nb)nb.classList.remove('dict-next-ready');
  var dr=document.getElementById('dict-result');if(dr)dr.innerHTML='';
  if(ck){
   var h='';
@@ -420,11 +421,13 @@ function checkDict(){
  var cb=document.getElementById('dict-check-btn');if(cb)cb.style.display='none';
  var hw=document.getElementById('dict-vi-hint-wrapper');if(hw)hw.classList.add('is-hidden');
  var s=subtitles[dictTargetIdx];
- if(re)re.innerHTML=resultCard(pct,correct+'/'+total+' ký tự đúng',[
-  ['Đáp án','<div class="v-result-ko">'+esc(s.ko)+'</div>'],
-  s.vi?['Nghĩa','<div class="v-result-vi">'+esc(s.vi)+'</div>']:null
- ],dictTargetIdx<subtitles.length-1?'Nhấn <kbd>Enter</kbd> để sang câu tiếp':'🎉 Bạn đã đến câu cuối cùng của bài');
+ // Kết quả gọn 2 dòng, nằm đúng chỗ của nút gợi ý → khung không phình ra
+ if(re)re.innerHTML=miniResult(pct,
+  '<span class="v-mini-label">Đáp án</span>'+esc(s.ko),
+  '<b>'+resultTitle(pct)+'</b> · '+correct+'/'+total+' ký tự'+(s.vi?' · '+esc(s.vi):''));
+ var nb=document.getElementById('vact-dict-next');if(nb)nb.classList.add('dict-next-ready');
  saveDictScore(dictTargetIdx,pct);
+ revealResult(re);
  if(allC&&typeof confetti==='function'){
   var r=ck.getBoundingClientRect(),xl=r.left/window.innerWidth,xr=r.right/window.innerWidth,yb=r.bottom/window.innerHeight;
   confetti({particleCount:60,angle:60,spread:55,origin:{x:xl,y:yb},zIndex:9999});
@@ -432,13 +435,21 @@ function checkDict(){
  }
 }
 
+// Khung câu cuộn bên trong → tự cuộn tới thẻ kết quả (chỉ cuộn khung, không cuộn trang)
+function revealResult(el){
+ if(!el)return;
+ setTimeout(function(){
+  var box=el.closest('.video-grid-cursub');if(!box)return;
+  var r=el.getBoundingClientRect(),b=box.getBoundingClientRect();
+  if(r.bottom>b.bottom)box.scrollBy({top:r.bottom-b.bottom+12,behavior:'smooth'});
+ },60);
+}
+
 // Thẻ kết quả dùng chung cho Chính tả & Luyện nói
 function resultTitle(p){return p>=100?'Hoàn hảo! 🎉':p>=80?'Rất tốt!':p>=50?'Gần đúng rồi':'Cố lên nhé!';}
-function resultCard(p,sub,rows,foot){
- var h='<div class="v-result '+lvl(p)+'"><div class="v-result-head"><div class="v-ring" style="--p:'+p+'"><span>'+p+'%</span></div><div class="v-result-head-text"><div class="v-result-title">'+resultTitle(p)+'</div><div class="v-result-sub">'+sub+'</div></div></div>';
- rows.forEach(function(r){if(r)h+='<div class="v-result-row"><span class="v-result-label">'+r[0]+'</span>'+r[1]+'</div>';});
- if(foot)h+='<div class="v-result-foot">'+foot+'</div>';
- return h+'</div>';
+function miniResult(p,main,sub){
+ return '<div class="v-mini '+lvl(p)+'"><div class="v-ring" style="--p:'+p+'"><span>'+p+'%</span></div>'
+  +'<div class="v-mini-body"><div class="v-mini-main">'+main+'</div><div class="v-mini-sub">'+sub+'</div></div></div>';
 }
 
 // LCS giữa mảng ký tự đích tA và mảng ký tự người dùng rA.
@@ -583,9 +594,9 @@ function evalShRes(transcript){
  var ra=document.getElementById('speak-result-in-sub');
  var isPerfect = (matchCount === tA.length && matchCount === rA.length);
  var pct = isPerfect ? 100 : Math.round(matchCount / Math.max(tA.length, rA.length, 1) * 100);
- if(ra) ra.innerHTML = resultCard(pct, matchCount + '/' + tA.length + ' âm tiết khớp với câu gốc',
-   [['Bạn nói', '<div class="v-result-ko">' + finalHtml + '</div>']],
-   'Bấm <b>Nói theo</b> để thử lại · <b>Câu kế</b> để tiếp tục');
+ if(ra) ra.innerHTML = miniResult(pct, '<span class="v-mini-label">Bạn nói</span>' + finalHtml,
+   '<b>' + resultTitle(pct) + '</b> · ' + matchCount + '/' + tA.length + ' âm tiết khớp · bấm 🎤 để thử lại');
+ revealResult(ra);
 
  if(isPerfect && typeof confetti === 'function') {
   var curSub = document.getElementById('video-current-sub');
@@ -605,7 +616,7 @@ function saveNotes(){try{localStorage.setItem(getNotesKey(),JSON.stringify(notes
 function addNote(text){var s=(currentSubIdx>=0&&currentSubIdx<subtitles.length)?subtitles[currentSubIdx]:null;notes.push({time:currentTime,ts:Date.now(),subTime:s?fmt(s.start):fmt(currentTime),subIdx:currentSubIdx,subKo:s?s.ko:'',text:text});notes.sort(function(a,b){return a.time-b.time;});saveNotes();renderNotes();renderTimelineDots();}
 function deleteNote(idx){notes.splice(idx,1);saveNotes();renderNotes();renderTimelineDots();}
 function seekToNote(time){if(!ytPlayer||!playerReady)return;window._lastSeekTime=Date.now();var t=Math.max(0,time-.3);resetAutoPause(t);ytPlayer.seekTo(t,true);currentTime=t;highlight(t);if(!isPlaying)ytPlayer.playVideo();}
-function renderNotes(){var el=document.getElementById('notes-list');if(!el)return;if(!notes.length){el.innerHTML='<div class="practice-empty"><div class="empty-icon">📝</div><div>Chưa có ghi chú nào</div><div class="practice-empty-sub">Ghi chú gắn với câu đang phát và hiện thành chấm vàng trên thanh thời gian</div></div>';return;}var h='';notes.forEach(function(n,i){h+='<div class="note-card"><div class="note-time" onclick="window._seekNote('+n.time+')">⏱ '+n.subTime+'</div>';if(n.subKo)h+='<div class="note-sub-ko">'+esc(n.subKo)+'</div>';h+='<div>'+esc(n.text)+'</div><button class="note-delete" onclick="event.stopPropagation();window._deleteNote('+i+')">✕</button></div>';});el.innerHTML=h;}
+function renderNotes(){var nc=document.getElementById('notes-count');if(nc)nc.textContent=notes.length;var el=document.getElementById('notes-list');if(!el)return;if(!notes.length){el.innerHTML='<div class="practice-empty"><div class="empty-icon">📝</div><div>Chưa có ghi chú nào</div><div class="practice-empty-sub">Ghi chú gắn với câu đang phát và hiện thành chấm vàng trên thanh thời gian</div></div>';return;}var h='';notes.forEach(function(n,i){h+='<div class="note-card"><div class="note-time" onclick="window._seekNote('+n.time+')">⏱ '+n.subTime+'</div>';if(n.subKo)h+='<div class="note-sub-ko">'+esc(n.subKo)+'</div>';h+='<div>'+esc(n.text)+'</div><button class="note-delete" onclick="event.stopPropagation();window._deleteNote('+i+')">✕</button></div>';});el.innerHTML=h;}
 window._seekNote=seekToNote;window._deleteNote=deleteNote;
 
 // ── Timeline dots ──

@@ -161,3 +161,15 @@ window.auth.onAuthStateChanged(async (user) => {
     }
 });
 
+
+// ===== KHÓA NỘI DUNG CHO HỌC VIÊN NỘI BỘ =====
+// Nạp access-gate.js càng sớm càng tốt (auth.js nằm trong <head>) để che trang bị khóa trước khi lộ nội dung.
+(function () {
+    if (window.AccessGate || document.querySelector('script[src*="access-gate.js"]')) return;
+    var me = document.currentScript && document.currentScript.src;
+    if (!me) return; // navbar.js sẽ nạp dự phòng
+    var s = document.createElement('script');
+    s.src = me.replace(/auth\.js(\?.*)?$/, 'assets/js/access-gate.js');
+    s.async = false;
+    (document.head || document.documentElement).appendChild(s);
+})();
