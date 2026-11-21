@@ -73,22 +73,46 @@
             } catch (e) { resolve(); }
         });
     }
-    function speak(text) {
+    // MP3 đọc sẵn (tools/curriculum-tts/gen.py): audio/index.json = { w: {từ: file}, d: {"nhân vật|câu": file} }
+    const AUDIO_BASE = 'audio/';
+    let audioIndex = null;
+    const audioIndexReady = fetch(AUDIO_BASE + 'index.json', { cache: 'no-cache' })
+        .then(r => r.ok ? r.json() : null).then(j => { audioIndex = j || { w: {}, d: {} }; })
+        .catch(() => { audioIndex = { w: {}, d: {} }; });
+    function audioFileFor(text, speaker) {
+        const ix = audioIndex || {};
+        const d = ix.d || {}, w = ix.w || {};
+        return (speaker != null && d[speaker + '|' + text]) || w[text] || d['|' + text] || null;
+    }
+    function speak(text, speaker) {
         text = String(text || '').trim();
         stopSpeak();
         const token = speakToken;
         if (!text) return Promise.resolve();
-        return new Promise(resolve => {
+        return audioIndexReady.then(() => new Promise(resolve => {
+            if (token !== speakToken) return resolve();
             let done = false;
             const finish = () => { if (!done) { done = true; resolve(); } };
-            const fallback = () => { if (done || token !== speakToken) return finish(); speakFallback(text, token).then(finish); };
-            const q = encodeURIComponent(text);
-            audioEl.onended = finish;
-            audioEl.onerror = fallback;
-            audioEl.src = 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ko&total=1&idx=0&textlen=' + q.length + '&q=' + q;
-            const p = audioEl.play();
-            if (p && p.catch) p.catch(fallback);
-        });
+            const file = audioFileFor(text, speaker);
+            let triedGoogle = false;
+            const next = () => {
+                if (done || token !== speakToken) return finish();
+                if (!triedGoogle) { triedGoogle = true; playSrc(googleTts(text)); return; }
+                speakFallback(text, token).then(finish);
+            };
+            const playSrc = (src) => {
+                audioEl.onended = finish;
+                audioEl.onerror = next;
+                audioEl.src = src;
+                const p = audioEl.play();
+                if (p && p.catch) p.catch(next);
+            };
+            if (file) playSrc(AUDIO_BASE + file); else next();
+        }));
+    }
+    function googleTts(text) {
+        const q = encodeURIComponent(text);
+        return 'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=ko&total=1&idx=0&textlen=' + q.length + '&q=' + q;
     }
     window.clSpeak = speak;
 
@@ -610,7 +634,7 @@
         const el = card.querySelector(`.cl-line[data-l="${li}"]`);
         card.querySelectorAll('.speaking').forEach(x => x.classList.remove('speaking'));
         if (el) el.classList.add('speaking');
-        return speak(d.lines[li].kr).then(() => { if (el) el.classList.remove('speaking'); });
+        return speak(d.lines[li].kr, d.lines[li].s || '').then(() => { if (el) el.classList.remove('speaking'); });
     }
     async function playDialogue(card, d) {
         stopDialogue();
