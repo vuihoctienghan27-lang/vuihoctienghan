@@ -209,7 +209,7 @@
 
     // ---------- Ảnh minh họa (curricula/{c}/media, mỗi doc { lesson, items: { id: dataURL } })
     // Thẻ ảnh được vẽ sẵn dạng <img data-img="id" hidden>; tải xong thì gắn src và hiện ra.
-    function imgTag(id, cls) { return `<img class="${cls}" data-img="${esc(id)}" alt="" ${S.media[id] ? `src="${S.media[id]}"` : 'hidden'}>`; }
+    function imgTag(id, cls) { return `<img class="${cls}" data-img="${esc(id)}" alt="" ${S.media[id] ? `src="${esc(S.media[id])}"` : 'hidden'}>`; }
     function applyMedia(root2) {
         (root2 || document).querySelectorAll('img[data-img]').forEach(im => {
             const u = S.media[im.dataset.img];
@@ -361,7 +361,7 @@
     function flipFlash() { const c = document.querySelector('#clFlash .card'); if (c) c.classList.toggle('flip'); }
     function drawFlash() {
         const w = FC.list[FC.i], el = document.getElementById('clFlash');
-        const pic = S.media[w.id] ? `<img class="fc-pic" src="${S.media[w.id]}" alt="">` : '';
+        const pic = S.media[w.id] ? `<img class="fc-pic" src="${esc(S.media[w.id])}" alt="">` : '';
         const front = FC.reverse ? `${pic}<div class="big" style="font-size:1.7em">${esc(w.meaning)}</div>` : `${FC.picOnly && pic ? pic + '<div class="small">Đây là từ gì?</div>' : pic + `<div class="big kr">${esc(w.word)}</div>`}`;
         const back = FC.reverse ? `<div class="big kr">${esc(w.word)}</div>`
             : (FC.picOnly && pic ? `<div class="big kr">${esc(w.word)}</div><div class="small" style="font-size:1.15em">${esc(w.meaning)}</div>` : `<div class="big" style="font-size:1.7em">${esc(w.meaning)}</div>`);

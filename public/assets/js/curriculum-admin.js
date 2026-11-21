@@ -467,7 +467,9 @@
                 words: clone(data.words || []), grammar: clone(data.grammar || []), dialogues: clone(data.dialogues || [])
             };
             S.dirty = false;
+            S.media = {};
             renderLesson();
+            loadLessonMedia(id);
         } catch (err) { fail(err); }
     }
 
@@ -564,6 +566,7 @@
                 <div class="panel-h">
                     <h2>💬 Đoạn ${i + 1}</h2>
                     <span>
+                        ${picButton(d.id, i, "dialogue")}
                         <button class="btn ghost sm" ${i === 0 ? 'disabled' : ''} onclick="CA.moveDialogue(${i},-1)">↑</button>
                         <button class="btn ghost sm" ${i === D.length - 1 ? 'disabled' : ''} onclick="CA.moveDialogue(${i},1)">↓</button>
                         <button class="btn ghost sm danger" onclick="CA.removeDialogue(${i})">✕</button>
@@ -613,6 +616,111 @@
         };
     }
 
+    // ---------- ảnh minh họa của bài (curricula/{id}/media) — lưu ngay, không cần bấm "Lưu bài"
+    // Giá trị ảnh: link https://… hoặc data:image/… (ảnh chọn từ máy / dán từ clipboard, đã thu nhỏ)
+    async function loadLessonMedia(lid) {
+        try {
+            const snap = await curCol().doc(S.cur.id).collection('media').where('lesson', '==', lid).get();
+            const items = {};
+            snap.docs.forEach(d => Object.assign(items, d.data().items || {}));
+            if (!S.lesson || S.lesson.id !== lid) return;
+            S.media = items;
+            renderTab();
+        } catch (err) { console.warn('Không tải được ảnh của bài:', err); }
+    }
+    async function writeLessonMedia(lid, items) {
+        const media = curCol().doc(S.cur.id).collection('media');
+        const old = await media.where('lesson', '==', lid).get();
+        const docs = []; let cur = {}, size = 0;
+        Object.entries(items).forEach(([id, url]) => {
+            if (size + url.length > MEDIA_DOC_BYTES && Object.keys(cur).length) { docs.push(cur); cur = {}; size = 0; }
+            cur[id] = url; size += url.length + id.length;
+        });
+        if (Object.keys(cur).length) docs.push(cur);
+        const ops = old.docs.map(d => b => b.delete(d.ref));
+        docs.forEach((it, part) => ops.push(b => b.set(media.doc(`${lid}_${part}`), { lesson: lid, part, items: it })));
+        await commitInChunks(ops);
+    }
+    function picButton(id, i, kind) {
+        const u = (S.media || {})[id];
+        const title = kind === 'dialogue' ? 'Tranh minh họa đoạn hội thoại' : 'Ảnh minh họa của từ';
+        return u
+            ? `<button class="pic-btn has" title="${title} — bấm để đổi" onclick="CA.editImage('${kind}',${i})"><img src="${esc(u)}" alt=""></button>`
+            : `<button class="pic-btn" title="${title} — bấm để thêm" onclick="CA.editImage('${kind}',${i})">🖼</button>`;
+    }
+    const isImageValue = (v) => /^https:\/\/\S+$/i.test(v) || /^data:image\/(png|jpe?g|gif|webp);base64,/i.test(v);
+    function loadImage(src) {
+        return new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('load')); im.src = src; });
+    }
+    async function shrinkToDataUrl(src, maxSide) {
+        const im = await loadImage(src);
+        const k = Math.min(1, maxSide / Math.max(im.naturalWidth, im.naturalHeight));
+        const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(im.naturalWidth * k)); c.height = Math.max(1, Math.round(im.naturalHeight * k));
+        const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(im, 0, 0, c.width, c.height);
+        return c.toDataURL('image/jpeg', 0.8);
+    }
+    const readFileAsDataUrl = (f) => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+
+    async function editImage(kind, i) {
+        const L = S.lesson; if (!L) return;
+        const item = kind === 'dialogue' ? L.dialogues[i] : L.words[i];
+        if (!item) return;
+        if (!item.id) item.id = newId(kind === 'dialogue' ? 'd' : 'w');
+        const label = kind === 'dialogue' ? (item.title || 'Đoạn ' + (i + 1)) : (item.word || 'Từ ' + (i + 1));
+        const maxSide = kind === 'dialogue' ? 720 : 300;
+        const current = (S.media || {})[item.id] || '';
+        let value = current;
+        const res = await Swal.fire({
+            title: '🖼 Ảnh: ' + esc(label), width: 'min(560px, 96vw)',
+            html: `<div class="sw-form">
+                <div class="img-prev" id="imgPrev">${current ? `<img src="${esc(current)}" alt="">` : '<span class="hint">Chưa có ảnh</span>'}</div>
+                <div class="field"><label>Dán link ảnh (https://…)</label>
+                    <input id="imgUrl" value="${current.startsWith('https://') ? esc(current) : ''}" placeholder="https://…/anh.jpg"></div>
+                <div class="hint">Hoặc <label class="btn sm" style="display:inline-flex;cursor:pointer">📁 Chọn ảnh từ máy<input type="file" id="imgFile" accept="image/*" style="display:none"></label>
+                    — hoặc bấm vào ô này rồi <b>Ctrl+V</b> để dán ảnh vừa copy. Ảnh từ máy được thu nhỏ còn ${maxSide}px.</div>
+                <div class="hint">Mẹo: link phải là link trực tiếp tới file ảnh (chuột phải vào ảnh → "Sao chép địa chỉ hình ảnh").</div>
+            </div>`,
+            showCancelButton: true, showDenyButton: !!current,
+            confirmButtonText: 'Lưu ảnh', denyButtonText: 'Xóa ảnh', cancelButtonText: 'Hủy', focusConfirm: false,
+            didOpen: (popup) => {
+                // tìm trong chính hộp thoại này (hộp thoại có thể đã bị thay nếu người dùng bấm quá nhanh)
+                const q = (id) => popup.querySelector("#" + id);
+                const prev = q("imgPrev"), url = q("imgUrl"), file = q("imgFile");
+                if (!prev || !url || !file) return;
+                const show = (src) => { value = src; prev.innerHTML = src ? `<img src="${esc(src)}" alt="">` : '<span class="hint">Chưa có ảnh</span>'; };
+                const fromBlob = async (blob) => {
+                    try { show(await shrinkToDataUrl(await readFileAsDataUrl(blob), maxSide)); url.value = ''; }
+                    catch (e) { Swal.showValidationMessage('Không đọc được file ảnh này'); }
+                };
+                url.addEventListener('input', e => { const v = e.target.value.trim(); if (v) show(v); });
+                file.addEventListener('change', e => { const f = e.target.files[0]; if (f) fromBlob(f); });
+                popup.addEventListener('paste', e => {
+                    const f = [...((e.clipboardData || {}).items || [])].find(x => x.kind === 'file' && x.type.startsWith('image/'));
+                    if (f) { e.preventDefault(); fromBlob(f.getAsFile()); }
+                });
+            },
+            preConfirm: async () => {
+                // ô link có chữ thì ưu tiên link (đọc thẳng từ ô, không phụ thuộc sự kiện input)
+                const v = String((($('imgUrl') || {}).value || '').trim() || value || '').trim();
+                if (!v) { Swal.showValidationMessage('Chưa có ảnh: dán link, chọn file hoặc Ctrl+V'); return false; }
+                if (!isImageValue(v)) { Swal.showValidationMessage('Link phải bắt đầu bằng https:// (hoặc dùng ảnh từ máy)'); return false; }
+                try { await loadImage(v); } catch (e) { Swal.showValidationMessage('Không tải được ảnh từ link này — hãy dùng link trực tiếp tới file ảnh'); return false; }
+                return v;
+            }
+        });
+        if (!res.isConfirmed && !res.isDenied) return;
+        const items = Object.assign({}, S.media || {});
+        if (res.isDenied) delete items[item.id]; else items[item.id] = res.value;
+        try {
+            loading('Đang lưu ảnh…');
+            await writeLessonMedia(L.id, items);
+            S.media = items;
+            Swal.close();
+            toast(res.isDenied ? 'Đã xóa ảnh' : 'Đã lưu ảnh');
+            renderTab();
+        } catch (err) { fail(err); }
+    }
+
     // ---------- tab từ vựng
     function renderWords() {
         const W = S.lesson.words;
@@ -621,6 +729,7 @@
         $('wCount') && ($('wCount').textContent = W.length);
         const rows = W.map((w, i) => `<tr class="${dup.has(i) ? 'dup' : ''}" title="${dup.has(i) ? 'Từ bị trùng trong bài' : ''}">
             <td class="idx">${i + 1}</td>
+            <td class="pic">${picButton(w.id, i, "word")}</td>
             <td><input class="kr" data-i="${i}" data-f="word" value="${esc(w.word)}" placeholder="단어"></td>
             <td><input data-i="${i}" data-f="meaning" value="${esc(w.meaning)}" placeholder="Nghĩa"></td>
             <td class="col-ex"><input class="kr" data-i="${i}" data-f="ex_kr" value="${esc(w.ex_kr)}" placeholder="예문"></td>
@@ -636,10 +745,10 @@
                 <button class="btn" onclick="CA.bulkPaste()">📋 Dán danh sách</button>
                 ${dup.size ? `<button class="btn" onclick="CA.removeDuplicates()">🧹 Xóa ${dup.size} dòng trùng</button>` : ''}
                 <span class="grow"></span>
-                <span class="hint">Ô vàng = từ bị trùng. Dòng để trống từ sẽ bị bỏ khi lưu.</span>
+                <span class="hint">Ô vàng = từ bị trùng. Dòng để trống từ sẽ bị bỏ khi lưu. Bấm 🖼 để thêm / đổi ảnh (lưu ngay).</span>
             </div>
             ${W.length ? `<div style="overflow-x:auto"><table class="words">
-                <thead><tr><th>#</th><th>Từ (한국어)</th><th>Nghĩa</th><th class="col-ex">Ví dụ</th><th class="col-ex">Dịch ví dụ</th><th></th></tr></thead>
+                <thead><tr><th>#</th><th title="Ảnh minh họa">Ảnh</th><th>Từ (한국어)</th><th>Nghĩa</th><th class="col-ex">Ví dụ</th><th class="col-ex">Dịch ví dụ</th><th></th></tr></thead>
                 <tbody id="wordsBody">${rows}</tbody></table></div>`
                 : `<div class="empty" style="padding:30px"><p>Chưa có từ vựng. Bấm <b>📋 Dán danh sách</b> để thêm nhanh nhiều từ.</p></div>`}`;
         const body = $('wordsBody');
@@ -1047,7 +1156,7 @@
                 });
                 const byLesson = {}; let unmatched = 0;
                 Object.entries(data.items).forEach(([id, url]) => {
-                    if (typeof url !== 'string' || !url.startsWith('data:image/')) return;
+                    if (typeof url !== 'string' || !isImageValue(url)) return;
                     const lid = owner[id];
                     if (!lid) { unmatched++; return; }
                     (byLesson[lid] = byLesson[lid] || {})[id] = url;
@@ -1146,7 +1255,7 @@
         createStage, renameStage, deleteStage, createLesson, deleteLesson, openLesson, moveLesson, backToCurriculum,
         switchTab, addWordRow, moveWord, removeWord, removeDuplicates, bulkPaste,
         pickFromLibrary, previewGrammar, editGrammar, moveGrammar, removeGrammar, saveLesson,
-        addDialogue, moveDialogue, removeDialogue, _parseScript: parseScript,
+        addDialogue, moveDialogue, removeDialogue, editImage, _parseScript: parseScript,
         convertFromClass, exportJson, importJson, importMedia,
         _parseLine: parseLine // để kiểm thử
     };
