@@ -603,8 +603,8 @@
                         <div class="cl-bub">
                             ${l.s ? `<div class="who">${esc(l.s)}</div>` : ''}
                             <div class="ko kr">${highlight(l.kr, keys)}</div>
-                            ${l.vi ? `<div class="vi">${esc(l.vi)}</div>` : ''}
                             <div class="mask">🎤 Lượt của bạn — nói xong chạm để xem</div>
+                            ${l.vi ? `<div class="vi">${esc(l.vi)}</div>` : ''}
                             <button class="say" data-act="say" title="Nghe câu này" aria-label="Nghe câu này">🔊</button>
                         </div>
                     </div>`).join('')}</div>
