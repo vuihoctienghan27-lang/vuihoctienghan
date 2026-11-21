@@ -270,7 +270,7 @@
                 return `<div class="lesson-row" onclick="CA.openLesson(${arg(u.id)})">
                     <span class="n">${num}</span>
                     <span class="t">${esc(u.title)}</span>
-                    <span class="c">${u.wordCount || 0} từ · ${u.grammarCount || 0} NP</span>
+                    <span class="c">${u.wordCount || 0} từ · ${u.grammarCount || 0} NP${u.dialogueCount ? ' · ' + u.dialogueCount + ' HT' : ''}</span>
                     <span class="ops" onclick="event.stopPropagation()">
                         <button class="btn ghost sm" title="Lên" ${idx === 0 ? 'disabled' : ''} onclick="CA.moveLesson(${idx},-1)">↑</button>
                         <button class="btn ghost sm" title="Xuống" ${idx === units.length - 1 ? 'disabled' : ''} onclick="CA.moveLesson(${idx},1)">↓</button>
@@ -461,7 +461,7 @@
             const data = d.data();
             S.lesson = {
                 id, title: data.title || '', stage: data.stage || NO_STAGE, version: data.version || 0,
-                words: clone(data.words || []), grammar: clone(data.grammar || [])
+                words: clone(data.words || []), grammar: clone(data.grammar || []), dialogues: clone(data.dialogues || [])
             };
             S.dirty = false;
             renderLesson();
@@ -488,11 +488,14 @@
             <div class="editor-head">
                 <div class="field"><label>Tên bài</label><input id="lTitle" value="${esc(L.title)}"></div>
                 <div class="field"><label>Giai đoạn</label><select id="lStage">${stageOptions(c.stages || [], L.stage)}</select></div>
-                <div><button class="btn danger" onclick="CA.deleteLesson(${arg(L.id)})">🗑 Xóa bài</button></div>
+                <div style="display:flex;gap:6px">
+                    <a class="btn" href="lesson.html?c=${encodeURIComponent(c.id)}&l=${encodeURIComponent(L.id)}" target="_blank" rel="noopener" title="Mở trang học của bài này (bản đã lưu)">👁 Xem</a>
+                    <button class="btn danger" onclick="CA.deleteLesson(${arg(L.id)})">🗑 Xóa bài</button></div>
             </div>
             <div class="tabs">
-                <button class="tab ${S.tab === 'words' ? 'active' : ''}" onclick="CA.switchTab('words')">🔤 Từ vựng (<span id="wCount">${L.words.length}</span>)</button>
-                <button class="tab ${S.tab === 'grammar' ? 'active' : ''}" onclick="CA.switchTab('grammar')">📗 Ngữ pháp (<span id="gCount">${L.grammar.length}</span>)</button>
+                <button class="tab ${S.tab === 'words' ? 'active' : ''}" data-tab="words" onclick="CA.switchTab('words')">🔤 Từ vựng (<span id="wCount">${L.words.length}</span>)</button>
+                <button class="tab ${S.tab === 'grammar' ? 'active' : ''}" data-tab="grammar" onclick="CA.switchTab('grammar')">📗 Ngữ pháp (<span id="gCount">${L.grammar.length}</span>)</button>
+                <button class="tab ${S.tab === 'dialogues' ? 'active' : ''}" data-tab="dialogues" onclick="CA.switchTab('dialogues')">💬 Hội thoại (<span id="dCount">${L.dialogues.length}</span>)</button>
             </div>
             <div class="tab-b" id="tabBody"></div>
             <div class="savebar">
@@ -507,10 +510,103 @@
 
     function switchTab(t) {
         S.tab = t;
-        document.querySelectorAll('.tab').forEach((el, i) => el.classList.toggle('active', (i === 0) === (t === 'words')));
+        document.querySelectorAll('.tab').forEach(el => el.classList.toggle('active', el.dataset.tab === t));
         renderTab();
     }
-    function renderTab() { S.tab === 'words' ? renderWords() : renderGrammar(); }
+    function renderTab() {
+        if (S.tab === 'grammar') renderGrammar();
+        else if (S.tab === 'dialogues') renderDialogues();
+        else renderWords();
+    }
+
+    // ---------- tab hội thoại
+    // Định dạng soạn thảo (mỗi câu một dòng):
+    //   A: 안녕하세요?
+    //   = Xin chào?            ← dòng bắt đầu bằng "=" là bản dịch của câu ngay trên
+    //   B: 네, 안녕하세요.
+    // Dòng không có "Tên:" được nối vào câu trước (hoặc thành lời dẫn nếu là dòng đầu).
+    function parseScript(text) {
+        const lines = [];
+        String(text || '').split(/\r?\n/).forEach(raw => {
+            const s = raw.trim();
+            if (!s) return;
+            if (/^[=＝]/.test(s)) {
+                const vi = s.replace(/^[=＝]\s*/, '');
+                if (lines.length) lines[lines.length - 1].vi = (lines[lines.length - 1].vi ? lines[lines.length - 1].vi + ' ' : '') + vi;
+                return;
+            }
+            const m = s.match(/^([^:：]{1,15})\s*[:：]\s*(.+)$/);
+            if (m && !/[.?!。]/.test(m[1]) && !/^\d+$/.test(m[1].trim())) lines.push({ s: m[1].trim(), kr: m[2].trim(), vi: '' });
+            else if (lines.length && lines[lines.length - 1].s) lines[lines.length - 1].kr += ' ' + s;
+            else lines.push({ s: '', kr: s, vi: '' });
+        });
+        return lines;
+    }
+    function serializeScript(lines) {
+        return (lines || []).map(l => (l.s ? l.s + ': ' : '') + l.kr + (l.vi ? '\n= ' + l.vi : '')).join('\n');
+    }
+
+    function renderDialogues() {
+        const D = S.lesson.dialogues;
+        $('dCount') && ($('dCount').textContent = D.length);
+        $('tabBody').innerHTML = `
+            <div class="toolbar">
+                <button class="btn primary" onclick="CA.addDialogue()">＋ Thêm đoạn hội thoại</button>
+                <span class="grow"></span>
+                <span class="hint">Mỗi câu một dòng dạng <code>A: 안녕하세요?</code>, dòng <code>= …</code> ngay dưới là bản dịch.</span>
+            </div>
+            ${D.length ? D.map((d, i) => `<div class="panel" style="margin-bottom:12px">
+                <div class="panel-h">
+                    <h2>💬 Đoạn ${i + 1}</h2>
+                    <span>
+                        <button class="btn ghost sm" ${i === 0 ? 'disabled' : ''} onclick="CA.moveDialogue(${i},-1)">↑</button>
+                        <button class="btn ghost sm" ${i === D.length - 1 ? 'disabled' : ''} onclick="CA.moveDialogue(${i},1)">↓</button>
+                        <button class="btn ghost sm danger" onclick="CA.removeDialogue(${i})">✕</button>
+                    </span>
+                </div>
+                <div class="panel-b" style="display:grid;gap:10px">
+                    <div class="editor-head" style="padding:0;grid-template-columns:1fr 1fr">
+                        <div class="field"><label>Tiêu đề (tùy chọn)</label><input data-d="${i}" data-f="title" value="${esc(d.title || '')}" placeholder="VD: 말하기 1 — Ở quán cà phê"></div>
+                        <div class="field"><label>Link audio mp3 (tùy chọn)</label><input data-d="${i}" data-f="audio" value="${esc(d.audio || '')}" placeholder="https://… (để trống thì web tự đọc)"></div>
+                    </div>
+                    <div class="field"><label>Kịch bản</label>
+                        <textarea data-d="${i}" data-f="script" rows="8" class="kr" placeholder="A: 안녕하세요? 저는 마리코예요.&#10;= Xin chào, tôi là Mariko.&#10;B: 안녕하세요? 저는 스티븐이에요.">${esc(serializeScript(d.lines))}</textarea></div>
+                    <div class="hint" id="dInfo${i}">${dialogueInfo(d)}</div>
+                </div></div>`).join('')
+                : `<div class="empty" style="padding:30px"><p>Chưa có hội thoại. Bấm <b>＋ Thêm đoạn hội thoại</b> rồi dán kịch bản.</p></div>`}`;
+        $('tabBody').querySelectorAll('[data-d]').forEach(el => el.addEventListener('input', () => {
+            const d = D[+el.dataset.d];
+            if (el.dataset.f === 'script') d.lines = parseScript(el.value);
+            else d[el.dataset.f] = el.value;
+            const info = $('dInfo' + el.dataset.d); if (info) info.innerHTML = dialogueInfo(d);
+            markDirty();
+        }));
+    }
+    function dialogueInfo(d) {
+        const lines = d.lines || [];
+        if (!lines.length) return 'Chưa có câu nào.';
+        const speakers = [...new Set(lines.map(l => l.s).filter(Boolean))];
+        const noVi = lines.filter(l => !l.vi).length;
+        return `${lines.length} câu · nhân vật: ${speakers.length ? speakers.map(esc).join(', ') : '(không có)'}` +
+            (noVi ? ` · <span style="color:var(--warn)">${noVi} câu chưa có bản dịch</span>` : ' · đủ bản dịch');
+    }
+    function addDialogue() { S.lesson.dialogues.push({ id: newId('d'), title: '', audio: '', lines: [] }); markDirty(); renderDialogues(); }
+    function moveDialogue(i, d) {
+        const D = S.lesson.dialogues, j = i + d;
+        if (j < 0 || j >= D.length) return;
+        [D[i], D[j]] = [D[j], D[i]]; markDirty(); renderDialogues();
+    }
+    async function removeDialogue(i) {
+        const r = await Swal.fire({ icon: 'question', title: 'Xóa đoạn hội thoại này?', showCancelButton: true, confirmButtonText: 'Xóa', cancelButtonText: 'Hủy', confirmButtonColor: '#dc2626' });
+        if (!r.isConfirmed) return;
+        S.lesson.dialogues.splice(i, 1); markDirty(); renderDialogues();
+    }
+    function cleanDialogue(d) {
+        return {
+            id: d.id || newId('d'), title: String(d.title || '').trim(), audio: String(d.audio || '').trim(),
+            lines: (d.lines || []).map(l => ({ s: String(l.s || '').trim(), kr: String(l.kr || '').trim(), vi: String(l.vi || '').trim() })).filter(l => l.kr)
+        };
+    }
 
     // ---------- tab từ vựng
     function renderWords() {
@@ -748,25 +844,26 @@
         if (!title) return Swal.fire('Thiếu tên bài', 'Vui lòng nhập tên bài.', 'info');
         const words = L.words.map(cleanWord).filter(w => w.word);
         const grammar = L.grammar.map(cleanGrammar).filter(g => g.title);
+        const dialogues = (L.dialogues || []).map(cleanDialogue).filter(d => d.lines.length);
         const noMeaning = words.filter(w => !w.meaning).length;
         if (noMeaning) {
             const r = await Swal.fire({ icon: 'question', title: `${noMeaning} từ chưa có nghĩa`, text: 'Vẫn lưu?', showCancelButton: true, confirmButtonText: 'Vẫn lưu', cancelButtonText: 'Quay lại sửa' });
             if (!r.isConfirmed) return;
         }
-        const payload = { title, stage: L.stage, words, grammar, version: (L.version || 0) + 1 };
+        const payload = { title, stage: L.stage, words, grammar, dialogues, version: (L.version || 0) + 1 };
         if (bytesOf(payload) > MAX_LESSON_BYTES) {
             return Swal.fire('Bài quá lớn', 'Nội dung bài vượt giới hạn ~1MB của Firestore. Hãy tách bớt ngữ pháp sang bài khác.', 'error');
         }
         const btn = $('saveBtn'); btn.disabled = true; btn.textContent = 'Đang lưu…';
         try {
             const units = clone(c.units || []).map(u => u.id === L.id
-                ? { ...u, title, stage: L.stage, wordCount: words.length, grammarCount: grammar.length } : u);
+                ? { ...u, title, stage: L.stage, wordCount: words.length, grammarCount: grammar.length, dialogueCount: dialogues.length } : u);
             const b = db.batch();
             b.set(curCol().doc(c.id).collection('lessons').doc(L.id), { ...payload, updatedAt: FV.serverTimestamp() }, { merge: true });
             b.update(curCol().doc(c.id), { units, version: FV.increment(1), updatedAt: FV.serverTimestamp() });
             await b.commit();
             c.units = units; c.version = (c.version || 0) + 1;
-            Object.assign(L, { title, words, grammar, version: payload.version });
+            Object.assign(L, { title, words, grammar, dialogues, version: payload.version });
             S.dirty = false;
             renderSidebar(); renderLesson();
             toast('Đã lưu bài');
@@ -789,9 +886,10 @@
             const id = newId('l_');
             const words = (l.words || []).map(cleanWord).filter(w => w.word);
             const grammar = (l.grammar || []).map(cleanGrammar).filter(g => g.title);
-            const doc = { title: String(l.title || 'Bài').trim(), stage, words, grammar, version: 1 };
+            const dialogues = (l.dialogues || []).map(cleanDialogue).filter(d => d.lines.length);
+            const doc = { title: String(l.title || 'Bài').trim(), stage, words, grammar, dialogues, version: 1 };
             if (bytesOf(doc) > MAX_LESSON_BYTES) throw new Error(`Bài "${doc.title}" vượt giới hạn 1MB — hãy tách nhỏ.`);
-            units.push({ id, title: doc.title, stage, wordCount: words.length, grammarCount: grammar.length });
+            units.push({ id, title: doc.title, stage, wordCount: words.length, grammarCount: grammar.length, dialogueCount: dialogues.length });
             ops.push(b => b.set(ref.collection('lessons').doc(id), { ...doc, updatedAt: FV.serverTimestamp() }));
         });
         await commitInChunks(ops);
@@ -927,7 +1025,7 @@
             const snap = await curCol().doc(c.id).collection('lessons').get();
             const byId = Object.fromEntries(snap.docs.map(d => [d.id, d.data()]));
             const lessons = (c.units || []).map(u => byId[u.id]).filter(Boolean)
-                .map(l => ({ title: l.title, stage: l.stage || '', words: l.words || [], grammar: l.grammar || [] }));
+                .map(l => ({ title: l.title, stage: l.stage || '', words: l.words || [], grammar: l.grammar || [], dialogues: l.dialogues || [] }));
             const data = {
                 format: 'vht-curriculum', formatVersion: 1, exportedAt: new Date().toISOString(),
                 curriculum: { title: c.title, level: c.level, icon: c.icon, description: c.description || '', visibility: c.visibility, stages: c.stages || [] },
@@ -982,6 +1080,7 @@
         createStage, renameStage, deleteStage, createLesson, deleteLesson, openLesson, moveLesson, backToCurriculum,
         switchTab, addWordRow, moveWord, removeWord, removeDuplicates, bulkPaste,
         pickFromLibrary, previewGrammar, editGrammar, moveGrammar, removeGrammar, saveLesson,
+        addDialogue, moveDialogue, removeDialogue, _parseScript: parseScript,
         convertFromClass, exportJson, importJson,
         _parseLine: parseLine // để kiểm thử
     };
