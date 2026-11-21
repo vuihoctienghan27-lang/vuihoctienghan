@@ -202,25 +202,55 @@
         S.tab = ['words', 'grammar', 'dialogues'].includes(hash) ? hash
             : (lesson.words.length ? 'words' : lesson.grammar.length ? 'grammar' : lesson.dialogues.length ? 'dialogues' : 'words');
         window.learningActive = true; // activity-tracker.js: tính giờ học
-        S.media = {};
+        S.media = {}; S.credits = {};
         drawLesson();
         loadMedia(cid, lid);
     }
 
     // ---------- Ảnh minh họa (curricula/{c}/media, mỗi doc { lesson, items: { id: dataURL } })
     // Thẻ ảnh được vẽ sẵn dạng <img data-img="id" hidden>; tải xong thì gắn src và hiện ra.
-    function imgTag(id, cls) { return `<img class="${cls}" data-img="${esc(id)}" alt="" ${S.media[id] ? `src="${esc(S.media[id])}"` : 'hidden'}>`; }
+    // Ảnh có giấy phép mở (CC BY / BY-SA…) mang theo credits[id] = { t, u } → hiện ở mục "Nguồn ảnh".
+    function imgTag(id, cls) {
+        const cr = (S.credits || {})[id];
+        return `<img class="${cls}" data-img="${esc(id)}" alt="" ${cr ? `title="${esc(cr.t)}"` : ''} ${S.media[id] ? `src="${esc(S.media[id])}"` : 'hidden'}>`;
+    }
+    function creditsBlock(ids) {
+        // gom theo nguồn: nhiều từ cùng dùng biểu tượng Twemoji → một dòng
+        const groups = new Map();
+        ids.forEach(({ id, label }) => {
+            const cr = (S.credits || {})[id];
+            if (!cr || !S.media[id]) return;
+            const key = cr.t + '|' + cr.u;
+            if (!groups.has(key)) groups.set(key, { cr, labels: [] });
+            groups.get(key).labels.push(label);
+        });
+        const rows = [...groups.values()].map(({ cr, labels }) => {
+            const names = labels.length > 6 ? labels.slice(0, 6).join(', ') + ` … (+${labels.length - 6})` : labels.join(', ');
+            return `<li><b class="kr">${esc(names)}</b>: ${cr.u ? `<a href="${esc(cr.u)}" target="_blank" rel="noopener nofollow">${esc(cr.t)}</a>` : esc(cr.t)}</li>`;
+        });
+        return rows.length ? `<details class="cl-credits"><summary>📷 Nguồn ảnh (${rows.length})</summary><ul>${rows.join('')}</ul></details>` : '';
+    }
+    function fillCredits() {
+        const el = document.getElementById('clCredits'); if (!el) return;
+        const L = S.lesson;
+        el.innerHTML = S.tab === 'dialogues'
+            ? creditsBlock(L.dialogues.map((d, i) => ({ id: d.id, label: d.title || 'Hội thoại ' + (i + 1) })))
+            : creditsBlock(L.words.map(w => ({ id: w.id, label: w.word })));
+    }
     function applyMedia(root2) {
         (root2 || document).querySelectorAll('img[data-img]').forEach(im => {
-            const u = S.media[im.dataset.img];
+            const u = S.media[im.dataset.img], cr = (S.credits || {})[im.dataset.img];
             if (u && im.getAttribute('src') !== u) { im.src = u; im.hidden = false; }
+            if (cr) im.title = cr.t;
         });
         document.querySelectorAll('.cl-vcard').forEach(c => c.classList.toggle('has-img', !!c.querySelector('img[data-img]:not([hidden])')));
+        fillCredits();
     }
     async function loadMedia(cid, lid) {
         try {
             const snap = await db().collection('curricula').doc(cid).collection('media').where('lesson', '==', lid).get();
-            snap.docs.forEach(d => Object.assign(S.media, d.data().items || {}));
+            S.credits = S.credits || {};
+            snap.docs.forEach(d => { Object.assign(S.media, d.data().items || {}); Object.assign(S.credits, d.data().credits || {}); });
             if (S.lessonId === lid) applyMedia();
         } catch (e) { /* chưa có ảnh hoặc không có quyền → bỏ qua */ }
     }
@@ -292,7 +322,9 @@
                     <div class="m">${esc(w.meaning)}</div>
                     ${w.ex_kr ? `<div class="ex"><div class="ko kr">${esc(w.ex_kr)}</div>${w.ex_vn ? `<div class="vi">${esc(w.ex_vn)}</div>` : ''}</div>` : ''}
                     <span class="num">${i + 1}</span>
-                </div>`).join('')}</div>`;
+                </div>`).join('')}</div>
+            <div id="clCredits"></div>`;
+        fillCredits();
         const grid = document.getElementById('clVGrid');
         box.querySelectorAll('[data-hide]').forEach(b => b.addEventListener('click', () => {
             S.hide = b.dataset.hide;
@@ -553,7 +585,8 @@
                         </div>
                     </div>`).join('')}</div>
             </div>`;
-        }).join('');
+        }).join('') + '<div id="clCredits"></div>';
+        fillCredits();
 
         box.querySelectorAll('.cl-dlg').forEach(card => {
             const d = D[+card.dataset.d];

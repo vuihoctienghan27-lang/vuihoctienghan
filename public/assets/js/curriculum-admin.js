@@ -467,7 +467,7 @@
                 words: clone(data.words || []), grammar: clone(data.grammar || []), dialogues: clone(data.dialogues || [])
             };
             S.dirty = false;
-            S.media = {};
+            S.media = {}; S.credits = {};
             renderLesson();
             loadLessonMedia(id);
         } catch (err) { fail(err); }
@@ -621,14 +621,16 @@
     async function loadLessonMedia(lid) {
         try {
             const snap = await curCol().doc(S.cur.id).collection('media').where('lesson', '==', lid).get();
-            const items = {};
-            snap.docs.forEach(d => Object.assign(items, d.data().items || {}));
+            const items = {}, credits = {};
+            snap.docs.forEach(d => { Object.assign(items, d.data().items || {}); Object.assign(credits, d.data().credits || {}); });
             if (!S.lesson || S.lesson.id !== lid) return;
-            S.media = items;
+            S.media = items; S.credits = credits;
             renderTab();
         } catch (err) { console.warn('Không tải được ảnh của bài:', err); }
     }
-    async function writeLessonMedia(lid, items) {
+    // credits: { id: { t: "tên ảnh — tác giả · giấy phép · nguồn", u: "link trang gốc" } } (ảnh giấy phép mở cần ghi nguồn)
+    async function writeLessonMedia(lid, items, credits) {
+        credits = credits || {};
         const media = curCol().doc(S.cur.id).collection('media');
         const old = await media.where('lesson', '==', lid).get();
         const docs = []; let cur = {}, size = 0;
@@ -638,7 +640,11 @@
         });
         if (Object.keys(cur).length) docs.push(cur);
         const ops = old.docs.map(d => b => b.delete(d.ref));
-        docs.forEach((it, part) => ops.push(b => b.set(media.doc(`${lid}_${part}`), { lesson: lid, part, items: it })));
+        docs.forEach((it, part) => {
+            const cr = {};
+            Object.keys(it).forEach(id => { const c = credits[id]; if (c && typeof c.t === 'string') cr[id] = { t: c.t.slice(0, 300), u: /^https:\/\//.test(c.u || '') ? String(c.u).slice(0, 500) : '' }; });
+            ops.push(b => b.set(media.doc(`${lid}_${part}`), { lesson: lid, part, items: it, credits: cr }));
+        });
         await commitInChunks(ops);
     }
     function picButton(id, i, kind) {
@@ -710,11 +716,13 @@
         });
         if (!res.isConfirmed && !res.isDenied) return;
         const items = Object.assign({}, S.media || {});
+        const credits = Object.assign({}, S.credits || {});
+        delete credits[item.id]; // ảnh mới do giáo viên chọn → không còn nguồn cũ
         if (res.isDenied) delete items[item.id]; else items[item.id] = res.value;
         try {
             loading('Đang lưu ảnh…');
-            await writeLessonMedia(L.id, items);
-            S.media = items;
+            await writeLessonMedia(L.id, items, credits);
+            S.media = items; S.credits = credits;
             Swal.close();
             toast(res.isDenied ? 'Đã xóa ảnh' : 'Đã lưu ảnh');
             renderTab();
@@ -1172,19 +1180,8 @@
                 });
                 if (!r.isConfirmed) return;
                 loading('Đang lưu ảnh…');
-                const media = curCol().doc(c.id).collection('media');
-                const old = await media.get();
-                const ops = old.docs.filter(d => lids.includes(d.data().lesson)).map(d => b => b.delete(d.ref));
-                await commitInChunks(ops);
-                for (const lid of lids) {
-                    let part = 0, items = {}, size = 0;
-                    const flush = async () => { if (!Object.keys(items).length) return; await media.doc(`${lid}_${part}`).set({ lesson: lid, part, items }); part++; items = {}; size = 0; };
-                    for (const [id, url] of Object.entries(byLesson[lid])) {
-                        if (size + url.length > MEDIA_DOC_BYTES) await flush();
-                        items[id] = url; size += url.length + id.length;
-                    }
-                    await flush();
-                }
+                const credits = (data.credits && typeof data.credits === 'object') ? data.credits : {};
+                for (const lid of lids) await writeLessonMedia(lid, byLesson[lid], credits);
                 Swal.fire({ icon: 'success', title: `Đã nhập ${total} ảnh`, timer: 1800, showConfirmButton: false });
             } catch (err) { fail(err); }
         };
