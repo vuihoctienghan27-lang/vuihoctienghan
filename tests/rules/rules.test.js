@@ -452,3 +452,46 @@ test('student_requests: tự gửi yêu cầu của mình, admin duyệt/xoá', 
   await assertSucceeds(getDocs(collection(ADMIN(), 'student_requests')));
   await assertSucceeds(deleteDoc(doc(ADMIN(), 'student_requests', ALICE)));
 });
+
+// ───────── KHO GIÁO TRÌNH (curricula) ─────────
+test('curricula: chỉ admin soạn; đọc theo visibility', async () => {
+  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula', 'cS'), { title: 'Lớp', visibility: 'students', units: [] }));
+  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula/cS/lessons/l1'), { title: 'Bài 1', words: [], grammar: [] }));
+  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cX'), { title: 'x', visibility: 'public' }));
+  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'curricula/cS/lessons/l2'), { title: 'x' }));
+  await seed('curricula/cP', { title: 'Công khai', visibility: 'public' });
+  await seed('curricula/cP/lessons/l1', { title: 'Bài 1' });
+  await seed('curricula/cR', { title: 'Riêng', visibility: 'private' });
+  await seed('curricula/cR/lessons/l1', { title: 'Bài 1' });
+  await seed('curricula/cN', { title: 'Không đặt visibility' });
+
+  await assertSucceeds(getDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cS')));
+  await assertSucceeds(getDoc(doc(db(ALICE, aliceEmail), 'curricula/cS/lessons/l1')));
+  await assertFails(getDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cR')));
+  await assertFails(getDoc(doc(db(ALICE, aliceEmail), 'curricula/cR/lessons/l1')));
+  await assertFails(getDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cN')));
+  await assertSucceeds(getDoc(doc(anon(), 'curricula', 'cP')));
+  await assertSucceeds(getDoc(doc(anon(), 'curricula/cP/lessons/l1')));
+  await assertFails(getDoc(doc(anon(), 'curricula', 'cS')));
+  await assertFails(getDoc(doc(anon(), 'curricula/cS/lessons/l1')));
+  await assertSucceeds(getDoc(doc(ADMIN(), 'curricula/cR/lessons/l1')));
+});
+
+test('curricula: học viên liệt kê theo visibility (curriculum-personal.js), không liệt kê tất cả', async () => {
+  await seed('curricula/cS', { title: 'Lớp', visibility: 'students' });
+  await seed('curricula/cP', { title: 'Công khai', visibility: 'public' });
+  await seed('curricula/cR', { title: 'Riêng', visibility: 'private' });
+  const col = collection(db(ALICE, aliceEmail), 'curricula');
+  await assertSucceeds(getDocs(query(col, where('visibility', '==', 'students'))));
+  await assertSucceeds(getDocs(query(col, where('visibility', '==', 'public'))));
+  await assertFails(getDocs(col));
+  await assertFails(getDocs(query(collection(anon(), 'curricula'), where('visibility', '==', 'students'))));
+  await assertSucceeds(getDocs(query(collection(anon(), 'curricula'), where('visibility', '==', 'public'))));
+  await assertSucceeds(getDocs(collection(ADMIN(), 'curricula')));   // curriculum-admin.js / curriculum-sync.js
+});
+
+test('vocabulary cá nhân: truy vấn từ theo src.c của chính mình', async () => {
+  await seed(`users/${ALICE}/vocabulary/cv_cS_w1`, { word: '학교', src: { c: 'cS', l: 'l1', w: 'w1' } });
+  await assertSucceeds(getDocs(query(collection(db(ALICE, aliceEmail), `users/${ALICE}/vocabulary`), where('src.c', '==', 'cS'))));
+  await assertFails(getDocs(query(collection(db(BOB), `users/${ALICE}/vocabulary`), where('src.c', '==', 'cS'))));
+});

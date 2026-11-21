@@ -1712,7 +1712,10 @@
                 <div
                     style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.6); padding-bottom: 10px;">
                     <h3 style="margin:0; font-size: 1.3em;">Thư mục của bạn</h3>
-                    <button class="btn-create-list" onclick="createFolderDialog()">+ Tạo Thư mục</button>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
+                        <button class="btn-create-list" onclick="window.CurriculumPersonal && CurriculumPersonal.openPicker()" style="background:#4f46e5;border:none;">📚 Thêm giáo trình</button>
+                        <button class="btn-create-list" onclick="createFolderDialog()">+ Tạo Thư mục</button>
+                    </div>
                 </div>
                 <div class="list-grid" id="listsGrid"></div>
             </div>
@@ -2068,6 +2071,7 @@
     <script src="assets/js/grammar-library.js"></script>
     <script src="assets/js/shared-vocab.js"></script>
     <script src="assets/js/curriculum-sync.js"></script>
+    <script src="assets/js/curriculum-personal.js"></script>
     <script src="assets/js/vocab-game.js"></script>
     <script src="assets/js/srs.js"></script>
     <script src="assets/js/ui-icons.js"></script>
