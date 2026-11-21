@@ -495,3 +495,15 @@ test('vocabulary cá nhân: truy vấn từ theo src.c của chính mình', asyn
   await assertSucceeds(getDocs(query(collection(db(ALICE, aliceEmail), `users/${ALICE}/vocabulary`), where('src.c', '==', 'cS'))));
   await assertFails(getDocs(query(collection(db(BOB), `users/${ALICE}/vocabulary`), where('src.c', '==', 'cS'))));
 });
+
+test('curricula/media: ảnh minh họa theo quyền xem của giáo trình, chỉ admin ghi', async () => {
+  await seed('curricula/cS', { title: 'Lớp', visibility: 'students' });
+  await seed('curricula/cR', { title: 'Riêng', visibility: 'private' });
+  await seed('curricula/cS/media/l1_0', { lesson: 'l1', part: 0, items: { w1: 'data:image/jpeg;base64,AA' } });
+  await seed('curricula/cR/media/l1_0', { lesson: 'l1', part: 0, items: {} });
+  await assertSucceeds(getDocs(query(collection(db(ALICE, aliceEmail), 'curricula/cS/media'), where('lesson', '==', 'l1'))));
+  await assertFails(getDocs(query(collection(db(ALICE, aliceEmail), 'curricula/cR/media'), where('lesson', '==', 'l1'))));
+  await assertFails(getDoc(doc(anon(), 'curricula/cS/media/l1_0')));
+  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'curricula/cS/media/l1_1'), { lesson: 'l1', items: {} }));
+  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula/cS/media/l1_1'), { lesson: 'l1', items: {} }));
+});

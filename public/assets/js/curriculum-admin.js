@@ -228,8 +228,8 @@
         if (!value) return;
         try {
             loading('Đang xóa…');
-            const snap = await curCol().doc(c.id).collection('lessons').get();
-            await commitInChunks(snap.docs.map(d => (b) => b.delete(d.ref)));
+            const [snap, media] = await Promise.all([curCol().doc(c.id).collection('lessons').get(), curCol().doc(c.id).collection('media').get()]);
+            await commitInChunks(snap.docs.concat(media.docs).map(d => (b) => b.delete(d.ref)));
             await curCol().doc(c.id).delete();
             S.cur = null; S.lesson = null;
             Swal.close();
@@ -292,6 +292,7 @@
                 </div>
                 <div class="actions">
                     <button class="btn" onclick="CA.editCurriculum()">✎ Thông tin</button>
+                    <button class="btn" onclick="CA.importMedia()" title="Nhập file ảnh minh họa (tranh từ vựng, tranh hội thoại)">🖼 Nhập ảnh</button>
                     <button class="btn" onclick="CA.exportJson()">⬇ Xuất JSON</button>
                     <button class="btn danger" onclick="CA.deleteCurriculum()">🗑 Xóa</button>
                 </div>
@@ -442,7 +443,9 @@
         if (!r.isConfirmed) return;
         try {
             const units = (S.cur.units || []).filter(x => x.id !== id);
+            const media = await curCol().doc(S.cur.id).collection('media').where('lesson', '==', id).get();
             const b = db.batch();
+            media.docs.forEach(d => b.delete(d.ref));
             b.delete(curCol().doc(S.cur.id).collection('lessons').doc(id));
             b.update(curCol().doc(S.cur.id), { units, version: FV.increment(1), updatedAt: FV.serverTimestamp() });
             await b.commit();
@@ -535,6 +538,8 @@
                 if (lines.length) lines[lines.length - 1].vi = (lines[lines.length - 1].vi ? lines[lines.length - 1].vi + ' ' : '') + vi;
                 return;
             }
+            // Dòng nằm trọn trong ngoặc, VD "(…)" hay "(두 사람이 웃는다)" → lời dẫn / chuyển cảnh
+            if (/^[(（][^)）]*[)）]$/.test(s)) { lines.push({ s: '', kr: s, vi: '' }); return; }
             const m = s.match(/^([^:：]{1,15})\s*[:：]\s*(.+)$/);
             if (m && !/[.?!。]/.test(m[1]) && !/^\d+$/.test(m[1].trim())) lines.push({ s: m[1].trim(), kr: m[2].trim(), vi: '' });
             else if (lines.length && lines[lines.length - 1].s) lines[lines.length - 1].kr += ' ' + s;
@@ -553,7 +558,7 @@
             <div class="toolbar">
                 <button class="btn primary" onclick="CA.addDialogue()">＋ Thêm đoạn hội thoại</button>
                 <span class="grow"></span>
-                <span class="hint">Mỗi câu một dòng dạng <code>A: 안녕하세요?</code>, dòng <code>= …</code> ngay dưới là bản dịch.</span>
+                <span class="hint">Mỗi câu một dòng dạng <code>A: 안녕하세요?</code>, dòng <code>= …</code> ngay dưới là bản dịch, dòng <code>(…)</code> là lời dẫn / chuyển cảnh.</span>
             </div>
             ${D.length ? D.map((d, i) => `<div class="panel" style="margin-bottom:12px">
                 <div class="panel-h">
@@ -1016,6 +1021,67 @@
         } catch (err) { fail(err); }
     }
 
+    // ------------------------------------------------------------------ Ảnh minh họa
+    // File: { format: 'vht-curriculum-media', items: { <wordId | dialogueId>: 'data:image/jpeg;base64,…' } }
+    // Ảnh được ghép theo ID từ / đoạn hội thoại của giáo trình đang mở, gom theo bài,
+    // lưu ở curricula/{id}/media/{lessonId}_{n} (mỗi doc < 900KB) — cùng quyền xem với bài học.
+    const MEDIA_DOC_BYTES = 850 * 1024;
+    async function importMedia() {
+        const c = S.cur; if (!c) return;
+        if (!(await confirmDiscard())) return;
+        const input = $('jsonFileInput');
+        input.value = '';
+        input.onchange = async () => {
+            const file = input.files[0]; if (!file) return;
+            let data;
+            try { data = JSON.parse(await file.text()); } catch (e) { return Swal.fire('File không hợp lệ', 'Không đọc được JSON.', 'error'); }
+            if (!data || data.format !== 'vht-curriculum-media' || !data.items) return Swal.fire('Sai định dạng', 'Đây không phải file ảnh giáo trình.', 'error');
+            try {
+                loading('Đang ghép ảnh với bài học…');
+                const snap = await curCol().doc(c.id).collection('lessons').get();
+                const owner = {}; // id → lessonId
+                snap.docs.forEach(d => {
+                    const L = d.data();
+                    (L.words || []).forEach(w => { owner[w.id] = d.id; });
+                    (L.dialogues || []).forEach(x => { owner[x.id] = d.id; });
+                });
+                const byLesson = {}; let unmatched = 0;
+                Object.entries(data.items).forEach(([id, url]) => {
+                    if (typeof url !== 'string' || !url.startsWith('data:image/')) return;
+                    const lid = owner[id];
+                    if (!lid) { unmatched++; return; }
+                    (byLesson[lid] = byLesson[lid] || {})[id] = url;
+                });
+                const lids = Object.keys(byLesson);
+                if (!lids.length) { Swal.close(); return Swal.fire('Không khớp ảnh nào', 'ID trong file ảnh không trùng với từ / hội thoại của giáo trình này.', 'warning'); }
+                Swal.close();
+                const total = lids.reduce((n, l) => n + Object.keys(byLesson[l]).length, 0);
+                const r = await Swal.fire({
+                    icon: 'question', title: 'Nhập ảnh minh họa?',
+                    html: `<b>${total}</b> ảnh cho <b>${lids.length}</b> bài${unmatched ? `<br><span class="hint">${unmatched} ảnh không khớp sẽ bị bỏ qua</span>` : ''}<br><span class="hint">Ảnh cũ của các bài này sẽ được thay mới.</span>`,
+                    showCancelButton: true, confirmButtonText: 'Nhập', cancelButtonText: 'Hủy'
+                });
+                if (!r.isConfirmed) return;
+                loading('Đang lưu ảnh…');
+                const media = curCol().doc(c.id).collection('media');
+                const old = await media.get();
+                const ops = old.docs.filter(d => lids.includes(d.data().lesson)).map(d => b => b.delete(d.ref));
+                await commitInChunks(ops);
+                for (const lid of lids) {
+                    let part = 0, items = {}, size = 0;
+                    const flush = async () => { if (!Object.keys(items).length) return; await media.doc(`${lid}_${part}`).set({ lesson: lid, part, items }); part++; items = {}; size = 0; };
+                    for (const [id, url] of Object.entries(byLesson[lid])) {
+                        if (size + url.length > MEDIA_DOC_BYTES) await flush();
+                        items[id] = url; size += url.length + id.length;
+                    }
+                    await flush();
+                }
+                Swal.fire({ icon: 'success', title: `Đã nhập ${total} ảnh`, timer: 1800, showConfirmButton: false });
+            } catch (err) { fail(err); }
+        };
+        input.click();
+    }
+
     // ------------------------------------------------------------------ Xuất / Nhập JSON
     async function exportJson() {
         const c = S.cur; if (!c) return;
@@ -1081,7 +1147,7 @@
         switchTab, addWordRow, moveWord, removeWord, removeDuplicates, bulkPaste,
         pickFromLibrary, previewGrammar, editGrammar, moveGrammar, removeGrammar, saveLesson,
         addDialogue, moveDialogue, removeDialogue, _parseScript: parseScript,
-        convertFromClass, exportJson, importJson,
+        convertFromClass, exportJson, importJson, importMedia,
         _parseLine: parseLine // để kiểm thử
     };
 })();

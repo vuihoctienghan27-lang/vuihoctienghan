@@ -202,7 +202,27 @@
         S.tab = ['words', 'grammar', 'dialogues'].includes(hash) ? hash
             : (lesson.words.length ? 'words' : lesson.grammar.length ? 'grammar' : lesson.dialogues.length ? 'dialogues' : 'words');
         window.learningActive = true; // activity-tracker.js: tính giờ học
+        S.media = {};
         drawLesson();
+        loadMedia(cid, lid);
+    }
+
+    // ---------- Ảnh minh họa (curricula/{c}/media, mỗi doc { lesson, items: { id: dataURL } })
+    // Thẻ ảnh được vẽ sẵn dạng <img data-img="id" hidden>; tải xong thì gắn src và hiện ra.
+    function imgTag(id, cls) { return `<img class="${cls}" data-img="${esc(id)}" alt="" ${S.media[id] ? `src="${S.media[id]}"` : 'hidden'}>`; }
+    function applyMedia(root2) {
+        (root2 || document).querySelectorAll('img[data-img]').forEach(im => {
+            const u = S.media[im.dataset.img];
+            if (u && im.getAttribute('src') !== u) { im.src = u; im.hidden = false; }
+        });
+        document.querySelectorAll('.cl-vcard').forEach(c => c.classList.toggle('has-img', !!c.querySelector('img[data-img]:not([hidden])')));
+    }
+    async function loadMedia(cid, lid) {
+        try {
+            const snap = await db().collection('curricula').doc(cid).collection('media').where('lesson', '==', lid).get();
+            snap.docs.forEach(d => Object.assign(S.media, d.data().items || {}));
+            if (S.lessonId === lid) applyMedia();
+        } catch (e) { /* chưa có ảnh hoặc không có quyền → bỏ qua */ }
     }
 
     function drawLesson() {
@@ -266,7 +286,8 @@
                 <input class="cl-search" id="clSearch" type="search" placeholder="Tìm từ hoặc nghĩa…" aria-label="Tìm từ">
             </div>
             <div class="cl-vgrid ${S.hide}" id="clVGrid">${W.map((w, i) => `
-                <div class="cl-vcard" data-i="${i}" data-q="${esc((w.word + ' ' + w.meaning).toLowerCase())}">
+                <div class="cl-vcard${S.media[w.id] ? ' has-img' : ''}" data-i="${i}" data-q="${esc((w.word + ' ' + w.meaning).toLowerCase())}">
+                    ${imgTag(w.id, 'pic')}
                     <div class="top"><div class="w kr">${esc(w.word)}</div><button class="cl-say" data-say="${i}" title="Nghe phát âm" aria-label="Nghe ${esc(w.word)}">🔊</button></div>
                     <div class="m">${esc(w.meaning)}</div>
                     ${w.ex_kr ? `<div class="ex"><div class="ko kr">${esc(w.ex_kr)}</div>${w.ex_vn ? `<div class="vi">${esc(w.ex_vn)}</div>` : ''}</div>` : ''}
@@ -316,7 +337,7 @@
     }
 
     // ---------- Flashcard
-    const FC = { list: [], i: 0, reverse: false };
+    const FC = { list: [], i: 0, reverse: false, picOnly: false };
     function openFlash() {
         FC.list = S.lesson.words.slice(); FC.i = 0;
         const el = document.getElementById('clFlash');
@@ -340,8 +361,10 @@
     function flipFlash() { const c = document.querySelector('#clFlash .card'); if (c) c.classList.toggle('flip'); }
     function drawFlash() {
         const w = FC.list[FC.i], el = document.getElementById('clFlash');
-        const front = FC.reverse ? `<div class="big" style="font-size:1.7em">${esc(w.meaning)}</div>` : `<div class="big kr">${esc(w.word)}</div>`;
-        const back = FC.reverse ? `<div class="big kr">${esc(w.word)}</div>` : `<div class="big" style="font-size:1.7em">${esc(w.meaning)}</div>`;
+        const pic = S.media[w.id] ? `<img class="fc-pic" src="${S.media[w.id]}" alt="">` : '';
+        const front = FC.reverse ? `${pic}<div class="big" style="font-size:1.7em">${esc(w.meaning)}</div>` : `${FC.picOnly && pic ? pic + '<div class="small">Đây là từ gì?</div>' : pic + `<div class="big kr">${esc(w.word)}</div>`}`;
+        const back = FC.reverse ? `<div class="big kr">${esc(w.word)}</div>`
+            : (FC.picOnly && pic ? `<div class="big kr">${esc(w.word)}</div><div class="small" style="font-size:1.15em">${esc(w.meaning)}</div>` : `<div class="big" style="font-size:1.7em">${esc(w.meaning)}</div>`);
         const ex = w.ex_kr ? `<div class="small kr">${esc(w.ex_kr)}${w.ex_vn ? '<br>' + esc(w.ex_vn) : ''}</div>` : '';
         el.innerHTML = `<div class="box">
             <div class="bar"><b>🃏 ${esc(splitTitle(S.lesson.title).main)}</b><span>${FC.i + 1} / ${FC.list.length}</span>
@@ -356,6 +379,7 @@
             <div class="ctrl">
                 <button class="cl-btn" data-fc="shuffle">🔀 Trộn thẻ</button>
                 <button class="cl-btn ${FC.reverse ? 'on' : ''}" data-fc="reverse">⇄ Nghĩa trước</button>
+                ${S.lesson.words.some(x => S.media[x.id]) ? `<button class="cl-btn ${FC.picOnly ? 'on' : ''}" data-fc="pic">🖼 Chỉ xem ảnh</button>` : ''}
             </div>
             <div class="hint">Chạm vào thẻ để lật · phím ← → để chuyển · Space để lật · Esc để đóng</div></div>`;
         el.onclick = e => {
@@ -368,7 +392,8 @@
             else if (act === 'next') moveFlash(1);
             else if (act === 'say') speak(FC.list[FC.i].word);
             else if (act === 'shuffle') { for (let i = FC.list.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [FC.list[i], FC.list[j]] = [FC.list[j], FC.list[i]]; } FC.i = 0; drawFlash(); }
-            else if (act === 'reverse') { FC.reverse = !FC.reverse; drawFlash(); }
+            else if (act === 'reverse') { FC.reverse = !FC.reverse; if (FC.reverse) FC.picOnly = false; drawFlash(); }
+            else if (act === 'pic') { FC.picOnly = !FC.picOnly; if (FC.picOnly) FC.reverse = false; drawFlash(); }
         };
     }
 
@@ -514,6 +539,7 @@
                     <button class="cl-btn on" data-act="vi">🇻🇳 Bản dịch</button>
                     ${speakers.length ? `<select data-act="role" aria-label="Luyện vai"><option value="">🎭 Luyện vai: tắt</option>${speakers.map(s => `<option value="${esc(s)}">🎤 Tôi đóng vai ${esc(s)}</option>`).join('')}</select>` : ''}
                 </div>
+                ${imgTag(d.id, 'scene')}
                 ${d.audio ? `<audio controls preload="none" src="${esc(d.audio)}"></audio>` : ''}
                 <div class="cl-lines">${d.lines.map((l, li) => `
                     <div class="cl-line ${side(l.s)}" data-l="${li}" data-s="${esc(l.s)}">

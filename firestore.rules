@@ -621,6 +621,14 @@ service cloud.firestore {
           || curriculumReadable(get(/databases/$(database)/documents/curricula/$(curId)).data);
         allow write: if isAdmin();
       }
+
+      // Ảnh minh họa (tranh từ vựng, tranh hội thoại) — cùng quyền xem với bài học
+      // Mỗi doc: { lesson, part, items: { wordId|dialogueId: dataURL } }
+      match /media/{mediaId} {
+        allow read: if isAdmin()
+          || curriculumReadable(get(/databases/$(database)/documents/curricula/$(curId)).data);
+        allow write: if isAdmin();
+      }
     }
   }
 }
