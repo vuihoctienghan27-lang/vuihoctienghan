@@ -601,5 +601,26 @@ service cloud.firestore {
         }
       }
     }
+
+    // ===== KHO GIÁO TRÌNH (curricula) =====
+    // Nguồn dữ liệu chính (từ vựng + ngữ pháp theo bài) dùng chung cho nhiều lớp.
+    // - Admin (giáo viên): toàn quyền soạn — /curriculum/admin.html
+    // - visibility = "public": ai cũng đọc được; "students": cần đăng nhập; "private": chỉ admin
+    function curriculumReadable(data) {
+      return isAdmin()
+        || data.get("visibility", "private") == "public"
+        || (isSignedIn() && data.get("visibility", "private") == "students");
+    }
+    match /curricula/{curId} {
+      allow read: if curriculumReadable(resource.data);
+      allow write: if isAdmin();
+
+      // Bài học của giáo trình (mảng words + grammar nhúng trong doc)
+      match /lessons/{lessonId} {
+        allow read: if isAdmin()
+          || curriculumReadable(get(/databases/$(database)/documents/curricula/$(curId)).data);
+        allow write: if isAdmin();
+      }
+    }
   }
 }

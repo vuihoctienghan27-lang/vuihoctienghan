@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kho Giáo trình — Soạn thảo</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" />
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+  <script src="../assets/js/grammar-library.js"></script>
+  <style>
+    :root {
+      --bg: #f4f6fb; --panel: #ffffff; --panel-2: #f8fafc; --border: #e2e8f0;
+      --text: #0f172a; --muted: #64748b; --accent: #4f46e5; --accent-soft: #eef2ff;
+      --danger: #dc2626; --danger-soft: #fef2f2; --ok: #059669; --ok-soft: #ecfdf5;
+      --warn: #d97706; --warn-soft: #fffbeb; --shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.04);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0b1120; --panel: #111827; --panel-2: #0f172a; --border: #1f2937;
+        --text: #e5e7eb; --muted: #94a3b8; --accent: #818cf8; --accent-soft: #1e1b4b;
+        --danger: #f87171; --danger-soft: #2a1215; --ok: #34d399; --ok-soft: #052e22;
+        --warn: #fbbf24; --warn-soft: #2a1f05; --shadow: none;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Inter', 'Pretendard', system-ui, sans-serif; font-size: 14px; }
+    button { font: inherit; cursor: pointer; }
+    input, select, textarea { font: inherit; color: var(--text); background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; width: 100%; }
+    input:focus, select:focus, textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+    .kr { font-family: 'Pretendard', 'Inter', sans-serif; }
+
+    /* Auth gate */
+    #authOverlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: var(--bg); z-index: 50; padding: 16px; }
+    .auth-card { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 32px 28px; max-width: 380px; width: 100%; text-align: center; box-shadow: var(--shadow); }
+    .auth-card h1 { font-size: 1.3em; margin: 8px 0 6px; }
+    .auth-card p { color: var(--muted); margin: 0 0 18px; line-height: 1.5; }
+
+    /* Buttons */
+    .btn { border: 1px solid var(--border); background: var(--panel); color: var(--text); border-radius: 8px; padding: 7px 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+    .btn:hover { border-color: var(--accent); }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .btn.primary:hover { filter: brightness(1.08); }
+    .btn.danger { color: var(--danger); }
+    .btn.danger:hover { background: var(--danger-soft); border-color: var(--danger); }
+    .btn.ghost { border-color: transparent; background: transparent; }
+    .btn.sm { padding: 4px 8px; font-size: .85em; }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+
+    /* Layout */
+    header.top { position: sticky; top: 0; z-index: 10; background: var(--panel); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; gap: 12px; }
+    header.top .brand { font-weight: 800; font-size: 1.05em; display: flex; align-items: center; gap: 8px; }
+    header.top .spacer { flex: 1; }
+    header.top .who { color: var(--muted); font-size: .85em; }
+    .layout { display: grid; grid-template-columns: 290px 1fr; gap: 16px; padding: 16px 20px; max-width: 1400px; margin: 0 auto; }
+    .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+    .panel-h { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+    .panel-h h2 { font-size: .95em; margin: 0; }
+    .panel-b { padding: 12px 14px; }
+
+    /* Sidebar */
+    .cur-list { list-style: none; margin: 0; padding: 6px; }
+    .cur-item { padding: 10px 10px; border-radius: 8px; cursor: pointer; display: flex; gap: 10px; align-items: flex-start; }
+    .cur-item:hover { background: var(--panel-2); }
+    .cur-item.active { background: var(--accent-soft); }
+    .cur-item .ic { font-size: 1.4em; line-height: 1; }
+    .cur-item .t { font-weight: 700; }
+    .cur-item .m { color: var(--muted); font-size: .8em; margin-top: 2px; }
+    .side-actions { display: flex; flex-direction: column; gap: 6px; padding: 10px; border-top: 1px solid var(--border); }
+    .side-actions .btn { justify-content: center; }
+
+    /* Badges */
+    .badge { display: inline-block; font-size: .72em; font-weight: 700; padding: 2px 7px; border-radius: 999px; background: var(--panel-2); color: var(--muted); border: 1px solid var(--border); }
+    .badge.public { background: var(--ok-soft); color: var(--ok); border-color: transparent; }
+    .badge.students { background: var(--accent-soft); color: var(--accent); border-color: transparent; }
+    .badge.private { background: var(--warn-soft); color: var(--warn); border-color: transparent; }
+
+    /* Main */
+    .empty { text-align: center; color: var(--muted); padding: 60px 20px; }
+    .empty .big { font-size: 2.6em; }
+    .cur-head { display: flex; gap: 14px; align-items: flex-start; padding: 16px; }
+    .cur-head .ic { font-size: 2.4em; line-height: 1; }
+    .cur-head h1 { margin: 0 0 4px; font-size: 1.3em; }
+    .cur-head .desc { color: var(--muted); margin: 4px 0 0; line-height: 1.5; }
+    .cur-head .actions { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .stats { display: flex; gap: 14px; color: var(--muted); font-size: .85em; margin-top: 6px; flex-wrap: wrap; }
+    .stage { margin-top: 14px; }
+    .stage-h { display: flex; align-items: center; gap: 8px; padding: 6px 4px; }
+    .stage-h h3 { margin: 0; font-size: .9em; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    .stage-h .line { flex: 1; height: 1px; background: var(--border); }
+    .lesson-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; margin: 6px 0; background: var(--panel); cursor: pointer; }
+    .lesson-row:hover { border-color: var(--accent); }
+    .lesson-row .n { width: 28px; height: 28px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .85em; flex: 0 0 auto; }
+    .lesson-row .t { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lesson-row .c { color: var(--muted); font-size: .8em; white-space: nowrap; }
+    .lesson-row .ops { display: flex; gap: 2px; }
+
+    /* Lesson editor */
+    .crumbs { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .85em; padding: 12px 16px 0; }
+    .crumbs a { color: var(--accent); cursor: pointer; text-decoration: none; font-weight: 600; }
+    .editor-head { display: grid; grid-template-columns: 1fr 220px auto; gap: 10px; padding: 12px 16px; align-items: end; }
+    .editor-head label, .field label { display: block; font-size: .78em; font-weight: 700; color: var(--muted); margin-bottom: 4px; }
+    .tabs { display: flex; gap: 4px; padding: 0 16px; border-bottom: 1px solid var(--border); }
+    .tab { border: none; background: none; padding: 10px 12px; font-weight: 700; color: var(--muted); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+    .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+    .tab-b { padding: 14px 16px; }
+    .toolbar { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; align-items: center; }
+    .toolbar .grow { flex: 1; }
+    table.words { width: 100%; border-collapse: collapse; }
+    table.words th { text-align: left; font-size: .75em; color: var(--muted); font-weight: 700; padding: 6px; border-bottom: 1px solid var(--border); }
+    table.words td { padding: 3px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    table.words td.idx { color: var(--muted); font-size: .8em; text-align: center; width: 32px; }
+    table.words input { border-color: transparent; background: transparent; padding: 6px 8px; }
+    table.words input:hover { border-color: var(--border); }
+    table.words input:focus { background: var(--panel); }
+    table.words tr.dup input { background: var(--warn-soft); }
+    table.words td.ops { white-space: nowrap; width: 1%; }
+    .gram-item { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; display: flex; gap: 10px; align-items: center; }
+    .gram-item .t { flex: 1; font-weight: 600; }
+    .gram-item .src { font-size: .75em; color: var(--muted); }
+    .savebar { position: sticky; bottom: 0; background: var(--panel); border-top: 1px solid var(--border); padding: 10px 16px; display: flex; gap: 8px; align-items: center; border-radius: 0 0 12px 12px; }
+    .savebar .status { color: var(--muted); font-size: .85em; flex: 1; }
+    .savebar .status.dirty { color: var(--warn); font-weight: 700; }
+    .hint { color: var(--muted); font-size: .82em; line-height: 1.5; }
+
+    /* Swal modals content */
+    .sw-form { text-align: left; display: grid; gap: 10px; }
+    .sw-form .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .lib-list { max-height: 50vh; overflow: auto; text-align: left; border: 1px solid var(--border); border-radius: 8px; }
+    .lib-row { display: flex; gap: 10px; align-items: center; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+    .lib-row:last-child { border-bottom: none; }
+    .lib-row .k { font-weight: 700; min-width: 120px; }
+    .lib-row .v { flex: 1; color: var(--muted); font-size: .9em; }
+    .lib-row.added { opacity: .5; }
+    .check-list { max-height: 45vh; overflow: auto; text-align: left; border: 1px solid var(--border); border-radius: 8px; padding: 4px 0; }
+    .check-list label { display: flex; gap: 8px; align-items: center; padding: 6px 10px; cursor: pointer; }
+    .check-list label:hover { background: var(--panel-2); }
+    .check-list input { width: auto; }
+    .check-list .c { margin-left: auto; color: var(--muted); font-size: .8em; }
+    .paste-preview { max-height: 30vh; overflow: auto; font-size: .85em; text-align: left; margin-top: 8px; border: 1px solid var(--border); border-radius: 8px; }
+    .paste-preview div { padding: 4px 8px; border-bottom: 1px solid var(--border); display: flex; gap: 8px; }
+    .paste-preview .bad { color: var(--danger); }
+    .paste-preview .skip { color: var(--warn); }
+    .gram-preview { text-align: left; max-height: 60vh; overflow: auto; line-height: 1.6; }
+    .gram-preview table { border-collapse: collapse; width: 100%; }
+    .gram-preview td, .gram-preview th { border: 1px solid var(--border); padding: 4px 6px; }
+    .swal2-popup { background: var(--panel) !important; color: var(--text) !important; }
+    .swal2-title, .swal2-html-container { color: var(--text) !important; }
+
+    .layout > * { min-width: 0; }
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; padding: 12px 16px; }
+      header.top { padding: 10px 16px; gap: 8px; }
+      header.top .brand .badge { display: none; }
+      .lesson-row { flex-wrap: wrap; }
+      .lesson-row .t { white-space: normal; flex-basis: calc(100% - 40px); }
+      .lesson-row .c { margin-left: 38px; flex: 1; }
+      .stage-h { flex-wrap: wrap; }
+      .savebar { flex-wrap: wrap; }
+      .gram-item { flex-wrap: wrap; }
+      .editor-head { grid-template-columns: 1fr; }
+      .cur-head { flex-wrap: wrap; }
+      .cur-head .actions { margin-left: 0; justify-content: flex-start; }
+      header.top .who { display: none; }
+      table.words .col-ex { display: none; }
+      .sw-form .row2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="authOverlay">
+    <div class="auth-card">
+      <div style="font-size:2.4em">📚</div>
+      <h1>Kho Giáo trình</h1>
+      <p id="authMessage">Đang kiểm tra đăng nhập…</p>
+      <button class="btn primary" id="googleSignInBtn" style="display:none;margin:0 auto">Đăng nhập bằng Google</button>
+    </div>
+  </div>
+
+  <div id="app" style="display:none">
+    <header class="top">
+      <div class="brand">📚 Kho Giáo trình <span class="badge">Soạn thảo</span></div>
+      <div class="spacer"></div>
+      <span class="who" id="whoAmI"></span>
+      <a class="btn ghost sm" href="../vocab.html">← Sổ từ</a>
+      <button class="btn sm" onclick="CA.logout()">Đăng xuất</button>
+    </header>
+
+    <div class="layout">
+      <aside class="panel" style="align-self:start">
+        <div class="panel-h"><h2>Giáo trình</h2><span class="badge" id="curCount">0</span></div>
+        <ul class="cur-list" id="curList"><li class="hint" style="padding:10px">Đang tải…</li></ul>
+        <div class="side-actions">
+          <button class="btn primary" onclick="CA.createCurriculum()">＋ Giáo trình mới</button>
+          <button class="btn" onclick="CA.convertFromClass()">⭐ Chuyển lớp 1:1 thành giáo trình</button>
+          <button class="btn" onclick="CA.importJson()">⬆ Nhập từ file JSON</button>
+        </div>
+      </aside>
+
+      <main class="panel" id="main">
+        <div class="empty"><div class="big">📖</div><p>Chọn một giáo trình bên trái, hoặc tạo giáo trình mới.</p></div>
+      </main>
+    </div>
+  </div>
+
+  <input type="file" id="jsonFileInput" accept="application/json,.json" style="display:none" />
+
+  <script>
+    const firebaseConfig = { apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU", authDomain: "vuihoctienghan2027.firebaseapp.com", projectId: "vuihoctienghan2027", storageBucket: "vuihoctienghan2027.firebasestorage.app", messagingSenderId: "346757373399", appId: "1:346757373399:web:526625b339fc9a1a523f92", measurementId: "G-JHCHNDDY1S" };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  </script>
+  <script src="../assets/js/curriculum-admin.js"></script>
+</body>
+</html>
