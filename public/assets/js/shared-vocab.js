@@ -647,7 +647,7 @@
             // Dùng data mới nhất từ cache (_teacherFolders đã được openSharedFolder cập nhật)
             const freshFolder = (_teacherFolders.concat(_studentFolders)).find(f => f.id === window.currentSharedFolderId);
             const folderToUse = freshFolder || window.currentSharedFolderData;
-            if (folderToUse) renderSharedSubLessonsGrid(folderToUse);
+            if (folderToUse) { renderSharedSubLessonsGrid(folderToUse); if (window.CurriculumSync) window.CurriculumSync.decorateFolder(folderToUse); }
         }
     };
 
@@ -2173,6 +2173,7 @@
         }
 
         renderSharedSubLessonsGrid(folder);
+        if (window.CurriculumSync) window.CurriculumSync.decorateFolder(folder); // Kho giáo trình (curriculum-sync.js)
     };
 
     // Render danh sách Bài học & Thư mục con / Giai đoạn bên trong Shared Folder
@@ -11357,7 +11358,11 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
             block.innerHTML = `
                 <div class="shared-section-header">
                     <h3 class="shared-section-title">🎓 Thư mục Giảng dạy 1:1 (${_teacherFolders.length})</h3>
-                    <button class="btn-create-list" onclick="createTeacherSharedFolder()" style="background:#f59e0b;border:none;padding:8px 16px;font-size:0.85em;">+ Tạo Thư mục 1:1</button>
+                    <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                        <a class="btn-edit" href="curriculum/admin.html" style="padding:8px 14px;font-size:0.85em;text-decoration:none;background:#eef2ff;color:#4338ca;border-color:#c7d2fe;">📚 Kho giáo trình</a>
+                        ${window.CurriculumSync ? `<button class="btn-create-list" onclick="CurriculumSync.createClassDialog()" style="background:#4f46e5;border:none;padding:8px 16px;font-size:0.85em;">+ Lớp từ giáo trình</button>` : ""}
+                        <button class="btn-create-list" onclick="createTeacherSharedFolder()" style="background:#f59e0b;border:none;padding:8px 16px;font-size:0.85em;">+ Tạo Thư mục 1:1</button>
+                    </div>
                 </div>
                 ${itemsHtml}
                 <div class="shared-section-header" style="margin-top:30px;">
