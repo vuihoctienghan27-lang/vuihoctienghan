@@ -240,8 +240,9 @@
         lesson.dialogues = (lesson.dialogues || []).filter(d => d && (d.lines || []).length);
         lesson.listening = (lesson.listening || []).filter(d => d && ((d.lines || []).length || (d.questions || []).length));
         lesson.listening.forEach(d => { d.lines = d.lines || []; d.questions = d.questions || []; });
+        normalizeExtra(lesson);
         const hash = (location.hash || '').replace('#', '');
-        S.tab = ['words', 'grammar', 'dialogues', 'listening'].includes(hash) ? hash
+        S.tab = ['words', 'grammar', 'dialogues', 'listening', 'reading', 'culture', 'pron'].includes(hash) ? hash
             : (lesson.words.length ? 'words' : lesson.grammar.length ? 'grammar' : lesson.dialogues.length ? 'dialogues' : 'words');
         window.learningActive = true; // activity-tracker.js: tính giờ học
         S.media = {}; S.credits = {};
@@ -277,6 +278,7 @@
         const L = S.lesson;
         el.innerHTML = S.tab === 'dialogues'
             ? creditsBlock(L.dialogues.map((d, i) => ({ id: d.id, label: d.title || 'Hội thoại ' + (i + 1) })))
+            : S.tab === 'culture' ? creditsBlock((L.culture || []).map((d, i) => ({ id: d.id, label: d.title || 'Văn hóa ' + (i + 1) })))
             : creditsBlock(L.words.map(w => ({ id: w.id, label: w.word })));
     }
     function applyMedia(root2) {
@@ -312,7 +314,7 @@
                 <div class="eyebrow kr">${esc(cur.icon || '📘')} ${esc(cur.title)}${L.stage ? ' · ' + esc(L.stage) : ''}</div>
                 <h1 class="kr">${esc(t.main)}</h1>
                 ${t.sub ? `<p class="sub">${esc(t.sub)}</p>` : ''}
-                <div class="chips"><span class="cl-chip">🔤 ${L.words.length} từ vựng</span><span class="cl-chip">📗 ${L.grammar.length} ngữ pháp</span><span class="cl-chip">💬 ${L.dialogues.length} hội thoại</span>${L.listening.length ? `<span class="cl-chip">🎧 ${L.listening.length} bài nghe</span>` : ''}</div>
+                <div class="chips"><span class="cl-chip">🔤 ${L.words.length} từ vựng</span><span class="cl-chip">📗 ${L.grammar.length} ngữ pháp</span><span class="cl-chip">💬 ${L.dialogues.length} hội thoại</span>${L.listening.length ? `<span class="cl-chip">🎧 ${L.listening.length} bài nghe</span>` : ''}${L.reading.length ? `<span class="cl-chip">📖 ${L.reading.length} bài đọc</span>` : ''}</div>
                 <div class="nav">
                     ${FROM.f ? `<a class="cl-btn pri" href="${esc(backToClassUrl())}" title="Quay lại bài này trong thư mục lớp">← Về bài học trong lớp</a>` : ''}
                     ${prev ? `<a class="cl-btn" href="${lessonUrl(cur.id, prev.id, S.tab)}" title="${esc(prev.title)}">← Bài trước</a>` : '<button class="cl-btn" disabled>← Bài trước</button>'}
@@ -326,6 +328,9 @@
                 <button class="cl-tab" role="tab" data-tab="grammar">📗 Ngữ pháp <span class="n">${L.grammar.length}</span></button>
                 <button class="cl-tab" role="tab" data-tab="dialogues">💬 Hội thoại <span class="n">${L.dialogues.length}</span></button>
                 <button class="cl-tab" role="tab" data-tab="listening">🎧 Nghe <span class="n">${L.listening.length}</span></button>
+                ${L.reading.length ? `<button class="cl-tab" role="tab" data-tab="reading">📖 Đọc <span class="n">${L.reading.length}</span></button>` : ''}
+                ${L.culture.length ? `<button class="cl-tab" role="tab" data-tab="culture">🏮 Văn hóa <span class="n">${L.culture.length}</span></button>` : ''}
+                ${L.pron.length ? `<button class="cl-tab" role="tab" data-tab="pron">🗣 Phát âm <span class="n">${L.pron.length}</span></button>` : ''}
             </div>
             <div class="cl-panel cl-section" id="clTabBody"></div>`;
         document.getElementById('clLessonSel').addEventListener('change', e => { location.href = lessonUrl(cur.id, e.target.value, S.tab); });
@@ -343,6 +348,9 @@
         if (tab === 'grammar') renderGrammar();
         else if (tab === 'dialogues') renderDialogues();
         else if (tab === 'listening') renderListening();
+        else if (tab === 'reading') renderReading();
+        else if (tab === 'culture') renderCulture();
+        else if (tab === 'pron') renderPron();
         else renderWords();
     }
 
@@ -750,6 +758,158 @@
                     act.textContent = show ? '🙈 Ẩn lời thoại' : '📜 Xem lời thoại';
                     act.classList.toggle('on', show);
                 }
+            });
+        });
+    }
+
+    // ---------- Đọc / Văn hóa / Phát âm (읽고 쓰기 · 문화 산책 · 발음 của sách)
+    // reading: [{ id, title, lines: [{ kr, vi }], questions, task, taskVi }] — ảnh minh họa (nếu có): media[id]
+    // culture: [{ id, title, lines: [{ kr, vi }] }] — ảnh minh họa: media[id]
+    // pron:    [{ id, title, rule, examples: [{ kr, pr, vi }] }]
+    function normalizeExtra(lesson) {
+        const lines = (a) => (a || []).filter(l => l && (l.kr || l.vi)).map(l => ({ kr: String(l.kr || ''), vi: String(l.vi || '') }));
+        lesson.reading = (lesson.reading || []).filter(Boolean)
+            .map(r => ({ ...r, lines: lines(r.lines), questions: (r.questions || []).filter(q => q && q.options && q.options.length >= 2) }))
+            .filter(r => r.lines.length || r.questions.length || r.task);
+        lesson.culture = (lesson.culture || []).filter(Boolean).map(c => ({ ...c, lines: lines(c.lines) })).filter(c => c.lines.length || c.title);
+        lesson.pron = (lesson.pron || []).filter(Boolean).map(p => ({ ...p, examples: (p.examples || []).filter(e => e && e.kr) })).filter(p => p.rule || p.examples.length);
+    }
+    const nl2br = (s) => esc(s).replace(/\n/g, '<br>');
+    // Đọc lần lượt các câu; phần tử [data-k="i"] trong card được tô sáng khi đang đọc
+    async function playSeq(card, texts, btn, label) {
+        if (DLG.playing === card) { stopDialogue(); if (btn) btn.textContent = label; return; }
+        stopDialogue();
+        DLG.playing = card;
+        const my = ++DLG.token;
+        if (btn) btn.textContent = '⏹ Dừng';
+        for (let i = 0; i < texts.length; i++) {
+            if (DLG.token !== my) break;
+            const el = card.querySelector(`.cl-para[data-k="${i}"], .row[data-k="${i}"]`);
+            card.querySelectorAll('.speaking').forEach(x => x.classList.remove('speaking'));
+            if (el) { el.classList.add('speaking'); el.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
+            await speak(texts[i], '');
+            if (el) el.classList.remove('speaking');
+            await new Promise(r => setTimeout(r, 300));
+        }
+        if (DLG.token === my) stopDialogue();
+        if (btn) btn.textContent = label;
+    }
+    function quizHtml(qs) {
+        return qs.length ? `<div class="grammar-content cl-lq"><div class="quiz-section">
+            ${qs.map((q, qi) => `<div class="quiz-q" data-type="mc" data-answer="${q.answer}">
+                <div class="quiz-q-text"><b>${qi + 1}.</b> <span class="kr">${esc(q.q)}</span>${q.qvi ? `<div class="qvi">${esc(q.qvi)}</div>` : ''}</div>
+                <div class="quiz-opts">${q.options.map((o, oi) => `<button class="quiz-opt kr" data-v="${oi}">${esc(o)}</button>`).join('')}</div>
+                <div class="quiz-feedback"></div>
+                ${q.explain ? `<div class="quiz-explain">💡 ${esc(q.explain)}</div>` : ''}
+            </div>`).join('')}
+            <div class="quiz-score"></div>
+        </div></div>` : '';
+    }
+    // Đoạn văn: chỉ số data-k đếm theo câu có tiếng Hàn (khớp với danh sách đọc của playSeq)
+    function passageHtml(lines, keys) {
+        let k = 0;
+        return `<div class="cl-pass">${lines.map(l => {
+            const idx = l.kr ? k++ : -1;
+            return `<div class="cl-para" ${idx >= 0 ? `data-k="${idx}"` : ''}>
+                ${l.kr ? `<div class="ko kr">${keys ? highlight(l.kr, keys) : esc(l.kr)} <button class="say" data-act="say" data-t="${esc(l.kr)}" title="Nghe câu này" aria-label="Nghe câu này">🔊</button></div>` : ''}
+                ${l.vi ? `<div class="vi">${esc(l.vi)}</div>` : ''}
+            </div>`;
+        }).join('')}</div>`;
+    }
+    function bindPassage(card, lines) {
+        card.addEventListener('click', e => {
+            const vh = e.target.closest('.cl-vh');
+            if (vh) { e.stopPropagation(); return showPop(vh, S.lesson.words[+vh.dataset.w]); }
+            const act = e.target.closest('[data-act]'); if (!act) return;
+            if (act.dataset.act === 'say') {
+                stopDialogue();
+                const el = act.closest('.cl-para');
+                card.querySelectorAll('.speaking').forEach(x => x.classList.remove('speaking'));
+                if (el) el.classList.add('speaking');
+                speak(act.dataset.t, '').then(() => el && el.classList.remove('speaking'));
+            } else if (act.dataset.act === 'playall') playSeq(card, lines.map(l => l.kr).filter(Boolean), act, '▶ Nghe cả bài');
+            else if (act.dataset.act === 'vi') { act.classList.toggle('on'); card.classList.toggle('no-vi', !act.classList.contains('on')); }
+        });
+    }
+    function renderReading() {
+        const D = S.lesson.reading, box = document.getElementById('clTabBody');
+        if (!D.length) { box.innerHTML = '<div class="cl-empty"><div class="big">📖</div>Bài này chưa có bài đọc.</div>'; return; }
+        const keys = vocabKeys();
+        box.innerHTML = D.map((r, ri) => {
+            const wkey = `clw_${S.cur ? S.cur.id : ''}_${S.lessonId || ''}_${r.id || ri}`;
+            let saved = ''; try { saved = localStorage.getItem(wkey) || ''; } catch (e) { }
+            return `<div class="cl-dlg cl-read" data-r="${ri}">
+                <div class="head">
+                    <h3 class="kr">📖 ${esc(r.title || 'Bài đọc ' + (ri + 1))}</h3>
+                    ${r.lines.some(l => l.kr) ? '<button class="cl-btn pri" data-act="playall">▶ Nghe cả bài</button>' : ''}
+                    ${r.lines.some(l => l.vi) ? '<button class="cl-btn on" data-act="vi">🇻🇳 Bản dịch</button>' : ''}
+                </div>
+                ${imgTag(r.id, 'cl-rimg')}
+                ${passageHtml(r.lines, keys)}
+                ${quizHtml(r.questions)}
+                ${r.task ? `<div class="cl-task">
+                    <div class="t">✍️ Luyện viết</div>
+                    <div class="kr">${nl2br(r.task)}</div>
+                    ${r.taskVi ? `<div class="vi">${nl2br(r.taskVi)}</div>` : ''}
+                    <textarea class="kr" data-wkey="${esc(wkey)}" rows="5" placeholder="Viết bài của bạn ở đây (tự lưu trên máy này)…">${esc(saved)}</textarea>
+                    <div class="cnt">${saved.replace(/\s/g, '').length} chữ</div>
+                </div>` : ''}
+            </div>`;
+        }).join('');
+        box.querySelectorAll('.cl-read').forEach(card => {
+            const r = D[+card.dataset.r];
+            const sec = card.querySelector('.quiz-section'); if (sec) initQuizSection(sec);
+            bindPassage(card, r.lines);
+            const ta = card.querySelector('textarea[data-wkey]');
+            if (ta) ta.addEventListener('input', () => {
+                try { localStorage.setItem(ta.dataset.wkey, ta.value); } catch (e) { }
+                card.querySelector('.cl-task .cnt').textContent = ta.value.replace(/\s/g, '').length + ' chữ';
+            });
+        });
+        applyMedia(box);
+    }
+    function renderCulture() {
+        const D = S.lesson.culture, box = document.getElementById('clTabBody');
+        if (!D.length) { box.innerHTML = '<div class="cl-empty"><div class="big">🏮</div>Bài này chưa có phần văn hóa.</div>'; return; }
+        box.innerHTML = D.map((c, ci) => `<div class="cl-dlg cl-cult" data-c="${ci}">
+            <div class="head">
+                <h3 class="kr">🏮 ${esc(c.title || 'Văn hóa ' + (ci + 1))}</h3>
+                ${c.lines.some(l => l.kr) ? '<button class="cl-btn" data-act="playall">▶ Nghe cả bài</button>' : ''}
+                ${c.lines.some(l => l.kr) && c.lines.some(l => l.vi) ? '<button class="cl-btn on" data-act="vi">🇻🇳 Bản dịch</button>' : ''}
+            </div>
+            ${imgTag(c.id, 'cl-cimg')}
+            ${passageHtml(c.lines)}
+        </div>`).join('') + '<div id="clCredits"></div>';
+        box.querySelectorAll('.cl-cult').forEach(card => bindPassage(card, D[+card.dataset.c].lines));
+        applyMedia(box);
+    }
+    function renderPron() {
+        const D = S.lesson.pron, box = document.getElementById('clTabBody');
+        if (!D.length) { box.innerHTML = '<div class="cl-empty"><div class="big">🗣</div>Bài này chưa có phần phát âm.</div>'; return; }
+        box.innerHTML = D.map((p, pi) => `<div class="cl-dlg cl-pron" data-p="${pi}">
+            <div class="head">
+                <h3 class="kr">🗣 ${esc(p.title || 'Phát âm ' + (pi + 1))}</h3>
+                ${p.examples.length ? '<button class="cl-btn pri" data-act="playall">▶ Nghe tất cả</button>' : ''}
+            </div>
+            ${p.rule ? `<div class="cl-rule">${nl2br(p.rule)}</div>` : ''}
+            ${p.examples.length ? `<div class="cl-ex">${p.examples.map((e, ei) => `<div class="row" data-k="${ei}">
+                <button class="say" data-act="say" data-k="${ei}" aria-label="Nghe">🔊</button>
+                <span class="ko kr">${esc(e.kr)}</span>
+                ${e.pr ? `<span class="pr kr">[${esc(e.pr)}]</span>` : ''}
+                ${e.vi ? `<span class="vi">${esc(e.vi)}</span>` : ''}
+            </div>`).join('')}</div>` : ''}
+        </div>`).join('');
+        box.querySelectorAll('.cl-pron').forEach(card => {
+            const p = D[+card.dataset.p];
+            card.addEventListener('click', e => {
+                const act = e.target.closest('[data-act]'); if (!act) return;
+                if (act.dataset.act === 'say') {
+                    stopDialogue();
+                    const row = act.closest('.row');
+                    card.querySelectorAll('.speaking').forEach(x => x.classList.remove('speaking'));
+                    if (row) row.classList.add('speaking');
+                    speak(p.examples[+act.dataset.k].kr, '').then(() => row && row.classList.remove('speaking'));
+                } else if (act.dataset.act === 'playall') playSeq(card, p.examples.map(x => x.kr), act, '▶ Nghe tất cả');
             });
         });
     }

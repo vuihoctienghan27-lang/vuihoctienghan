@@ -62,6 +62,13 @@ async def main(files):
                     s = (ln.get('s') or '').strip()
                     v = VOICES[speakers.get(s, 'F')]
                     fn = fname(v, t); index['d'][s + '|' + t] = fn; jobs[fn] = (v, t)
+            # Đọc / Văn hóa (từng câu) và ví dụ Phát âm — giọng nữ, tra theo khóa "|câu"
+            extra = [ln.get('kr') for x in les.get('reading', []) + les.get('culture', []) for ln in x.get('lines', [])]
+            extra += [e.get('kr') for x in les.get('pron', []) for e in x.get('examples', [])]
+            for t in extra:
+                t = (t or '').strip()
+                if t:
+                    fn = fname(VOICES['F'], t); index['d']['|' + t] = fn; jobs[fn] = (VOICES['F'], t)
     todo = [(fn, v, t) for fn, (v, t) in jobs.items() if not os.path.exists(os.path.join(OUT, fn))]
     print(f'{len(jobs)} câu/từ, cần tạo {len(todo)} file')
     sem = asyncio.Semaphore(4)

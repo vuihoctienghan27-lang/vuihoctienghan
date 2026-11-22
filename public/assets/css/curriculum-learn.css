@@ -265,3 +265,26 @@ body.dark-mode .cl-vcard .pic { background: #f8fafc; }
 .cl-lis-tools { display: flex; justify-content: flex-end; margin-bottom: 8px; }
 .cl-classh { font-size: 1.05em; font-weight: 800; margin: 18px 0 10px; }
 .cl-classh:first-child { margin-top: 0; }
+
+/* ---------- Đọc / Văn hóa / Phát âm */
+.cl-pass { display: flex; flex-direction: column; gap: 10px; background: var(--cl-soft); border: 1px solid var(--cl-line); border-radius: 14px; padding: 14px 16px; }
+.cl-para { border-radius: 10px; padding: 4px 6px; transition: 0.15s; }
+.cl-para .ko { font-size: 1.1em; font-weight: 600; line-height: 1.75; }
+.cl-para .vi { color: var(--cl-sub); font-size: 0.92em; line-height: 1.55; margin-top: 2px; }
+.cl-para .say, .cl-ex .say { border: 1px solid var(--cl-line); background: var(--cl-card-solid); border-radius: 50%; width: 26px; height: 26px; font-size: 0.72em; cursor: pointer; vertical-align: middle; opacity: 0.55; }
+.cl-para:hover .say, .cl-para.speaking .say { opacity: 1; }
+.cl-para.speaking, .cl-ex .row.speaking { box-shadow: 0 0 0 3px var(--cl-accent); background: var(--cl-card-solid); }
+.no-vi .cl-para .vi { display: none; }
+.cl-rimg:not([hidden]), .cl-cimg:not([hidden]) { display: block; max-width: 100%; max-height: 360px; margin: 0 auto 12px; border-radius: 12px; border: 1px solid var(--cl-line); }
+.cl-read .cl-lq { margin-top: 6px; }
+.cl-task { margin-top: 16px; border: 2px dashed var(--cl-line); border-radius: 14px; padding: 14px 16px; }
+.cl-task .t { font-weight: 800; margin-bottom: 6px; }
+.cl-task .vi { color: var(--cl-sub); font-size: 0.92em; margin-top: 4px; }
+.cl-task textarea { width: 100%; box-sizing: border-box; margin-top: 10px; border: 1px solid var(--cl-line); border-radius: 10px; padding: 10px 12px; background: var(--cl-card-solid); color: var(--cl-text); font-size: 1em; line-height: 1.7; resize: vertical; }
+.cl-task .cnt { text-align: right; color: var(--cl-sub); font-size: 0.82em; margin-top: 4px; }
+.cl-rule { background: var(--cl-soft); border-left: 4px solid var(--cl-accent); border-radius: 10px; padding: 12px 14px; line-height: 1.7; margin-bottom: 12px; }
+.cl-ex { display: grid; gap: 8px; }
+.cl-ex .row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid var(--cl-line); border-radius: 12px; padding: 8px 12px; background: var(--cl-card-solid); }
+.cl-ex .ko { font-size: 1.15em; font-weight: 700; }
+.cl-ex .pr { color: var(--cl-accent); font-weight: 700; }
+.cl-ex .vi { color: var(--cl-sub); font-size: 0.9em; }
