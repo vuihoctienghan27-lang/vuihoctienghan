@@ -74,7 +74,11 @@
         });
     }
     // MP3 đọc sẵn (tools/curriculum-tts/gen.py): audio/index.json = { w: {từ: file}, d: {"nhân vật|câu": file} }
-    const AUDIO_BASE = 'audio/';
+    // Thư mục MP3 tính từ vị trí file script → dùng được cả ở lesson/*.html lẫn vocab.html
+    const AUDIO_BASE = (function () {
+        try { return new URL('../../lesson/audio/', (document.currentScript && document.currentScript.src) || location.href).href; }
+        catch (e) { return 'audio/'; }
+    })();
     let audioIndex = null;
     const audioIndexReady = fetch(AUDIO_BASE + 'index.json', { cache: 'no-cache' })
         .then(r => r.ok ? r.json() : null).then(j => { audioIndex = j || { w: {}, d: {} }; })
@@ -776,6 +780,28 @@
             if (PAGE === 'lesson') renderLessonPage(); else renderIndex();
         });
     }
-    window.CurriculumLearn = { _vocabKeys: vocabKeys, _highlight: highlight, _state: S };
+    // Nhúng tab Hội thoại / Nghe của một bài giáo trình vào trang khác (vocab.html — bài trong lớp).
+    // box: phần tử chứa; lesson: doc bài giáo trình; opts: { tab: 'dialogues'|'listening', media, credits }
+    function mount(box, lesson, opts) {
+        opts = opts || {};
+        stopDialogue(); closePop();
+        const old = document.getElementById('clTabBody');
+        if (old && old !== box) old.removeAttribute('id');
+        box.id = 'clTabBody';
+        lesson = Object.assign({}, lesson);
+        lesson.words = (lesson.words || []).filter(w => w && w.word);
+        lesson.grammar = lesson.grammar || [];
+        lesson.dialogues = (lesson.dialogues || []).filter(d => d && (d.lines || []).length);
+        lesson.listening = (lesson.listening || []).filter(d => d && ((d.lines || []).length || (d.questions || []).length));
+        lesson.listening.forEach(d => { d.lines = d.lines || []; d.questions = d.questions || []; });
+        S.lesson = lesson;
+        S.media = opts.media || {};
+        S.credits = opts.credits || {};
+        S.tab = opts.tab === 'listening' ? 'listening' : 'dialogues';
+        if (S.tab === 'listening') renderListening(); else renderDialogues();
+        applyMedia(box);
+    }
+    function unmount() { stopDialogue(); closePop(); }
+    window.CurriculumLearn = { mount, unmount, speak, _vocabKeys: vocabKeys, _highlight: highlight, _state: S };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
