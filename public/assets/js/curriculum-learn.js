@@ -29,7 +29,12 @@
         return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
     }
     const isAdmin = (u) => !!(u && u.email && ADMIN_EMAILS.includes(u.email.toLowerCase()));
-    const lessonUrl = (cid, lid, tab) => `lesson.html?c=${encodeURIComponent(cid)}&l=${encodeURIComponent(lid)}${tab ? '#' + tab : ''}`;
+    // Mở từ bài trong lớp (vocab.html → nút "📚 Học theo giáo trình"): ?from=<folderId>&fl=<tên bài trong lớp>
+    // → giữ 2 tham số này khi chuyển bài, và hiện nút "← Về bài học trong lớp".
+    const FROM = { f: params.get('from') || '', l: params.get('fl') || '' };
+    const fromQs = FROM.f ? `&from=${encodeURIComponent(FROM.f)}&fl=${encodeURIComponent(FROM.l)}` : '';
+    const backToClassUrl = () => `../vocab.html?view=classes&f=${encodeURIComponent(FROM.f)}${FROM.l ? '&lesson=' + encodeURIComponent(FROM.l) : ''}`;
+    const lessonUrl = (cid, lid, tab) => `lesson.html?c=${encodeURIComponent(cid)}&l=${encodeURIComponent(lid)}${fromQs}${tab ? '#' + tab : ''}`;
     function splitTitle(t) {
         // "Bài 1. 안녕하세요? — Xin chào" → { main: "Bài 1. 안녕하세요?", sub: "Xin chào" }
         const i = String(t || '').indexOf(' — ');
@@ -300,13 +305,16 @@
         const t = splitTitle(L.title);
         document.title = `${t.main} · ${cur.title}`;
         root.innerHTML = `
-            <nav class="cl-crumbs"><a href="index.html">📚 Giáo trình</a> › <a class="kr" href="index.html?c=${encodeURIComponent(cur.id)}">${esc(cur.title)}</a> › <span>Bài ${(cur.units || []).findIndex(u => u.id === S.lessonId) + 1}</span></nav>
+            <nav class="cl-crumbs">${FROM.f
+                ? `<a href="${esc(backToClassUrl())}">← Về bài học trong lớp</a> · <span class="kr">${esc(cur.title)}</span>`
+                : `<a href="index.html">📚 Giáo trình</a> › <a class="kr" href="index.html?c=${encodeURIComponent(cur.id)}">${esc(cur.title)}</a>`} › <span>Bài ${(cur.units || []).findIndex(u => u.id === S.lessonId) + 1}</span></nav>
             <section class="cl-hero">
                 <div class="eyebrow kr">${esc(cur.icon || '📘')} ${esc(cur.title)}${L.stage ? ' · ' + esc(L.stage) : ''}</div>
                 <h1 class="kr">${esc(t.main)}</h1>
                 ${t.sub ? `<p class="sub">${esc(t.sub)}</p>` : ''}
                 <div class="chips"><span class="cl-chip">🔤 ${L.words.length} từ vựng</span><span class="cl-chip">📗 ${L.grammar.length} ngữ pháp</span><span class="cl-chip">💬 ${L.dialogues.length} hội thoại</span>${L.listening.length ? `<span class="cl-chip">🎧 ${L.listening.length} bài nghe</span>` : ''}</div>
                 <div class="nav">
+                    ${FROM.f ? `<a class="cl-btn pri" href="${esc(backToClassUrl())}" title="Quay lại bài này trong thư mục lớp">← Về bài học trong lớp</a>` : ''}
                     ${prev ? `<a class="cl-btn" href="${lessonUrl(cur.id, prev.id, S.tab)}" title="${esc(prev.title)}">← Bài trước</a>` : '<button class="cl-btn" disabled>← Bài trước</button>'}
                     <select id="clLessonSel" aria-label="Chọn bài">${units.map(u => `<option value="${esc(u.id)}" ${u.id === S.lessonId ? 'selected' : ''}>${(cur.units || []).indexOf(u) + 1}. ${esc(splitTitle(u.title).main)}</option>`).join('')}</select>
                     ${next ? `<a class="cl-btn" href="${lessonUrl(cur.id, next.id, S.tab)}" title="${esc(next.title)}">Bài sau →</a>` : '<button class="cl-btn" disabled>Bài sau →</button>'}
