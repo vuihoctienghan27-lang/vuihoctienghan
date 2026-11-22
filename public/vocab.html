@@ -5,6 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sổ Từ Vựng - Vui Học Tiếng Hàn</title>
+    <script>
+        // vocab.html?view=classes = mục "Giáo trình": chỉ hiện thư mục lớp học (giáo viên + học viên).
+        // Mặc định (Sổ từ vựng) chỉ còn sổ cá nhân; thư mục lớp chuyển sang Giáo trình.
+        window.VOCAB_VIEW = /[?&]view=classes(&|$)/.test(location.search) ? 'classes' : 'notebook';
+        if (window.VOCAB_VIEW === 'classes') document.title = 'Giáo Trình - Vui Học Tiếng Hàn';
+    </script>
+    <style>
+        body.view-classes .tabs-2x2, body.view-classes #viewAllVocab,
+        body.view-classes #personalFoldersHead, body.view-classes #listsGrid { display: none !important; }
+        body.view-classes.cls-grid #vocabHub { display: none !important; }
+        .cls-page-head { display: none; }
+        body.view-classes.cls-grid .cls-page-head { display: block; margin: 4px 0 18px; }
+        .cls-page-head h1 { margin: 0; font-size: 1.6em; font-weight: 800; }
+        .cls-page-head p { margin: 4px 0 0; color: var(--text-sub, #64748b); }
+        .cls-moved { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; margin-bottom: 18px;
+            border-radius: 14px; background: rgba(79, 70, 229, 0.08); border: 1px solid rgba(79, 70, 229, 0.25); }
+        .cls-moved .t { flex: 1; min-width: 200px; font-weight: 600; }
+        .cls-moved a { text-decoration: none; }
+    </style>
     <link rel="icon" type="image/png" sizes="16x16"  href="/assets/img/favicon.png">
     <meta name="msapplication-TileColor" content="#ffffff">
     <meta name="theme-color" content="#ffffff">
@@ -1652,6 +1671,9 @@
             </div>
         </div>
 
+        <!-- Tiêu đề mục Giáo trình (vocab.html?view=classes) -->
+        <div class="cls-page-head"><h1>🎓 Giáo trình</h1><p>Các lớp học và bài học giáo viên giao cho bạn.</p></div>
+
         <!-- Bài tập lớp sắp đến hạn (shared-vocab.js → renderUpcomingDeadlines) -->
         <div id="deadlineStrip" class="dl-strip" style="display:none;"></div>
 
@@ -1709,7 +1731,7 @@
         <!-- TAB CONTENT: THƯ MỤC -->
         <div id="viewFolders" style="display: none; animation: fadeIn 0.3s ease;">
             <div id="vocabSetsView">
-                <div
+                <div id="personalFoldersHead"
                     style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid rgba(255,255,255,0.6); padding-bottom: 10px;">
                     <h3 style="margin:0; font-size: 1.3em;">Thư mục của bạn</h3>
                     <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;">
@@ -2071,6 +2093,7 @@
     <script src="assets/js/grammar-library.js"></script>
     <script src="assets/js/shared-vocab.js"></script>
     <script src="assets/js/curriculum-sync.js"></script>
+    <script src="assets/js/curriculum-access.js"></script>
     <script src="assets/js/curriculum-personal.js"></script>
     <script src="assets/js/vocab-game.js"></script>
     <script src="assets/js/srs.js"></script>
@@ -2088,10 +2111,31 @@
         (function () {
             try {
                 var p = new URLSearchParams(window.location.search).get('tab');
-                if (p === 'folders' && typeof switchVocabTab === 'function') {
+                if ((p === 'folders' || window.VOCAB_VIEW === 'classes') && typeof switchVocabTab === 'function') {
                     switchVocabTab('folders');
                 }
             } catch (e) {}
+        })();
+
+        // Mục "Giáo trình": ẩn phần thống kê cá nhân ở màn danh sách lớp, hiện lại khi vào lớp / bài
+        (function () {
+            if (window.VOCAB_VIEW !== 'classes') return;
+            document.body.classList.add('view-classes', 'cls-grid');
+            var open = window.openSharedFolder;
+            if (typeof open === 'function') {
+                window.openSharedFolder = function () {
+                    document.body.classList.remove('cls-grid');
+                    return open.apply(this, arguments);
+                };
+            }
+            var back = window.backToSets;
+            if (typeof back === 'function') {
+                window.backToSets = function () {
+                    var r = back.apply(this, arguments);
+                    if (!window.currentSharedFolderId) document.body.classList.add('cls-grid');
+                    return r;
+                };
+            }
         })();
 
         // Picker chọn trò chơi arcade

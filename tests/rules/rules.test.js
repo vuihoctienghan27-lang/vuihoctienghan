@@ -454,40 +454,84 @@ test('student_requests: tự gửi yêu cầu của mình, admin duyệt/xoá', 
 });
 
 // ───────── KHO GIÁO TRÌNH (curricula) ─────────
-test('curricula: chỉ admin soạn; đọc theo visibility', async () => {
-  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula', 'cS'), { title: 'Lớp', visibility: 'students', units: [] }));
-  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula/cS/lessons/l1'), { title: 'Bài 1', words: [], grammar: [] }));
-  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cX'), { title: 'x', visibility: 'public' }));
-  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'curricula/cS/lessons/l2'), { title: 'x' }));
-  await seed('curricula/cP', { title: 'Công khai', visibility: 'public' });
-  await seed('curricula/cP/lessons/l1', { title: 'Bài 1' });
-  await seed('curricula/cR', { title: 'Riêng', visibility: 'private' });
-  await seed('curricula/cR/lessons/l1', { title: 'Bài 1' });
-  await seed('curricula/cN', { title: 'Không đặt visibility' });
+// Lớp F1 gán giáo trình cA; Alice là học viên F1 (ghi danh bằng Key Code), Bob thì không.
+async function seedClassWithCurriculum() {
+  await seed('curricula/cA', { title: 'Seoul 1A', visibility: 'students', units: [{ id: 'l1' }] });
+  await seed('curricula/cA/lessons/l1', { title: 'Bài 1', words: [], grammar: [] });
+  await seed('curricula/cA/media/l1_0', { lesson: 'l1', part: 0, items: {} });
+  await seed('curricula/cB', { title: 'Seoul 1B (chưa gán lớp nào)', visibility: 'public', units: [] });
+  await seed('curricula/cB/lessons/l1', { title: 'Bài 9' });
+  await seed('shared_folders/F1', { name: 'Lớp 1A', keyCode: 'K1', curLinks: { cA: { title: 'Seoul 1A', lessons: { l1: { name: 'Bài 1' } } } } });
+  await seed(`shared_folders/F1/students/${ALICE}`, { uid: ALICE, keyCode: 'K1' });
+  await seed('shared_folders/F2', { name: 'Lớp khác', keyCode: 'K2', curLinks: {} });
+  await seed(`shared_folders/F2/students/${ALICE}`, { uid: ALICE, keyCode: 'K2' });
+}
 
-  await assertSucceeds(getDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cS')));
-  await assertSucceeds(getDoc(doc(db(ALICE, aliceEmail), 'curricula/cS/lessons/l1')));
-  await assertFails(getDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cR')));
-  await assertFails(getDoc(doc(db(ALICE, aliceEmail), 'curricula/cR/lessons/l1')));
-  await assertFails(getDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cN')));
-  await assertSucceeds(getDoc(doc(anon(), 'curricula', 'cP')));
-  await assertSucceeds(getDoc(doc(anon(), 'curricula/cP/lessons/l1')));
-  await assertFails(getDoc(doc(anon(), 'curricula', 'cS')));
-  await assertFails(getDoc(doc(anon(), 'curricula/cS/lessons/l1')));
-  await assertSucceeds(getDoc(doc(ADMIN(), 'curricula/cR/lessons/l1')));
+test('curricula: chỉ admin soạn và xem tất cả; không còn chế độ công khai', async () => {
+  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula', 'cS'), { title: 'Lớp', units: [] }));
+  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula/cS/lessons/l1'), { title: 'Bài 1', words: [], grammar: [] }));
+  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cX'), { title: 'x' }));
+  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'curricula/cS/lessons/l2'), { title: 'x' }));
+  await seed('curricula/cP', { title: 'Từng để công khai', visibility: 'public' });
+  await seed('curricula/cP/lessons/l1', { title: 'Bài 1' });
+  // visibility cũ không còn mở quyền: chưa gán lớp thì học viên / khách đều không xem được
+  await assertFails(getDoc(doc(anon(), 'curricula', 'cP')));
+  await assertFails(getDoc(doc(anon(), 'curricula/cP/lessons/l1')));
+  await assertFails(getDoc(doc(db(ALICE, aliceEmail), 'curricula', 'cS')));
+  await assertFails(getDoc(doc(db(ALICE, aliceEmail), 'curricula/cS/lessons/l1')));
+  // không ai ngoài admin liệt kê được kho
+  await assertFails(getDocs(collection(db(ALICE, aliceEmail), 'curricula')));
+  await assertFails(getDocs(query(collection(anon(), 'curricula'), where('visibility', '==', 'public'))));
+  await assertSucceeds(getDocs(collection(ADMIN(), 'curricula')));   // curriculum-admin.js / curriculum-sync.js
+  await assertSucceeds(getDoc(doc(ADMIN(), 'curricula/cP/lessons/l1')));
 });
 
-test('curricula: học viên liệt kê theo visibility (curriculum-personal.js), không liệt kê tất cả', async () => {
-  await seed('curricula/cS', { title: 'Lớp', visibility: 'students' });
-  await seed('curricula/cP', { title: 'Công khai', visibility: 'public' });
-  await seed('curricula/cR', { title: 'Riêng', visibility: 'private' });
-  const col = collection(db(ALICE, aliceEmail), 'curricula');
-  await assertSucceeds(getDocs(query(col, where('visibility', '==', 'students'))));
-  await assertSucceeds(getDocs(query(col, where('visibility', '==', 'public'))));
-  await assertFails(getDocs(col));
-  await assertFails(getDocs(query(collection(anon(), 'curricula'), where('visibility', '==', 'students'))));
-  await assertSucceeds(getDocs(query(collection(anon(), 'curricula'), where('visibility', '==', 'public'))));
-  await assertSucceeds(getDocs(collection(ADMIN(), 'curricula')));   // curriculum-admin.js / curriculum-sync.js
+test('curricula: học viên đọc được giáo trình đã gán cho lớp mình qua thẻ đọc readers/{uid}', async () => {
+  await seedClassWithCurriculum();
+  const alice = db(ALICE, aliceEmail);
+  // chưa có thẻ đọc → chưa đọc được
+  await assertFails(getDoc(doc(alice, 'curricula', 'cA')));
+  // thẻ trỏ tới lớp KHÔNG gán giáo trình này → bị chặn
+  await assertFails(setDoc(doc(alice, `curricula/cA/readers/${ALICE}`), { folder: 'F2' }));
+  // thẻ trỏ tới lớp mình không học → bị chặn
+  await seed('shared_folders/F3', { name: 'Lớp lạ', keyCode: 'K3', curLinks: { cA: {} } });
+  await assertFails(setDoc(doc(alice, `curricula/cA/readers/${ALICE}`), { folder: 'F3' }));
+  // thêm trường lạ → bị chặn
+  await assertFails(setDoc(doc(alice, `curricula/cA/readers/${ALICE}`), { folder: 'F1', role: 'admin' }));
+  // tạo thẻ cho người khác → bị chặn
+  await assertFails(setDoc(doc(db(BOB), `curricula/cA/readers/${ALICE}`), { folder: 'F1' }));
+  // đúng lớp → được
+  await assertSucceeds(setDoc(doc(alice, `curricula/cA/readers/${ALICE}`), { folder: 'F1', at: serverTimestamp() }));
+  await assertSucceeds(getDoc(doc(alice, 'curricula', 'cA')));
+  await assertSucceeds(getDoc(doc(alice, 'curricula/cA/lessons/l1')));
+  await assertSucceeds(getDocs(query(collection(alice, 'curricula/cA/media'), where('lesson', '==', 'l1'))));
+  // giáo trình khác chưa gán vẫn không đọc được, kể cả có thẻ
+  await assertFails(setDoc(doc(alice, `curricula/cB/readers/${ALICE}`), { folder: 'F1' }));
+  await assertFails(getDoc(doc(alice, 'curricula/cB/lessons/l1')));
+  // Bob (không học lớp F1) không dùng được thẻ của Alice, không tự tạo thẻ được
+  await assertFails(getDoc(doc(db(BOB), 'curricula', 'cA')));
+  await assertFails(setDoc(doc(db(BOB), `curricula/cA/readers/${BOB}`), { folder: 'F1' }));
+  await assertFails(getDoc(doc(db(BOB), `curricula/cA/readers/${ALICE}`)));
+  await assertSucceeds(getDoc(doc(ADMIN(), `curricula/cA/readers/${ALICE}`)));
+  // vẫn không liệt kê được kho
+  await assertFails(getDocs(collection(alice, 'curricula')));
+});
+
+test('curricula: bỏ lớp hoặc gỡ giáo trình khỏi lớp → mất quyền ngay', async () => {
+  await seedClassWithCurriculum();
+  const alice = db(ALICE, aliceEmail);
+  await assertSucceeds(setDoc(doc(alice, `curricula/cA/readers/${ALICE}`), { folder: 'F1' }));
+  await assertSucceeds(getDoc(doc(alice, 'curricula/cA/lessons/l1')));
+  // giáo viên gỡ giáo trình khỏi lớp
+  await seed('shared_folders/F1', { name: 'Lớp 1A', keyCode: 'K1', curLinks: {} });
+  await assertFails(getDoc(doc(alice, 'curricula/cA/lessons/l1')));
+  // gán lại, rồi học viên rời lớp
+  await seed('shared_folders/F1', { name: 'Lớp 1A', keyCode: 'K1', curLinks: { cA: {} } });
+  await assertSucceeds(getDoc(doc(alice, 'curricula/cA/lessons/l1')));
+  await assertSucceeds(deleteDoc(doc(alice, `shared_folders/F1/students/${ALICE}`)));
+  await assertFails(getDoc(doc(alice, 'curricula/cA/lessons/l1')));
+  // học viên tự xóa thẻ của mình được
+  await assertSucceeds(deleteDoc(doc(alice, `curricula/cA/readers/${ALICE}`)));
 });
 
 test('vocabulary cá nhân: truy vấn từ theo src.c của chính mình', async () => {
@@ -496,14 +540,14 @@ test('vocabulary cá nhân: truy vấn từ theo src.c của chính mình', asyn
   await assertFails(getDocs(query(collection(db(BOB), `users/${ALICE}/vocabulary`), where('src.c', '==', 'cS'))));
 });
 
-test('curricula/media: ảnh minh họa theo quyền xem của giáo trình, chỉ admin ghi', async () => {
-  await seed('curricula/cS', { title: 'Lớp', visibility: 'students' });
-  await seed('curricula/cR', { title: 'Riêng', visibility: 'private' });
-  await seed('curricula/cS/media/l1_0', { lesson: 'l1', part: 0, items: { w1: 'data:image/jpeg;base64,AA' } });
-  await seed('curricula/cR/media/l1_0', { lesson: 'l1', part: 0, items: {} });
-  await assertSucceeds(getDocs(query(collection(db(ALICE, aliceEmail), 'curricula/cS/media'), where('lesson', '==', 'l1'))));
-  await assertFails(getDocs(query(collection(db(ALICE, aliceEmail), 'curricula/cR/media'), where('lesson', '==', 'l1'))));
-  await assertFails(getDoc(doc(anon(), 'curricula/cS/media/l1_0')));
-  await assertFails(setDoc(doc(db(ALICE, aliceEmail), 'curricula/cS/media/l1_1'), { lesson: 'l1', items: {} }));
-  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula/cS/media/l1_1'), { lesson: 'l1', items: {} }));
+test('curricula/media: ảnh minh họa cùng quyền với bài học, chỉ admin ghi', async () => {
+  await seedClassWithCurriculum();
+  await seed('curricula/cB/media/l1_0', { lesson: 'l1', part: 0, items: {} });
+  const alice = db(ALICE, aliceEmail);
+  await assertSucceeds(setDoc(doc(alice, `curricula/cA/readers/${ALICE}`), { folder: 'F1' }));
+  await assertSucceeds(getDocs(query(collection(alice, 'curricula/cA/media'), where('lesson', '==', 'l1'))));
+  await assertFails(getDocs(query(collection(alice, 'curricula/cB/media'), where('lesson', '==', 'l1'))));
+  await assertFails(getDoc(doc(anon(), 'curricula/cA/media/l1_0')));
+  await assertFails(setDoc(doc(alice, 'curricula/cA/media/l1_1'), { lesson: 'l1', items: {} }));
+  await assertSucceeds(setDoc(doc(ADMIN(), 'curricula/cA/media/l1_1'), { lesson: 'l1', items: {} }));
 });

@@ -3,7 +3,7 @@
    --------------------------------------------------------------------------
    Firestore:
      curricula/{curId}
-       title, icon, level, description, visibility ("private"|"students"|"public"),
+       title, icon, level, description, (visibility — trường cũ, không còn dùng: chỉ admin và lớp được gán mới xem),
        order, stages: [tên giai đoạn], units: [{ id, title, stage, wordCount, grammarCount }],
        version, source?, ownerUid, createdAt, updatedAt
      curricula/{curId}/lessons/{lessonId}
@@ -23,12 +23,6 @@
         socap1: 'Sơ cấp 1', socap2: 'Sơ cấp 2', trungcap3: 'Trung cấp 3', trungcap4: 'Trung cấp 4',
         caocap5: 'Cao cấp 5', caocap6: 'Cao cấp 6', topik1: 'TOPIK I', topik2: 'TOPIK II', other: 'Khác'
     };
-    const VIS = { private: '🔒 Riêng tư', students: '👥 Học viên', public: '🌐 Công khai' };
-    const VIS_HINT = {
-        private: 'Chỉ giáo viên thấy.',
-        students: 'Học viên đã đăng nhập đọc được (dùng cho lớp học).',
-        public: 'Ai cũng xem được — chỉ nên dùng với nội dung tự soạn.'
-    };
     const GRAMMAR_LEVELS = { 1: 'Sơ cấp 1', 2: 'Sơ cấp 2', 3: 'Trung cấp 3', 4: 'Trung cấp 4', 5: 'Cao cấp 5', 6: 'Cao cấp 6', 7: 'TOPIK' };
     const NO_STAGE = '';
     const MAX_LESSON_BYTES = 900 * 1024; // Firestore giới hạn 1 MiB / doc
@@ -38,7 +32,7 @@
     const FV = firebase.firestore.FieldValue;
     const curCol = () => db.collection('curricula');
 
-    const S = { curricula: [], cur: null, lesson: null, dirty: false, tab: 'words' };
+    const S = { curricula: [], folders: [], cur: null, lesson: null, dirty: false, tab: 'words' };
 
     // ------------------------------------------------------------------ helpers
     const $ = (id) => document.getElementById(id);
@@ -114,7 +108,7 @@
     // ------------------------------------------------------------------ danh sách giáo trình
     async function loadCurricula(selectId) {
         try {
-            const snap = await curCol().get();
+            const [snap] = await Promise.all([curCol().get(), loadFolders()]);
             S.curricula = snap.docs.map(d => ({ id: d.id, ...d.data() }))
                 .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || String(a.title).localeCompare(String(b.title), 'vi'));
             const keepId = selectId || (S.cur && S.cur.id);
@@ -140,9 +134,69 @@
                 <div style="min-width:0">
                     <div class="t">${esc(c.title)}</div>
                     <div class="m">${esc(LEVELS[c.level] || '')} · ${units.length} bài · ${words} từ</div>
-                    <div style="margin-top:4px"><span class="badge ${esc(c.visibility || 'private')}">${VIS[c.visibility || 'private']}</span></div>
+                    <div style="margin-top:4px">${classBadge(c.id)}</div>
                 </div></li>`;
         }).join('');
+    }
+
+    // ------------------------------------------------------------------ lớp học (shared_folders) được gán giáo trình
+    async function loadFolders() {
+        try {
+            const snap = await db.collection('shared_folders').get();
+            S.folders = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => String(a.name || '').localeCompare(String(b.name || ''), 'vi'));
+        } catch (err) { console.warn('Không tải được danh sách lớp:', err); S.folders = []; }
+    }
+    function classesOf(curId) {
+        return S.folders.filter(f => f.curLinks && f.curLinks[curId]);
+    }
+    function classBadge(curId) {
+        const n = classesOf(curId).length;
+        return n ? `<span class="badge students">👥 ${n} lớp</span>` : '<span class="badge private">🔒 Chưa gán lớp</span>';
+    }
+    async function assignDialog() {
+        const c = S.cur; if (!c) return;
+        if (!(await confirmDiscard())) return;
+        if (!window.CurriculumSync) return Swal.fire('Thiếu curriculum-sync.js', '', 'error');
+        await loadFolders();
+        if (!S.folders.length) return Swal.fire('Chưa có lớp nào', 'Hãy tạo lớp trong Sổ từ vựng trước.', 'info');
+        const linked = classesOf(c.id);
+        const unitsN = (c.units || []).length;
+        const rows = linked.length ? linked.map(f => {
+            const n = Object.keys((f.curLinks[c.id] || {}).lessons || {}).length;
+            return `<div class="as-row"><span class="t">👥 ${esc(f.name || f.id)}</span><span class="m">${n}/${unitsN} bài</span>
+                <button type="button" class="btn sm" data-act="add" data-f="${esc(f.id)}">＋ Thêm bài</button>
+                <button type="button" class="btn sm" data-act="sync" data-f="${esc(f.id)}">🔄 Đồng bộ</button>
+                <button type="button" class="btn sm danger" data-act="unlink" data-f="${esc(f.id)}">Gỡ</button></div>`;
+        }).join('') : '<div class="hint" style="padding:6px 0">Chưa gán cho lớp nào — học viên chưa xem được giáo trình này.</div>';
+        const others = S.folders.filter(f => !(f.curLinks && f.curLinks[c.id]));
+        let picked = null;
+        await Swal.fire({
+            title: '👥 Gán “' + esc(c.title) + '” cho lớp', width: 'min(640px, 96vw)',
+            html: `<div class="assign" style="text-align:left">
+                <div class="lbl">Đang gán</div>${rows}
+                ${others.length ? `<div class="lbl" style="margin-top:12px">Gán thêm cho lớp</div>
+                <div style="display:flex;gap:8px"><select id="asNew" style="flex:1">${others.map(f => `<option value="${esc(f.id)}">${esc(f.name || f.id)}</option>`).join('')}</select>
+                <button type="button" class="btn primary" data-act="add" data-new="1">Chọn bài…</button></div>` : ''}
+                <p class="hint" style="margin-top:12px">Học viên chỉ xem được giáo trình đã gán cho lớp mình và chỉ thấy các bài đã chọn. Từ vựng và ngữ pháp của bài được chép vào lớp; sửa giáo trình xong bấm <b>🔄 Đồng bộ</b>.</p>
+            </div>`,
+            showConfirmButton: false, showCloseButton: true,
+            didOpen: (pop) => {
+                pop.querySelectorAll('[data-act]').forEach(b => b.addEventListener('click', () => {
+                    const fid = b.dataset.new ? pop.querySelector('#asNew').value : b.dataset.f;
+                    picked = { act: b.dataset.act, fid };
+                    Swal.close();
+                }));
+            }
+        });
+        if (!picked) return;
+        const f = S.folders.find(x => x.id === picked.fid);
+        if (picked.act === 'add') await window.CurriculumSync.importDialog(picked.fid, c.id);
+        else if (picked.act === 'sync') await window.CurriculumSync.syncDialog(picked.fid, c.id);
+        else if (picked.act === 'unlink') await window.CurriculumSync.unlinkDialog(picked.fid, c.id, (f && f.name) || '');
+        await loadFolders();
+        renderSidebar();
+        if (S.cur && !S.lesson) renderCurriculum();
     }
 
     async function openCurriculum(id) {
@@ -155,7 +209,6 @@
 
     function metaForm(c) {
         c = c || {};
-        const vis = c.visibility || 'private';
         return `<div class="sw-form">
             <div class="row2">
                 <div class="field" style="grid-column:span 2"><label>Tên giáo trình</label>
@@ -165,8 +218,7 @@
                 <div class="field"><label>Cấp độ</label><select id="fLevel">${levelOptions(c.level || 'socap1')}</select></div>
                 <div class="field"><label>Biểu tượng (emoji)</label><input id="fIcon" value="${esc(c.icon || '📘')}" maxlength="4"></div>
             </div>
-            <div class="field"><label>Ai được xem</label>
-                <select id="fVis">${Object.entries(VIS).map(([k, v]) => `<option value="${k}" ${k === vis ? 'selected' : ''}>${v} — ${VIS_HINT[k]}</option>`).join('')}</select></div>
+            <p class="hint" style="margin:0 0 10px">🔒 Chỉ giáo viên thấy toàn bộ kho. Học viên chỉ xem được khi giáo trình được <b>gán cho lớp</b> của mình (nút 👥 Gán cho lớp).</p>
             <div class="field"><label>Mô tả ngắn</label><textarea id="fDesc" rows="2" placeholder="Giáo trình dùng cho lớp…">${esc(c.description || '')}</textarea></div>
             <div class="field"><label>Thứ tự hiển thị</label><input id="fOrder" type="number" value="${esc(c.order ?? '')}" placeholder="Nhỏ hiện trước"></div>
         </div>`;
@@ -177,7 +229,7 @@
         const order = $('fOrder').value.trim();
         return {
             title, level: $('fLevel').value, icon: $('fIcon').value.trim() || '📘',
-            visibility: $('fVis').value, description: $('fDesc').value.trim(),
+            description: $('fDesc').value.trim(),
             order: order === '' ? 999 : Number(order)
         };
     }
@@ -185,7 +237,7 @@
     async function createCurriculum() {
         if (!(await confirmDiscard())) return;
         const { value } = await Swal.fire({
-            title: '📚 Giáo trình mới', html: metaForm({ visibility: 'students' }), width: 'min(560px, 94vw)',
+            title: '📚 Giáo trình mới', html: metaForm({}), width: 'min(560px, 94vw)',
             showCancelButton: true, confirmButtonText: 'Tạo', cancelButtonText: 'Hủy', focusConfirm: false, preConfirm: readMetaForm
         });
         if (!value) return;
@@ -285,12 +337,13 @@
                 <span class="ic">${esc(c.icon || '📘')}</span>
                 <div style="min-width:0">
                     <h1>${esc(c.title)}</h1>
-                    <div><span class="badge">${esc(LEVELS[c.level] || '')}</span> <span class="badge ${esc(c.visibility || 'private')}">${VIS[c.visibility || 'private']}</span></div>
+                    <div><span class="badge">${esc(LEVELS[c.level] || '')}</span> ${classBadge(c.id)}${classesOf(c.id).length ? ` <span class="hint">${classesOf(c.id).map(f => esc(f.name || f.id)).join(', ')}</span>` : ''}</div>
                     ${c.description ? `<p class="desc">${esc(c.description)}</p>` : ''}
                     <div class="stats"><span>📄 ${units.length} bài</span><span>🔤 ${words} từ vựng</span><span>📗 ${gram} ngữ pháp</span>
                         ${c.source && c.source.folderName ? `<span>⭐ Chuyển từ lớp “${esc(c.source.folderName)}”</span>` : ''}</div>
                 </div>
                 <div class="actions">
+                    <button class="btn primary" onclick="CA.assignDialog()" title="Chọn lớp và các bài học viên được học">👥 Gán cho lớp</button>
                     <button class="btn" onclick="CA.editCurriculum()">✎ Thông tin</button>
                     <button class="btn" onclick="CA.importMedia()" title="Nhập file ảnh minh họa (tranh từ vựng, tranh hội thoại)">🖼 Nhập ảnh</button>
                     <button class="btn" onclick="CA.importListening()" title="Nhập file bài nghe (lời thoại + câu hỏi) vào các bài đã có">🎧 Nhập bài nghe</button>
@@ -1121,7 +1174,7 @@
         await commitInChunks(ops);
         await ref.set({
             title: meta.title, level: meta.level || 'other', icon: meta.icon || '📘', description: meta.description || '',
-            visibility: meta.visibility || 'private', order: meta.order ?? 999,
+            order: meta.order ?? 999,
             stages, units, version: 1, ...(source ? { source } : {}),
             ownerUid: auth.currentUser.uid, createdAt: FV.serverTimestamp(), updatedAt: FV.serverTimestamp()
         });
@@ -1234,7 +1287,7 @@
         try {
             loading('Đang tạo giáo trình…');
             const id = await createCurriculumFromData(
-                { title: form.title, level: form.level, icon: '📘', visibility: 'private', description: '' },
+                { title: form.title, level: form.level, icon: '📘', description: '' },
                 lessons, { type: 'shared_folder', folderId, folderName: folder.name });
             const nw = lessons.reduce((n, l) => n + l.words.length, 0), ng = lessons.reduce((n, l) => n + l.grammar.length, 0);
             await loadCurricula(id);
@@ -1357,7 +1410,7 @@
                 .map(l => ({ title: l.title, stage: l.stage || '', words: l.words || [], grammar: l.grammar || [], dialogues: l.dialogues || [], listening: l.listening || [] }));
             const data = {
                 format: 'vht-curriculum', formatVersion: 1, exportedAt: new Date().toISOString(),
-                curriculum: { title: c.title, level: c.level, icon: c.icon, description: c.description || '', visibility: c.visibility, stages: c.stages || [] },
+                curriculum: { title: c.title, level: c.level, icon: c.icon, description: c.description || '', stages: c.stages || [] },
                 lessons
             };
             const a = document.createElement('a');
@@ -1389,7 +1442,8 @@
             if (!r.isConfirmed) return;
             try {
                 loading('Đang nhập…');
-                const meta = { ...data.curriculum, title: data.curriculum.title || file.name, visibility: 'private' };
+                const meta = { ...data.curriculum, title: data.curriculum.title || file.name };
+                delete meta.visibility;
                 const id = await createCurriculumFromData(meta, data.lessons, null);
                 // giữ thứ tự giai đoạn của file gốc (kể cả giai đoạn trống)
                 if (Array.isArray(data.curriculum.stages) && data.curriculum.stages.length) {
@@ -1411,7 +1465,7 @@
         pickFromLibrary, previewGrammar, editGrammar, moveGrammar, removeGrammar, saveLesson,
         addDialogue, moveDialogue, removeDialogue, editImage, _parseScript: parseScript,
         addListening, moveListening, removeListening, _parseQuestions: parseQuestions, _cleanListening: cleanListening,
-        convertFromClass, exportJson, importJson, importMedia, importListening,
+        convertFromClass, exportJson, importJson, importMedia, importListening, assignDialog,
         _parseLine: parseLine // để kiểm thử
     };
 })();

@@ -450,7 +450,7 @@
                     const m = document.getElementById('adminBtnManage');
                     const t = document.getElementById('adminBtnTest');
                     if (c) c.onclick = () => { Swal.close(); window.createTeacherSharedFolder(); };
-                    if (m) m.onclick = () => { Swal.close(); window.location.href = 'vocab.html?tab=folders'; };
+                    if (m) m.onclick = () => { Swal.close(); window.location.href = 'vocab.html?view=classes'; };
                     if (t) t.onclick = () => { Swal.close(); showStudentInputPrompt(user); };
                 }
             });
@@ -569,12 +569,12 @@
                     confirmButtonText: 'Vào học ngay',
                     confirmButtonColor: '#2563eb'
                 }).then(() => {
-                    if (window.location.pathname.includes('vocab.html')) {
+                    if (window.location.pathname.includes('vocab.html') && window.VOCAB_VIEW === 'classes') {
                         if (typeof window.openSharedFolder === 'function') {
                             window.openSharedFolder(folderId);
                         }
                     } else {
-                        window.location.href = 'vocab.html?tab=folders';
+                        window.location.href = 'vocab.html?view=classes';
                     }
                 });
                 return;
@@ -598,12 +598,12 @@
                 title: '🎉 Mở khóa thành công!',
                 html: `
                     Đã mở khóa thư mục: <b style="color:#1e40af;font-size:1.1em;">"${folderData.name}"</b><br>
-                    Toàn bộ bài học và từ vựng của Giáo viên đã được thêm vào Sổ từ vựng của bạn!
+                    Toàn bộ bài học của Giáo viên đã có trong mục <b>Giáo trình</b> của bạn!
                 `,
                 confirmButtonText: 'Vào học ngay 📖',
                 confirmButtonColor: '#10b981'
             }).then(() => {
-                if (window.location.pathname.includes('vocab.html')) {
+                if (window.location.pathname.includes('vocab.html') && window.VOCAB_VIEW === 'classes') {
                     if (typeof window.switchVocabTab === 'function') {
                         window.switchVocabTab('folders');
                     }
@@ -613,7 +613,7 @@
                         window.location.reload();
                     }
                 } else {
-                    window.location.href = 'vocab.html?tab=folders';
+                    window.location.href = 'vocab.html?view=classes';
                 }
             });
 
@@ -11307,6 +11307,39 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
         const oldStudentBlock = document.getElementById('_sharedStudentBlock');
         if (oldTeacherBlock) oldTeacherBlock.remove();
         if (oldStudentBlock) oldStudentBlock.remove();
+        const oldMoved = document.getElementById('_sharedMovedBanner');
+        if (oldMoved) oldMoved.remove();
+
+        // Thư mục lớp đã chuyển sang mục "Giáo trình" (vocab.html?view=classes).
+        // Sổ từ vựng (mặc định) chỉ còn sổ cá nhân + 1 dòng lối tắt.
+        const classesView = window.VOCAB_VIEW === 'classes';
+        if (!classesView) {
+            if (isTeacher() || _studentFolders.length > 0) {
+                const moved = document.createElement('div');
+                moved.id = '_sharedMovedBanner';
+                moved.className = 'cls-moved';
+                moved.style.gridColumn = '1 / -1';
+                const n = isTeacher() ? _teacherFolders.length : _studentFolders.length;
+                moved.innerHTML = `<span class="t">🎓 ${isTeacher() ? 'Thư mục giảng dạy' : 'Lớp học của bạn'} (${n}) đã chuyển sang mục <b>Giáo trình</b>.</span>
+                    <a class="btn-create-list" href="vocab.html?view=classes" style="background:#4f46e5;border:none;padding:8px 16px;font-size:0.85em;">Mở Giáo trình →</a>`;
+                container.parentNode.insertBefore(moved, container);
+            }
+            return;
+        }
+        document.body.classList.add('cls-grid');
+        // Học viên chưa vào lớp nào
+        if (!isTeacher() && _studentFolders.length === 0) {
+            const block = document.createElement('div');
+            block.id = '_sharedStudentBlock';
+            block.style.gridColumn = '1 / -1';
+            block.innerHTML = `<div style="padding:28px 20px;text-align:center;color:#64748b;background:rgba(255,255,255,0.55);border-radius:14px;border:1px dashed #cbd5e1;">
+                <div style="font-size:2.2em">🎓</div>
+                <div style="font-weight:700;margin:6px 0 4px;color:var(--text-main)">Bạn chưa tham gia lớp nào</div>
+                <div>Nhập mã Key Code giáo viên gửi để mở bài học của lớp.</div>
+                <button class="btn-create-list" onclick="openKeyCodeModal()" style="background:#f59e0b;border:none;margin-top:12px;">🔑 Nhập mã lớp</button></div>`;
+            container.parentNode.insertBefore(block, container);
+            return;
+        }
 
         // 1. Phía ADMIN (Thầy/Cô):
         if (isTeacher()) {
@@ -11365,9 +11398,6 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
                     </div>
                 </div>
                 ${itemsHtml}
-                <div class="shared-section-header" style="margin-top:30px;">
-                    <h3 style="margin:0;font-size:1.15em;font-weight:700;color:var(--text-main);">📁 Thư mục cá nhân của bạn</h3>
-                </div>
             `;
 
             container.parentNode.insertBefore(block, container);
@@ -11409,9 +11439,6 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
                     <button class="btn-create-list" onclick="openKeyCodeModal()" style="background:#f59e0b;border:none;padding:6px 14px;font-size:0.8em;">+ Nhập mã mới</button>
                 </div>
                 ${itemsHtml}
-                <div class="shared-section-header" style="margin-top:30px;">
-                    <h3 style="margin:0;font-size:1.15em;font-weight:700;color:var(--text-main);">📁 Thư mục cá nhân của bạn</h3>
-                </div>
             `;
 
             container.parentNode.insertBefore(block, container);

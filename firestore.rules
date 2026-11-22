@@ -603,30 +603,48 @@ service cloud.firestore {
     }
 
     // ===== KHO GIÁO TRÌNH (curricula) =====
-    // Nguồn dữ liệu chính (từ vựng + ngữ pháp theo bài) dùng chung cho nhiều lớp.
-    // - Admin (giáo viên): toàn quyền soạn — /curriculum/admin.html
-    // - visibility = "public": ai cũng đọc được; "students": cần đăng nhập; "private": chỉ admin
-    function curriculumReadable(data) {
-      return isAdmin()
-        || data.get("visibility", "private") == "public"
-        || (isSignedIn() && data.get("visibility", "private") == "students");
+    // Nguồn dữ liệu chính (từ vựng, ngữ pháp, hội thoại, nghe theo bài) dùng chung cho nhiều lớp.
+    // - Admin (giáo viên): xem + soạn tất cả — /lesson/admin.html
+    // - Học viên: chỉ đọc giáo trình đã được GÁN cho lớp mình đã ghi danh (shared_folders/{id}.curLinks[curId]).
+    //   Học viên tự tạo "thẻ đọc" curricula/{curId}/readers/{uid} = { folder } trỏ tới lớp đó;
+    //   rules kiểm tra lại mỗi lần đọc: còn là học viên của lớp + lớp còn gán giáo trình này.
+    //   (Bỏ lớp / gỡ giáo trình khỏi lớp → mất quyền ngay, thẻ cũ vô hiệu.)
+    function classLinksCurriculum(folderId, curId) {
+      return isFolderStudent(folderId)
+        && curId in get(/databases/$(database)/documents/shared_folders/$(folderId)).data.get('curLinks', {});
+    }
+    function curriculumReader(curId) {
+      let card = /databases/$(database)/documents/curricula/$(curId)/readers/$(request.auth.uid);
+      return isSignedIn() && exists(card) && classLinksCurriculum(get(card).data.folder, curId);
+    }
+    function curriculumReadable(curId) {
+      return isAdmin() || curriculumReader(curId);
     }
     match /curricula/{curId} {
-      allow read: if curriculumReadable(resource.data);
-      allow write: if isAdmin();
+      allow get: if curriculumReadable(curId);
+      allow list, write: if isAdmin();
 
-      // Bài học của giáo trình (mảng words + grammar nhúng trong doc)
+      // Thẻ đọc của học viên (xem ghi chú ở trên)
+      match /readers/{uid} {
+        allow read: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+        allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == uid);
+        allow create, update: if isAdmin() || (isSignedIn() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['folder', 'at'])
+          && request.resource.data.folder is string
+          && request.resource.data.folder.size() > 0 && request.resource.data.folder.size() <= 200
+          && classLinksCurriculum(request.resource.data.folder, curId));
+      }
+
+      // Bài học của giáo trình
       match /lessons/{lessonId} {
-        allow read: if isAdmin()
-          || curriculumReadable(get(/databases/$(database)/documents/curricula/$(curId)).data);
+        allow read: if curriculumReadable(curId);
         allow write: if isAdmin();
       }
 
       // Ảnh minh họa (tranh từ vựng, tranh hội thoại) — cùng quyền xem với bài học
-      // Mỗi doc: { lesson, part, items: { wordId|dialogueId: dataURL } }
+      // Mỗi doc: { lesson, part, items: { wordId|dialogueId: dataURL }, credits }
       match /media/{mediaId} {
-        allow read: if isAdmin()
-          || curriculumReadable(get(/databases/$(database)/documents/curricula/$(curId)).data);
+        allow read: if curriculumReadable(curId);
         allow write: if isAdmin();
       }
     }

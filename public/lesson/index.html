@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+    <script>
+        // Mục "Giáo trình" của học viên giờ là thư mục lớp học (vocab.html?view=classes).
+        // Trang này chỉ còn dùng để xem một giáo trình (?c=…) khi giáo viên bấm "👁 Xem".
+        if (!/[?&]c=/.test(location.search)) location.replace('../vocab.html?view=classes');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Học theo giáo trình - Vui Học Tiếng Hàn</title>
@@ -36,6 +41,7 @@
     <script src="../auth.js"></script>
     <script src="../assets/js/theme.js"></script>
     <script src="../assets/js/menu.js"></script>
+    <script src="../assets/js/curriculum-access.js"></script>
     <script src="../assets/js/curriculum-personal.js"></script>
     <script src="../assets/js/curriculum-learn.js"></script>
 </body>

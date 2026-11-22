@@ -1,7 +1,7 @@
 /* ==========================================================================
    KHO GIÁO TRÌNH → SỔ TỪ CÁ NHÂN (Giai đoạn 3) — vocab.html, mọi học viên
    --------------------------------------------------------------------------
-   Học viên chọn giáo trình (visibility "students" hoặc "public") và các bài,
+   Học viên chọn giáo trình đã được gán cho lớp mình (curriculum-access.js) và các bài được giao,
    từ vựng được chép vào users/{uid}/vocabulary thành:
        Thư mục  = tên giáo trình (vocabLists)
        Bài học  = "01. Tên bài"  (đánh số để giữ đúng thứ tự khi sắp xếp)
@@ -63,13 +63,12 @@
         document.head.appendChild(st);
     }
 
-    // Học viên chỉ được truy vấn giáo trình mình có quyền đọc → truy vấn theo từng mức hiển thị
+    // Giáo trình được gán cho lớp của học viên (admin: tất cả) — xem curriculum-access.js
     async function listVisibleCurricula() {
-        const col = db().collection('curricula');
-        const snaps = await Promise.all(['students', 'public'].map(v => col.where('visibility', '==', v).get().catch(() => null)));
-        const map = new Map();
-        snaps.forEach(s => s && s.docs.forEach(d => map.set(d.id, { id: d.id, ...d.data() })));
-        return [...map.values()].filter(c => (c.units || []).length)
+        const user = firebase.auth().currentUser;
+        const list = await window.CurriculumAccess.listCurricula(user);
+        const units = (c) => c.allowed ? (c.units || []).filter(u => c.allowed.has(u.id)) : (c.units || []);
+        return list.filter(c => units(c).length).map(c => ({ ...c, units: units(c), allUnits: c.units || [] }))
             .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || String(a.title).localeCompare(String(b.title), 'vi'));
     }
 
@@ -83,7 +82,7 @@
     // ------------------------------------------------------------------ thêm / cập nhật
     async function addToNotebook(cur, lessonIds, folderName) {
         const folder = safePart(folderName) || safePart(cur.title) || 'Giáo trình';
-        const units = cur.units || [];
+        const units = cur.allUnits || cur.units || []; // đánh số theo vị trí trong cả giáo trình
         const lessonsSnap = await Promise.all(lessonIds.map(id => db().collection('curricula').doc(cur.id).collection('lessons').doc(id).get()));
         const lessons = new Map(lessonsSnap.filter(d => d.exists).map(d => [d.id, d.data()]));
 
@@ -142,7 +141,7 @@
         injectStyles();
         let list;
         try { loading('Đang tải Kho giáo trình…'); list = await listVisibleCurricula(); Swal.close(); } catch (err) { return fail(err); }
-        if (!list.length) return Swal.fire({ icon: 'info', title: 'Chưa có giáo trình', text: 'Giáo viên chưa chia sẻ giáo trình nào.' });
+        if (!list.length) return Swal.fire({ icon: 'info', title: 'Chưa có giáo trình', text: 'Lớp của bạn chưa được giao giáo trình nào.' });
 
         let picked = null;
         await Swal.fire({
@@ -171,14 +170,16 @@
     async function lessonDialog(cur) {
         injectStyles();
         const done = addedLessonIds(cur.id);
-        const units = cur.units || [];
+        // chỉ các bài được giao; số thứ tự theo vị trí trong cả giáo trình
+        const all = cur.allUnits || cur.units || [];
+        const units = cur.allowed ? (cur.units || []).filter(u => cur.allowed.has(u.id)) : (cur.units || []);
         const prevFolder = (myVocab().find(w => w.src && w.src.c === cur.id && w.listName) || {}).listName;
         const folderDefault = prevFolder ? prevFolder.split('/')[0] : safePart(cur.title);
         let stage = null;
         const rows = units.map((u, i) => {
             const head = u.stage && u.stage !== stage ? `<div class="muted" style="padding:6px 10px 2px;font-weight:700">${esc(stage = u.stage)}</div>` : '';
             return head + `<label><input type="checkbox" data-id="${esc(u.id)}" ${done.size ? (done.has(u.id) ? 'checked' : '') : 'checked'}>
-                <span>${pad(i + 1)}. ${esc(u.title)}</span>
+                <span>${pad(all.indexOf(u) + 1)}. ${esc(u.title)}</span>
                 <span class="c">${done.has(u.id) ? '✓ đã thêm · ' : ''}${u.wordCount || 0} từ</span></label>`;
         }).join('');
         const { value } = await Swal.fire({

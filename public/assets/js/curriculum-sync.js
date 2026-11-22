@@ -614,7 +614,7 @@
     }
 
     window.CurriculumSync = {
-        openHub, importDialog, syncDialog, createClassDialog, decorateFolder,
+        openHub, importDialog, syncDialog, unlinkDialog, createClassDialog, decorateFolder,
         // dùng cho kiểm thử
         _importLessons: importLessons, _buildSyncPlan: buildSyncPlan, _applySyncPlan: applySyncPlan, _relinkFromSource: relinkFromSource,
         _loadFolder: loadFolder, _loadClassContent: loadClassContent

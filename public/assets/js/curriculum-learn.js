@@ -5,8 +5,8 @@
      index.html            → danh sách giáo trình được xem
      index.html?c=ID       → danh sách bài của một giáo trình
      lesson.html?c=ID&l=LID#words|grammar|dialogues|listening → trang một bài
-   Quyền đọc theo firestore.rules: "public" ai cũng xem, "students" cần đăng nhập,
-   "private" chỉ giáo viên (admin).
+   Quyền đọc (firestore.rules + curriculum-access.js): admin xem tất cả; học viên chỉ xem
+   giáo trình được gán cho lớp mình và chỉ thấy các bài đã giao.
    ========================================================================== */
 (function () {
     'use strict';
@@ -117,19 +117,11 @@
     window.clSpeak = speak;
 
     // ------------------------------------------------------------------ dữ liệu
-    async function listCurricula() {
-        const col = db().collection('curricula');
-        if (isAdmin(S.user)) {
-            const snap = await col.get();
-            return snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        }
-        const levels = S.user ? ['students', 'public'] : ['public'];
-        const snaps = await Promise.all(levels.map(v => col.where('visibility', '==', v).get().catch(() => null)));
-        const map = new Map();
-        snaps.forEach(s => s && s.docs.forEach(d => map.set(d.id, { id: d.id, ...d.data() })));
-        return [...map.values()];
-    }
-    const sortCurricula = (list) => list.filter(c => (c.units || []).length || isAdmin(S.user))
+    const ACC = () => window.CurriculumAccess;
+    async function listCurricula() { return ACC().listCurricula(S.user); }
+    // Lọc danh sách bài theo bài được giao (allowed = null → admin, xem tất cả)
+    const visibleUnits = (units, allowed) => allowed ? (units || []).filter(u => allowed.has(u.id)) : (units || []);
+    const sortCurricula = (list) => list.filter(c => visibleUnits(c.units, c.allowed).length || isAdmin(S.user))
         .sort((a, b) => (a.order ?? 999) - (b.order ?? 999) || String(a.title).localeCompare(String(b.title), 'vi'));
 
     // ------------------------------------------------------------------ INDEX
@@ -139,24 +131,37 @@
         let list;
         try { list = sortCurricula(await listCurricula()); } catch (e) { return showMessage('⚠️', 'Không tải được giáo trình: ' + esc(e.message)); }
         document.title = 'Học theo giáo trình - Vui Học Tiếng Hàn';
-        const body = list.length ? `<div class="cl-cgrid">${list.map(c => {
-            const units = c.units || [];
+        const card = (c) => {
+            const units = visibleUnits(c.units, c.allowed);
             const words = units.reduce((n, u) => n + (u.wordCount || 0), 0);
             return `<a class="cl-ccard" href="index.html?c=${encodeURIComponent(c.id)}">
                 <div class="ic">${esc(c.icon || '📘')}</div>
                 <h3 class="kr">${esc(c.title)}</h3>
                 <div class="meta">${units.length} bài · ${words} từ vựng${c.description ? '<br>' + esc(c.description) : ''}</div>
                 ${LEVELS[c.level] ? `<span class="lv">${esc(LEVELS[c.level])}</span>` : ''}
-                ${c.visibility === 'private' ? '<span class="lv" style="margin-left:4px;background:var(--cl-warn-soft);color:var(--cl-warn)">🔒 Riêng tư</span>' : ''}
+                ${c.classes && c.classes.length ? `<span class="lv" style="margin-left:4px">👥 ${esc(c.classes.map(x => x.name).filter(Boolean).join(', ') || 'Lớp của bạn')}</span>` : ''}
             </a>`;
-        }).join('')}</div>`
-            : `<div class="cl-empty"><div class="big">📭</div>${S.user ? 'Chưa có giáo trình nào được chia sẻ với bạn.' : 'Đăng nhập để xem giáo trình của lớp bạn.'}
+        };
+        let body;
+        if (!list.length) {
+            body = `<div class="cl-empty"><div class="big">📭</div>${S.user
+                ? 'Lớp của bạn chưa được giao giáo trình nào.<br><small>Nếu bạn chưa vào lớp, hãy nhập Key Code giáo viên gửi ở mục <b>Sổ từ vựng</b>.</small>'
+                : 'Đăng nhập để xem giáo trình của lớp bạn.'}
                 ${S.user ? '' : '<div style="margin-top:14px"><button class="cl-btn pri" onclick="clOpenLogin()">Đăng nhập</button></div>'}</div>`;
+        } else if (isAdmin(S.user)) {
+            body = `<div class="cl-cgrid">${list.map(card).join('')}</div>`;
+        } else {
+            // Học viên: gom theo lớp
+            const classes = await ACC().myClasses(S.user);
+            body = classes.filter(f => list.some(c => f.curLinks && f.curLinks[c.id])).map(f => `
+                <h2 class="cl-classh">👥 ${esc(f.name || 'Lớp của tôi')}</h2>
+                <div class="cl-cgrid">${list.filter(c => f.curLinks && f.curLinks[c.id]).map(c => card({ ...c, classes: [] })).join('')}</div>`).join('');
+        }
         root.innerHTML = `
             <section class="cl-hero">
-                <div class="eyebrow">📚 Kho giáo trình</div>
+                <div class="eyebrow">📚 ${isAdmin(S.user) ? 'Kho giáo trình' : 'Lớp của tôi'}</div>
                 <h1>Học theo giáo trình</h1>
-                <p class="sub">Từ vựng, ngữ pháp và hội thoại của từng bài — học trước khi lên lớp, ôn lại sau giờ học.</p>
+                <p class="sub">Từ vựng, ngữ pháp, hội thoại và bài nghe của từng bài được giao — học trước khi lên lớp, ôn lại sau giờ học.</p>
                 ${isAdmin(S.user) ? '<div class="nav"><a class="cl-btn" href="admin.html">✎ Soạn giáo trình</a></div>' : ''}
             </section>
             <div class="cl-panel cl-section">${body}</div>`;
@@ -165,13 +170,14 @@
     async function renderCurriculumPage(cid) {
         let cur;
         try {
-            const d = await db().collection('curricula').doc(cid).get();
+            const d = await ACC().getWithAccess(S.user, cid, db().collection('curricula').doc(cid));
             if (!d.exists) return showMessage('🔍', 'Không tìm thấy giáo trình này.', '<a class="cl-btn" href="index.html">← Danh sách giáo trình</a>');
             cur = { id: d.id, ...d.data() };
+            cur.allowed = await ACC().allowedLessons(S.user, cid);
         } catch (e) { return permissionMessage('giáo trình'); }
         S.cur = cur;
         document.title = cur.title + ' - Học theo giáo trình';
-        const units = cur.units || [];
+        const units = visibleUnits(cur.units, cur.allowed);
         const words = units.reduce((n, u) => n + (u.wordCount || 0), 0);
         const gram = units.reduce((n, u) => n + (u.grammarCount || 0), 0);
         let stage = null, rows = '';
@@ -179,7 +185,7 @@
             if ((u.stage || '') !== stage) { stage = u.stage || ''; if (stage) rows += `<div class="cl-stage">${esc(stage)}</div>`; }
             const t = splitTitle(u.title);
             rows += `<a class="cl-lrow" href="${lessonUrl(cur.id, u.id)}">
-                <span class="no">${i + 1}</span>
+                <span class="no">${(cur.units || []).indexOf(u) + 1}</span>
                 <span class="t kr">${esc(t.main)}${t.sub ? `<br><small style="color:var(--cl-sub);font-weight:600">${esc(t.sub)}</small>` : ''}</span>
                 <span class="c">${u.wordCount || 0} từ · ${u.grammarCount || 0} NP${u.dialogueCount ? ' · ' + u.dialogueCount + ' HT' : ''}</span>
             </a>`;
@@ -192,12 +198,12 @@
                 ${cur.description ? `<p class="sub">${esc(cur.description)}</p>` : ''}
                 <div class="chips"><span class="cl-chip">📄 ${units.length} bài</span><span class="cl-chip">🔤 ${words} từ</span><span class="cl-chip">📗 ${gram} ngữ pháp</span></div>
                 <div class="nav">
-                    ${units.length ? `<a class="cl-btn" href="${lessonUrl(cur.id, units[0].id)}">▶ Bắt đầu từ bài 1</a>` : ''}
+                    ${units.length ? `<a class="cl-btn" href="${lessonUrl(cur.id, units[0].id)}">▶ Bắt đầu học</a>` : ''}
                     <button class="cl-btn" onclick="clAddCurriculumToNotebook()">＋ Thêm vào Sổ từ</button>
                     ${isAdmin(S.user) ? '<a class="cl-btn" href="admin.html">✎ Soạn</a>' : ''}
                 </div>
             </section>
-            <div class="cl-panel cl-section">${rows || '<div class="cl-empty">Giáo trình chưa có bài.</div>'}</div>`;
+            <div class="cl-panel cl-section">${rows || `<div class="cl-empty">${cur.allowed ? 'Lớp của bạn chưa được giao bài nào trong giáo trình này.' : 'Giáo trình chưa có bài.'}</div>`}</div>`;
     }
     window.clAddCurriculumToNotebook = function () {
         if (!S.user) return openLogin();
@@ -210,12 +216,13 @@
         if (!cid || !lid) return showMessage('🔍', 'Thiếu thông tin bài học.', '<a class="cl-btn" href="index.html">← Danh sách giáo trình</a>');
         let cur, lesson;
         try {
-            const [cd, ld] = await Promise.all([
-                db().collection('curricula').doc(cid).get(),
-                db().collection('curricula').doc(cid).collection('lessons').doc(lid).get()
-            ]);
+            const cref = db().collection('curricula').doc(cid);
+            const cd = await ACC().getWithAccess(S.user, cid, cref);
+            const allowed = await ACC().allowedLessons(S.user, cid);
+            if (allowed && !allowed.has(lid)) return showMessage('🔒', 'Bài này chưa được giao cho lớp của bạn.', `<a class="cl-btn" href="index.html?c=${encodeURIComponent(cid)}">← Các bài được giao</a>`);
+            const ld = await cref.collection('lessons').doc(lid).get();
             if (!cd.exists || !ld.exists) return showMessage('🔍', 'Không tìm thấy bài học này.', `<a class="cl-btn" href="index.html${cd.exists ? '?c=' + encodeURIComponent(cid) : ''}">← Quay lại</a>`);
-            cur = { id: cd.id, ...cd.data() };
+            cur = { id: cd.id, ...cd.data(), allowed };
             lesson = { id: ld.id, ...ld.data() };
         } catch (e) { return permissionMessage('bài học'); }
         S.cur = cur; S.lesson = lesson; S.lessonId = lid;
@@ -283,13 +290,13 @@
 
     function drawLesson() {
         const cur = S.cur, L = S.lesson;
-        const units = cur.units || [];
+        const units = visibleUnits(cur.units, cur.allowed);
         const idx = units.findIndex(u => u.id === S.lessonId);
         const prev = idx > 0 ? units[idx - 1] : null, next = idx >= 0 && idx < units.length - 1 ? units[idx + 1] : null;
         const t = splitTitle(L.title);
         document.title = `${t.main} · ${cur.title}`;
         root.innerHTML = `
-            <nav class="cl-crumbs"><a href="index.html">📚 Giáo trình</a> › <a class="kr" href="index.html?c=${encodeURIComponent(cur.id)}">${esc(cur.title)}</a> › <span>Bài ${idx + 1}</span></nav>
+            <nav class="cl-crumbs"><a href="index.html">📚 Giáo trình</a> › <a class="kr" href="index.html?c=${encodeURIComponent(cur.id)}">${esc(cur.title)}</a> › <span>Bài ${(cur.units || []).findIndex(u => u.id === S.lessonId) + 1}</span></nav>
             <section class="cl-hero">
                 <div class="eyebrow kr">${esc(cur.icon || '📘')} ${esc(cur.title)}${L.stage ? ' · ' + esc(L.stage) : ''}</div>
                 <h1 class="kr">${esc(t.main)}</h1>
@@ -297,7 +304,7 @@
                 <div class="chips"><span class="cl-chip">🔤 ${L.words.length} từ vựng</span><span class="cl-chip">📗 ${L.grammar.length} ngữ pháp</span><span class="cl-chip">💬 ${L.dialogues.length} hội thoại</span>${L.listening.length ? `<span class="cl-chip">🎧 ${L.listening.length} bài nghe</span>` : ''}</div>
                 <div class="nav">
                     ${prev ? `<a class="cl-btn" href="${lessonUrl(cur.id, prev.id, S.tab)}" title="${esc(prev.title)}">← Bài trước</a>` : '<button class="cl-btn" disabled>← Bài trước</button>'}
-                    <select id="clLessonSel" aria-label="Chọn bài">${units.map((u, i) => `<option value="${esc(u.id)}" ${u.id === S.lessonId ? 'selected' : ''}>${i + 1}. ${esc(splitTitle(u.title).main)}</option>`).join('')}</select>
+                    <select id="clLessonSel" aria-label="Chọn bài">${units.map(u => `<option value="${esc(u.id)}" ${u.id === S.lessonId ? 'selected' : ''}>${(cur.units || []).indexOf(u) + 1}. ${esc(splitTitle(u.title).main)}</option>`).join('')}</select>
                     ${next ? `<a class="cl-btn" href="${lessonUrl(cur.id, next.id, S.tab)}" title="${esc(next.title)}">Bài sau →</a>` : '<button class="cl-btn" disabled>Bài sau →</button>'}
                     ${isAdmin(S.user) ? '<a class="cl-btn" href="admin.html" title="Mở trang soạn">✎ Soạn</a>' : ''}
                 </div>
@@ -763,6 +770,7 @@
             const key = user ? user.uid : null;
             if (S.loadedFor === key) return; // tránh vẽ lại khi token làm mới
             S.loadedFor = key; S.user = user;
+            if (window.CurriculumAccess) window.CurriculumAccess.reset();
             const m = document.getElementById('authModal');
             if (user && m) m.style.display = 'none';
             if (PAGE === 'lesson') renderLessonPage(); else renderIndex();
