@@ -120,7 +120,15 @@
     table.words { width: 100%; border-collapse: collapse; }
     table.words th { text-align: left; font-size: .75em; color: var(--muted); font-weight: 700; padding: 6px; border-bottom: 1px solid var(--border); }
     table.words td { padding: 3px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-    table.words td.idx { color: var(--muted); font-size: .8em; text-align: center; width: 32px; }
+    table.words td.idx { color: var(--muted); font-size: .8em; text-align: center; width: 44px; white-space: nowrap; }
+    table.words .grip { display: inline-flex; align-items: center; gap: 2px; cursor: grab; touch-action: none; user-select: none; padding: 4px 4px; border-radius: 6px; }
+    table.words .grip::before { content: '⋮⋮'; letter-spacing: -3px; font-size: 1.05em; opacity: .45; margin-right: 3px; }
+    table.words .grip:hover { background: var(--accent-soft); color: var(--accent); }
+    table.words .grip:hover::before { opacity: 1; }
+    table.words.dragging, table.words.dragging * { cursor: grabbing !important; user-select: none; }
+    table.words tr.drag-src { opacity: .45; }
+    table.words tr.drop-before td { box-shadow: inset 0 3px 0 var(--accent); }
+    table.words tr.drop-after td { box-shadow: inset 0 -3px 0 var(--accent); }
     table.words input { border-color: transparent; background: transparent; padding: 6px 8px; }
     table.words input:hover { border-color: var(--border); }
     table.words input:focus { background: var(--panel); }

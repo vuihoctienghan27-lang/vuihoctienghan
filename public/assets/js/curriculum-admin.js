@@ -1010,7 +1010,7 @@
         W.forEach((w, i) => { const k = normWord(w.word); if (!k) return; if (k in seen) { dup.add(i); dup.add(seen[k]); } else seen[k] = i; });
         $('wCount') && ($('wCount').textContent = W.length);
         const rows = W.map((w, i) => `<tr class="${dup.has(i) ? 'dup' : ''}" title="${dup.has(i) ? 'Từ bị trùng trong bài' : ''}">
-            <td class="idx">${i + 1}</td>
+            <td class="idx"><span class="grip" data-drag="${i}" title="Kéo để đổi vị trí">${i + 1}</span></td>
             <td class="pic">${picButton(w.id, i, "word")}</td>
             <td><input class="kr" data-i="${i}" data-f="word" value="${esc(w.word)}" placeholder="단어"></td>
             <td><input data-i="${i}" data-f="meaning" value="${esc(w.meaning)}" placeholder="Nghĩa"></td>
@@ -1027,7 +1027,7 @@
                 <button class="btn" onclick="CA.bulkPaste()">📋 Dán danh sách</button>
                 ${dup.size ? `<button class="btn" onclick="CA.removeDuplicates()">🧹 Xóa ${dup.size} dòng trùng</button>` : ''}
                 <span class="grow"></span>
-                <span class="hint">Ô vàng = từ bị trùng. Dòng để trống từ sẽ bị bỏ khi lưu. Bấm 🖼 để thêm / đổi ảnh (lưu ngay).</span>
+                <span class="hint">Ô vàng = từ bị trùng. Dòng để trống từ sẽ bị bỏ khi lưu. Bấm 🖼 để thêm / đổi ảnh (lưu ngay). Kéo ⋮⋮ ở cột số để đổi vị trí từ.</span>
             </div>
             ${W.length ? `<div style="overflow-x:auto"><table class="words">
                 <thead><tr><th>#</th><th title="Ảnh minh họa">Ảnh</th><th>Từ (한국어)</th><th>Nghĩa</th><th class="col-ex">Ví dụ</th><th class="col-ex">Dịch ví dụ</th><th></th></tr></thead>
@@ -1043,7 +1043,47 @@
                 // Enter ở ô cuối cùng → thêm dòng mới
                 if (e.key === 'Enter' && e.target.dataset && +e.target.dataset.i === W.length - 1) { e.preventDefault(); addWordRow(); }
             });
+            body.addEventListener('pointerdown', e => {
+                const g = e.target.closest('.grip'); if (!g || e.button > 0) return;
+                e.preventDefault(); dragWord(body, +g.dataset.drag, e);
+            });
         }
+    }
+    // Kéo dòng từ vựng bằng tay nắm ở cột số thứ tự (chuột lẫn cảm ứng)
+    function dragWord(body, from, ev) {
+        const rows = [...body.rows], table = body.closest('table');
+        const src = rows[from]; let to = from;
+        src.classList.add('drag-src'); table.classList.add('dragging');
+        const clear = () => rows.forEach(r => r.classList.remove('drop-before', 'drop-after'));
+        const scroller = document.scrollingElement;
+        let lastY = ev.clientY, raf = 0;
+        const target = (y) => {
+            let k = rows.length;
+            for (let i = 0; i < rows.length; i++) { const b = rows[i].getBoundingClientRect(); if (y < b.top + b.height / 2) { k = i; break; } }
+            to = k > from ? k - 1 : k; // vị trí mới sau khi rút dòng ra
+            return k;
+        };
+        const update = () => {
+            const y = lastY; clear();
+            const k = target(y);
+            if (to !== from) { if (k < rows.length) rows[k].classList.add('drop-before'); else rows[rows.length - 1].classList.add('drop-after'); }
+            // tự cuộn khi kéo sát mép màn hình
+            const edge = 60, h = window.innerHeight;
+            if (y < edge) scroller.scrollTop -= (edge - y) / 4; else if (y > h - edge) scroller.scrollTop += (y - h + edge) / 4;
+            raf = (y < edge || y > h - edge) ? requestAnimationFrame(update) : 0;
+        };
+        const move = e => { lastY = e.clientY; if (!raf) raf = requestAnimationFrame(update); };
+        const end = e => {
+            window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', end); window.removeEventListener('pointercancel', end);
+            if (raf) cancelAnimationFrame(raf);
+            clear(); src.classList.remove('drag-src'); table.classList.remove('dragging');
+            if (e.type === 'pointerup') target(e.clientY);
+            if (e.type === 'pointerup' && to !== from) {
+                const W = S.lesson.words; const [w] = W.splice(from, 1); W.splice(to, 0, w);
+                markDirty(); renderWords();
+            }
+        };
+        window.addEventListener('pointermove', move); window.addEventListener('pointerup', end); window.addEventListener('pointercancel', end);
     }
 
     function addWordRow() {
