@@ -392,7 +392,7 @@
                 ${relinkCards}
                 <div class="row" style="margin-top:4px">
                     <button class="b pri" data-act="import">＋ Nhập bài từ giáo trình</button>
-                    <a class="b" href="curriculum/admin.html" target="_blank" rel="noopener" style="text-decoration:none">Mở Kho giáo trình ↗</a>
+                    <a class="b" href="lesson/admin.html" target="_blank" rel="noopener" style="text-decoration:none">Mở Kho giáo trình ↗</a>
                 </div></div>`,
             didOpen: (popup) => {
                 popup.querySelectorAll('[data-act]').forEach(btn => btn.addEventListener('click', () => {
@@ -411,7 +411,7 @@
 
     async function pickCurriculum(curricula, title) {
         if (!curricula.length) {
-            await Swal.fire({ icon: 'info', title: 'Kho giáo trình trống', html: 'Hãy tạo giáo trình trước ở <a href="curriculum/admin.html" target="_blank">Kho giáo trình ↗</a>.' });
+            await Swal.fire({ icon: 'info', title: 'Kho giáo trình trống', html: 'Hãy tạo giáo trình trước ở <a href="lesson/admin.html" target="_blank">Kho giáo trình ↗</a>.' });
             return null;
         }
         const { value } = await Swal.fire({

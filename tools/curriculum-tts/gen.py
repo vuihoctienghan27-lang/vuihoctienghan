@@ -6,8 +6,8 @@ Cách dùng (cần: pip install edge-tts):
 - File giáo trình là bản xuất "vht-curriculum" (hoặc file bài nghe "vht-curriculum-listening").
 - Từ vựng đọc bằng SunHi; câu hội thoại phân vai theo speakers.json
   (F = SunHi, M = InJoon).
-- MP3 lưu ở public/curriculum/audio/<băm>.mp3 (tên băm theo giọng + câu,
-  nên chạy lại chỉ tạo file còn thiếu). Bảng tra public/curriculum/audio/index.json:
+- MP3 lưu ở public/lesson/audio/<băm>.mp3 (tên băm theo giọng + câu,
+  nên chạy lại chỉ tạo file còn thiếu). Bảng tra public/lesson/audio/index.json:
       { "w": { "<từ>": "<file>" }, "d": { "<nhân vật>|<câu>": "<file>" } }
   Trang học (curriculum-learn.js) tra bảng này trước, không có thì đọc bằng giọng trình duyệt.
 """
@@ -18,7 +18,7 @@ import edge_tts
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-OUT = os.path.join(ROOT, 'public', 'curriculum', 'audio')
+OUT = os.path.join(ROOT, 'public', 'lesson', 'audio')
 VOICES = {'F': 'ko-KR-SunHiNeural', 'M': 'ko-KR-InJoonNeural'}
 NARRATION = re.compile(r'^\(.*\)$')
 

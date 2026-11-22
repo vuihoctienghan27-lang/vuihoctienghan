@@ -32,6 +32,8 @@ public/
   reading/topik_ii/         # TOPIK II reading
   writing/topik_ii/         # TOPIK II writing (topik*, type51–54, wongoji53.html = 원고지 câu 53)
   lesson/, video/, games/   # Bài giảng, học qua video, minigame từ vựng
+  lesson/index.html, lesson.html, admin.html  # Kho giáo trình: học theo giáo trình + trang soạn (curriculum-*.js); /curriculum/* chuyển hướng về đây
+  lesson/audio/             # MP3 đọc sẵn (tools/curriculum-tts/gen.py) + bảng tra index.json
   home/                     # Copied index.html for sub-skill home pages
   implementation_plan.md    # Historical carousel implementation spec
 ```

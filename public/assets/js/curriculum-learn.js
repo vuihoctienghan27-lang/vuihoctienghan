@@ -1,5 +1,5 @@
 /* ==========================================================================
-   HỌC THEO GIÁO TRÌNH — curriculum/index.html & curriculum/lesson.html
+   HỌC THEO GIÁO TRÌNH — lesson/index.html & lesson/lesson.html
    --------------------------------------------------------------------------
    Đọc dữ liệu Kho giáo trình (curricula/{id}, curricula/{id}/lessons/{lid}):
      index.html            → danh sách giáo trình được xem

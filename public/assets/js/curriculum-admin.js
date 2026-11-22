@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KHO GIÁO TRÌNH — Trang soạn thảo (curriculum/admin.html)
+   KHO GIÁO TRÌNH — Trang soạn thảo (lesson/admin.html)
    --------------------------------------------------------------------------
    Firestore:
      curricula/{curId}

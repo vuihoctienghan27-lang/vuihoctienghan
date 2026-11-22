@@ -5,6 +5,18 @@
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
+    ],
+    "redirects": [
+      {
+        "regex": "^/curriculum/?$",
+        "destination": "/lesson/",
+        "type": 301
+      },
+      {
+        "regex": "^/curriculum/(?P<rest>.+)$",
+        "destination": "/lesson/:rest",
+        "type": 301
+      }
     ]
   },
   "firestore": {
