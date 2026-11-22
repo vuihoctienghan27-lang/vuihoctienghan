@@ -270,7 +270,7 @@
                 return `<div class="lesson-row" onclick="CA.openLesson(${arg(u.id)})">
                     <span class="n">${num}</span>
                     <span class="t">${esc(u.title)}</span>
-                    <span class="c">${u.wordCount || 0} từ · ${u.grammarCount || 0} NP${u.dialogueCount ? ' · ' + u.dialogueCount + ' HT' : ''}</span>
+                    <span class="c">${u.wordCount || 0} từ · ${u.grammarCount || 0} NP${u.dialogueCount ? ' · ' + u.dialogueCount + ' HT' : ''}${u.listeningCount ? ' · ' + u.listeningCount + ' nghe' : ''}</span>
                     <span class="ops" onclick="event.stopPropagation()">
                         <button class="btn ghost sm" title="Lên" ${idx === 0 ? 'disabled' : ''} onclick="CA.moveLesson(${idx},-1)">↑</button>
                         <button class="btn ghost sm" title="Xuống" ${idx === units.length - 1 ? 'disabled' : ''} onclick="CA.moveLesson(${idx},1)">↓</button>
@@ -293,6 +293,7 @@
                 <div class="actions">
                     <button class="btn" onclick="CA.editCurriculum()">✎ Thông tin</button>
                     <button class="btn" onclick="CA.importMedia()" title="Nhập file ảnh minh họa (tranh từ vựng, tranh hội thoại)">🖼 Nhập ảnh</button>
+                    <button class="btn" onclick="CA.importListening()" title="Nhập file bài nghe (lời thoại + câu hỏi) vào các bài đã có">🎧 Nhập bài nghe</button>
                     <button class="btn" onclick="CA.exportJson()">⬇ Xuất JSON</button>
                     <button class="btn danger" onclick="CA.deleteCurriculum()">🗑 Xóa</button>
                 </div>
@@ -464,7 +465,8 @@
             const data = d.data();
             S.lesson = {
                 id, title: data.title || '', stage: data.stage || NO_STAGE, version: data.version || 0,
-                words: clone(data.words || []), grammar: clone(data.grammar || []), dialogues: clone(data.dialogues || [])
+                words: clone(data.words || []), grammar: clone(data.grammar || []), dialogues: clone(data.dialogues || []),
+                listening: clone(data.listening || [])
             };
             S.dirty = false;
             S.media = {}; S.credits = {};
@@ -501,6 +503,7 @@
                 <button class="tab ${S.tab === 'words' ? 'active' : ''}" data-tab="words" onclick="CA.switchTab('words')">🔤 Từ vựng (<span id="wCount">${L.words.length}</span>)</button>
                 <button class="tab ${S.tab === 'grammar' ? 'active' : ''}" data-tab="grammar" onclick="CA.switchTab('grammar')">📗 Ngữ pháp (<span id="gCount">${L.grammar.length}</span>)</button>
                 <button class="tab ${S.tab === 'dialogues' ? 'active' : ''}" data-tab="dialogues" onclick="CA.switchTab('dialogues')">💬 Hội thoại (<span id="dCount">${L.dialogues.length}</span>)</button>
+                <button class="tab ${S.tab === 'listening' ? 'active' : ''}" data-tab="listening" onclick="CA.switchTab('listening')">🎧 Nghe (<span id="lsCount">${(L.listening || []).length}</span>)</button>
             </div>
             <div class="tab-b" id="tabBody"></div>
             <div class="savebar">
@@ -521,6 +524,7 @@
     function renderTab() {
         if (S.tab === 'grammar') renderGrammar();
         else if (S.tab === 'dialogues') renderDialogues();
+        else if (S.tab === 'listening') renderListening();
         else renderWords();
     }
 
@@ -615,6 +619,104 @@
             lines: (d.lines || []).map(l => ({ s: String(l.s || '').trim(), kr: String(l.kr || '').trim(), vi: String(l.vi || '').trim() })).filter(l => l.kr)
         };
     }
+
+    // ---------- tab nghe
+    // Mỗi bài nghe: { id, title, audio, lines (cùng định dạng kịch bản hội thoại), questions }
+    // Câu hỏi soạn dạng:
+    //   ? 남자는 어디에 가요?        ← câu hỏi
+    //   = Người nam đi đâu?          ← (tùy chọn) dịch câu hỏi
+    //   - 학교                       ← đáp án sai
+    //   * 도서관                     ← đáp án đúng (đúng 1 dòng *)
+    //   > Người nam nói 도서관에 가요. ← (tùy chọn) giải thích
+    function parseQuestions(text) {
+        const qs = [];
+        String(text || '').split(/\r?\n/).forEach(raw => {
+            const s = raw.trim(); if (!s) return;
+            const m = s.match(/^([?？=＝\-*＊>＞])\s*(.*)$/);
+            const cur = qs[qs.length - 1];
+            if (!m) { if (cur) { if (cur.options.length) cur.options[cur.options.length - 1] += ' ' + s; else cur.q += ' ' + s; } return; }
+            const k = m[1], v = m[2].trim();
+            if (k === '?' || k === '？') qs.push({ q: v, qvi: '', options: [], answer: -1, explain: '' });
+            else if (!cur) return;
+            else if (k === '=' || k === '＝') cur.qvi = (cur.qvi ? cur.qvi + ' ' : '') + v;
+            else if (k === '>' || k === '＞') cur.explain = (cur.explain ? cur.explain + ' ' : '') + v;
+            else { if (k !== '-') cur.answer = cur.options.length; cur.options.push(v); }
+        });
+        return qs;
+    }
+    function serializeQuestions(qs) {
+        return (qs || []).map(q => ['? ' + q.q, q.qvi ? '= ' + q.qvi : '',
+            ...(q.options || []).map((o, i) => (i === q.answer ? '* ' : '- ') + o), q.explain ? '> ' + q.explain : '']
+            .filter(Boolean).join('\n')).join('\n\n');
+    }
+    function renderListening() {
+        const D = S.lesson.listening || (S.lesson.listening = []);
+        $('lsCount') && ($('lsCount').textContent = D.length);
+        $('tabBody').innerHTML = `
+            <div class="toolbar">
+                <button class="btn primary" onclick="CA.addListening()">＋ Thêm bài nghe</button>
+                <span class="grow"></span>
+                <span class="hint">Lời thoại soạn giống hội thoại. Câu hỏi: <code>? câu hỏi</code>, <code>= dịch</code>, <code>- đáp án sai</code>, <code>* đáp án đúng</code>, <code>&gt; giải thích</code>.</span>
+            </div>
+            ${D.length ? D.map((d, i) => `<div class="panel" style="margin-bottom:12px">
+                <div class="panel-h">
+                    <h2>🎧 Bài nghe ${i + 1}</h2>
+                    <span>
+                        <button class="btn ghost sm" ${i === 0 ? 'disabled' : ''} onclick="CA.moveListening(${i},-1)">↑</button>
+                        <button class="btn ghost sm" ${i === D.length - 1 ? 'disabled' : ''} onclick="CA.moveListening(${i},1)">↓</button>
+                        <button class="btn ghost sm danger" onclick="CA.removeListening(${i})">✕</button>
+                    </span>
+                </div>
+                <div class="panel-b" style="display:grid;gap:10px">
+                    <div class="editor-head" style="padding:0;grid-template-columns:1fr 1fr">
+                        <div class="field"><label>Tiêu đề (tùy chọn)</label><input data-ls="${i}" data-f="title" value="${esc(d.title || '')}" placeholder="VD: 듣기 1 — Ở thư viện"></div>
+                        <div class="field"><label>Link audio mp3 (tùy chọn)</label><input data-ls="${i}" data-f="audio" value="${esc(d.audio || '')}" placeholder="https://… (để trống thì web đọc theo vai)"></div>
+                    </div>
+                    <div class="editor-head" style="padding:0;grid-template-columns:1fr 1fr;align-items:start">
+                        <div class="field"><label>Lời thoại</label>
+                            <textarea data-ls="${i}" data-f="script" rows="10" class="kr" placeholder="정우: 어디에 가요?&#10;= Bạn đi đâu thế?&#10;유진: 도서관에 가요.">${esc(serializeScript(d.lines))}</textarea></div>
+                        <div class="field"><label>Câu hỏi</label>
+                            <textarea data-ls="${i}" data-f="questions" rows="10" class="kr" placeholder="? 유진 씨는 어디에 가요?&#10;= Yu-jin đi đâu?&#10;- 학교&#10;* 도서관&#10;- 식당&#10;> 유진: 도서관에 가요.">${esc(serializeQuestions(d.questions))}</textarea></div>
+                    </div>
+                    <div class="hint" id="lsInfo${i}">${listeningInfo(d)}</div>
+                </div></div>`).join('')
+                : `<div class="empty" style="padding:30px"><p>Chưa có bài nghe. Bấm <b>＋ Thêm bài nghe</b> rồi dán lời thoại và câu hỏi.</p></div>`}`;
+        $('tabBody').querySelectorAll('[data-ls]').forEach(el => el.addEventListener('input', () => {
+            const d = D[+el.dataset.ls];
+            if (el.dataset.f === 'script') d.lines = parseScript(el.value);
+            else if (el.dataset.f === 'questions') d.questions = parseQuestions(el.value);
+            else d[el.dataset.f] = el.value;
+            const info = $('lsInfo' + el.dataset.ls); if (info) info.innerHTML = listeningInfo(d);
+            markDirty();
+        }));
+    }
+    function listeningInfo(d) {
+        const qs = d.questions || [];
+        const bad = qs.filter(q => q.options.length < 2 || q.answer < 0).length;
+        return dialogueInfo(d) + ` · ${qs.length} câu hỏi` +
+            (bad ? ` · <span style="color:var(--warn)">${bad} câu hỏi thiếu đáp án (cần ≥ 2 lựa chọn và đúng 1 dòng *)</span>` : '');
+    }
+    function addListening() { (S.lesson.listening = S.lesson.listening || []).push({ id: newId('ls'), title: '', audio: '', lines: [], questions: [] }); markDirty(); renderListening(); }
+    function moveListening(i, d) {
+        const D = S.lesson.listening, j = i + d;
+        if (j < 0 || j >= D.length) return;
+        [D[i], D[j]] = [D[j], D[i]]; markDirty(); renderListening();
+    }
+    async function removeListening(i) {
+        const r = await Swal.fire({ icon: 'question', title: 'Xóa bài nghe này?', showCancelButton: true, confirmButtonText: 'Xóa', cancelButtonText: 'Hủy', confirmButtonColor: '#dc2626' });
+        if (!r.isConfirmed) return;
+        S.lesson.listening.splice(i, 1); markDirty(); renderListening();
+    }
+    function cleanListening(d) {
+        const base = cleanDialogue({ ...d, id: d.id || newId('ls') });
+        base.questions = (d.questions || []).map(q => {
+            const options = (q.options || []).map(o => String(o || '').trim()).filter(Boolean);
+            const answer = Number.isInteger(q.answer) && q.answer >= 0 && q.answer < options.length ? q.answer : -1;
+            return { q: String(q.q || '').trim(), qvi: String(q.qvi || '').trim(), options, answer, explain: String(q.explain || '').trim() };
+        }).filter(q => q.q && q.options.length >= 2 && q.answer >= 0);
+        return base;
+    }
+    const keepListening = (d) => d.lines.length || d.questions.length;
 
     // ---------- ảnh minh họa của bài (curricula/{id}/media) — lưu ngay, không cần bấm "Lưu bài"
     // Giá trị ảnh: link https://… hoặc data:image/… (ảnh chọn từ máy / dán từ clipboard, đã thu nhỏ)
@@ -967,25 +1069,26 @@
         const words = L.words.map(cleanWord).filter(w => w.word);
         const grammar = L.grammar.map(cleanGrammar).filter(g => g.title);
         const dialogues = (L.dialogues || []).map(cleanDialogue).filter(d => d.lines.length);
+        const listening = (L.listening || []).map(cleanListening).filter(keepListening);
         const noMeaning = words.filter(w => !w.meaning).length;
         if (noMeaning) {
             const r = await Swal.fire({ icon: 'question', title: `${noMeaning} từ chưa có nghĩa`, text: 'Vẫn lưu?', showCancelButton: true, confirmButtonText: 'Vẫn lưu', cancelButtonText: 'Quay lại sửa' });
             if (!r.isConfirmed) return;
         }
-        const payload = { title, stage: L.stage, words, grammar, dialogues, version: (L.version || 0) + 1 };
+        const payload = { title, stage: L.stage, words, grammar, dialogues, listening, version: (L.version || 0) + 1 };
         if (bytesOf(payload) > MAX_LESSON_BYTES) {
             return Swal.fire('Bài quá lớn', 'Nội dung bài vượt giới hạn ~1MB của Firestore. Hãy tách bớt ngữ pháp sang bài khác.', 'error');
         }
         const btn = $('saveBtn'); btn.disabled = true; btn.textContent = 'Đang lưu…';
         try {
             const units = clone(c.units || []).map(u => u.id === L.id
-                ? { ...u, title, stage: L.stage, wordCount: words.length, grammarCount: grammar.length, dialogueCount: dialogues.length } : u);
+                ? { ...u, title, stage: L.stage, wordCount: words.length, grammarCount: grammar.length, dialogueCount: dialogues.length, listeningCount: listening.length } : u);
             const b = db.batch();
             b.set(curCol().doc(c.id).collection('lessons').doc(L.id), { ...payload, updatedAt: FV.serverTimestamp() }, { merge: true });
             b.update(curCol().doc(c.id), { units, version: FV.increment(1), updatedAt: FV.serverTimestamp() });
             await b.commit();
             c.units = units; c.version = (c.version || 0) + 1;
-            Object.assign(L, { title, words, grammar, dialogues, version: payload.version });
+            Object.assign(L, { title, words, grammar, dialogues, listening, version: payload.version });
             S.dirty = false;
             renderSidebar(); renderLesson();
             toast('Đã lưu bài');
@@ -1009,9 +1112,10 @@
             const words = (l.words || []).map(cleanWord).filter(w => w.word);
             const grammar = (l.grammar || []).map(cleanGrammar).filter(g => g.title);
             const dialogues = (l.dialogues || []).map(cleanDialogue).filter(d => d.lines.length);
-            const doc = { title: String(l.title || 'Bài').trim(), stage, words, grammar, dialogues, version: 1 };
+            const listening = (l.listening || []).map(cleanListening).filter(keepListening);
+            const doc = { title: String(l.title || 'Bài').trim(), stage, words, grammar, dialogues, listening, version: 1 };
             if (bytesOf(doc) > MAX_LESSON_BYTES) throw new Error(`Bài "${doc.title}" vượt giới hạn 1MB — hãy tách nhỏ.`);
-            units.push({ id, title: doc.title, stage, wordCount: words.length, grammarCount: grammar.length, dialogueCount: dialogues.length });
+            units.push({ id, title: doc.title, stage, wordCount: words.length, grammarCount: grammar.length, dialogueCount: dialogues.length, listeningCount: listening.length });
             ops.push(b => b.set(ref.collection('lessons').doc(id), { ...doc, updatedAt: FV.serverTimestamp() }));
         });
         await commitInChunks(ops);
@@ -1188,6 +1292,59 @@
         input.click();
     }
 
+    // ------------------------------------------------------------------ Nhập bài nghe vào giáo trình đang mở
+    // File: { format: 'vht-curriculum-listening', lessons: [{ title, listening: [...] }] }
+    // Ghép theo tên bài (bỏ qua hoa/thường, khoảng trắng), không khớp thì theo số "Bài N".
+    // Bài nghe của các bài khớp được THAY MỚI; từ vựng / ngữ pháp / hội thoại giữ nguyên.
+    function lessonKey(t) { return String(t || '').toLowerCase().replace(/\s+/g, ' ').trim(); }
+    function lessonNo(t) { const m = String(t || '').match(/^\s*(?:bài|lesson|제)?\s*(\d+)/i); return m ? m[1] : null; }
+    async function importListening() {
+        const c = S.cur; if (!c) return;
+        if (!(await confirmDiscard())) return;
+        const input = $('jsonFileInput');
+        input.value = '';
+        input.onchange = async () => {
+            const file = input.files[0]; if (!file) return;
+            let data;
+            try { data = JSON.parse(await file.text()); } catch (e) { return Swal.fire('File không hợp lệ', 'Không đọc được JSON.', 'error'); }
+            if (!data || data.format !== 'vht-curriculum-listening' || !Array.isArray(data.lessons)) return Swal.fire('Sai định dạng', 'Đây không phải file bài nghe giáo trình.', 'error');
+            const units = c.units || [];
+            const byKey = {}, byNo = {};
+            units.forEach(u => { byKey[lessonKey(u.title)] = u; const n = lessonNo(u.title); if (n && !byNo[n]) byNo[n] = u; });
+            const plan = []; const miss = [];
+            data.lessons.forEach(l => {
+                const u = byKey[lessonKey(l.title)] || byNo[lessonNo(l.title)];
+                const listening = (l.listening || []).map(cleanListening).filter(keepListening);
+                if (!u) { miss.push(l.title); return; }
+                if (listening.length) plan.push({ u, listening });
+            });
+            if (!plan.length) return Swal.fire('Không khớp bài nào', 'Tên bài trong file không trùng với bài của giáo trình này.', 'warning');
+            const total = plan.reduce((n, x) => n + x.listening.length, 0);
+            const r = await Swal.fire({
+                icon: 'question', title: 'Nhập bài nghe?',
+                html: `<b>${total}</b> bài nghe cho <b>${plan.length}</b> bài học` +
+                    (miss.length ? `<br><span class="hint">Không khớp, bỏ qua: ${miss.map(esc).join(', ')}</span>` : '') +
+                    '<br><span class="hint">Bài nghe cũ của các bài này sẽ được thay mới.</span>',
+                showCancelButton: true, confirmButtonText: 'Nhập', cancelButtonText: 'Hủy'
+            });
+            if (!r.isConfirmed) return;
+            try {
+                loading('Đang lưu bài nghe…');
+                const counts = Object.fromEntries(plan.map(x => [x.u.id, x.listening.length]));
+                const newUnits = clone(units).map(u => counts[u.id] != null ? { ...u, listeningCount: counts[u.id] } : u);
+                const ops = plan.map(x => b => b.set(curCol().doc(c.id).collection('lessons').doc(x.u.id),
+                    { listening: x.listening, version: FV.increment(1), updatedAt: FV.serverTimestamp() }, { merge: true }));
+                ops.push(b => b.update(curCol().doc(c.id), { units: newUnits, version: FV.increment(1), updatedAt: FV.serverTimestamp() }));
+                await commitInChunks(ops);
+                c.units = newUnits; c.version = (c.version || 0) + 1;
+                if (S.lesson && counts[S.lesson.id] != null) await openLesson(S.lesson.id, true);
+                else { renderSidebar(); if (!S.lesson) renderCurriculum(); }
+                Swal.fire({ icon: 'success', title: `Đã nhập ${total} bài nghe`, timer: 1800, showConfirmButton: false });
+            } catch (err) { fail(err); }
+        };
+        input.click();
+    }
+
     // ------------------------------------------------------------------ Xuất / Nhập JSON
     async function exportJson() {
         const c = S.cur; if (!c) return;
@@ -1197,7 +1354,7 @@
             const snap = await curCol().doc(c.id).collection('lessons').get();
             const byId = Object.fromEntries(snap.docs.map(d => [d.id, d.data()]));
             const lessons = (c.units || []).map(u => byId[u.id]).filter(Boolean)
-                .map(l => ({ title: l.title, stage: l.stage || '', words: l.words || [], grammar: l.grammar || [], dialogues: l.dialogues || [] }));
+                .map(l => ({ title: l.title, stage: l.stage || '', words: l.words || [], grammar: l.grammar || [], dialogues: l.dialogues || [], listening: l.listening || [] }));
             const data = {
                 format: 'vht-curriculum', formatVersion: 1, exportedAt: new Date().toISOString(),
                 curriculum: { title: c.title, level: c.level, icon: c.icon, description: c.description || '', visibility: c.visibility, stages: c.stages || [] },
@@ -1253,7 +1410,8 @@
         switchTab, addWordRow, moveWord, removeWord, removeDuplicates, bulkPaste,
         pickFromLibrary, previewGrammar, editGrammar, moveGrammar, removeGrammar, saveLesson,
         addDialogue, moveDialogue, removeDialogue, editImage, _parseScript: parseScript,
-        convertFromClass, exportJson, importJson, importMedia,
+        addListening, moveListening, removeListening, _parseQuestions: parseQuestions, _cleanListening: cleanListening,
+        convertFromClass, exportJson, importJson, importMedia, importListening,
         _parseLine: parseLine // để kiểm thử
     };
 })();

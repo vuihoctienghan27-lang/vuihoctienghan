@@ -1,9 +1,9 @@
-"""Tạo sẵn MP3 phát âm cho giáo trình (từ vựng + hội thoại) bằng giọng Edge TTS.
+"""Tạo sẵn MP3 phát âm cho giáo trình (từ vựng + hội thoại + bài nghe) bằng giọng Edge TTS.
 
 Cách dùng (cần: pip install edge-tts):
     python tools/curriculum-tts/gen.py <giao-trinh.json> [<giao-trinh-2.json> ...]
 
-- File giáo trình là bản xuất "vht-curriculum" từ trang soạn giáo trình.
+- File giáo trình là bản xuất "vht-curriculum" (hoặc file bài nghe "vht-curriculum-listening").
 - Từ vựng đọc bằng SunHi; câu hội thoại phân vai theo speakers.json
   (F = SunHi, M = InJoon).
 - MP3 lưu ở public/curriculum/audio/<băm>.mp3 (tên băm theo giọng + câu,
@@ -54,7 +54,7 @@ async def main(files):
                 t = (w.get('word') or '').strip()
                 if t:
                     fn = fname(VOICES['F'], t); index['w'][t] = fn; jobs[fn] = (VOICES['F'], t)
-            for d in les.get('dialogues', []):
+            for d in les.get('dialogues', []) + les.get('listening', []):
                 for ln in d.get('lines', []):
                     t = (ln.get('kr') or '').strip()
                     if not t or NARRATION.match(t):

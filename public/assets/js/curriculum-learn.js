@@ -4,7 +4,7 @@
    Đọc dữ liệu Kho giáo trình (curricula/{id}, curricula/{id}/lessons/{lid}):
      index.html            → danh sách giáo trình được xem
      index.html?c=ID       → danh sách bài của một giáo trình
-     lesson.html?c=ID&l=LID#words|grammar|dialogues → trang một bài
+     lesson.html?c=ID&l=LID#words|grammar|dialogues|listening → trang một bài
    Quyền đọc theo firestore.rules: "public" ai cũng xem, "students" cần đăng nhập,
    "private" chỉ giáo viên (admin).
    ========================================================================== */
@@ -222,8 +222,10 @@
         lesson.words = (lesson.words || []).filter(w => w && w.word);
         lesson.grammar = lesson.grammar || [];
         lesson.dialogues = (lesson.dialogues || []).filter(d => d && (d.lines || []).length);
+        lesson.listening = (lesson.listening || []).filter(d => d && ((d.lines || []).length || (d.questions || []).length));
+        lesson.listening.forEach(d => { d.lines = d.lines || []; d.questions = d.questions || []; });
         const hash = (location.hash || '').replace('#', '');
-        S.tab = ['words', 'grammar', 'dialogues'].includes(hash) ? hash
+        S.tab = ['words', 'grammar', 'dialogues', 'listening'].includes(hash) ? hash
             : (lesson.words.length ? 'words' : lesson.grammar.length ? 'grammar' : lesson.dialogues.length ? 'dialogues' : 'words');
         window.learningActive = true; // activity-tracker.js: tính giờ học
         S.media = {}; S.credits = {};
@@ -292,7 +294,7 @@
                 <div class="eyebrow kr">${esc(cur.icon || '📘')} ${esc(cur.title)}${L.stage ? ' · ' + esc(L.stage) : ''}</div>
                 <h1 class="kr">${esc(t.main)}</h1>
                 ${t.sub ? `<p class="sub">${esc(t.sub)}</p>` : ''}
-                <div class="chips"><span class="cl-chip">🔤 ${L.words.length} từ vựng</span><span class="cl-chip">📗 ${L.grammar.length} ngữ pháp</span><span class="cl-chip">💬 ${L.dialogues.length} hội thoại</span></div>
+                <div class="chips"><span class="cl-chip">🔤 ${L.words.length} từ vựng</span><span class="cl-chip">📗 ${L.grammar.length} ngữ pháp</span><span class="cl-chip">💬 ${L.dialogues.length} hội thoại</span>${L.listening.length ? `<span class="cl-chip">🎧 ${L.listening.length} bài nghe</span>` : ''}</div>
                 <div class="nav">
                     ${prev ? `<a class="cl-btn" href="${lessonUrl(cur.id, prev.id, S.tab)}" title="${esc(prev.title)}">← Bài trước</a>` : '<button class="cl-btn" disabled>← Bài trước</button>'}
                     <select id="clLessonSel" aria-label="Chọn bài">${units.map((u, i) => `<option value="${esc(u.id)}" ${u.id === S.lessonId ? 'selected' : ''}>${i + 1}. ${esc(splitTitle(u.title).main)}</option>`).join('')}</select>
@@ -304,6 +306,7 @@
                 <button class="cl-tab" role="tab" data-tab="words">🔤 Từ vựng <span class="n">${L.words.length}</span></button>
                 <button class="cl-tab" role="tab" data-tab="grammar">📗 Ngữ pháp <span class="n">${L.grammar.length}</span></button>
                 <button class="cl-tab" role="tab" data-tab="dialogues">💬 Hội thoại <span class="n">${L.dialogues.length}</span></button>
+                <button class="cl-tab" role="tab" data-tab="listening">🎧 Nghe <span class="n">${L.listening.length}</span></button>
             </div>
             <div class="cl-panel cl-section" id="clTabBody"></div>`;
         document.getElementById('clLessonSel').addEventListener('change', e => { location.href = lessonUrl(cur.id, e.target.value, S.tab); });
@@ -320,6 +323,7 @@
         root.querySelectorAll('.cl-hero a[href^="lesson.html"]').forEach(a => { a.href = a.href.replace(/#.*$/, '') + '#' + tab; });
         if (tab === 'grammar') renderGrammar();
         else if (tab === 'dialogues') renderDialogues();
+        else if (tab === 'listening') renderListening();
         else renderWords();
     }
 
@@ -646,7 +650,7 @@
         for (let li = 0; li < d.lines.length; li++) {
             if (DLG.token !== myToken) return;
             const el = card.querySelector(`.cl-line[data-l="${li}"]`);
-            if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            if (el && !card.classList.contains('no-script')) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
             if (el && el.classList.contains('mine')) {
                 // Luyện vai: chừa thời gian cho học viên tự nói rồi hiện đáp án
                 card.querySelectorAll('.speaking').forEach(x => x.classList.remove('speaking'));
@@ -667,6 +671,68 @@
         stopSpeak();
         document.querySelectorAll('.cl-dlg [data-act="play"]').forEach(b => { b.textContent = '▶ Nghe cả đoạn'; });
         document.querySelectorAll('.cl-line.speaking').forEach(x => x.classList.remove('speaking'));
+    }
+
+    // ---------- Nghe: nghe audio (hoặc đọc theo vai) → trả lời câu hỏi → mở lời thoại để đối chiếu
+    // Dùng chung bộ phát của hội thoại (playDialogue / speakLine) và bộ chấm bài của ngữ pháp (initQuizSection).
+    function renderListening() {
+        const D = S.lesson.listening, box = document.getElementById('clTabBody');
+        if (!D.length) { box.innerHTML = '<div class="cl-empty"><div class="big">🎧</div>Bài này chưa có bài nghe.<br><small>Giáo viên có thể thêm ở tab “🎧 Nghe” trong trang soạn giáo trình.</small></div>'; return; }
+        const keys = vocabKeys();
+        box.innerHTML = D.map((d, di) => {
+            const speakers = [...new Set(d.lines.map(l => l.s).filter(Boolean))];
+            const side = (s) => !s ? 'n' : (speakers.indexOf(s) % 2 === 1 ? 'r' : 'l');
+            const qs = d.questions || [];
+            return `<div class="cl-dlg cl-lis no-script" data-d="${di}">
+                <div class="head">
+                    <h3 class="kr">🎧 ${esc(d.title || 'Bài nghe ' + (di + 1))}</h3>
+                    ${d.audio ? '' : (d.lines.length ? '<button class="cl-btn pri" data-act="play">▶ Nghe cả đoạn</button>' : '')}
+                    ${d.lines.length ? '<button class="cl-btn" data-act="script">📜 Xem lời thoại</button>' : ''}
+                </div>
+                ${d.audio ? `<audio controls preload="none" src="${esc(d.audio)}"></audio>` : ''}
+                ${qs.length ? `<div class="grammar-content cl-lq"><div class="quiz-section">
+                    ${qs.map((q, qi) => `<div class="quiz-q" data-type="mc" data-answer="${q.answer}">
+                        <div class="quiz-q-text"><b>${qi + 1}.</b> <span class="kr">${esc(q.q)}</span>${q.qvi ? `<div class="qvi">${esc(q.qvi)}</div>` : ''}</div>
+                        <div class="quiz-opts">${q.options.map((o, oi) => `<button class="quiz-opt kr" data-v="${oi}">${esc(o)}</button>`).join('')}</div>
+                        <div class="quiz-feedback"></div>
+                        ${q.explain ? `<div class="quiz-explain">💡 ${esc(q.explain)}</div>` : ''}
+                    </div>`).join('')}
+                    <div class="quiz-score"></div>
+                </div></div>` : ''}
+                <div class="cl-lis-script">
+                    <div class="cl-lis-tools"><button class="cl-btn on" data-act="vi">🇻🇳 Bản dịch</button></div>
+                    <div class="cl-lines">${d.lines.map((l, li) => `
+                    <div class="cl-line ${side(l.s)}" data-l="${li}" data-s="${esc(l.s)}">
+                        ${l.s ? `<span class="cl-ava" style="background:${AVATAR_COLORS[speakers.indexOf(l.s) % AVATAR_COLORS.length]}">${esc(l.s.slice(0, 2))}</span>` : ''}
+                        <div class="cl-bub">
+                            ${l.s ? `<div class="who">${esc(l.s)}</div>` : ''}
+                            <div class="ko kr">${highlight(l.kr, keys)}</div>
+                            ${l.vi ? `<div class="vi">${esc(l.vi)}</div>` : ''}
+                            <button class="say" data-act="say" title="Nghe câu này" aria-label="Nghe câu này">🔊</button>
+                        </div>
+                    </div>`).join('')}</div>
+                </div>
+            </div>`;
+        }).join('');
+
+        box.querySelectorAll('.cl-lis').forEach(card => {
+            const d = D[+card.dataset.d];
+            const sec = card.querySelector('.quiz-section'); if (sec) initQuizSection(sec);
+            card.addEventListener('click', e => {
+                const vh = e.target.closest('.cl-vh');
+                if (vh) { e.stopPropagation(); return showPop(vh, S.lesson.words[+vh.dataset.w]); }
+                const act = e.target.closest('[data-act]'); if (!act) return;
+                const line = e.target.closest('.cl-line');
+                if (act.dataset.act === 'say' && line) { stopDialogue(); speakLine(card, d, +line.dataset.l); }
+                else if (act.dataset.act === 'play') { if (DLG.playing === +card.dataset.d) stopDialogue(); else playDialogue(card, d); }
+                else if (act.dataset.act === 'vi') { act.classList.toggle('on'); card.classList.toggle('no-vi', !act.classList.contains('on')); }
+                else if (act.dataset.act === 'script') {
+                    const show = card.classList.toggle('no-script') === false;
+                    act.textContent = show ? '🙈 Ẩn lời thoại' : '📜 Xem lời thoại';
+                    act.classList.toggle('on', show);
+                }
+            });
+        });
     }
 
     // popover nghĩa từ trong hội thoại
