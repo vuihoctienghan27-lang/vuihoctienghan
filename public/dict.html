@@ -302,7 +302,8 @@ function renderResult(entry){
     document.getElementById('resultCard').innerHTML=h;
     document.getElementById('resultCard').style.display='block';
 }
-function speak(w){if(!w||!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(w);u.lang='ko-KR';u.rate=.85;window.speechSynthesis.speak(u);}
+function speak(w){__krSay(w);}
+function __krSay(t){if(!t)return;if(window.readKorean)return window.readKorean(t,0.9);var s=document.createElement('script');s.src='/assets/js/tts-read.js';s.onload=function(){window.readKorean&&window.readKorean(t,0.9);};document.head.appendChild(s);} // MP3 đọc sẵn (tts-read.js)
 
 // ── Simple unfold (reuse the logic) ──
 function isKorean(ch){var c=ch.charCodeAt(0);return(c>=0xAC00&&c<=0xD7AF)||(c>=0x1100&&c<=0x11FF)||(c>=0x3130&&c<=0x318F);}

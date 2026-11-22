@@ -1973,7 +1973,7 @@
 
     <script>
         const firebaseConfig = { apiKey: "AIzaSyCoKD1zD63pQ-QotSTGFn0i8KMQmXzl8EU", authDomain: "vuihoctienghan2027.firebaseapp.com", projectId: "vuihoctienghan2027", storageBucket: "vuihoctienghan2027.firebasestorage.app", messagingSenderId: "346757373399", appId: "1:346757373399:web:526625b339fc9a1a523f92", measurementId: "G-JHCHNDDY1S" };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); firebase.firestore().settings({ experimentalForceLongPolling: true, useFetchStreams: false }); } // giống auth.js: mạng chặn WebChannel thì Firestore báo "client is offline"
         const auth = firebase.auth();
         const db = firebase.firestore();
 

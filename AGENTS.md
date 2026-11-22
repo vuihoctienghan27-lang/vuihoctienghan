@@ -67,6 +67,7 @@ public/
 | **Vocab** | `home-progress.js` | User exam progress for home pages (reading/listening/writing) |
 | **Vocab** | `vocab-external.js` | External dictionary API integration (Naver) |
 | **Vocab** | `vocab-tooltip.js` | Smart vocab popup tooltip (SweetAlert2) |
+| **Audio** | `tts-read.js` | `window.readKorean(text, rate, speaker)` dùng chung cho flashcard/game/tra từ: MP3 đọc sẵn `/lesson/audio/` (bảng tra `index.json`, tạo bằng `tools/curriculum-tts/gen.py`) → Google TTS → giọng trình duyệt |
 | **Games** | `game-dictation.js` | Dictation minigame |
 | **Games** | `game-speaking.js` | Speaking minigame |
 

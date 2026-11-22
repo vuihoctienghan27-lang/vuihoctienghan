@@ -1,3 +1,4 @@
+function __krSay(t){if(!t)return;if(window.readKorean)return window.readKorean(t,0.9);var s=document.createElement('script');s.src='/assets/js/tts-read.js';s.onload=function(){window.readKorean&&window.readKorean(t,0.9);};document.head.appendChild(s);} // MP3 đọc sẵn (tts-read.js)
 /* ==========================================================================
    VOCAB-TOOLTIP.JS — Hệ thống Popup Tra Từ Thông Minh (Tích hợp SweetAlert2)
    ========================================================================== */
@@ -6,13 +7,7 @@ let uid = null;
 window.userVocabLists = ['Đã lưu'];
 window.savedVocabSet = new Set();
 
-function speakText(text) {
-    if (!text || !('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'ko-KR'; u.rate = 0.85;
-    window.speechSynthesis.speak(u);
-}
+function speakText(text) { __krSay(text); }
 
 document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {

@@ -1,3 +1,4 @@
+function __krSay(t){if(!t)return;if(window.readKorean)return window.readKorean(t,0.9);var s=document.createElement('script');s.src='/assets/js/tts-read.js';s.onload=function(){window.readKorean&&window.readKorean(t,0.9);};document.head.appendChild(s);} // MP3 đọc sẵn (tts-read.js)
 /* hover-lookup.js — Click Korean word → full popup panel with 49K KRDict */
 (function() {
     'use strict';
@@ -666,7 +667,7 @@
         }catch(_){return '';}
     }
     function escHtml(s){return String(s||'').replace(/[&<>"']/g,function(t){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[t];});}
-    function speakWord(w){if(!w||!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(w);u.lang='ko-KR';u.rate=0.85;window.speechSynthesis.speak(u);}
+    function speakWord(w){__krSay(w);}
     // Khung từ điển nhúng trong navigator (chỉ desktop)
     function embeddedDictBody(){return (window.innerWidth>768)?document.getElementById('nav-dict-body'):null;}
 

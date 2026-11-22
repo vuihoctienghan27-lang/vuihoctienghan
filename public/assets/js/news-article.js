@@ -1,3 +1,4 @@
+function __krSay(t){if(!t)return;if(window.readKorean)return window.readKorean(t,0.9);var s=document.createElement('script');s.src='/assets/js/tts-read.js';s.onload=function(){window.readKorean&&window.readKorean(t,0.9);};document.head.appendChild(s);} // MP3 đọc sẵn (tts-read.js)
 /* ==========================================================================
    NEWS-ARTICLE.JS — Standalone article reader page
    URL: news-article.html?id=<docId>
@@ -78,12 +79,7 @@
         sb.style.cssText = 'position:absolute;top:12px;right:44px;background:none;border:none;font-size:1.2em;cursor:pointer;';
         sb.addEventListener('click', function(ev) {
             ev.stopPropagation();
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                var u = new SpeechSynthesisUtterance(entry.base);
-                u.lang = 'ko-KR'; u.rate = 0.85;
-                window.speechSynthesis.speak(u);
-            }
+            __krSay(entry.base);
         });
         popup.appendChild(sb);
 

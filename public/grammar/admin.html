@@ -786,6 +786,7 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
+if (firebase.firestore) firebase.firestore().settings({ experimentalForceLongPolling: true, useFetchStreams: false }); // giống auth.js
 const auth = firebase.auth();
 
 // Teacher check: only Google-authenticated users allowed (expand whitelist if needed)

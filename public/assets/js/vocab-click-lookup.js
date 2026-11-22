@@ -1,3 +1,4 @@
+function __krSay(t){if(!t)return;if(window.readKorean)return window.readKorean(t,0.9);var s=document.createElement('script');s.src='/assets/js/tts-read.js';s.onload=function(){window.readKorean&&window.readKorean(t,0.9);};document.head.appendChild(s);} // MP3 đọc sẵn (tts-read.js)
 /* ==========================================================================
    VOCAB-CLICK-LOOKUP.JS — Double-click bất kỳ từ Hàn nào → Popup nghĩa + ví dụ
    ========================================================================== */
@@ -263,12 +264,7 @@
         speakBtn.style.cssText = 'position:absolute;top:12px;right:44px;background:none;border:none;font-size:1.2em;cursor:pointer;';
         speakBtn.onclick = function(e) {
             e.stopPropagation();
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                var u = new SpeechSynthesisUtterance(word);
-                u.lang = 'ko-KR'; u.rate = 0.85;
-                window.speechSynthesis.speak(u);
-            }
+            __krSay(word);
         };
         popup.appendChild(speakBtn);
 
@@ -321,12 +317,7 @@
                 speakBtn.style.cssText = 'position:absolute;top:12px;right:48px;background:none;border:none;font-size:1.2em;cursor:pointer;';
                 speakBtn.onclick = (e) => {
                     e.stopPropagation();
-                    if ('speechSynthesis' in window) {
-                        window.speechSynthesis.cancel();
-                        const u = new SpeechSynthesisUtterance(word);
-                        u.lang = 'ko-KR'; u.rate = 0.85;
-                        window.speechSynthesis.speak(u);
-                    }
+                    __krSay(word);
                 };
                 const popup = Swal.getPopup();
                 if (popup) popup.appendChild(speakBtn);

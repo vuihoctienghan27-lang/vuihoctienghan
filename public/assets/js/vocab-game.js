@@ -81,7 +81,7 @@ if (document.readyState === 'loading') {
 }
 
 // ==================== GAME ENGINE ====================
-function speakVocab(text) { if(window.readKorean){ window.readKorean(text, 0.95); return; } if (!window.speechSynthesis) return; window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=0.85; window.speechSynthesis.speak(u); }
+function speakVocab(text) { if(window.readKorean){ window.readKorean(text, 1); return; } if (!window.speechSynthesis) return; window.speechSynthesis.cancel(); let u = new SpeechSynthesisUtterance(text); u.lang='ko-KR'; u.rate=0.85; window.speechSynthesis.speak(u); }
 window.lastRequestedGameType = '';
 window.lastStudyList = null;
 
