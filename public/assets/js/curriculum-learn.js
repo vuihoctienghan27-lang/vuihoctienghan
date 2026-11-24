@@ -64,12 +64,12 @@
         try { audioEl.pause(); } catch (e) { }
         try { window.speechSynthesis && window.speechSynthesis.cancel(); } catch (e) { }
     }
-    function speakFallback(text, token) {
+    function speakFallback(text, token, rate) {
         return new Promise(resolve => {
             if (!window.speechSynthesis || token !== speakToken) return resolve();
             try {
                 const u = new SpeechSynthesisUtterance(text);
-                u.lang = 'ko-KR'; u.rate = 0.95;
+                u.lang = 'ko-KR'; u.rate = 0.95 * (rate || 1);
                 const ko = window.speechSynthesis.getVoices().filter(v => (v.lang || '').toLowerCase().startsWith('ko'));
                 if (ko.length) u.voice = ko.find(v => /Google|Heami|Yuna/.test(v.name)) || ko[0];
                 u.onend = () => resolve(); u.onerror = () => resolve();
@@ -93,7 +93,7 @@
         const d = ix.d || {}, w = ix.w || {};
         return (speaker != null && d[speaker + '|' + text]) || w[text] || d['|' + text] || null;
     }
-    function speak(text, speaker) {
+    function speak(text, speaker, rate) {
         text = String(text || '').trim();
         stopSpeak();
         const token = speakToken;
@@ -107,11 +107,12 @@
             const next = () => {
                 if (done || token !== speakToken) return finish();
                 if (!triedGoogle) { triedGoogle = true; playSrc(googleTts(text)); return; }
-                speakFallback(text, token).then(finish);
+                speakFallback(text, token, rate).then(finish);
             };
             const playSrc = (src) => {
                 audioEl.onended = finish;
                 audioEl.onerror = next;
+                audioEl.playbackRate = rate || 1;
                 audioEl.src = src;
                 const p = audioEl.play();
                 if (p && p.catch) p.catch(next);
@@ -883,35 +884,321 @@
         box.querySelectorAll('.cl-cult').forEach(card => bindPassage(card, D[+card.dataset.c].lines));
         applyMedia(box);
     }
+    // ---------- Phát âm (발음): công thức · từ mẫu (thẻ lật) · luyện câu · hội thoại · luyện tập
+    // pron: [{ id, title, formula, rule, examples: [{ kr, pr, vi, g: 'w'|'s'|'d' }], quiz: [{ q, qvi, options, answer, explain }] }]
+    const isHangul = (c) => c >= '가' && c <= '힣';
+    function hSyl(c) { const n = c.charCodeAt(0) - 0xAC00; return [Math.floor(n / 588), Math.floor((n % 588) / 28), n % 28]; }
+    function sylScore(a, b) {
+        if (a === b) return 3;
+        const x = hSyl(a), y = hSyl(b);
+        return (x[0] === y[0] && x[1] === y[1]) ? 2 : (x[1] === y[1] || x[0] === y[0]) ? 1 : 0;
+    }
+    // Tìm đoạn trong câu (chữ viết) ứng với phần đọc trong [ ] → [{ ki: vị trí trong kr, k, p }]
+    function prAlign(kr, chunk) {
+        const ks = []; [...kr].forEach((c, i) => { if (isHangul(c)) ks.push([i, c]); });
+        const ps = [...chunk].filter(isHangul), L = ps.length;
+        if (!L || L > ks.length) return null;
+        let best = -1, at = 0;
+        for (let s = 0; s + L <= ks.length; s++) {
+            let sc = 0; for (let j = 0; j < L; j++) sc += sylScore(ks[s + j][1], ps[j]);
+            if (sc > best) { best = sc; at = s; }
+        }
+        if (best < L * 1.5) return null;
+        return ps.map((p, j) => ({ ki: ks[at + j][0], k: ks[at + j][1], p }));
+    }
+    // Tô màu những âm tiết đọc khác chữ viết, ở cả câu lẫn phần [cách đọc]
+    function prMark(kr, pr) {
+        const hiK = new Set();
+        const parts = String(pr || '').split(/\s*…\s*/).filter(Boolean).map(ch => {
+            const al = prAlign(kr, ch);
+            if (!al) return esc(ch);
+            const diff = new Set(); al.forEach((x, j) => { if (x.k !== x.p) { hiK.add(x.ki); diff.add(j); } });
+            let j = 0, out = '';
+            for (const c of ch) out += isHangul(c) ? (diff.has(j++) ? `<b class="chg">${esc(c)}</b>` : esc(c)) : esc(c);
+            return out;
+        });
+        return { kr: [...kr].map((c, i) => hiK.has(i) ? `<b class="chg">${esc(c)}</b>` : esc(c)).join(''), pr: parts.join(' … ') };
+    }
+    function formulaHtml(f) {
+        if (!f) return '';
+        const tok = (t) => {
+            if (t === '+') return '<span class="pf-op">+</span>';
+            if (t === '→') return '<span class="pf-arrow">➜</span>';
+            if (/^[↗↘]+$/.test(t)) return `<span class="pf-tone">${t}</span>`;
+            const m = t.match(/^\[(.+)\]$/), txt = esc((m ? m[1] : t).replace(/_/g, ' '));
+            return m ? `<span class="pf-chip out">[${txt}]</span>` : `<span class="pf-chip${txt.length > 3 ? ' wide' : ''}">${txt}</span>`;
+        };
+        return `<div class="pr-formula">${f.split(/\s*\|\s*/).map(g => `<div class="pf-row">${g.trim().split(/\s+/).map(tok).join('')}</div>`).join('')}</div>`;
+    }
+    function prGroup(e) { return e.g || (!/[.?!—]/.test(e.kr) && e.kr.length <= 12 ? 'w' : 's'); }
+    // tiến độ luyện phát âm của bài (lưu trên máy): h = câu đã nghe, q = câu "Đọc thế nào?" đã đúng, l = số câu "Nghe & chọn" đúng nhiều nhất
+    const prKey = () => `clpr_${S.cur ? S.cur.id : ''}_${S.lessonId || ''}`;
+    function prLoad() { try { return Object.assign({ h: {}, q: {}, l: {} }, JSON.parse(localStorage.getItem(prKey()) || '{}')); } catch (e) { return { h: {}, q: {}, l: {} }; } }
+    function prSave(st) { try { localStorage.setItem(prKey(), JSON.stringify(st)); } catch (e) { } }
+    const LISTEN_N = 4;
+    // "Nghe & chọn chữ viết": nghe từ (đã biến âm) rồi chọn cách VIẾT đúng; đáp án nhiễu = viết theo âm nghe được
+    // (lấy từ câu "Đọc thế nào?": đáp án đúng [cách đọc] và các phương án sai, bỏ ngoặc)
+    function listenPool(p) {
+        const seen = new Set();
+        return (p.quiz || []).map(q => {
+            const t = String(q.q || '').replace(/^\(.*?\)\s*/, '').trim();
+            if (!t || seen.has(t) || !(q.options || []).every(o => /^\[.*\]$/.test(o))) return null;
+            const bare = q.options.map(o => o.slice(1, -1).trim());
+            const cor = bare[q.answer];
+            const wrong = [cor, ...bare.filter((o, i) => i !== q.answer)].filter(o => o && o.replace(/\s/g, '') !== t.replace(/\s/g, ''));
+            const opts = [...new Set(wrong)].slice(0, 2);
+            if (opts.length < 2) return null;
+            seen.add(t);
+            return { t, pr: cor, opts: [t, ...opts] };
+        }).filter(Boolean);
+    }
+    function prStats(D, st) {
+        let h = 0, ht = 0, q = 0, qt = 0, l = 0, lt = 0;
+        D.forEach(p => {
+            p.examples.forEach((e, ei) => { ht++; if (st.h[p.id + ':' + ei]) h++; });
+            (p.quiz || []).forEach((x, qi) => { qt++; if (st.q[p.id + ':' + qi]) q++; });
+            const n = Math.min(LISTEN_N, listenPool(p).length);
+            if (n >= 2) { lt += n; l += Math.min(st.l[p.id] || 0, n); }
+        });
+        return { h, ht, q, qt, l, lt };
+    }
+    function prProgressHtml(D, st) {
+        const s = prStats(D, st);
+        const bar = (icon, label, a, b) => b ? `<div class="pp-item ${a >= b ? 'done' : ''}">
+            <div class="pp-top"><span>${icon} ${label}</span><b>${a}/${b}</b></div>
+            <div class="pp-bar"><i style="width:${Math.round(a / b * 100)}%"></i></div></div>` : '';
+        const all = s.ht + s.qt + s.lt, got = s.h + s.q + s.l;
+        return `<div class="pr-progress ${got >= all ? 'complete' : ''}">
+            <div class="pp-head">${got >= all ? '🏆 Hoàn thành phần phát âm của bài!' : `📈 Tiến độ luyện phát âm · <b>${all ? Math.round(got / all * 100) : 0}%</b>`}</div>
+            <div class="pp-grid">${bar('🔊', 'Đã nghe', s.h, s.ht)}${bar('🧩', 'Đọc thế nào?', s.q, s.qt)}${bar('👂', 'Nghe & chọn', s.l, s.lt)}</div>
+        </div>`;
+    }
+    function prRefreshProgress(D, st) {
+        const box = document.querySelector('#clTabBody .pr-progress');
+        if (box) box.outerHTML = prProgressHtml(D, st);
+        const s = prStats(D, st), tab = root.querySelector('.cl-tab[data-tab="pron"]');
+        if (tab) tab.classList.toggle('done', s.h + s.q + s.l >= s.ht + s.qt + s.lt);
+    }
+    function readQuizHtml(p) {
+        const Q = p.quiz || [];
+        if (!Q.length) return '';
+        return `<div class="pr-block pr-rq">
+            <div class="pr-sub">🧩 Đọc thế nào? <span>Chọn cách đọc đúng</span></div>
+            ${Q.map((q, qi) => `<div class="pq" data-q="${qi}">
+                <div class="pq-q"><span class="kr">${esc(q.q)}</span>${q.qvi ? `<span class="qvi">${esc(q.qvi)}</span>` : ''}</div>
+                <div class="pq-opts">${q.options.map((o, oi) => `<button class="pq-opt kr" data-v="${oi}">${esc(o)}</button>`).join('')}</div>
+                <div class="pq-after"><b class="pq-res"></b><button class="say" data-act="sayq" title="Nghe cách đọc" aria-label="Nghe cách đọc">🔊</button>${q.explain ? `<span>💡 ${esc(q.explain)}</span>` : ''}</div>
+            </div>`).join('')}
+            <div class="pq-score"></div>
+        </div>`;
+    }
+    function listenQuizHtml(p) {
+        const pool = listenPool(p);
+        if (pool.length < 2) return '';
+        const pick = shuffleArr(pool).slice(0, Math.min(LISTEN_N, pool.length));
+        return `<div class="pr-block pr-lq">
+            <div class="pr-sub">👂 Nghe & chọn chữ viết <span>Nghe cách đọc rồi chọn cách <b>viết</b> đúng — đừng để tai đánh lừa!</span><button class="cl-btn sm" data-act="lqnew">🔄 Câu khác</button></div>
+            ${pick.map((x, i) => `<div class="lq" data-i="${i}" data-t="${esc(x.t)}">
+                    <button class="lq-play" data-act="lqplay" title="Nghe" aria-label="Nghe câu ${i + 1}">▶</button>
+                    <div class="lq-main">
+                        <div class="lq-opts">${shuffleArr(x.opts).map(o => `<button class="lq-opt kr" data-v="${esc(o)}">${esc(o)}</button>`).join('')}</div>
+                        <div class="lq-ex">✍️ Viết <b class="kr">${esc(x.t)}</b> nhưng đọc là <b class="kr">[${esc(x.pr)}]</b></div>
+                    </div>
+                </div>`).join('')}
+            <div class="pq-score"></div>
+        </div>`;
+    }
+    function shuffleArr(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+    function pronCardHtml(p, pi) {
+        const ex = p.examples.map((e, ei) => ({ ...e, ei, g: prGroup(e) }));
+        const W = ex.filter(e => e.g === 'w'), Sn = ex.filter(e => e.g === 's'), Dl = ex.filter(e => e.g === 'd');
+        const ruleLines = String(p.rule || '').split('\n').map(s => s.trim()).filter(Boolean);
+        const ruleHtml = ruleLines.map(s => {
+            const hangul = [...s].filter(isHangul).length;
+            return `<div class="${hangul > s.length * 0.4 ? 'kr rk' : 'rv'}">${esc(s)}</div>`;
+        }).join('');
+        const slow = (ei) => `<button class="say slow" data-act="slow" data-k="${ei}" title="Nghe chậm" aria-label="Nghe chậm">🐢</button>`;
+        let bubble = 0;
+        const dlgHtml = Dl.map(e => {
+            const turns = e.kr.split(/\s+—\s+/);
+            const m = prMark(e.kr, e.pr);
+            const mk = turns.length > 1 ? turns.map(t => esc(t)) : [m.kr];
+            return turns.map((t, ti) => {
+                const side = bubble++ % 2 ? 'r' : '';
+                return `<div class="cl-line ${side}" data-k="${e.ei}" data-t="${esc(t)}">
+                    <span class="cl-ava" style="background:${side ? '#0ea5e9' : '#f97316'}">${side ? 'B' : 'A'}</span>
+                    <div class="cl-bub"><button class="say" data-act="sayt" title="Nghe" aria-label="Nghe">🔊</button>
+                        <div class="ko kr">${mk[ti]}</div>
+                        ${ti === turns.length - 1 && e.pr ? `<div class="prn kr">[${m.pr}]</div>` : ''}
+                        ${ti === turns.length - 1 && e.vi ? `<div class="vi">${esc(e.vi)}</div>` : ''}
+                    </div></div>`;
+            }).join('');
+        }).join('');
+        return `<div class="cl-dlg cl-pron" data-p="${pi}">
+            <div class="head">
+                <h3>🗣 ${esc(p.title || 'Phát âm ' + (pi + 1))}</h3>
+                ${ex.length ? '<button class="cl-btn pri" data-act="playall">▶ Nghe tất cả</button>' : ''}
+            </div>
+            ${formulaHtml(p.formula)}
+            ${ruleHtml ? `<div class="pr-rule">${ruleHtml}</div>` : ''}
+            ${W.length ? `<div class="pr-block"><div class="pr-sub">🔤 Từ mẫu <span>Chạm vào thẻ để lật: chữ viết ↔ cách đọc</span></div>
+                <div class="pr-cards">${W.map(e => {
+                    const m = prMark(e.kr, e.pr);
+                    return `<div class="pr-card" data-k="${e.ei}" tabindex="0" role="button" aria-label="${esc(e.kr)}">
+                        <div class="in">
+                            <div class="face front"><div class="tag">Chữ viết</div><div class="ko kr">${m.kr}</div></div>
+                            <div class="face back"><div class="tag">Cách đọc</div><div class="pr kr">${e.pr ? '[' + m.pr + ']' : esc(e.kr)}</div>${e.vi ? `<div class="vi">${esc(e.vi)}</div>` : ''}</div>
+                        </div>${slow(e.ei)}
+                    </div>`;
+                }).join('')}</div></div>` : ''}
+            ${Sn.length ? `<div class="pr-block"><div class="pr-sub">🗣 Luyện câu <span>Chữ tô màu là chỗ đọc khác chữ viết</span></div>
+                <div class="pr-rows">${Sn.map(e => {
+                    const m = prMark(e.kr, e.pr);
+                    return `<div class="row" data-k="${e.ei}">
+                        <div class="btns"><button class="say" data-act="say" data-k="${e.ei}" title="Nghe" aria-label="Nghe">🔊</button>${slow(e.ei)}</div>
+                        <div class="txt"><div class="ko kr">${m.kr}</div>${e.pr ? `<div class="prn kr">[${m.pr}]</div>` : ''}${e.vi ? `<div class="vi">${esc(e.vi)}</div>` : ''}</div>
+                    </div>`;
+                }).join('')}</div></div>` : ''}
+            ${Dl.length ? `<div class="pr-block"><div class="pr-sub">💬 Hội thoại <span>Đọc theo vai A – B</span></div><div class="cl-lines">${dlgHtml}</div></div>` : ''}
+            ${readQuizHtml(p)}${listenQuizHtml(p)}
+        </div>`;
+    }
     function renderPron() {
         const D = S.lesson.pron, box = document.getElementById('clTabBody');
         if (!D.length) { box.innerHTML = '<div class="cl-empty"><div class="big">🗣</div>Bài này chưa có phần phát âm.</div>'; return; }
-        box.innerHTML = D.map((p, pi) => `<div class="cl-dlg cl-pron" data-p="${pi}">
-            <div class="head">
-                <h3 class="kr">🗣 ${esc(p.title || 'Phát âm ' + (pi + 1))}</h3>
-                ${p.examples.length ? '<button class="cl-btn pri" data-act="playall">▶ Nghe tất cả</button>' : ''}
-            </div>
-            ${p.rule ? `<div class="cl-rule">${nl2br(p.rule)}</div>` : ''}
-            ${p.examples.length ? `<div class="cl-ex">${p.examples.map((e, ei) => `<div class="row" data-k="${ei}">
-                <button class="say" data-act="say" data-k="${ei}" aria-label="Nghe">🔊</button>
-                <span class="ko kr">${esc(e.kr)}</span>
-                ${e.pr ? `<span class="pr kr">[${esc(e.pr)}]</span>` : ''}
-                ${e.vi ? `<span class="vi">${esc(e.vi)}</span>` : ''}
-            </div>`).join('')}</div>` : ''}
-        </div>`).join('');
+        const st = prLoad();
+        box.innerHTML = prProgressHtml(D, st) + D.map(pronCardHtml).join('');
+        prRefreshProgress(D, st);
+        const heard = (p, ei) => { const k = p.id + ':' + ei; if (!st.h[k]) { st.h[k] = 1; prSave(st); prRefreshProgress(D, st); } };
+        const mark = (card, el) => { card.querySelectorAll('.speaking').forEach(x => x.classList.remove('speaking')); if (el) el.classList.add('speaking'); };
+        const say = (card, p, el, text, ei, rate) => {
+            stopDialogue(); mark(card, el);
+            if (ei != null) heard(p, ei);
+            return speak(text, '', rate).then(() => el && el.classList.remove('speaking'));
+        };
         box.querySelectorAll('.cl-pron').forEach(card => {
             const p = D[+card.dataset.p];
+            bindReadQuiz(card, p, st, D);
+            bindListenQuiz(card, p, st, D);
             card.addEventListener('click', e => {
-                const act = e.target.closest('[data-act]'); if (!act) return;
-                if (act.dataset.act === 'say') {
-                    stopDialogue();
-                    const row = act.closest('.row');
-                    card.querySelectorAll('.speaking').forEach(x => x.classList.remove('speaking'));
-                    if (row) row.classList.add('speaking');
-                    speak(p.examples[+act.dataset.k].kr, '').then(() => row && row.classList.remove('speaking'));
-                } else if (act.dataset.act === 'playall') playSeq(card, p.examples.map(x => x.kr), act, '▶ Nghe tất cả');
+                const act = e.target.closest('[data-act]');
+                const fc = e.target.closest('.pr-card');
+                if (act && act.closest('.pq, .lq, .pr-lq')) return; // trắc nghiệm tự xử lý
+                if (act && act.dataset.act === 'slow') {
+                    e.stopPropagation();
+                    const ei = +act.dataset.k;
+                    return say(card, p, act.closest('[data-k]'), p.examples[ei].kr, ei, 0.7);
+                }
+                if (fc && !act) {
+                    fc.classList.toggle('flip');
+                    const ei = +fc.dataset.k;
+                    return say(card, p, fc, p.examples[ei].kr, ei);
+                }
+                if (!act) return;
+                if (act.dataset.act === 'say') { const ei = +act.dataset.k; say(card, p, act.closest('.row'), p.examples[ei].kr, ei); }
+                else if (act.dataset.act === 'sayt') { const ln = act.closest('.cl-line'); say(card, p, ln, ln.dataset.t, +ln.dataset.k); }
+                else if (act.dataset.act === 'playall') playPron(card, p, act, heard);
+            });
+            card.addEventListener('keydown', e => {
+                const fc = e.target.closest('.pr-card');
+                if (fc && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); fc.click(); }
             });
         });
+    }
+    // Nghe lần lượt: từ mẫu → luyện câu → hội thoại (theo thứ tự hiển thị)
+    async function playPron(card, p, btn, heard) {
+        const label = '▶ Nghe tất cả';
+        if (DLG.playing === card) { stopDialogue(); btn.textContent = label; return; }
+        stopDialogue();
+        DLG.playing = card;
+        const my = ++DLG.token;
+        btn.textContent = '⏹ Dừng';
+        const els = [...card.querySelectorAll('.pr-card[data-k], .pr-rows .row[data-k], .cl-line[data-k]')];
+        for (const el of els) {
+            if (DLG.token !== my) break;
+            const ei = +el.dataset.k;
+            card.querySelectorAll('.speaking').forEach(x => x.classList.remove('speaking'));
+            el.classList.add('speaking');
+            if (el.classList.contains('pr-card')) el.classList.add('flip');
+            el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            heard(p, ei);
+            await speak(el.dataset.t || p.examples[ei].kr, '');
+            el.classList.remove('speaking');
+            await new Promise(r => setTimeout(r, 350));
+        }
+        if (DLG.token === my) stopDialogue();
+        btn.textContent = label;
+    }
+    function bindReadQuiz(card, p, st, D) {
+        const sec = card.querySelector('.pr-rq'); if (!sec) return;
+        const qs = [...sec.querySelectorAll('.pq')];
+        let ok = 0, done = 0;
+        qs.forEach(qel => {
+            const q = p.quiz[+qel.dataset.q];
+            qel.addEventListener('click', e => {
+                const sayq = e.target.closest('[data-act="sayq"]');
+                if (sayq) {
+                    // câu có ngữ cảnh "(…) câu" → chỉ đọc phần câu
+                    const t = q.q.replace(/^\(.*?\)\s*/, '');
+                    stopDialogue(); return speak(t, '');
+                }
+                const b = e.target.closest('.pq-opt'); if (!b || qel.classList.contains('answered')) return;
+                const right = +b.dataset.v === q.answer;
+                qel.querySelectorAll('.pq-opt').forEach(x => { if (+x.dataset.v === q.answer) x.classList.add('correct'); });
+                if (!right) b.classList.add('wrong');
+                qel.classList.add('answered', right ? 'ok' : 'fail'); qel.querySelector('.pq-res').textContent = right ? '✅ Đúng!' : '❌ Chưa đúng';
+                done++; if (right) ok++;
+                if (right) { st.q[p.id + ':' + qel.dataset.q] = 1; prSave(st); prRefreshProgress(D, st); }
+                const t = q.q.replace(/^\(.*?\)\s*/, ''); stopDialogue(); speak(t, '');
+                if (done >= qs.length) {
+                    const sc = sec.querySelector('.pq-score');
+                    sc.innerHTML = `${ok === qs.length ? '🎉' : ok * 2 >= qs.length ? '👍' : '💪'} Đúng <b>${ok}/${qs.length}</b> câu <button class="cl-btn sm" data-act="rqagain">↺ Làm lại</button>`;
+                    sc.classList.add('show');
+                    sc.querySelector('[data-act="rqagain"]').addEventListener('click', ev => {
+                        ev.stopPropagation(); ok = 0; done = 0; sc.classList.remove('show');
+                        qs.forEach(x => { x.classList.remove('answered', 'ok', 'fail'); x.querySelectorAll('.pq-opt').forEach(o => o.classList.remove('correct', 'wrong')); });
+                    });
+                }
+            });
+        });
+    }
+    function bindListenQuiz(card, p, st, D) {
+        const sec = card.querySelector('.pr-lq'); if (!sec) return;
+        const qs = [...sec.querySelectorAll('.lq')];
+        let ok = 0, done = 0;
+        sec.addEventListener('click', e => {
+            const act = e.target.closest('[data-act]');
+            if (act && act.dataset.act === 'lqnew') {
+                e.stopPropagation(); stopDialogue();
+                sec.outerHTML = listenQuizHtml(p);
+                return bindListenQuiz(card, p, st, D);
+            }
+            if (act && act.dataset.act === 'lqplay') {
+                const lq = act.closest('.lq');
+                stopDialogue(); act.classList.add('playing');
+                return speak(lq.dataset.t, '').then(() => act.classList.remove('playing'));
+            }
+            const b = e.target.closest('.lq-opt'); if (!b) return;
+            const lq = b.closest('.lq');
+            if (lq.classList.contains('answered')) return;
+            if (!lq.dataset.played) {
+                const play = lq.querySelector('.lq-play');
+                play.classList.add('nudge'); setTimeout(() => play.classList.remove('nudge'), 700);
+                return; // phải nghe trước khi chọn
+            }
+            const right = b.dataset.v === lq.dataset.t;
+            lq.querySelectorAll('.lq-opt').forEach(x => { if (x.dataset.v === lq.dataset.t) x.classList.add('correct'); });
+            if (!right) b.classList.add('wrong');
+            lq.classList.add('answered');
+            done++; if (right) ok++;
+            if (ok > (st.l[p.id] || 0)) { st.l[p.id] = ok; prSave(st); prRefreshProgress(D, st); }
+            if (done >= qs.length) {
+                const sc = sec.querySelector('.pq-score');
+                sc.innerHTML = `${ok === qs.length ? '🎉' : ok * 2 >= qs.length ? '👍' : '💪'} Nghe đúng <b>${ok}/${qs.length}</b> câu`;
+                sc.classList.add('show');
+            }
+        });
+        qs.forEach(lq => lq.querySelector('.lq-play').addEventListener('click', () => { lq.dataset.played = '1'; }));
     }
 
     // popover nghĩa từ trong hội thoại

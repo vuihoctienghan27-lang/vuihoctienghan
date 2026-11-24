@@ -783,13 +783,27 @@
     // reading: { id, title, lines (soạn như kịch bản, không cần tên nhân vật), questions, task, taskVi }
     // culture: { id, title, lines }
     // pron:    { id, title, rule, examples: [{ kr, pr, vi }] } — mỗi ví dụ một dòng: 한국어 [한구거] = nghĩa
+    // Nhóm ví dụ: dòng tiêu đề "# Từ mẫu" (w) / "# Luyện câu" (s) / "# Hội thoại" (d); không có tiêu đề thì trang học tự đoán
+    const PRON_GROUPS = { w: 'Từ mẫu', s: 'Luyện câu', d: 'Hội thoại' };
+    function pronGroupOf(h) { h = h.toLowerCase(); return /hội|thoại|dialog/.test(h) ? 'd' : /câu|sentence/.test(h) ? 's' : /từ|word/.test(h) ? 'w' : ''; }
     function parsePronExamples(text) {
+        let g = '';
         return String(text || '').split(/\r?\n/).map(s => s.trim()).filter(Boolean).map(s => {
+            if (/^#/.test(s)) { g = pronGroupOf(s.replace(/^#+\s*/, '')); return null; }
             const m = s.match(/^(.*?)\s*(?:\[([^\]]*)\])?\s*(?:[=＝]\s*(.*))?$/);
-            return { kr: (m ? m[1] : s).trim(), pr: (m && m[2] || '').trim(), vi: (m && m[3] || '').trim() };
-        }).filter(e => e.kr);
+            const e = { kr: (m ? m[1] : s).trim(), pr: (m && m[2] || '').trim(), vi: (m && m[3] || '').trim() };
+            if (g) e.g = g;
+            return e;
+        }).filter(e => e && e.kr);
     }
-    const serializePron = (ex) => (ex || []).map(e => e.kr + (e.pr ? ` [${e.pr}]` : '') + (e.vi ? ' = ' + e.vi : '')).join('\n');
+    const serializePron = (ex) => {
+        let g = '';
+        return (ex || []).map(e => {
+            const head = e.g && e.g !== g ? `# ${PRON_GROUPS[e.g] || e.g}\n` : '';
+            g = e.g || g;
+            return head + e.kr + (e.pr ? ` [${e.pr}]` : '') + (e.vi ? ' = ' + e.vi : '');
+        }).join('\n');
+    };
     function cleanLines(lines) {
         return (lines || []).map(l => ({ kr: String(l.kr || '').trim(), vi: String(l.vi || '').trim() })).filter(l => l.kr || l.vi);
     }
@@ -803,7 +817,13 @@
             .filter(c => c.lines.length);
         const pron = (L.pron || []).map(x => ({
             id: x.id || newId('pr'), title: String(x.title || '').trim(), rule: String(x.rule || '').trim(),
-            examples: (x.examples || []).map(e => ({ kr: String(e.kr || '').trim(), pr: String(e.pr || '').trim(), vi: String(e.vi || '').trim() })).filter(e => e.kr)
+            formula: String(x.formula || '').trim(),
+            examples: (x.examples || []).map(e => {
+                const o = { kr: String(e.kr || '').trim(), pr: String(e.pr || '').trim(), vi: String(e.vi || '').trim() };
+                if (PRON_GROUPS[e.g]) o.g = e.g;
+                return o;
+            }).filter(e => e.kr),
+            quiz: cleanListening({ lines: [], questions: x.quiz || [] }).questions
         })).filter(x => x.rule || x.examples.length);
         return { reading, culture, pron };
     }
@@ -835,8 +855,14 @@
             : 'Mỗi câu / đoạn một dòng tiếng Hàn, dòng <code>= …</code> ngay dưới là bản dịch.' + (kind === 'reading' ? ' Câu hỏi soạn như bài nghe.' : '');
         const body = (d, i) => {
             if (kind === 'pron') return `
+                <div class="field"><label>Công thức (sơ đồ lớn trên trang học)</label><input data-x="${i}" data-f="formula" class="kr" value="${esc(d.formula || '')}" placeholder="[ㄱ] [ㄷ] [ㅂ] + ㅎ → [ㅋ] [ㅌ] [ㅍ]">
+                    <span class="hint">Cách nhau bằng dấu cách; <code>[ㅋ]</code> = âm đọc ra (tô màu), <code>+</code> <code>→</code>, <code>|</code> xuống dòng, <code>_</code> = dấu cách trong một ô, <code>↗ ↘</code> = ngữ điệu.</span></div>
                 <div class="field"><label>Quy tắc (giải thích)</label><textarea data-x="${i}" data-f="rule" rows="4">${esc(d.rule || '')}</textarea></div>
-                <div class="field"><label>Ví dụ</label><textarea data-x="${i}" data-f="examples" rows="6" class="kr" placeholder="한국어 [한구거] = tiếng Hàn">${esc(serializePron(d.examples))}</textarea></div>`;
+                <div class="editor-head" style="padding:0;grid-template-columns:1fr 1fr;align-items:start">
+                <div class="field"><label>Ví dụ</label><textarea data-x="${i}" data-f="examples" rows="12" class="kr" placeholder="# Từ mẫu&#10;축하해요 [추카해요] = chúc mừng&#10;# Luyện câu&#10;생일 축하해요. [추카해요] = Chúc mừng sinh nhật.&#10;# Hội thoại&#10;…">${esc(serializePron(d.examples))}</textarea>
+                    <span class="hint">Nhóm bằng dòng <code># Từ mẫu</code>, <code># Luyện câu</code>, <code># Hội thoại</code>. Hội thoại một dòng hai lượt: <code>A … — B …</code></span></div>
+                <div class="field"><label>Câu hỏi "Đọc thế nào?"</label><textarea data-x="${i}" data-f="quiz" rows="12" class="kr" placeholder="? 축하해요&#10;= Đọc thế nào?&#10;* [추카해요]&#10;- [축하해요]&#10;- [추까해요]">${esc(serializeQuestions(d.quiz))}</textarea>
+                    <span class="hint">Soạn như câu hỏi bài nghe. "Nghe &amp; chọn" tự tạo từ ví dụ.</span></div></div>`;
             const passage = `<div class="field"><label>${kind === 'reading' ? 'Bài đọc' : 'Nội dung'}</label>
                 <textarea data-x="${i}" data-f="lines" rows="10" class="kr" placeholder="저는 한국어를 공부합니다.&#10;= Tôi học tiếng Hàn.">${esc(serializePassage(d.lines))}</textarea></div>`;
             if (kind === 'culture') return passage;
@@ -870,6 +896,7 @@
             const d = D[+el.dataset.x], f = el.dataset.f;
             if (f === 'lines') d.lines = parsePassage(el.value);
             else if (f === 'questions') d.questions = parseQuestions(el.value);
+            else if (f === 'quiz') d.quiz = parseQuestions(el.value);
             else if (f === 'examples') d.examples = parsePronExamples(el.value);
             else d[f] = el.value;
             markDirty();

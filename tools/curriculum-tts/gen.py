@@ -65,6 +65,10 @@ async def main(files):
             # Đọc / Văn hóa (từng câu) và ví dụ Phát âm — giọng nữ, tra theo khóa "|câu"
             extra = [ln.get('kr') for x in les.get('reading', []) + les.get('culture', []) for ln in x.get('lines', [])]
             extra += [e.get('kr') for x in les.get('pron', []) for e in x.get('examples', [])]
+            # câu hỏi "Đọc thế nào?" (bỏ phần ngữ cảnh "(…)" ở đầu); hội thoại một dòng "A — B" đọc từng lượt
+            extra += [re.sub(r'^\(.*?\)\s*', '', q.get('q') or '') for x in les.get('pron', []) for q in x.get('quiz', [])]
+            extra += [t for x in les.get('pron', []) for e in x.get('examples', []) if '—' in (e.get('kr') or '')
+                      for t in re.split(r'\s+—\s+', e['kr'])]
             for t in extra:
                 t = (t or '').strip()
                 if t:

@@ -11307,6 +11307,8 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
         const oldStudentBlock = document.getElementById('_sharedStudentBlock');
         if (oldTeacherBlock) oldTeacherBlock.remove();
         if (oldStudentBlock) oldStudentBlock.remove();
+        const oldShelf = document.getElementById('_seoulShelf');
+        if (oldShelf) oldShelf.remove();
         const oldMoved = document.getElementById('_sharedMovedBanner');
         if (oldMoved) oldMoved.remove();
 
@@ -11401,6 +11403,8 @@ Hãy biên soạn bài giảng chi tiết và bài tập kiểm tra cho danh sá
             `;
 
             container.parentNode.insertBefore(block, container);
+            // Kệ sách 서울대 한국어 1A–6B (seoul-shelf.js) ngay trên thư mục giảng dạy
+            if (window.SeoulShelf) window.SeoulShelf.mount(block);
         }
 
         // 2. Phía HỌC VIÊN:
