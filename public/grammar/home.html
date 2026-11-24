@@ -593,6 +593,9 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="../assets/js/grammar-library.js"></script>
+    <script src="../assets/js/grammar-conjugator.js"></script>
+    <script src="../assets/js/grammar-conjugator-rules.js"></script>
+    <script src="../assets/js/grammar-conjugator-ui.js"></script>
 
     <script>
         function loadGrammarDataSource() {
@@ -1059,6 +1062,9 @@
             if (closeBtn) closeBtn.onclick = closeModal;
             const footerBtn = document.getElementById('_closeGrammarHomeFooterBtn');
             if (footerBtn) footerBtn.onclick = closeModal;
+
+            // Máy chia ngữ pháp (mặc định ẩn) ở mục "Quy tắc chia / Kết hợp"
+            if (window.GrammarConjugatorUI) GrammarConjugatorUI.mount(m.querySelector('.grammar-content'), item.id);
 
             // Initialize quiz interactions
             setTimeout(function() { initQuizInContainer(m); }, 50);

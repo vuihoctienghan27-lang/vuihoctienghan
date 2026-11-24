@@ -33,6 +33,7 @@ public/
   writing/topik_ii/         # TOPIK II writing (topik*, type51–54, wongoji53.html = 원고지 câu 53)
   lesson/, video/, games/   # Bài giảng, học qua video, minigame từ vựng
   lesson/index.html, lesson.html, admin.html  # Kho giáo trình: học theo giáo trình + trang soạn (curriculum-*.js); /curriculum/* chuyển hướng về đây
+  grammar/audio/            # MP3 máy chia ngữ pháp (tools/grammar-tts/gen.py) + index.json
   lesson/audio/             # MP3 đọc sẵn (tools/curriculum-tts/gen.py) + bảng tra index.json
   home/                     # Copied index.html for sub-skill home pages
   implementation_plan.md    # Historical carousel implementation spec
@@ -58,6 +59,7 @@ public/
 | **Writing** | `grading-engine.js` | Chấm câu 51/52 theo cấu hình (exact = 5, khớp ý = 4, stems+grammar = 3, stems = 2, grammar = 1) |
 | **Writing** | `wongoji.js` | Xếp chữ 원고지, kiểm tra nhanh + bản sửa 1 chạm, ước lượng điểm câu 53 theo thang NIIED |
 | **Writing** | `gemini-grader.js` | `callWritingAI()` — gọi AI chấm bài (khoá đọc từ Firestore `app_config` cho tới khi bật Blaze) |
+| **Grammar** | `grammar-conjugator.js` + `-rules.js` + `-ui.js` | Máy chia ngữ pháp trong cửa sổ chi tiết của `grammar/home.html` (mục "Quy tắc chia"): engine chia dùng chung, bảng cấu hình theo id ngữ pháp trong `grammar-library.js` (thêm ngữ pháp = thêm 1 dòng), nút "Từng bước"; MP3 giọng SunHi ở `grammar/audio/` (tạo bằng `tools/grammar-tts/gen.py`) |
 | **Duel** | `duel-ninja.js` / `ninja-match.js` | Trò Ninja phi tiêu (claims/{i} chỉ tạo 1 lần) và so khớp đáp án |
 | **Classes** | `shared-vocab.js` | Thư mục lớp học 1:1 (Key Code qua `folder_keys`, bài tập, bài nộp) |
 | **Leaderboard** | `leaderboard.js` | Leaderboard V2 display with confetti animation |
@@ -90,6 +92,7 @@ No bundler/test runner in the app itself; tests are plain Node scripts:
 node tests/wongoji.test.js          # 원고지 layout / quick check / câu 53 assessment
 node tests/ninja-match.test.js      # Ninja answer matching
 node tests/grading-engine.test.js   # câu 51/52 grading
+node tests/grammar-conjugator.test.js  # máy chia ngữ pháp (bất quy tắc ㅂ/ㄷ/ㅅ/르/ㅎ/ㄹ/ㅡ)
 cd tests/rules && npm install && npm test   # Firestore rules (emulator, needs Java 11+)
 ```
 
