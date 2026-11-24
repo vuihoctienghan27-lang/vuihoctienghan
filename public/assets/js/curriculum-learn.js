@@ -243,7 +243,7 @@
         lesson.listening.forEach(d => { d.lines = d.lines || []; d.questions = d.questions || []; });
         normalizeExtra(lesson);
         const hash = (location.hash || '').replace('#', '');
-        S.tab = ['words', 'grammar', 'dialogues', 'listening', 'reading', 'culture', 'pron'].includes(hash) ? hash
+        S.tab = ['words', 'grammar', 'dialogues', 'listening', 'reading', 'culture', 'pron', 'exercises'].includes(hash) ? hash
             : (lesson.words.length ? 'words' : lesson.grammar.length ? 'grammar' : lesson.dialogues.length ? 'dialogues' : 'words');
         window.learningActive = true; // activity-tracker.js: tính giờ học
         S.media = {}; S.credits = {};
@@ -332,6 +332,7 @@
                 ${L.reading.length ? `<button class="cl-tab" role="tab" data-tab="reading">📖 Đọc <span class="n">${L.reading.length}</span></button>` : ''}
                 ${L.culture.length ? `<button class="cl-tab" role="tab" data-tab="culture">🏮 Văn hóa <span class="n">${L.culture.length}</span></button>` : ''}
                 ${L.pron.length ? `<button class="cl-tab" role="tab" data-tab="pron">🗣 Phát âm <span class="n">${L.pron.length}</span></button>` : ''}
+                ${L.exercises.length ? `<button class="cl-tab" role="tab" data-tab="exercises">📝 Bài tập <span class="n">${L.exercises.length}</span></button>` : ''}
             </div>
             <div class="cl-panel cl-section" id="clTabBody"></div>`;
         document.getElementById('clLessonSel').addEventListener('change', e => { location.href = lessonUrl(cur.id, e.target.value, S.tab); });
@@ -352,6 +353,7 @@
         else if (tab === 'reading') renderReading();
         else if (tab === 'culture') renderCulture();
         else if (tab === 'pron') renderPron();
+        else if (tab === 'exercises') renderExercises();
         else renderWords();
     }
 
@@ -774,6 +776,7 @@
             .filter(r => r.lines.length || r.questions.length || r.task);
         lesson.culture = (lesson.culture || []).filter(Boolean).map(c => ({ ...c, lines: lines(c.lines) })).filter(c => c.lines.length || c.title);
         lesson.pron = (lesson.pron || []).filter(Boolean).map(p => ({ ...p, examples: (p.examples || []).filter(e => e && e.kr) })).filter(p => p.rule || p.examples.length);
+        lesson.exercises = (lesson.exercises || []).filter(e => e && e.id && (e.items || []).length).map(e => ({ ...e, items: e.items.filter(it => it && it.q) }));
     }
     const nl2br = (s) => esc(s).replace(/\n/g, '<br>');
     // Đọc lần lượt các câu; phần tử [data-k="i"] trong card được tô sáng khi đang đọc
@@ -883,6 +886,234 @@
         </div>`).join('') + '<div id="clCredits"></div>';
         box.querySelectorAll('.cl-cult').forEach(card => bindPassage(card, D[+card.dataset.c].lines));
         applyMedia(box);
+    }
+    // ---------- Bài tập (연습 của sách bài tập)
+    // exercises: [{ id, part, sub, no, kr, vi, kind: 'fill'|'choice'|'match'|'free', ex, opts, imgs, items: [{ q, a, o, t }] }]
+    // Tiến độ lưu trên máy: clex_<giáo trình>_<bài> = { ok: { 'exId:k': 1 }, v: { 'exId:k': giá trị đã làm } }
+    const exKey = () => `clex_${S.cur ? S.cur.id : ''}_${S.lessonId || ''}`;
+    function exLoad() { try { return Object.assign({ ok: {}, v: {} }, JSON.parse(localStorage.getItem(exKey()) || '{}')); } catch (e) { return { ok: {}, v: {} }; } }
+    function exSave(st) { try { localStorage.setItem(exKey(), JSON.stringify(st)); } catch (e) { } }
+    const exNorm = (s) => String(s || '').normalize('NFC').toLowerCase().replace(/[\s.,?!~·…'"“”‘’()\[\]{}:;\-–—]/g, '');
+    const exAlts = (a) => String(a || '').split('/').map(x => x.trim()).filter(Boolean);
+    const exGraded = (e) => e.kind !== 'free';
+    const exW = (n) => Math.min(n * 1.05 + 1.4, 30).toFixed(2) + 'em'; // chữ Hàn ≈ 1em
+    function exImgIds(e) { const ids = [e.id]; for (let k = 2; k <= (e.imgs || 1); k++) ids.push(e.id + '_' + k); return ids; }
+    // câu ngắn (vd. ② ＿국, 나나(＿)) → xếp lưới nhiều cột cho gọn
+    const exShort = (e) => e.kind !== 'free' && e.items.length > 2 && e.items.every(it => !it.p && !it.t && String(it.q).length <= 22 && (e.kind !== 'fill' || (it.a || []).every(a => exAlts(a).every(x => x.length <= 8))) && (e.kind !== 'choice' || (it.o || []).join('').length <= 14));
+    function exStats(D, st) {
+        let got = 0, all = 0;
+        D.forEach(e => { if (!exGraded(e)) return; e.items.forEach((it, k) => { all++; if (st.ok[e.id + ':' + k]) got++; }); });
+        return { got, all };
+    }
+    function exProgressHtml(D, st) {
+        const { got, all } = exStats(D, st);
+        const parts = [...new Set(D.map(e => e.part || 'Bài tập'))];
+        return `<div class="pr-progress ex-progress ${all && got >= all ? 'complete' : ''}">
+            <div class="pp-head">${all && got >= all ? '🏆 Hoàn thành toàn bộ bài tập của bài!' : `📝 Bài tập của bài · đúng <b>${got}/${all}</b> câu`}</div>
+            <div class="pp-bar"><i style="width:${all ? Math.round(got / all * 100) : 0}%"></i></div>
+            ${parts.length > 1 ? `<div class="ex-jump">${parts.map((p, i) => `<button type="button" class="cl-btn" data-jump="${i}">${esc(p)}</button>`).join('')}</div>` : ''}
+        </div>`;
+    }
+    function exRefresh(box, D, st) {
+        const { got, all } = exStats(D, st);
+        const pg = box.querySelector('.ex-progress');
+        if (pg) {
+            pg.classList.toggle('complete', !!all && got >= all);
+            pg.querySelector('.pp-head').innerHTML = all && got >= all ? '🏆 Hoàn thành toàn bộ bài tập của bài!' : `📝 Bài tập của bài · đúng <b>${got}/${all}</b> câu`;
+            pg.querySelector('.pp-bar i').style.width = (all ? Math.round(got / all * 100) : 0) + '%';
+        }
+        box.querySelectorAll('.ex-card').forEach(card => {
+            const e = D[+card.dataset.e]; if (!exGraded(e)) return;
+            const n = e.items.filter((it, k) => st.ok[e.id + ':' + k]).length;
+            const pill = card.querySelector('.ex-pill');
+            pill.textContent = n >= e.items.length ? '✓ Xong' : `${n}/${e.items.length}`;
+            card.classList.toggle('done', n >= e.items.length);
+        });
+        const tab = root.querySelector('.cl-tab[data-tab="exercises"]');
+        if (tab) tab.classList.toggle('done', !!all && got >= all);
+    }
+    // một câu hỏi: chỗ trống "___" thành ô nhập (fill) hoặc ô hiện lựa chọn (choice / match)
+    function exItemHtml(e, it, k, st) {
+        const key = e.id + ':' + k, saved = st.v[key], ok = st.ok[key];
+        const say = it.t ? `<button type="button" class="ex-say" data-say="${esc(it.t)}" title="Nghe câu">🔊</button>` : '';
+        // số câu theo sách ("3) …") hiện ở ô số, bỏ khỏi câu
+        const m = String(it.q).match(/^\s*(\d+)\)\s*/);
+        it = Object.assign({}, it, { q: m ? String(it.q).slice(m[0].length) : String(it.q) });
+        const num = `<span class="ex-n">${m ? m[1] : k + 1}</span>`;
+        const pic = it.p ? imgTag(e.id + '_i' + (k + 1), 'ex-img ex-ithumb') : '';
+        if (e.kind === 'fill') {
+            const parts = String(it.q).split('___');
+            const blanks = parts.length - 1;
+            const vals = Array.isArray(saved) ? saved : [];
+            let html = '';
+            parts.forEach((p, j) => {
+                html += `<span class="kr">${esc(p)}</span>`;
+                if (j < blanks) {
+                    const longest = Math.max(2, ...exAlts((it.a || [])[j]).map(x => [...x].length));
+                    const wide = longest > 10;
+                    html += `<input class="ex-in kr ${wide ? 'wide' : ''}" data-j="${j}" autocomplete="off" spellcheck="false" data-base="${longest}" style="--w:${exW(Math.max(longest, [...(vals[j] || '')].length))}" value="${esc(vals[j] || '')}" aria-label="Chỗ trống ${j + 1}">`;
+                }
+            });
+            if (!blanks) html += `<input class="ex-in kr wide" data-j="0" autocomplete="off" spellcheck="false" value="${esc(vals[0] || '')}">`;
+            return `<div class="ex-it ${ok ? 'ok' : ''}" data-k="${k}">${num}<div class="ex-q">${pic}${say}${html}</div><span class="ex-mark">${ok ? '✓' : ''}</span><div class="ex-ans" hidden></div></div>`;
+        }
+        if (e.kind === 'free') {
+            return `<div class="ex-it free" data-k="${k}">${num}<div class="ex-q">${pic}${say}<span class="kr">${esc(it.q)}</span>
+                <textarea class="ex-free kr" rows="2" placeholder="Viết câu trả lời của bạn…">${esc(saved || '')}</textarea>
+                ${it.a ? `<details class="ex-sample"><summary>💡 Câu trả lời mẫu</summary><div class="kr">${esc(it.a)}</div></details>` : ''}</div></div>`;
+        }
+        const opts = e.kind === 'match' ? (e.opts || []) : (it.o || []);
+        const q = String(it.q);
+        const slot = `<span class="ex-slot kr">${saved != null && opts[saved] != null ? esc(opts[saved]) : '&nbsp;'}</span>`;
+        const qHtml = q.includes('___') ? q.split('___').map(esc).join(slot) : (e.kind === 'match' ? (q ? esc(q) + ' → ' : '') + slot : esc(q));
+        return `<div class="ex-it pick ${ok ? 'ok' : saved != null ? 'bad' : ''}" data-k="${k}">${num}<div class="ex-q">${pic}${say}<span class="kr">${qHtml}</span>
+            <div class="ex-opts">${opts.map((o, oi) => `<button type="button" class="ex-opt kr ${saved === oi ? (ok ? 'right' : 'wrong') : ''}" data-oi="${oi}">${esc(o)}</button>`).join('')}</div></div>
+            <span class="ex-mark">${ok ? '✓' : saved != null ? '✗' : ''}</span></div>`;
+    }
+    function renderExercises() {
+        const D = S.lesson.exercises, box = document.getElementById('clTabBody');
+        if (!D.length) { box.innerHTML = '<div class="cl-empty"><div class="big">📝</div>Bài này chưa có bài tập.</div>'; return; }
+        const st = exLoad();
+        let lastPart = null, lastSub = null, partNo = -1;
+        const parts = [...new Set(D.map(e => e.part || 'Bài tập'))];
+        box.innerHTML = exProgressHtml(D, st) + D.map((e, ei) => {
+            let head = '';
+            const part = e.part || 'Bài tập';
+            if (part !== lastPart) { partNo = parts.indexOf(part); head += `<h2 class="ex-part kr" data-part="${partNo}">${esc(part)}</h2>`; lastPart = part; lastSub = null; }
+            if (e.sub && e.sub !== lastSub) { head += `<h3 class="ex-sub kr">📗 ${esc(e.sub)}</h3>`; }
+            lastSub = e.sub || null;
+            const imgs = exImgIds(e).map(id => imgTag(id, 'ex-img')).join('');
+            const graded = exGraded(e);
+            const hasFill = e.kind === 'fill';
+            return head + `<div class="ex-card" data-e="${ei}">
+                <div class="ex-head">
+                    <span class="ex-no kr">${esc(e.no || 'Bài ' + (ei + 1))}</span>
+                    <div class="ex-title"><b class="kr">${esc(e.kr)}</b>${e.vi ? `<small>${esc(e.vi)}</small>` : ''}</div>
+                    ${graded ? '<span class="ex-pill"></span>' : '<span class="ex-pill free">Tự luyện</span>'}
+                </div>
+                ${e.ex ? `<div class="ex-example"><span class="lb">[보기]</span> <span class="kr">${esc(e.ex)}</span></div>` : ''}
+                <div class="ex-body">
+                    <div class="ex-pics">${imgs}</div>
+                    <div class="ex-items ${exShort(e) ? 'short' : ''}">${e.items.map((it, k) => exItemHtml(e, it, k, st)).join('')}</div>
+                </div>
+                ${graded ? `<div class="ex-foot">
+                    ${hasFill ? '<button type="button" class="cl-btn pri" data-act="check">✅ Kiểm tra</button>' : ''}
+                    <button type="button" class="cl-btn" data-act="show">👀 Xem đáp án</button>
+                    <button type="button" class="cl-btn" data-act="reset">↺ Làm lại</button>
+                    <span class="ex-res"></span>
+                </div>` : ''}
+            </div>`;
+        }).join('') + '<div id="clCredits"></div>';
+        exRefresh(box, D, st);
+        box.querySelectorAll('[data-jump]').forEach(b => b.addEventListener('click', () => {
+            const h = box.querySelector(`.ex-part[data-part="${b.dataset.jump}"]`);
+            if (h) h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }));
+        box.querySelectorAll('.ex-card').forEach(card => bindExercise(card, D[+card.dataset.e], st, box, D));
+        applyMedia(box);
+    }
+    function exCheckItem(e, it, k, row, st) {
+        const key = e.id + ':' + k;
+        const ins = [...row.querySelectorAll('.ex-in')];
+        const vals = ins.map(x => x.value);
+        st.v[key] = vals;
+        if (vals.every(v => !v.trim())) { row.classList.remove('ok', 'bad'); row.querySelector('.ex-mark').textContent = ''; return null; }
+        // chấp nhận cả khi gõ luôn chữ dính liền trước / sau chỗ trống (vd. ô ＿국 gõ 한국)
+        const segs = String(it.q).split('___');
+        const res = ins.map((x, j) => {
+            const pre = exNorm((String(segs[j] || '').trim().split(/\s+/).pop() || '').replace(/^[\d)①-⑳]+/, ''));
+            const post = exNorm(String(segs[j + 1] || '').trim().split(/\s+/)[0] || '');
+            const v = exNorm(x.value);
+            return exAlts((it.a || [])[j]).some(a => { const n = exNorm(a); return v === n || v === pre + n || v === n + post || v === pre + n + post; });
+        });
+        ins.forEach((x, j) => { x.classList.toggle('right', res[j]); x.classList.toggle('wrong', !res[j]); });
+        const good = res.every(Boolean);
+        if (good) st.ok[key] = 1; else delete st.ok[key];
+        row.classList.toggle('ok', good); row.classList.toggle('bad', !good);
+        row.querySelector('.ex-mark').textContent = good ? '✓' : '✗';
+        return good;
+    }
+    function bindExercise(card, e, st, box, D) {
+        const res = card.querySelector('.ex-res');
+        const flash = (txt, cls) => { if (!res) return; res.textContent = txt; res.className = 'ex-res ' + (cls || ''); };
+        card.querySelectorAll('.ex-say').forEach(b => b.addEventListener('click', () => speak(b.dataset.say, '')));
+        card.querySelectorAll('.ex-img').forEach(im => im.addEventListener('click', () => exZoom(im.src)));
+        // điền: Enter → ô kế tiếp; hết ô thì kiểm tra
+        const ins = [...card.querySelectorAll('.ex-in')];
+        ins.forEach((x, i) => {
+            x.addEventListener('keydown', ev => {
+                if (ev.key !== 'Enter' || ev.isComposing) return;
+                ev.preventDefault();
+                if (ins[i + 1]) ins[i + 1].focus(); else card.querySelector('[data-act="check"]').click();
+            });
+            x.addEventListener('input', () => { x.classList.remove('right', 'wrong'); x.style.setProperty('--w', exW(Math.max(+x.dataset.base || 2, [...x.value].length))); });
+        });
+        // chọn / nối: bấm là chấm ngay
+        card.querySelectorAll('.ex-it.pick').forEach(row => {
+            const k = +row.dataset.k, it = e.items[k], key = e.id + ':' + k;
+            const opts = e.kind === 'match' ? (e.opts || []) : (it.o || []);
+            row.querySelectorAll('.ex-opt').forEach(b => b.addEventListener('click', () => {
+                const oi = +b.dataset.oi;
+                const good = e.kind === 'match' ? exNorm(opts[oi]) === exNorm(it.a) : oi === it.a;
+                st.v[key] = oi;
+                if (good) st.ok[key] = 1; else delete st.ok[key];
+                row.querySelectorAll('.ex-opt').forEach(x => x.classList.remove('right', 'wrong'));
+                b.classList.add(good ? 'right' : 'wrong');
+                row.classList.toggle('ok', good); row.classList.toggle('bad', !good);
+                row.querySelectorAll('.ex-slot').forEach(s => { s.textContent = opts[oi]; });
+                row.querySelector('.ex-mark').textContent = good ? '✓' : '✗';
+                if (!good) { row.classList.remove('nudge'); void row.offsetWidth; row.classList.add('nudge'); }
+                exSave(st); exRefresh(box, D, st);
+            }));
+        });
+        card.querySelectorAll('.ex-free').forEach(t => t.addEventListener('input', () => { st.v[e.id + ':' + t.closest('.ex-it').dataset.k] = t.value; exSave(st); }));
+        const act = (name, fn) => { const b = card.querySelector(`[data-act="${name}"]`); if (b) b.addEventListener('click', fn); };
+        act('check', () => {
+            let good = 0, done = 0;
+            card.querySelectorAll('.ex-it').forEach(row => {
+                if (row.classList.contains('pick')) { if (row.classList.contains('ok')) { good++; done++; } else if (row.classList.contains('bad')) done++; return; }
+                const k = +row.dataset.k, r = exCheckItem(e, e.items[k], k, row, st);
+                if (r !== null) { done++; if (r) good++; }
+            });
+            exSave(st); exRefresh(box, D, st);
+            if (!done) flash('Hãy điền câu trả lời trước nhé.', 'warn');
+            else if (good === e.items.length) flash('🎉 Chính xác tất cả!', 'ok');
+            else flash(`Đúng ${good}/${e.items.length} câu — sửa ô đỏ rồi kiểm tra lại.`, 'warn');
+        });
+        act('show', () => {
+            card.querySelectorAll('.ex-it').forEach(row => {
+                const k = +row.dataset.k, it = e.items[k];
+                if (row.classList.contains('pick')) {
+                    const opts = e.kind === 'match' ? (e.opts || []) : (it.o || []);
+                    const ci = e.kind === 'match' ? opts.findIndex(o => exNorm(o) === exNorm(it.a)) : it.a;
+                    row.querySelectorAll('.ex-opt').forEach((b, oi) => b.classList.toggle('reveal', oi === ci));
+                    return;
+                }
+                const box2 = row.querySelector('.ex-ans');
+                if (box2) { box2.hidden = false; box2.innerHTML = '💡 ' + (it.a || []).map(a => `<b class="kr">${esc(exAlts(a)[0] || '')}</b>`).join(' · '); }
+            });
+            flash('Đáp án hiện bên dưới mỗi câu (không tính điểm).', '');
+        });
+        act('reset', () => {
+            e.items.forEach((it, k) => { delete st.ok[e.id + ':' + k]; delete st.v[e.id + ':' + k]; });
+            exSave(st);
+            card.querySelector('.ex-items').innerHTML = e.items.map((it, k) => exItemHtml(e, it, k, st)).join('');
+            const clone = card.cloneNode(true);
+            card.replaceWith(clone);
+            bindExercise(clone, e, st, box, D);
+            exRefresh(box, D, st);
+        });
+    }
+    function exZoom(src) {
+        if (!src) return;
+        const o = document.createElement('div');
+        o.className = 'ex-zoom';
+        o.innerHTML = `<img src="${esc(src)}" alt=""><button type="button" aria-label="Đóng">✕</button>`;
+        const close = () => { o.remove(); document.removeEventListener('keydown', onKey); };
+        const onKey = (ev) => { if (ev.key === 'Escape') close(); };
+        o.addEventListener('click', close);
+        document.addEventListener('keydown', onKey);
+        document.body.appendChild(o);
     }
     // ---------- Phát âm (발음): công thức · từ mẫu (thẻ lật) · luyện câu · hội thoại · luyện tập
     // pron: [{ id, title, formula, rule, examples: [{ kr, pr, vi, g: 'w'|'s'|'d' }], quiz: [{ q, qvi, options, answer, explain }] }]
