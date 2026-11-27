@@ -505,6 +505,7 @@
             c.innerHTML = G[+item.dataset.i].contentHtml || '<p><i>(Chưa có nội dung)</i></p>';
             c.dataset.ready = '1';
             c.querySelectorAll('.quiz-section').forEach(initQuizSection);
+            mountConjugator(c, G[+item.dataset.i]);
         };
         box.querySelectorAll('.cl-gitem').forEach(item => {
             if (item.classList.contains('open')) fill(item);
@@ -515,6 +516,28 @@
                 if (open) fill(item);
             });
         });
+    }
+
+    // Bảng quy tắc + Máy chia ngữ pháp (grammar-conjugator*.js). Mục lấy từ thư viện có libId;
+    // mục tự soạn thì ghép theo tên — chỉ khi đó mới tải thư viện ngữ pháp (file lớn).
+    const GRAMMAR_LIB_SRC = (function () {
+        try { return new URL('grammar-library.js', (document.currentScript && document.currentScript.src) || location.href).href; }
+        catch (e) { return '/assets/js/grammar-library.js'; }
+    })();
+    let grammarLibLoading = null;
+    function loadGrammarLibrary() {
+        if (window.GrammarLibrary) return Promise.resolve();
+        if (!grammarLibLoading) grammarLibLoading = new Promise(resolve => {
+            const sc = document.createElement('script'); sc.src = GRAMMAR_LIB_SRC;
+            sc.onload = sc.onerror = () => resolve(); document.head.appendChild(sc);
+        });
+        return grammarLibLoading;
+    }
+    function mountConjugator(box, g) {
+        const UI = window.GrammarConjugatorUI; if (!UI || !g) return;
+        const go = () => { const key = UI.keyFor(g); if (key && box.isConnected) UI.mount(box, key); return !!key; };
+        if (go() || g.libId) return;
+        loadGrammarLibrary().then(go);
     }
 
     // Bộ chạy bài tập trong nội dung ngữ pháp (định dạng của grammar-library.js)

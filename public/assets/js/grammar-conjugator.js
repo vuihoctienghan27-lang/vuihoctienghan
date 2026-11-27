@@ -152,53 +152,53 @@
         switch (irr) {
             case 'hada':
                 notes.check = 'Gốc kết thúc bằng 하 → 하 + 여 = 해';
-                return { changed: stem, joined: pre + '해', how: '하 + 여 → 해' };
+                return { changed: stem, joined: pre + '해', how: '하 + 여 → 해', add: '여' };
             case 'b':
                 changed = pre + setFin(lc, 0);
                 var w = WA_B[word] ? '와' : '워';
                 notes.change = 'ㅂ gặp nguyên âm → đổi thành 우 (' + lc + ' → ' + setFin(lc, 0) + '우)';
-                return { changed: changed + '우', joined: changed + w, how: '우 + 어 → ' + w + (WA_B[word] ? ' (돕다/곱다 → 와)' : '') };
+                return { changed: changed + '우', joined: changed + w, add: w === '와' ? '아' : '어', how: '우 + 어 → ' + w + (WA_B[word] ? ' (돕다/곱다 → 와)' : '') };
             case 'd':
                 changed = pre + setFin(lc, T['ㄹ']);
                 notes.change = 'ㄷ gặp nguyên âm → đổi thành ㄹ (' + lc + ' → ' + setFin(lc, T['ㄹ']) + ')';
                 res = changed + (bright(v) ? '아' : '어');
-                return { changed: changed, joined: res, how: 'nguyên âm ' + v + ' → ' + (bright(v) ? '아' : '어') };
+                return { changed: changed, joined: res, add: bright(v) ? '아' : '어', how: 'nguyên âm ' + v + ' → ' + (bright(v) ? '아' : '어') };
             case 's':
                 changed = pre + setFin(lc, 0);
                 notes.change = 'ㅅ gặp nguyên âm → rụng ㅅ (' + lc + ' → ' + setFin(lc, 0) + '), không rút gọn';
-                return { changed: changed, joined: changed + (bright(v) ? '아' : '어'), how: 'nguyên âm ' + v + ' → ' + (bright(v) ? '아' : '어') + ' (giữ nguyên, không gộp)' };
+                return { changed: changed, joined: changed + (bright(v) ? '아' : '어'), add: bright(v) ? '아' : '어', how: 'nguyên âm ' + v + ' → ' + (bright(v) ? '아' : '어') + ' (giữ nguyên, không gộp)' };
             case 'h':
                 var nv = v === 'ㅑ' ? 'ㅒ' : (v === 'ㅕ' ? 'ㅖ' : 'ㅐ');
                 changed = pre + setFin(lc, 0);
                 notes.change = 'ㅎ rụng, nguyên âm ' + v + ' + 아/어 → ' + nv;
-                return { changed: changed, joined: pre + setVowel(setFin(lc, 0), nv), how: lc + ' → ' + setVowel(setFin(lc, 0), nv) };
+                return { changed: changed, joined: pre + setVowel(setFin(lc, 0), nv), add: bright(v) ? '아' : '어', how: lc + ' → ' + setVowel(setFin(lc, 0), nv) };
             case 'reu':
                 var ps = lastCh(pre), ppre = initOf(pre), pv = vowelOf(ps);
                 var e = bright(pv) ? '라' : '러';
                 changed = ppre + setFin(ps, T['ㄹ']);
                 notes.change = '르 gặp 아/어 → ㅡ rụng, thêm ㄹ vào âm trước (' + ps + ' → ' + setFin(ps, T['ㄹ']) + ')';
-                return { changed: changed, joined: changed + e, how: 'nguyên âm trước là ' + pv + ' → ' + e };
+                return { changed: changed, joined: changed + e, add: e, how: 'nguyên âm trước là ' + pv + ' → ' + e };
             case 'reo':
                 notes.change = '러 bất quy tắc: 르 + 어 → 르러';
-                return { changed: stem, joined: stem + '러', how: '르 + 어 → 르러' };
+                return { changed: stem, joined: stem + '러', add: '러', how: '르 + 어 → 르러' };
             case 'u':
                 notes.change = '우 bất quy tắc: ㅜ rụng (푸 → 퍼)';
-                return { changed: stem, joined: pre + setVowel(lc, 'ㅓ'), how: 'ㅜ + 어 → ㅓ' };
+                return { changed: stem, joined: pre + setVowel(lc, 'ㅓ'), add: '어', how: 'ㅜ + 어 → ㅓ' };
             case 'eu':
                 var e2 = (prevV && bright(prevV)) ? 'ㅏ' : 'ㅓ';
                 notes.change = 'ㅡ gặp 아/어 → ㅡ rụng' + (prevV ? ' (nguyên âm trước là ' + prevV + ' → ' + (e2 === 'ㅏ' ? '아' : '어') + ')' : ' (1 âm tiết → 어)');
-                return { changed: stem, joined: pre + setVowel(lc, e2), how: lc + ' → ' + setVowel(lc, e2) };
+                return { changed: stem, joined: pre + setVowel(lc, e2), add: e2 === 'ㅏ' ? '아' : '어', how: lc + ' → ' + setVowel(lc, e2) };
         }
         var e3 = bright(v) ? '아' : '어';
-        if (t > 0) return { changed: stem, joined: stem + e3, how: 'nguyên âm ' + v + (bright(v) ? ' (ㅏ/ㅗ)' : ' (khác ㅏ/ㅗ)') + ' → ' + e3 };
+        if (t > 0) return { changed: stem, joined: stem + e3, add: e3, how: 'nguyên âm ' + v + (bright(v) ? ' (ㅏ/ㅗ)' : ' (khác ㅏ/ㅗ)') + ' → ' + e3 };
         /* gốc tận cùng nguyên âm: rút gọn */
         var map = { 'ㅏ': 'ㅏ', 'ㅓ': 'ㅓ', 'ㅐ': 'ㅐ', 'ㅔ': 'ㅔ', 'ㅕ': 'ㅕ', 'ㅗ': 'ㅘ', 'ㅜ': 'ㅝ', 'ㅣ': 'ㅕ', 'ㅚ': 'ㅙ' };
         if (map[v]) {
             var j2 = setVowel(lc, map[v]);
             /* 이 (không phụ âm đầu ㅇ+ㅣ) → 여: 이기다 → 이겨 vẫn đúng với ㅕ */
-            return { changed: stem, joined: pre + j2, how: lc + ' + ' + e3 + ' → ' + j2 + (j2 === lc ? ' (gộp, chỉ còn một)' : ' (rút gọn)') };
+            return { changed: stem, joined: pre + j2, add: e3, how: lc + ' + ' + e3 + ' → ' + j2 + (j2 === lc ? ' (gộp, chỉ còn một)' : ' (rút gọn)') };
         }
-        return { changed: stem, joined: stem + e3, how: 'nguyên âm ' + v + ' → ' + e3 };
+        return { changed: stem, joined: stem + e3, add: e3, how: 'nguyên âm ' + v + ' → ' + e3 };
     }
 
     /* ---------------- Hàm chính ---------------- */
@@ -238,7 +238,7 @@
             } else { end = sp.tail; why = 'Gắn thẳng vào danh từ'; }
             steps.push({ key: 'check', title: 'Kiểm tra patchim', main: [P(check)], sub: b ? 'Có patchim' : 'Không patchim', text: true });
             var resN = (end.charAt(0) === ' ' ? n + end : attach(n, end));
-            steps.push({ key: 'attach', title: 'Gắn đuôi', main: [P(n, 'stem'), P(' + ', 'mut'), P('-' + end.trim(), 'end')], sub: why });
+            steps.push({ key: 'attach', title: 'Gắn đuôi', main: [P(n, 'stem'), P(' + ', 'mut'), P('-' + end.trim(), 'end')], sub: why, base: n, add: end });
             steps.push({ key: 'result', title: 'Kết quả', main: split(resN, n), sub: sp.label ? 'Mẫu: ' + (sp.label) : '' });
             return { ok: true, pos: pos, stem: n, result: resN, steps: steps, irregular: null };
         }
@@ -257,13 +257,14 @@
         var notes = {};
         var checkTxt = fj2 ? '"' + lc + '" có patchim ' + fj2 : '"' + lc + '" không có patchim (nguyên âm ' + vv + ')';
         var irrTxt = irr && irr !== 'hada' ? IRR_NAME[irr] : (irr === 'hada' ? 'gốc 하다' : 'có quy tắc');
-        var result, attachMain, attachSub, change = null, finalBase = stem;
+        var result, attachMain, attachSub, change = null, finalBase = stem, attBase = stem, attAdd = '';
 
         if (sp.kind === 'aeo') {
             var r = aeoBase(raw.replace(/\s+/g, ''), pos, stem, irr, notes);
             if (!irr || irr === 'l') checkTxt = '"' + lc + '": nguyên âm ' + vv + (fj2 ? ', patchim ' + fj2 : ', không patchim');
             if (notes.change) change = { from: stem, to: r.changed, sub: notes.change };
             result = attach(r.joined, sp.tail); finalBase = r.changed;
+            attBase = r.changed; attAdd = attach(r.add, sp.tail);
             attachMain = [P(r.joined, 'stem'), P(' + ', 'mut'), P('-' + (sp.tail.charAt(0) === 'ㅆ' ? '았/었' + sp.tail.slice(1) : (sp.tail || '(kết thúc)')).trim(), 'end')];
             attachSub = r.how;
         } else if (sp.kind === 'eu') {
@@ -294,6 +295,7 @@
             if (notes.change) change = { from: stem, to: base, sub: notes.change };
             var fullTail = useIns ? attach(ins, tail) : tail;
             result = attach(base, fullTail); finalBase = base;
+            attBase = base; attAdd = fullTail;
             attachMain = [P(base, 'stem'), P(' + ', 'mut'), P('-' + fullTail.trim(), 'end')];
         } else if (sp.kind === 'vc') {
             var useV = fj2 === '', base2 = stem;
@@ -304,6 +306,7 @@
             }
             var tl = useV ? sp.v : sp.c;
             result = attach(base2, tl); finalBase = base2;
+            attBase = base2; attAdd = tl;
             attachMain = [P(base2, 'stem'), P(' + ', 'mut'), P('-' + tl.trim(), 'end')];
             attachSub = useV ? (irr === 'l' ? 'Gốc ㄹ (đã rụng) → -' + sp.v : 'Không patchim → -' + sp.v) : 'Có patchim → -' + sp.c;
         } else {
@@ -314,6 +317,7 @@
                 change = { from: stem, to: base3, sub: notes.change };
             }
             result = attach(base3, tl2); finalBase = base3;
+            attBase = base3; attAdd = tl2;
             attachMain = [P(base3, 'stem'), P(' + ', 'mut'), P('-' + tl2.trim(), 'end')];
             attachSub = 'Đuôi bắt đầu bằng phụ âm → gắn thẳng vào gốc';
         }
@@ -323,7 +327,7 @@
         steps.push({ key: 'check', title: 'Kiểm tra patchim / bất quy tắc', main: [P(checkTxt)], sub: irrTxt.charAt(0).toUpperCase() + irrTxt.slice(1), text: true });
         if (change && change.from !== change.to) steps.push({ key: 'change', title: 'Biến đổi gốc', main: [P(change.from, 'stem'), P(' → ', 'mut'), P(change.to, 'chg')], sub: change.sub });
         else if (change) steps.push({ key: 'change', title: 'Biến đổi gốc', main: [P(change.from, 'stem')], sub: change.sub });
-        steps.push({ key: 'attach', title: 'Gắn đuôi', main: attachMain, sub: attachSub });
+        steps.push({ key: 'attach', title: 'Gắn đuôi', main: attachMain, sub: attachSub, base: attBase, add: attAdd });
         steps.push({ key: 'result', title: 'Kết quả', main: (prefix ? [P(prefix)] : []).concat(split(result, finalBase)), sub: sp.label ? 'Mẫu: ' + sp.label : '' });
         result = prefix + result;
         return { ok: true, pos: pos, stem: stem, result: result, steps: steps, irregular: irr };

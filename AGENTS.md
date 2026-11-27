@@ -59,7 +59,7 @@ public/
 | **Writing** | `grading-engine.js` | Chấm câu 51/52 theo cấu hình (exact = 5, khớp ý = 4, stems+grammar = 3, stems = 2, grammar = 1) |
 | **Writing** | `wongoji.js` | Xếp chữ 원고지, kiểm tra nhanh + bản sửa 1 chạm, ước lượng điểm câu 53 theo thang NIIED |
 | **Writing** | `gemini-grader.js` | `callWritingAI()` — gọi AI chấm bài (khoá đọc từ Firestore `app_config` cho tới khi bật Blaze) |
-| **Grammar** | `grammar-conjugator.js` + `-rules.js` + `-ui.js` | Máy chia ngữ pháp trong cửa sổ chi tiết của `grammar/home.html` (mục "Quy tắc chia"): engine chia dùng chung, bảng cấu hình theo id ngữ pháp trong `grammar-library.js` (thêm ngữ pháp = thêm 1 dòng), nút "Từng bước"; MP3 giọng SunHi ở `grammar/audio/` (tạo bằng `tools/grammar-tts/gen.py`) |
+| **Grammar** | `grammar-conjugator.js` + `-rules.js` + `-ui.js` | Bảng quy tắc + Máy chia ngữ pháp ở 3 nơi (mục "Quy tắc chia"): cửa sổ chi tiết `grammar/home.html`, tab Ngữ pháp giáo trình (`curriculum-learn.js`, theo `libId`), ngữ pháp lớp ở `vocab.html` (`shared-vocab.js`, ghép theo tên bằng `keyFor`). Engine chia dùng chung, bảng cấu hình theo id ngữ pháp trong `grammar-library.js` (thêm ngữ pháp = thêm 1 dòng), nút "Từng bước"; MP3 giọng SunHi ở `grammar/audio/` (tạo bằng `tools/grammar-tts/gen.py`) |
 | **Duel** | `duel-ninja.js` / `ninja-match.js` | Trò Ninja phi tiêu (claims/{i} chỉ tạo 1 lần) và so khớp đáp án |
 | **Classes** | `shared-vocab.js` | Thư mục lớp học 1:1 (Key Code qua `folder_keys`, bài tập, bài nộp) |
 | **Leaderboard** | `leaderboard.js` | Leaderboard V2 display with confetti animation |

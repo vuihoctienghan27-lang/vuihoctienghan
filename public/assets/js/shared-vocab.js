@@ -7123,6 +7123,11 @@ Lưu ý: "answer" của mc là số thứ tự đáp án đúng (bắt đầu t�
         `;
         document.body.appendChild(m);
 
+        // Bảng quy tắc + Máy chia ngữ pháp (grammar-conjugator*.js), ghép theo tên với thư viện
+        const gcBox = m.querySelector('.grammar-content');
+        const gcKey = window.GrammarConjugatorUI && window.GrammarConjugatorUI.keyFor(g);
+        if (gcBox && gcKey) window.GrammarConjugatorUI.mount(gcBox, gcKey);
+
         function closeModal() {
             window.removeEventListener('keydown', onKeyDown);
             if (m && m.parentNode) m.remove();
