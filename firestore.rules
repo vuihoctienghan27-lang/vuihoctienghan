@@ -163,6 +163,16 @@ service cloud.firestore {
         allow read, write: if isSignedIn() && request.auth.uid == userId;
       }
 
+      // Sổ tay nháp bài học (lesson-notes.js: vocab.html + trang giáo trình) — chỉ chủ sở hữu
+      match /lesson_notes/{noteId} {
+        allow read, delete: if isSignedIn() && request.auth.uid == userId;
+        allow create, update: if isSignedIn() && request.auth.uid == userId
+          && request.resource.data.content is string
+          && strMax(request.resource.data, 'content', 300000)
+          && strMax(request.resource.data, 'folderTitle', 500)
+          && strMax(request.resource.data, 'lessonName', 500);
+      }
+
       // Sổ câu sai (exam.js / shared-vocab.js ghi, mistakes.html ôn tập) — chỉ chủ sở hữu
       match /mistakes/{mistakeId} {
         allow read, delete: if isSignedIn() && request.auth.uid == userId;

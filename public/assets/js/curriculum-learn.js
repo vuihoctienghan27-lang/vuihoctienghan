@@ -322,6 +322,8 @@
                     <select id="clLessonSel" aria-label="Chọn bài">${units.map(u => `<option value="${esc(u.id)}" ${u.id === S.lessonId ? 'selected' : ''}>${(cur.units || []).indexOf(u) + 1}. ${esc(splitTitle(u.title).main)}</option>`).join('')}</select>
                     ${next ? `<a class="cl-btn" href="${lessonUrl(cur.id, next.id, S.tab)}" title="${esc(next.title)}">Bài sau →</a>` : '<button class="cl-btn" disabled>Bài sau →</button>'}
                     ${isAdmin(S.user) ? '<a class="cl-btn" href="admin.html" title="Mở trang soạn">✎ Soạn</a>' : ''}
+                    ${isAdmin(S.user) && window.LessonAnnotate ? '<button type="button" class="cl-btn" id="clAnnotateBtn" title="Vẽ, khoanh, gạch chân, ghi chú thẳng lên bài khi giảng (chỉ giáo viên thấy nút này)">✏️ Vẽ chú thích</button>' : ''}
+                    ${window.LessonNotes ? '<button type="button" class="cl-btn" id="clNotesBtn" title="Ghi chú nháp riêng cho bài này (lưu vào máy & tài khoản)">📖 Sổ tay nháp</button>' : ''}
                 </div>
             </section>
             <div class="cl-panel cl-tabs" role="tablist">
@@ -336,6 +338,22 @@
             </div>
             <div class="cl-panel cl-section" id="clTabBody"></div>`;
         document.getElementById('clLessonSel').addEventListener('change', e => { location.href = lessonUrl(cur.id, e.target.value, S.tab); });
+        if (window.LessonNotes) {
+            // Sổ tay nháp (lesson-notes.js): mỗi bài giáo trình một trang nháp riêng
+            const notesOpts = () => ({
+                noteId: `cur_${cur.id}_${S.lessonId}`,
+                folderId: 'cur_' + cur.id,
+                folderTitle: cur.title,
+                lessonName: `Bài ${(cur.units || []).findIndex(u => u.id === S.lessonId) + 1}. ${t.main}`
+            });
+            document.getElementById('clNotesBtn').addEventListener('click', () => window.LessonNotes.open(notesOpts()));
+            window.LessonNotes.mountFab(notesOpts);
+        }
+        if (isAdmin(S.user) && window.LessonAnnotate) {
+            // Vẽ chú thích đè lên bài (lesson-annotate.js) — chỉ giáo viên, không lưu
+            window.LessonAnnotate.mount();
+            document.getElementById('clAnnotateBtn').addEventListener('click', () => window.LessonAnnotate.toggle());
+        }
         root.querySelectorAll('.cl-tab').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
         switchTab(S.tab, true);
     }
@@ -345,6 +363,7 @@
         stopSpeak(); closePop();
         root.querySelectorAll('.cl-tab').forEach(b => { b.classList.toggle('active', b.dataset.tab === tab); b.setAttribute('aria-selected', b.dataset.tab === tab); });
         if (!initial) history.replaceState(null, '', '#' + tab);
+        if (window.LessonAnnotate) window.LessonAnnotate.setPage(tab); // mỗi tab một lớp nét vẽ
         // giữ tab khi chuyển bài
         root.querySelectorAll('.cl-hero a[href^="lesson.html"]').forEach(a => { a.href = a.href.replace(/#.*$/, '') + '#' + tab; });
         if (tab === 'grammar') renderGrammar();
